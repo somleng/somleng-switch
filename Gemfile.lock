@@ -1,9 +1,22 @@
 GIT
+  remote: git://github.com/adhearsion/adhearsion-drb.git
+  revision: e77bce26877af857bf393a27d5ae28217e6f8580
+  specs:
+
+GIT
   remote: git://github.com/dwilkie/adhearsion-twilio.git
   revision: f22ba77873d4fe58ca0e948454058d7a5fc5018b
   specs:
+
+PATH
+  remote: /home/dave/work/contrib/adhearsion-drb
+  specs:
+    adhearsion-drb (1.1.1)
+
+PATH
+  remote: /home/dave/work/contrib/adhearsion-twilio
+  specs:
     adhearsion-twilio (0.0.1)
-      adhearsion (~> 2.2)
       httparty
       mail
 
@@ -33,10 +46,6 @@ GEM
       rake
       ruby_speech (~> 2.0)
       thor (~> 0.18.0)
-    adhearsion-asr (1.5.0)
-      adhearsion (~> 2.4)
-      punchblock (~> 2.0)
-      ruby_speech (~> 2.1)
     adhearsion-loquacious (1.9.3)
     axiom-types (0.1.1)
       descendants_tracker (~> 0.0.4)
@@ -64,9 +73,13 @@ GEM
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     diff-lcs (1.2.5)
+    dotenv (0.7.0)
     equalizer (0.0.11)
-    eventmachine (1.2.0.1)
+    eventmachine (1.0.9.1)
     ffi (1.9.10)
+    foreman (0.64.0)
+      dotenv (~> 0.7.0)
+      thor (>= 0.13.6)
     future-resource (1.1.0)
     girl_friday (0.11.2)
       connection_pool (~> 1.0)
@@ -167,12 +180,14 @@ PLATFORMS
 
 DEPENDENCIES
   adhearsion (~> 2.6.2)
-  adhearsion-asr
+  adhearsion-drb!
   adhearsion-twilio!
+  eventmachine (~> 1.0.9)
+  foreman
   rack-test
   rspec
   vcr
   webmock
 
 BUNDLED WITH
-   1.11.2
+   1.12.5
