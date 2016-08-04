@@ -1,20 +1,13 @@
 GIT
-  remote: git://github.com/adhearsion/adhearsion-drb.git
-  revision: e77bce26877af857bf393a27d5ae28217e6f8580
-  specs:
-
-GIT
-  remote: git://github.com/dwilkie/adhearsion-twilio.git
-  revision: f22ba77873d4fe58ca0e948454058d7a5fc5018b
-  specs:
-
-PATH
-  remote: /home/dave/work/contrib/adhearsion-drb
+  remote: git://github.com/dwilkie/adhearsion-drb.git
+  revision: 91ade74001e31f7f11c2ac9bdcc9d3c28b9ff39b
+  branch: develop
   specs:
     adhearsion-drb (1.1.1)
 
-PATH
-  remote: /home/dave/work/contrib/adhearsion-twilio
+GIT
+  remote: git://github.com/dwilkie/adhearsion-twilio.git
+  revision: 5a36a60a3f6d6ab09b2723a50d9c8fe0164ee7bf
   specs:
     adhearsion-twilio (0.0.1)
       httparty
@@ -86,8 +79,7 @@ GEM
       rubinius-actor
     has-guarded-handlers (1.6.3)
     hashdiff (0.3.0)
-    httparty (0.13.7)
-      json (~> 1.8)
+    httparty (0.14.0)
       multi_xml (>= 0.5.2)
     i18n (0.7.0)
     ice_nine (0.11.2)
@@ -188,6 +180,9 @@ DEPENDENCIES
   rspec
   vcr
   webmock
+
+RUBY VERSION
+   ruby 2.3.1p112
 
 BUNDLED WITH
    1.12.5
