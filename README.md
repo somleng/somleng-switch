@@ -3,7 +3,6 @@
 Todo:
 
 * Add build status badge
-* Add app.json
 
 Somleng (សំឡេង meaning Voice in Khmer) is an Adhearsion application compatible with [Twilreapi](https://github.com/dwilkie/twilreapi) and [TwiML](https://www.twilio.com/docs/api/twiml). It can be used, for certain call flows, as a drop-in replacement for Twilio routing calls to a local telco a SIP provider.
 
