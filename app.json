@@ -1,0 +1,52 @@
+{
+  "name": "Somleng",
+  "description": "An adhearsion application compatible with Twilreapi",
+  "website": "https://github.com/dwilkie/somleng",
+  "repository": "https://github.com/dwilkie/somleng",
+  "env": {
+    "AHN_PUNCHBLOCK_USERNAME":  {
+      "description": "Required. The punchblock username. If using Rayo with FreeSwitch this should match the configuration in your rayo.conf.xml",
+      "value": "adhearsion@localhost"
+    },
+    "AHN_PUNCHBLOCK_PASSWORD": {
+      "description": "Required. The punchblock password. If using Rayo with FreeSwitch this should match the configuration in your rayo.conf.xml"
+    },
+    "AHN_PUNCHBLOCK_HOST": {
+      "description": "Required. The punchblock host. If using Rayo with FreeSwitch this should match the configuration in your rayo.conf.xml",
+      "value": "0.0.0.0"
+    },
+    "AHN_PUNCHBLOCK_PLATFORM": {
+      "description": "Required. If using Rayo this should be xmpp",
+      "value": "xmpp"
+    },
+    "AHN_ADHEARSION_DRB_HOST":  {
+      "description": "Required. The hostname of the DRb service",
+      "value": "127.0.0.1"
+    },
+    "AHN_ADHEARSION_DRB_PORT":  {
+      "description": "Required. The port number of the DRb service",
+      "value": "9050"
+    },
+    "AHN_TWILIO_STATUS_CALLBACK_METHOD":  {
+      "description": "Optional. Make a request to the AHN_TWILIO_STATUS_CALLBACK_URL using this HTTP method when a call is completed.",
+      "value": "POST"
+    },
+    "AHN_TWILIO_STATUS_CALLBACK_URL":  {
+      "description": "Optional. Make a request to this URL when a call is completed.",
+      "value": "http://localhost:3000"
+    },
+    "AHN_TWILIO_VOICE_REQUEST_METHOD":  {
+      "description": "Optional. Retrieve and execute the TwiML using this HTTP method. Defaults to POST.",
+      "value": "POST"
+    },
+    "AHN_TWILIO_VOICE_REQUEST_URL":  {
+      "description": "Required. Retrieve and execute the TwiML at this URL",
+      "value": "http://localhost:3000"
+    }
+  },
+  "formation": {
+    "ahn": {
+      "quantity": 1
+    }
+  }
+}
