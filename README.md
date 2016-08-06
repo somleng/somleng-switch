@@ -8,6 +8,14 @@ Somleng (សំឡេង meaning Voice in Khmer) is an Adhearsion application co
 
 Currently Somleng only supports [FreeSwitch](https://freeswitch.org/). Theoretically [Asterisk](http://www.asterisk.org/) should also work but it has not been tested.
 
+### Configuration
+
+Run the following rake task to show the adhearsion configuration
+
+```
+$ bundle exec rake config:show
+```
+
 ### FreeSwitch Configuration
 
 To get started we recommend using the FreeSwitch configuration available here.
