@@ -1,0 +1,7 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "andrius/alpine-adhearsion",
+    "Update": "true"
+  }
+}
