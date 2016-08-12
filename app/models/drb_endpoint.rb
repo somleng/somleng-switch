@@ -7,7 +7,9 @@ class DrbEndpoint
   def initiate_outbound_call!(call_json)
     self.call_params = JSON.parse(call_json)
     setup_call_variables
-    Adhearsion::OutboundCall.originate(dial_string, :controller_metadata => controller_metadata)
+    Adhearsion::OutboundCall.originate(
+      dial_string, :controller => CallController, :controller_metadata => controller_metadata
+    )
   end
 
   private
