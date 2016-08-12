@@ -3,5 +3,10 @@
   "Image": {
     "Name": "andrius/alpine-adhearsion",
     "Update": "true"
-  }
+  },
+  "Ports": [
+    {
+      "ContainerPort": "9050"
+    }
+  ]
 }
