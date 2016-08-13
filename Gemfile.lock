@@ -28,14 +28,16 @@ GIT
       thor (~> 0.18.0)
       virtus (~> 1.0)
 
-PATH
-  remote: /home/dave/work/contrib/adhearsion-drb
+GIT
+  remote: git://github.com/dwilkie/adhearsion-drb.git
+  revision: 33e824b1f2abbb78bc855d95f4c4914b826d3016
+  branch: develop
   specs:
     adhearsion-drb (1.1.1)
-      adhearsion (~> 3.0.0.rc1)
 
-PATH
-  remote: /home/dave/work/contrib/adhearsion-twilio
+GIT
+  remote: git://github.com/dwilkie/adhearsion-twilio.git
+  revision: 9b6f64cfded9d95bd4baf6c33aede2543d1cc113
   specs:
     adhearsion-twilio (0.0.1)
       adhearsion (~> 3.0.0.rc1)

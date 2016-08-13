@@ -2,11 +2,11 @@ source 'https://rubygems.org'
 
 ruby(File.read(".ruby-version").strip) if File.exist?(".ruby-version")
 
-gem 'adhearsion', :github =>  "adhearsion/adhearsion"
-gem 'adhearsion-twilio', :path => "/home/dave/work/contrib/adhearsion-twilio"#, :github => "dwilkie/adhearsion-twilio"
+gem 'adhearsion', :github => "adhearsion/adhearsion"
+gem 'adhearsion-twilio', :github => "dwilkie/adhearsion-twilio"
 gem 'eventmachine', "~> 1.0.9"
 
-gem 'adhearsion-drb', :branch => :develop, :path => "/home/dave/work/contrib/adhearsion-drb"#, :github => "dwilkie/adhearsion-drb",
+gem 'adhearsion-drb', :branch => :develop, :github => "dwilkie/adhearsion-drb"
 
 group :development do
   gem 'foreman'
