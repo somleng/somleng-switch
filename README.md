@@ -18,7 +18,7 @@ $ bundle exec rake config:show
 
 ### FreeSwitch Configuration
 
-To get started we recommend using the FreeSwitch configuration available here.
+To get started we recommend using the FreeSwitch configuration available [here](https://github.com/dwilkie/freeswitch-config).
 
 ### Deployment
 
