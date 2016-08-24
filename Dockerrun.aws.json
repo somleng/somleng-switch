@@ -6,6 +6,12 @@
       "host": {
         "sourcePath": "/var/app/current"
       }
+    },
+    {
+      "name": "somleng-logs",
+      "host": {
+        "sourcePath": "/var/log/containers/somleng"
+      }
     }
   ],
   "containerDefinitions": [
@@ -18,6 +24,10 @@
         {
           "sourceVolume": "somleng-app",
           "containerPath": "/usr/src/app"
+        },
+        {
+          "sourceVolume": "somleng-logs",
+          "containerPath": "/usr/src/app/log"
         }
       ],
       "portMappings": [
