@@ -13,4 +13,5 @@ ONBUILD RUN bundle install
 
 ONBUILD COPY . /usr/src/app
 
-CMD ["ahn", "start", "/usr/src/app"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["ahn"]
