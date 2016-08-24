@@ -1,12 +1,42 @@
 {
-  "AWSEBDockerrunVersion": "1",
-  "Image": {
-    "Name": "dwilkie/docker-adhearsion",
-    "Update": "true"
-  },
-  "Ports": [
+  "AWSEBDockerrunVersion": 2,
+  "volumes": [
     {
-      "ContainerPort": "9050"
+      "name": "somleng-app",
+      "host": {
+        "sourcePath": "/var/app/current"
+      }
+    }
+  ],
+  "containerDefinitions": [
+    {
+      "name": "somleng",
+      "image": "dwilkie/somleng",
+      "essential": true,
+      "memory": 1024,
+      "mountPoints": [
+        {
+          "sourceVolume": "somleng-app",
+          "containerPath": "/usr/src/app"
+        }
+      ],
+      "portMappings": [
+        {
+          "hostPort": 9050,
+          "containerPort": 9050,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "SECRETS_BUCKET_NAME",
+          "value": "somlengsecrets"
+        },
+        {
+          "name": "SECRETS_FILE_NAME",
+          "value": "somleng_config.txt"
+        }
+      ]
     }
   ]
 }
