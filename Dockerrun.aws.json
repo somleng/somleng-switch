@@ -19,7 +19,7 @@
       "name": "somleng",
       "image": "dwilkie/somleng",
       "essential": true,
-      "memory": 1024,
+      "memory": 128,
       "mountPoints": [
         {
           "sourceVolume": "somleng-app",
