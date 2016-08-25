@@ -14,8 +14,7 @@ RUN apt-get update && \
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-ONBUILD COPY Gemfile /usr/src/app/
-ONBUILD COPY Gemfile.lock /usr/src/app/
+ONBUILD COPY . /usr/src/app
 ONBUILD RUN bundle install --deployment --without development test
 
 # Install the entrypoint script
