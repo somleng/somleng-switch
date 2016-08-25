@@ -14,8 +14,8 @@ RUN apt-get update && \
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-ONBUILD COPY . /usr/src/app
-ONBUILD RUN bundle install --deployment --without development test
+COPY . /usr/src/app
+RUN bundle install --deployment --without development test
 
 # Install the entrypoint script
 COPY docker-entrypoint.sh /docker-entrypoint.sh
