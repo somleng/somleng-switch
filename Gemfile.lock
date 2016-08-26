@@ -30,7 +30,7 @@ GIT
 
 GIT
   remote: git://github.com/dwilkie/adhearsion-drb.git
-  revision: b49f197409f9b8b515b1c5a35e39de44e3cbaf87
+  revision: d459d70975ce69eff6905ff8cf49b8c04f829711
   branch: develop
   specs:
     adhearsion-drb (1.1.1)
