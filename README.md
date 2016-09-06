@@ -22,7 +22,7 @@ To get started we recommend using the FreeSwitch configuration available [here](
 
 ### Deployment
 
-To get started quickly we recommend deploying to Heroku.
+For testing purposes we recommend deploying to Heroku.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
