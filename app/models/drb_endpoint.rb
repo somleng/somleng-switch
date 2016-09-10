@@ -23,7 +23,7 @@ class DrbEndpoint
 
     if originate_call?
       logger.info("Initiating outbound call with: #{call_args}")
-      Adhearsion::OutboundCall.originate(*call_args)
+      Adhearsion::OutboundCall.originate(*call_args).id
     end
   end
 

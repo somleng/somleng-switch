@@ -6,6 +6,10 @@ describe DrbEndpoint do
 
     let(:call_json) { sample_call_json }
 
+    let(:call) { instance_double(Adhearsion::OutboundCall, :id => call_id) }
+    let(:call_id) { "becf0231-3028-4e10-8f40-e77ec6c8fd6d" }
+    let(:asserted_call_id) { call_id }
+
     let(:asserted_dial_string) { "+85512334667" }
     let(:asserted_caller_id) { "2442" }
     let(:asserted_call_controller) { CallController }
@@ -26,7 +30,7 @@ describe DrbEndpoint do
     end
 
     def setup_scenario
-      allow(Adhearsion::OutboundCall).to receive(:originate)
+      allow(Adhearsion::OutboundCall).to receive(:originate).and_return(call)
     end
 
     def setup_expectations
@@ -40,7 +44,7 @@ describe DrbEndpoint do
 
     def assert_outbound_call!
       setup_expectations
-      subject.initiate_outbound_call!(call_json)
+      expect(subject.initiate_outbound_call!(call_json)).to eq(asserted_call_id)
     end
 
     context "by default" do
@@ -62,6 +66,7 @@ describe DrbEndpoint do
       context "disable_originate" do
         let(:routing_instructions) { { "disable_originate" => disable_originate } }
         let(:disable_originate) { "1" }
+        let(:asserted_call_id) { nil }
 
         def setup_expectations
           expect(Adhearsion::OutboundCall).not_to receive(:originate)
