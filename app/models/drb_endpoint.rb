@@ -8,6 +8,7 @@ class DrbEndpoint
                 :call_sid, :account_sid, :auth_token, :disable_originate
 
   def initiate_outbound_call!(call_json)
+    logger.info("Receiving DRb request: #{call_json}")
     self.call_params = JSON.parse(call_json)
     setup_call_variables
 
