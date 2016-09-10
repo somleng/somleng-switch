@@ -1,49 +1,83 @@
 class DrbEndpoint
-  attr_accessor :call_params, :destination_host, :number_to_dial,
-                :dial_string_format, :dial_string,
+  DEFAULT_DIAL_STRING_FORMAT = "%{destination}"
+
+  attr_accessor :call_params, :destination, :destination_host,
+                :caller_id, :dial_string_format, :dial_string, :gateway,
                 :voice_request_url, :voice_request_method,
-                :status_callback_url, :status_callback_method
+                :status_callback_url, :status_callback_method,
+                :call_sid, :account_sid, :auth_token, :disable_originate
 
   def initiate_outbound_call!(call_json)
     self.call_params = JSON.parse(call_json)
     setup_call_variables
-    Adhearsion::OutboundCall.originate(
-      dial_string, :controller => CallController, :controller_metadata => controller_metadata
-    )
+
+    call_args = [
+      dial_string,
+      {
+        :from => caller_id,
+        :controller => CallController,
+        :controller_metadata => controller_metadata
+      }
+    ]
+
+    if originate_call?
+      logger.info("Initiating outbound call with: #{call_args}")
+      Adhearsion::OutboundCall.originate(*call_args)
+    end
   end
 
   private
+
+  def originate_call?
+    disable_originate.to_i != 1
+  end
+
+  def routing_instructions
+    call_params["routing_instructions"] || {}
+  end
 
   def controller_metadata
     {
       :voice_request_url => voice_request_url,
       :voice_request_method => voice_request_method,
       :status_callback_url => status_callback_url,
-      :status_callback_method => status_callback_method
+      :status_callback_method => status_callback_method,
+      :account_sid => account_sid,
+      :auth_token => auth_token,
+      :call_sid => call_sid
     }
   end
 
   def setup_call_variables
-    self.destination_host = call_params["destination_host"] || default_destination_host
-    self.number_to_dial = call_params["number_to_dial"] || default_number_to_dial
-    self.dial_string_format = call_params["dial_string_format"] || default_dial_string_format
-    self.dial_string = call_params["dial_string"] || default_dial_string || generate_dial_string
     self.voice_request_url = call_params["voice_url"]
     self.voice_request_method = call_params["voice_method"]
     self.status_callback_url = call_params["status_callback_url"]
     self.status_callback_method = call_params["status_callback_method"]
+    self.account_sid = call_params["account_sid"]
+    self.auth_token = call_params["account_auth_token"]
+    self.call_sid = call_params["sid"]
+
+    self.caller_id = routing_instructions["source"] || call_params["from"] || default_caller_id
+    self.destination = routing_instructions["destination"] || call_params["to"] || default_destination
+    self.destination_host = routing_instructions["destination_host"] || default_destination_host
+    self.gateway = routing_instructions["gateway"] || default_gateway
+    self.dial_string_format = routing_instructions["dial_string_format"] || default_dial_string_format
+    self.dial_string = routing_instructions["dial_string"] || default_dial_string || generate_dial_string
+    self.disable_originate = routing_instructions["disable_originate"] || default_disable_originate
   end
 
   def generate_dial_string
     dial_string_format.sub(
-      /\%\{number_to_dial\}\%/, number_to_dial
+      /\%\{destination\}/, destination.to_s
     ).sub(
-      /\%\{destination_host\}\%/, destination_host
+      /\%\{destination_host\}/, destination_host.to_s
+    ).sub(
+      /\%\{gateway\}/, gateway.to_s
     )
   end
 
-  def default_number_to_dial
-    ENV["AHN_SOMLENG_DEFAULT_NUMBER_TO_DIAL"]
+  def default_destination
+    ENV["AHN_SOMLENG_DEFAULT_DESTINATION"]
   end
 
   def default_destination_host
@@ -54,7 +88,19 @@ class DrbEndpoint
     ENV["AHN_SOMLENG_DEFAULT_DIAL_STRING"]
   end
 
+  def default_gateway
+    ENV["AHN_SOMLENG_DEFAULT_GATEWAY"]
+  end
+
   def default_dial_string_format
-    ENV["AHN_SOMLENG_DEFAULT_DIAL_STRING_FORMAT"]
+    ENV["AHN_SOMLENG_DEFAULT_DIAL_STRING_FORMAT"] || DEFAULT_DIAL_STRING_FORMAT
+  end
+
+  def default_caller_id
+    ENV["AHN_SOMLENG_DEFAULT_CALLER_ID"]
+  end
+
+  def default_disable_originate
+    ENV["AHN_SOMLENG_DISABLE_ORIGINATE"]
   end
 end
