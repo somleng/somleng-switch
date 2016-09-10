@@ -1,14 +1,27 @@
 require 'spec_helper'
-require 'adhearsion/twilio/spec/helpers'
 
 describe CallController do
-  include Adhearsion::Twilio::Spec::Helpers
-
-  subject { CallController.new(mock_call) }
+  subject { described_class.new(mock_call) }
+  let(:mock_call) { double("Call") }
 
   describe "#run" do
-    it "should make a request to fetch the Twiml" do
-      expect_call_status_update(:assert_answered => false) { subject.run }
+    def setup_scenario
+      allow(subject).to receive(:notify_voice_request_url)
     end
+
+    def setup_expectations
+      expect(subject).to receive(:notify_voice_request_url)
+    end
+
+    def assert_adhearsion_twilio_handled!
+      setup_expectations
+      subject.run
+    end
+
+    before do
+      setup_scenario
+    end
+
+    it { assert_adhearsion_twilio_handled! }
   end
 end
