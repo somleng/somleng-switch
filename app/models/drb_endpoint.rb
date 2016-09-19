@@ -45,7 +45,8 @@ class DrbEndpoint
       :status_callback_method => status_callback_method,
       :account_sid => account_sid,
       :auth_token => auth_token,
-      :call_sid => call_sid
+      :call_sid => call_sid,
+      :call_direction => :outbound_api
     }
   end
 
