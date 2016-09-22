@@ -46,7 +46,8 @@ class DrbEndpoint
       :account_sid => account_sid,
       :auth_token => auth_token,
       :call_sid => call_sid,
-      :call_direction => :outbound_api
+      :call_direction => :outbound_api,
+      :rest_api_enabled => false
     }
   end
 
