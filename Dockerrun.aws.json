@@ -13,7 +13,7 @@
       "name": "somleng",
       "image": "dwilkie/somleng",
       "essential": true,
-      "memory": 128,
+      "memory": 995,
       "mountPoints": [
         {
           "sourceVolume": "somleng-logs",
