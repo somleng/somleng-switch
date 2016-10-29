@@ -53,12 +53,12 @@ class DrbEndpoint
   end
 
   def handle_event_answered(event)
-    logger.info("handle_event_answered - event: #{event}")
+    logger.info("handle_event_answered - event: #{event}, self.answered: #{answered}, answered? #{answered?}")
     self.answered = true
   end
 
   def handle_event_end(event)
-    logger.info("handle_event_end - event: #{event}, answered?: #{answered?}")
+    logger.info("handle_event_end - event: #{event}, self.answered: #{answered}, answered?: #{answered?}")
     notify_status_callback_url if !answered?
   end
 
