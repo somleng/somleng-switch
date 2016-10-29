@@ -41,6 +41,7 @@ describe DrbEndpoint do
         :controller => CallController,
         :controller_metadata => asserted_controller_metadata
       )
+      expect(call).to receive(:register_event_handler).with(Adhearsion::Event::Answered)
       expect(call).to receive(:register_event_handler).with(Adhearsion::Event::End)
     end
 

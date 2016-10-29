@@ -6,7 +6,7 @@ class DrbEndpoint
                 :voice_request_url, :voice_request_method,
                 :status_callback_url, :status_callback_method,
                 :call_sid, :account_sid, :auth_token, :disable_originate,
-                :outbound_call
+                :outbound_call, :answered
 
   def initiate_outbound_call!(call_json)
     logger.info("Receiving DRb request: #{call_json}")
@@ -25,14 +25,51 @@ class DrbEndpoint
     if originate_call?
       logger.info("Initiating outbound call with: #{call_args}")
       self.outbound_call = Adhearsion::OutboundCall.originate(*call_args)
-      outbound_call.register_event_handler(Adhearsion::Event::End) do |event|
-        logger.info("Call Ended. Executing custom event handler for Adhearsion::Event::End. #{outbound_call}")
-      end
+      register_event_answered
+      register_event_end
       outbound_call_sid
     end
   end
 
   private
+
+  def register_event_answered
+    outbound_call.register_event_handler(Adhearsion::Event::Answered) do
+      self.answered = true
+    end
+  end
+
+  def register_event_end
+    outbound_call.register_event_handler(Adhearsion::Event::End) do
+      logger.info("Call Ended. Executing custom event handler for Adhearsion::Event::End")
+      notify_status_callback_url
+    end
+  end
+
+  def notify_status_callback_url
+    logger.info("Notifying status_callback_url. Call answered?: #{answered?}")
+    http_client.notify_status_callback_url(answered? ? :answer : :no_answer)
+  end
+
+  def answered?
+    !!answered
+  end
+
+  def twilio_call
+    @twilio_call ||= Adhearsion::Twilio::Call.new(outbound_call)
+  end
+
+  def http_client
+    @http_client ||= Adhearsion::Twilio::HttpClient.new(
+      :status_callback_url => status_callback_url,
+      :status_callback_method => status_callback_method,
+      :twilio_call => twilio_call,
+      :call_sid => outbound_call_sid,
+      :call_direction => call_direction,
+      :auth_token => auth_token,
+      :logger => logger
+    )
+  end
 
   def outbound_call_sid
     outbound_call.id
