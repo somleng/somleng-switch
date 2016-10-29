@@ -5,7 +5,8 @@ class DrbEndpoint
                 :caller_id, :dial_string_format, :dial_string, :gateway,
                 :voice_request_url, :voice_request_method,
                 :status_callback_url, :status_callback_method,
-                :call_sid, :account_sid, :auth_token, :disable_originate
+                :call_sid, :account_sid, :auth_token, :disable_originate,
+                :outbound_call
 
   def initiate_outbound_call!(call_json)
     logger.info("Receiving DRb request: #{call_json}")
@@ -23,15 +24,23 @@ class DrbEndpoint
 
     if originate_call?
       logger.info("Initiating outbound call with: #{call_args}")
-      outbound_call = Adhearsion::OutboundCall.originate(*call_args)
+      self.outbound_call = Adhearsion::OutboundCall.originate(*call_args)
       outbound_call.register_event_handler(Adhearsion::Event::End) do |event|
-        logger.info("Call Ended. Executing custom event handler for Adhearsion::Event::End")
+        logger.info("Call Ended. Executing custom event handler for Adhearsion::Event::End. #{outbound_call}")
       end
-      outbound_call.id
+      outbound_call_sid
     end
   end
 
   private
+
+  def outbound_call_sid
+    outbound_call.id
+  end
+
+  def call_direction
+    :outbound_api
+  end
 
   def originate_call?
     disable_originate.to_i != 1
@@ -45,12 +54,10 @@ class DrbEndpoint
     {
       :voice_request_url => voice_request_url,
       :voice_request_method => voice_request_method,
-      :status_callback_url => status_callback_url,
-      :status_callback_method => status_callback_method,
       :account_sid => account_sid,
       :auth_token => auth_token,
       :call_sid => call_sid,
-      :call_direction => :outbound_api,
+      :call_direction => call_direction,
       :rest_api_enabled => false
     }
   end

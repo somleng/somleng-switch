@@ -17,8 +17,6 @@ describe DrbEndpoint do
       {
         :voice_request_url=>"https://rapidpro.ngrok.com/handle/33/",
         :voice_request_method=>"GET",
-        :status_callback_url=>"https://rapidpro.ngrok.com/handle/33/",
-        :status_callback_method=>"POST",
         :account_sid=>"acf75d31-b951-41d0-bb36-e2c48739308a",
         :auth_token=>"7b7cff7af0aa74286404902622605af8e2da186aea4f65a6774563db9a8c6670",
         :call_sid=>"91171124-2da9-40df-b21f-2531c895ff83",
