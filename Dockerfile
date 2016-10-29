@@ -1,5 +1,5 @@
 FROM ruby:latest
-MAINTAINER dwlkie <dwilkie@gmail.com>
+MAINTAINER dwilkie <dwilkie@gmail.com>
 
 # Install the AWS CLI
 RUN apt-get update && \
