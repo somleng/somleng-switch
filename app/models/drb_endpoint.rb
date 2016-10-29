@@ -23,7 +23,11 @@ class DrbEndpoint
 
     if originate_call?
       logger.info("Initiating outbound call with: #{call_args}")
-      Adhearsion::OutboundCall.originate(*call_args).id
+      outbound_call = Adhearsion::OutboundCall.originate(*call_args)
+      outbound_call.register_event_handler(Adhearsion::Event::End) do |event|
+        logger.info("Call Ended. Executing custom event handler for Adhearsion::Event::End")
+      end
+      outbound_call.id
     end
   end
 

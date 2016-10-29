@@ -33,6 +33,7 @@ describe DrbEndpoint do
 
     def setup_scenario
       allow(Adhearsion::OutboundCall).to receive(:originate).and_return(call)
+      allow(call).to receive(:register_event_handler)
     end
 
     def setup_expectations
@@ -42,6 +43,7 @@ describe DrbEndpoint do
         :controller => CallController,
         :controller_metadata => asserted_controller_metadata
       )
+      expect(call).to receive(:register_event_handler).with(Adhearsion::Event::End)
     end
 
     def assert_outbound_call!
