@@ -41,29 +41,29 @@ class DrbEndpoint
   end
 
   def register_event_answered
-    outbound_call.register_event_handler(Adhearsion::Event::Answered) do
-      handle_event_answered
+    outbound_call.register_event_handler(Adhearsion::Event::Answered) do |event|
+      handle_event_answered(event)
     end
   end
 
   def register_event_end
-    outbound_call.register_event_handler(Adhearsion::Event::End) do
-      handle_event_end
+    outbound_call.register_event_handler(Adhearsion::Event::End) do |event|
+      handle_event_end(event)
     end
   end
 
-  def handle_event_answered
+  def handle_event_answered(event)
+    logger.info("handle_event_answered - event: #{event}")
     self.answered = true
   end
 
-  def handle_event_end
-    logger.info("Call Ended. Executing custom event handler for Adhearsion::Event::End")
-    notify_status_callback_url
+  def handle_event_end(event)
+    logger.info("handle_event_end - event: #{event}, answered?: #{answered?}")
+    notify_status_callback_url if !answered?
   end
 
   def notify_status_callback_url
-    logger.info("Notifying status_callback_url. Call answered?: #{answered?}")
-    http_client.notify_status_callback_url(:no_answer) if !answered?
+    http_client.notify_status_callback_url(:no_answer)
   end
 
   def answered?

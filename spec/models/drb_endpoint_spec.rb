@@ -91,7 +91,7 @@ describe DrbEndpoint do
 
   describe "#handle_event_answered" do
     before do
-      subject.send(:handle_event_answered)
+      subject.send(:handle_event_answered, Adhearsion::Event::Answered.new)
     end
 
     it { expect(subject.send(:answered?)).to eq(true) }
@@ -130,7 +130,7 @@ describe DrbEndpoint do
           :status_callback_method => asserted_status_callback_method
         )
       )
-      subject.send(:handle_event_end)
+      subject.send(:handle_event_end, Adhearsion::Event::End.new)
     end
 
     before do
