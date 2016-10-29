@@ -33,17 +33,29 @@ class DrbEndpoint
 
   private
 
+  def configuration
+    @configuration ||= Adhearsion::Twilio::Configuration.new
+  end
+
   def register_event_answered
     outbound_call.register_event_handler(Adhearsion::Event::Answered) do
-      self.answered = true
+      handle_event_answered
     end
   end
 
   def register_event_end
     outbound_call.register_event_handler(Adhearsion::Event::End) do
-      logger.info("Call Ended. Executing custom event handler for Adhearsion::Event::End")
-      notify_status_callback_url
+      handle_event_end
     end
+  end
+
+  def handle_event_answered
+    self.answered = true
+  end
+
+  def handle_event_end
+    logger.info("Call Ended. Executing custom event handler for Adhearsion::Event::End")
+    notify_status_callback_url
   end
 
   def notify_status_callback_url
@@ -61,8 +73,8 @@ class DrbEndpoint
 
   def http_client
     @http_client ||= Adhearsion::Twilio::HttpClient.new(
-      :status_callback_url => status_callback_url,
-      :status_callback_method => status_callback_method,
+      :status_callback_url => status_callback_url || configuration.status_callback_url,
+      :status_callback_method => status_callback_method || configuration.status_callback_method,
       :twilio_call => twilio_call,
       :call_sid => outbound_call_sid,
       :call_direction => call_direction,
