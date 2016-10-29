@@ -6,7 +6,7 @@ class DrbEndpoint
                 :voice_request_url, :voice_request_method,
                 :status_callback_url, :status_callback_method,
                 :call_sid, :account_sid, :auth_token, :disable_originate,
-                :outbound_call, :answered
+                :outbound_call, :answered, :outbound_call_sid, :call_to, :call_from
 
   def initiate_outbound_call!(call_json)
     logger.info("Receiving DRb request: #{call_json}")
@@ -25,9 +25,12 @@ class DrbEndpoint
     if originate_call?
       logger.info("Initiating outbound call with: #{call_args}")
       self.outbound_call = Adhearsion::OutboundCall.originate(*call_args)
+      twilio_call = Adhearsion::Twilio::Call.new(outbound_call)
+      self.call_to = twilio_call.to
+      self.call_from = twilio_call.from
       register_event_answered
       register_event_end
-      outbound_call_sid
+      self.outbound_call_sid = outbound_call.id
     end
   end
 
@@ -60,31 +63,24 @@ class DrbEndpoint
 
   def notify_status_callback_url
     logger.info("Notifying status_callback_url. Call answered?: #{answered?}")
-    http_client.notify_status_callback_url(answered? ? :answer : :no_answer)
+    http_client.notify_status_callback_url(:no_answer) if !answered?
   end
 
   def answered?
     !!answered
   end
 
-  def twilio_call
-    @twilio_call ||= Adhearsion::Twilio::Call.new(outbound_call)
-  end
-
   def http_client
     @http_client ||= Adhearsion::Twilio::HttpClient.new(
       :status_callback_url => status_callback_url || configuration.status_callback_url,
       :status_callback_method => status_callback_method || configuration.status_callback_method,
-      :twilio_call => twilio_call,
       :call_sid => outbound_call_sid,
+      :call_to => call_to,
+      :call_from => call_from,
       :call_direction => call_direction,
       :auth_token => auth_token,
       :logger => logger
     )
-  end
-
-  def outbound_call_sid
-    outbound_call.id
   end
 
   def call_direction
@@ -103,6 +99,8 @@ class DrbEndpoint
     {
       :voice_request_url => voice_request_url,
       :voice_request_method => voice_request_method,
+      :status_callback_url => status_callback_url,
+      :status_callback_method => status_callback_method,
       :account_sid => account_sid,
       :auth_token => auth_token,
       :call_sid => call_sid,
