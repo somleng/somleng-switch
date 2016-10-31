@@ -1,3 +1,5 @@
+require "adhearsion/twilio/util/sip_header"
+
 class DrbEndpoint
   # Do not use instance variables in this class!
   # If an instance variable is set,
@@ -37,8 +39,8 @@ class DrbEndpoint
   end
 
   def handle_event_end(event)
-    logger.info("handle_event_end - event: #{event}")
     event_details = parse_event(event)
+    logger.info("handle_event_end - event details: #{event_details}")
     notify_status_callback_url(event_details) if !answered?(event_details)
   end
 
@@ -48,16 +50,78 @@ class DrbEndpoint
 
   def construct_adhearsion_twilio_headers(call_variables)
     sip_header_util = Adhearsion::Twilio::Util::SipHeader.new
-    {
-      sip_header_util.construct_header_name("Status-Callback-Url") => call_variables[:status_callback_url]
-    }
+    headers = {}
+
+    add_adhearsion_twilio_header!(
+      sip_header_util,
+      headers,
+      "Status-Callback-Url",
+      call_variables[:status_callback_url]
+    )
+
+    add_adhearsion_twilio_header!(
+      sip_header_util,
+      headers,
+      "Status-Callback-Method",
+      call_variables[:status_callback_method]
+    )
+
+    add_adhearsion_twilio_header!(
+      sip_header_util,
+      headers,
+      "Call-Sid",
+      call_variables[:call_sid]
+    )
+
+    add_adhearsion_twilio_header!(
+      sip_header_util,
+      headers,
+      "To",
+      call_variables[:adhearsion_twilio_to]
+    )
+
+    add_adhearsion_twilio_header!(
+      sip_header_util,
+      headers,
+      "From",
+      call_variables[:adhearsion_twilio_from]
+    )
+
+    add_adhearsion_twilio_header!(
+      sip_header_util,
+      headers,
+      "Direction",
+      call_variables[:call_direction]
+    )
+
+    add_adhearsion_twilio_header!(
+      sip_header_util,
+      headers,
+      "Auth-Token",
+      call_variables[:auth_token]
+    )
+
+    headers
+  end
+
+  def add_adhearsion_twilio_header!(sip_header_util, headers, name, value)
+    headers.merge!(
+     sip_header_util.construct_header_name(name) => value
+    ) if value
   end
 
   def parse_event(event)
+    sip_header_util = Adhearsion::Twilio::Util::SipHeader.new
     headers = event.headers
     {
       :sip_term_status => headers["variable-sip_term_status"],
-      :status_callback_url => headers["X-Adhearsion-Twilio-Status-Callback-Url"]
+      :status_callback_url => headers[sip_header_util.construct_header_name("Status-Callback-Url")],
+      :status_callback_method => headers[sip_header_util.construct_header_name("Status-Callback-Method")],
+      :call_sid => headers[sip_header_util.construct_header_name("Call-Sid")],
+      :to => headers[sip_header_util.construct_header_name("To")],
+      :from => headers[sip_header_util.construct_header_name("From")],
+      :direction => headers[sip_header_util.construct_header_name("Direction")],
+      :auth_token => headers[sip_header_util.construct_header_name("Auth-Token")]
     }
   end
 
@@ -66,11 +130,11 @@ class DrbEndpoint
     http_client = Adhearsion::Twilio::HttpClient.new(
       :status_callback_url => event_details[:status_callback_url] || configuration.status_callback_url,
       :status_callback_method => event_details[:status_callback_method] || configuration.status_callback_method,
-      :call_sid => event_details[:outbound_call_sid],
-      :call_to => event_details[:call_to],
-      :call_from => event_details[:call_from],
-      :call_direction => event_details[:call_direction],
+      :call_sid => event_details[:call_sid],
+      :call_to => event_details[:to],
+      :call_from => event_details[:from],
       :auth_token => event_details[:auth_token],
+      :call_direction => event_details[:direction],
       :logger => logger
     )
 
@@ -78,7 +142,7 @@ class DrbEndpoint
   end
 
   def call_direction
-    :outbound_api
+    "outbound_api"
   end
 
   def get_routing_instructions(call_params)
@@ -94,7 +158,9 @@ class DrbEndpoint
       :account_sid => call_variables[:account_sid],
       :auth_token => call_variables[:auth_token],
       :call_sid => call_variables[:call_sid],
-      :call_direction => call_direction,
+      :adhearsion_twilio_to => call_variables[:adhearsion_twilio_to],
+      :adhearsion_twilio_from => call_variables[:adhearsion_twilio_from],
+      :call_direction => call_variables[:call_direction],
       :rest_api_enabled => false
     }
   end
@@ -119,6 +185,10 @@ class DrbEndpoint
     )
     disable_originate = routing_instructions["disable_originate"] || default_disable_originate
 
+    number_normalizer = Adhearsion::Twilio::Util::NumberNormalizer.new
+    adhearsion_twilio_from = number_normalizer.normalize(caller_id)
+    adhearsion_twilio_to = number_normalizer.normalize(dial_string)
+
     {
       :voice_request_url => voice_request_url,
       :voice_request_method => voice_request_method,
@@ -133,6 +203,9 @@ class DrbEndpoint
       :gateway => gateway,
       :dial_string_format => dial_string_format,
       :dial_string => dial_string,
+      :adhearsion_twilio_from => adhearsion_twilio_from,
+      :adhearsion_twilio_to => adhearsion_twilio_to,
+      :call_direction => call_direction,
       :disable_originate => disable_originate
     }
   end
