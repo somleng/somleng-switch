@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe DrbEndpoint do
   describe "#initiate_outbound_call!(call_json)" do
-    let(:sample_call_json) { "{\"to\":\"+85512334667\",\"from\":\"2442\",\"voice_url\":\"https://rapidpro.ngrok.com/handle/33/\",\"voice_method\":\"GET\",\"status_callback_url\":\"https://rapidpro.ngrok.com/handle/33/\",\"status_callback_method\":\"POST\",\"sid\":\"91171124-2da9-40df-b21f-2531c895ff83\",\"account_sid\":\"acf75d31-b951-41d0-bb36-e2c48739308a\",\"account_auth_token\":\"7b7cff7af0aa74286404902622605af8e2da186aea4f65a6774563db9a8c6670\",\"routing_instructions\":{\"source\":\"2442\",\"destination\":\"+85512334667\"}}" }
+    let(:sample_call_json) { "{\"to\":\"+85512334667\",\"from\":\"2442\",\"voice_url\":\"https://rapidpro.ngrok.com/handle/33/\",\"voice_method\":\"GET\",\"status_callback_url\":\"#{asserted_status_callback_url}\",\"status_callback_method\":\"POST\",\"sid\":\"91171124-2da9-40df-b21f-2531c895ff83\",\"account_sid\":\"acf75d31-b951-41d0-bb36-e2c48739308a\",\"account_auth_token\":\"7b7cff7af0aa74286404902622605af8e2da186aea4f65a6774563db9a8c6670\",\"routing_instructions\":{\"source\":\"2442\",\"destination\":\"+85512334667\"}}" }
 
     let(:call_json) { sample_call_json }
     let(:asserted_call_id) { call_id }
@@ -12,6 +12,9 @@ describe DrbEndpoint do
     let(:asserted_dial_string) { "+85512334667" }
     let(:asserted_caller_id) { "2442" }
     let(:asserted_call_controller) { CallController }
+
+    let(:asserted_status_callback_url) { "https://rapidpro.ngrok.com/handle/33/" }
+
     let(:asserted_controller_metadata) do
       {
         :voice_request_url=>"https://rapidpro.ngrok.com/handle/33/",
@@ -25,6 +28,12 @@ describe DrbEndpoint do
         :rest_api_enabled=>false
       }
     end
+
+    let(:asserted_headers) {
+      {
+        "X-Adhearsion-Twilio-Status-Callback-Url" => asserted_status_callback_url
+      }
+    }
 
     before do
       setup_scenario
@@ -42,21 +51,15 @@ describe DrbEndpoint do
         asserted_dial_string,
         :from => asserted_caller_id,
         :controller => CallController,
-        :controller_metadata => asserted_controller_metadata
+        :controller_metadata => asserted_controller_metadata,
+        :headers => asserted_headers
       )
-      expect(call).to receive(:register_event_handler).with(Adhearsion::Event::Answered)
       expect(call).to receive(:register_event_handler).with(Adhearsion::Event::End)
     end
 
     def assert_outbound_call!
       setup_expectations
       expect(subject.initiate_outbound_call!(call_json)).to eq(asserted_call_id)
-      if asserted_call_id
-        expect(subject.outbound_call).to eq(call)
-        expect(subject.call_to).to be_present
-        expect(subject.call_from).to be_present
-        expect(subject.outbound_call_sid).to be_present
-      end
     end
 
     context "by default" do
@@ -89,17 +92,11 @@ describe DrbEndpoint do
     end
   end
 
-  describe "#handle_event_answered" do
-    before do
-      subject.send(:handle_event_answered, Adhearsion::Event::Answered.new)
-    end
-
-    it { expect(subject.send(:answered?)).to eq(true) }
-  end
-
-  describe "#handle_event_end" do
+  describe "#handle_event_end(event)" do
     let(:http_client_class) { Adhearsion::Twilio::HttpClient }
     let(:http_client) { instance_double(http_client_class) }
+
+    let(:sip_term_status) { "200" }
 
     let(:call_to) { "+85512334667" }
     let(:call_from) { "+85512334667" }
@@ -109,14 +106,24 @@ describe DrbEndpoint do
     let(:asserted_status_callback_url) { nil }
     let(:asserted_status_callback_method) { Adhearsion::Twilio::Configuration::DEFAULT_STATUS_CALLBACK_METHOD }
 
+    let :stanza do
+      <<-MESSAGE
+<end xmlns="urn:xmpp:rayo:1">
+  <timeout platform-code="18" />
+  <!-- Signaling (e.g. SIP) Headers -->
+  <header name="X-Adhearsion-Twilio-Status-Callback-Url" value="#{status_callback_url}" />
+  <header name="variable-sip_term_status" value="#{sip_term_status}" />
+</end>
+      MESSAGE
+    end
+
+    def parse_stanza(xml)
+      Nokogiri::XML.parse(xml, nil, nil, Nokogiri::XML::ParseOptions::NOBLANKS)
+    end
+
+    let(:event) { Adhearsion::Rayo::RayoNode.from_xml(parse_stanza(stanza).root, '9f00061', '1') }
+
     def setup_scenario
-      subject.call_to = call_to
-      subject.call_from = call_from
-      subject.outbound_call_sid = outbound_call_sid
-      subject.status_callback_url = status_callback_url
-      subject.status_callback_method = status_callback_method
-      allow(http_client).to receive(:notify_status_callback_url)
-      allow(http_client_class).to receive(:new).and_return(http_client)
     end
 
     def assert_handle_event_end!
@@ -130,7 +137,7 @@ describe DrbEndpoint do
           :status_callback_method => asserted_status_callback_method
         )
       )
-      subject.send(:handle_event_end, Adhearsion::Event::End.new)
+      subject.send(:handle_event_end, event)
     end
 
     before do
@@ -138,16 +145,14 @@ describe DrbEndpoint do
     end
 
     context "given the call is not answered" do
-      let(:asserted_status) { :no_answer }
-      it { assert_handle_event_end! }
+      let(:sip_term_status) { "486" }
+      let(:status_callback_url) { "https://status-callback.com/status_callback.xml" }
+
+      #it { assert_handle_event_end! }
     end
 
     context "given the call is answered" do
-      def setup_scenario
-        subject.answered = true
-        super
-      end
-
+      let(:sip_term_status) { "200" }
       it { expect(http_client).not_to receive(:notify_status_callback_url) }
     end
   end
