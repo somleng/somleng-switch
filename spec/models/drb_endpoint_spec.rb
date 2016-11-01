@@ -58,6 +58,7 @@ describe DrbEndpoint do
         "X-Adhearsion-Twilio-To" => asserted_adhearsion_twilio_to,
         "X-Adhearsion-Twilio-From" => asserted_adhearsion_twilio_from,
         "X-Adhearsion-Twilio-Direction" => asserted_call_direction,
+        "X-Adhearsion-Twilio-Account-Sid" => asserted_account_sid,
         "X-Adhearsion-Twilio-Auth-Token" => asserted_auth_token,
       }
     }
@@ -132,6 +133,8 @@ describe DrbEndpoint do
     let(:header_call_sid) { "abcdefghij" }
     let(:header_call_direction) { "outbound_api" }
     let(:header_auth_token) { "12345678" }
+    let(:header_billsec) { "0" }
+    let(:header_account_sid) { "987654321" }
 
     let(:asserted_status_callback_url) { header_status_callback_url }
     let(:asserted_status_callback_method) { header_status_callback_method }
@@ -140,6 +143,23 @@ describe DrbEndpoint do
     let(:asserted_call_sid) { header_call_sid }
     let(:asserted_auth_token) { header_auth_token }
     let(:asserted_call_direction) { header_call_direction }
+    let(:asserted_call_duration) { header_billsec }
+    let(:asserted_sip_response_code) { header_sip_term_status }
+    let(:asserted_account_sid) { header_account_sid }
+
+    let(:asserted_notify_status_callback_url_options) {
+      {
+        "CallDuration" => asserted_call_duration,
+        "SipResponseCode" => asserted_sip_response_code
+      }
+    }
+
+    let(:asserted_notify_status_callback_url_args) {
+      [
+        asserted_notify_status_callback_url_status,
+        asserted_notify_status_callback_url_options
+      ].compact
+    }
 
     let :stanza do
       <<-MESSAGE
@@ -147,6 +167,7 @@ describe DrbEndpoint do
   <timeout platform-code="18" />
   <!-- Signaling (e.g. SIP) Headers -->
   <header name="variable-sip_term_status" value="#{header_sip_term_status}" />
+  <header name="variable-billsec" value="#{header_billsec}" />
   <header name="X-Adhearsion-Twilio-Status-Callback-Url" value="#{header_status_callback_url}" />
   <header name="X-Adhearsion-Twilio-Status-Callback-Method" value="#{header_status_callback_method}" />
   <header name="X-Adhearsion-Twilio-To" value="#{header_adhearsion_twilio_to}" />
@@ -154,6 +175,7 @@ describe DrbEndpoint do
   <header name="X-Adhearsion-Twilio-Call-Sid" value="#{header_call_sid}" />
   <header name="X-Adhearsion-Twilio-Direction" value="#{header_call_direction}" />
   <header name="X-Adhearsion-Twilio-Auth-Token" value="#{header_auth_token}" />
+  <header name="X-Adhearsion-Twilio-Account-Sid" value="#{header_account_sid}" />
 </end>
       MESSAGE
     end
@@ -169,7 +191,7 @@ describe DrbEndpoint do
     end
 
     def assert_handle_event_end!
-      expect(http_client).to receive(:notify_status_callback_url).with(:no_answer)
+      expect(http_client).to receive(:notify_status_callback_url).with(*asserted_notify_status_callback_url_args)
       expect(http_client_class).to receive(:new).with(
         hash_including(
           :status_callback_url => asserted_status_callback_url,
@@ -177,8 +199,9 @@ describe DrbEndpoint do
           :call_to => asserted_call_to,
           :call_from => asserted_call_from,
           :call_sid => asserted_call_sid,
+          :account_sid => asserted_account_sid,
           :auth_token => asserted_auth_token,
-          :call_direction => asserted_call_direction
+          :call_direction => asserted_call_direction,
         )
       )
       subject.send(:handle_event_end, event)
@@ -188,8 +211,27 @@ describe DrbEndpoint do
       setup_scenario
     end
 
-    context "given the call is not answered" do
+    context "given the call is not_answered" do
+      let(:header_sip_term_status) { "480" }
+      let(:asserted_notify_status_callback_url_status) { :no_answer }
+      it { assert_handle_event_end! }
+    end
+
+    context "given the call is cancelled by originator" do
+      let(:header_sip_term_status) { "487" }
+      let(:asserted_notify_status_callback_url_status) { :no_answer }
+      it { assert_handle_event_end! }
+    end
+
+    context "given the call is busy" do
       let(:header_sip_term_status) { "486" }
+      let(:asserted_notify_status_callback_url_status) { :busy }
+      it { assert_handle_event_end! }
+    end
+
+    context "given the number is wrong" do
+      let(:header_sip_term_status) { "484" }
+      let(:asserted_notify_status_callback_url_status) { :error }
       it { assert_handle_event_end! }
     end
 

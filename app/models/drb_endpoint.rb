@@ -4,6 +4,7 @@ class DrbEndpoint
   # Do not use instance variables in this class!
   # If an instance variable is set,
   # the next time this DrbEndpoint is invoked it will use the previous instance variable
+  # DRb is not thread safe!
 
   DEFAULT_DIAL_STRING_FORMAT = "%{destination}"
 
@@ -45,7 +46,20 @@ class DrbEndpoint
   end
 
   def answered?(event_details)
-    event_details[:sip_term_status] == "200"
+    get_adhearsion_twilio_call_status(event_details) == :answer
+  end
+
+  def get_adhearsion_twilio_call_status(event_details)
+    case event_details[:sip_term_status]
+    when "200"
+      :answer
+    when "486"
+      :busy
+    when "480", "487"
+      :no_answer
+    else
+      :error
+    end
   end
 
   def construct_adhearsion_twilio_headers(call_variables)
@@ -97,6 +111,13 @@ class DrbEndpoint
     add_adhearsion_twilio_header!(
       sip_header_util,
       headers,
+      "Account-Sid",
+      call_variables[:account_sid]
+    )
+
+    add_adhearsion_twilio_header!(
+      sip_header_util,
+      headers,
       "Auth-Token",
       call_variables[:auth_token]
     )
@@ -121,7 +142,9 @@ class DrbEndpoint
       :to => headers[sip_header_util.construct_header_name("To")],
       :from => headers[sip_header_util.construct_header_name("From")],
       :direction => headers[sip_header_util.construct_header_name("Direction")],
-      :auth_token => headers[sip_header_util.construct_header_name("Auth-Token")]
+      :account_sid => headers[sip_header_util.construct_header_name("Account-Sid")],
+      :auth_token => headers[sip_header_util.construct_header_name("Auth-Token")],
+      :call_duration => headers["variable-billsec"]
     }
   end
 
@@ -133,12 +156,24 @@ class DrbEndpoint
       :call_sid => event_details[:call_sid],
       :call_to => event_details[:to],
       :call_from => event_details[:from],
+      :account_sid => event_details[:account_sid],
       :auth_token => event_details[:auth_token],
       :call_direction => event_details[:direction],
       :logger => logger
     )
 
-    http_client.notify_status_callback_url(:no_answer)
+    request_options = {}
+
+    request_options.merge!(
+      "CallDuration" => event_details[:call_duration]
+    ) if event_details[:call_duration]
+
+    request_options.merge!(
+      "SipResponseCode" => event_details[:sip_term_status]
+    ) if event_details[:sip_term_status]
+
+    call_status = get_adhearsion_twilio_call_status(event_details)
+    http_client.notify_status_callback_url(call_status, request_options)
   end
 
   def call_direction
