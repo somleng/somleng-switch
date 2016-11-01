@@ -46,7 +46,7 @@ class DrbEndpoint
   end
 
   def answered?(event_details)
-    get_adhearsion_twilio_call_status(event_details) == :answer
+    get_adhearsion_twilio_call_status(event_details) == :answer || event_details[:call_duration].to_i > 0
   end
 
   def get_adhearsion_twilio_call_status(event_details)

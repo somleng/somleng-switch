@@ -236,8 +236,21 @@ describe DrbEndpoint do
     end
 
     context "given the call is answered" do
-      let(:header_sip_term_status) { "200" }
-      it { expect(http_client).not_to receive(:notify_status_callback_url) }
+      def assert_handle_event_end!
+        expect(http_client).not_to receive(:notify_status_callback_url)
+        subject.send(:handle_event_end, event)
+      end
+
+      context "as defined by billsec" do
+        let(:header_billsec) { "1" }
+        let(:header_sip_term_status) { nil }
+        it { assert_handle_event_end! }
+      end
+
+      context "as defined by sip_term_status" do
+        let(:header_sip_term_status) { "200" }
+        it { assert_handle_event_end! }
+      end
     end
   end
 end
