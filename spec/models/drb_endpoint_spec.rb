@@ -135,6 +135,7 @@ describe DrbEndpoint do
     let(:header_auth_token) { "12345678" }
     let(:header_billsec) { "0" }
     let(:header_account_sid) { "987654321" }
+    let(:header_answer_epoch) { "" }
 
     let(:asserted_status_callback_url) { header_status_callback_url }
     let(:asserted_status_callback_method) { header_status_callback_method }
@@ -168,6 +169,7 @@ describe DrbEndpoint do
   <!-- Signaling (e.g. SIP) Headers -->
   <header name="variable-sip_term_status" value="#{header_sip_term_status}" />
   <header name="variable-billsec" value="#{header_billsec}" />
+  <header name="variable-answer-epoch" value="#{header_answer_epoch}" />
   <header name="X-Adhearsion-Twilio-Status-Callback-Url" value="#{header_status_callback_url}" />
   <header name="X-Adhearsion-Twilio-Status-Callback-Method" value="#{header_status_callback_method}" />
   <header name="X-Adhearsion-Twilio-To" value="#{header_adhearsion_twilio_to}" />
@@ -241,8 +243,8 @@ describe DrbEndpoint do
         subject.send(:handle_event_end, event)
       end
 
-      context "as defined by billsec" do
-        let(:header_billsec) { "1" }
+      context "as defined by answer-epoch" do
+        let(:header_answer_epoch) { "1478050584" }
         let(:header_sip_term_status) { nil }
         it { assert_handle_event_end! }
       end

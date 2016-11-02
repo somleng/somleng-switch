@@ -46,7 +46,7 @@ class DrbEndpoint
   end
 
   def answered?(event_details)
-    get_adhearsion_twilio_call_status(event_details) == :answer || event_details[:call_duration].to_i > 0
+    get_adhearsion_twilio_call_status(event_details) == :answer || event_details[:answer_epoch].to_i > 0
   end
 
   def get_adhearsion_twilio_call_status(event_details)
@@ -136,6 +136,8 @@ class DrbEndpoint
     headers = event.headers
     {
       :sip_term_status => headers["variable-sip_term_status"],
+      :call_duration => headers["variable-billsec"],
+      :answer_epoch => headers["variable-answer-epoch"],
       :status_callback_url => headers[sip_header_util.construct_header_name("Status-Callback-Url")],
       :status_callback_method => headers[sip_header_util.construct_header_name("Status-Callback-Method")],
       :call_sid => headers[sip_header_util.construct_header_name("Call-Sid")],
@@ -143,8 +145,7 @@ class DrbEndpoint
       :from => headers[sip_header_util.construct_header_name("From")],
       :direction => headers[sip_header_util.construct_header_name("Direction")],
       :account_sid => headers[sip_header_util.construct_header_name("Account-Sid")],
-      :auth_token => headers[sip_header_util.construct_header_name("Auth-Token")],
-      :call_duration => headers["variable-billsec"]
+      :auth_token => headers[sip_header_util.construct_header_name("Auth-Token")]
     }
   end
 
