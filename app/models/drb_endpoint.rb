@@ -1,3 +1,7 @@
+require "openssl"
+require 'digest/sha2'
+require 'base64'
+require 'cgi'
 require "adhearsion/twilio/util/sip_header"
 
 class DrbEndpoint
@@ -157,7 +161,6 @@ class DrbEndpoint
     encrypted_auth_token_iv = headers[sip_header_util.construct_header_name("Encrypted-Auth-Token-IV")]
 
     if encrypted_auth_token && !encrypted_auth_token.empty? && encrypted_auth_token_iv && !encrypted_auth_token.empty?
-      logger.info("Auth Token Encrypted with Encryption Key: #{encryption_key}, digest #{encryption_key_digest}")
       auth_token = decrypt(encrypted_auth_token, encrypted_auth_token_iv)
     else
       logger.warn("Auth token not encrypted! Set AHN_SOMLENG_ENCRYPTION_KEY to encrypt it")
@@ -303,12 +306,12 @@ class DrbEndpoint
     [Base64.encode64(cipher), Base64.encode64(iv)]
   end
 
-  def decrypt(base64_value, base64_iv)
+  def decrypt(html_escaped_base64_value, html_escaped_base64_iv)
     decode_cipher = OpenSSL::Cipher::Cipher.new(encryption_algorithm)
     decode_cipher.decrypt
     decode_cipher.key = encryption_key_digest
-    decode_cipher.iv = Base64.decode64(base64_iv)
-    plain = decode_cipher.update(Base64.decode64(base64_value))
+    decode_cipher.iv = Base64.decode64(CGI.unescapeHTML(html_escaped_base64_iv))
+    plain = decode_cipher.update(Base64.decode64(CGI.unescapeHTML(html_escaped_base64_value)))
     plain << decode_cipher.final
     plain
   end

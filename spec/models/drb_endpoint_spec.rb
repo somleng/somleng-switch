@@ -255,8 +255,9 @@ describe DrbEndpoint do
           set_dummy_encryption_key
         end
 
-        let(:header_encrypted_auth_token) { "3wCh/wuFmfl62z253vLTCBrpEig9IYD0Z77JrpHAMJ8=\n" }
-        let(:header_encrypted_auth_token_iv) { "xuNbWFfCbZUnMjgItwb8QA==\n" }
+        let(:header_encrypted_auth_token) { "3wCh/wuFmfl62z253vLTCBrpEig9IYD0Z77JrpHAMJ8=&#10;" }
+        let(:header_encrypted_auth_token) { "3wCh/wuFmfl62z253vLTCBrpEig9IYD0Z77JrpHAMJ8=&#38;&#35;10&#59;" }
+        let(:header_encrypted_auth_token_iv) { "xuNbWFfCbZUnMjgItwb8QA==&#38;&#35;10&#59;" }
         let(:header_auth_token) { "not-the-real-auth-token" }
         let(:asserted_auth_token) { "sample-auth-token" }
         it { assert_handle_event_end! }
