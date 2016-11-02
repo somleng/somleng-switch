@@ -1,6 +1,12 @@
 require 'spec_helper'
 
 describe DrbEndpoint do
+  include EnvHelpers
+
+  def set_dummy_encryption_key
+    stub_env(:ahn_somleng_encryption_key => "shh-dont-tell")
+  end
+
   describe "#initiate_outbound_call!(call_json)" do
     let(:sample_call_json) { "{\"to\":\"#{call_json_to}\",\"from\":\"2442\",\"voice_url\":\"#{call_json_voice_url}\",\"voice_method\":\"#{call_json_voice_method}\",\"status_callback_url\":\"#{call_json_status_callback_url}\",\"status_callback_method\":\"#{call_json_status_callback_method}\",\"sid\":\"#{call_json_call_sid}\",\"account_sid\":\"#{call_json_account_sid}\",\"account_auth_token\":\"#{call_json_auth_token}\",\"routing_instructions\":{\"source\":\"2442\",\"destination\":\"+85512334667\"}}" }
 
@@ -19,8 +25,8 @@ describe DrbEndpoint do
     let(:call_json_status_callback_method) { "POST" }
     let(:call_json_to) { "+85512334667" }
     let(:call_json_call_sid) { "91171124-2da9-40df-b21f-2531c895ff83" }
-    let(:call_json_auth_token) { "7b7cff7af0aa74286404902622605af8e2da186aea4f65a6774563db9a8c6670" }
-    let(:call_json_account_sid) { "acf75d31-b951-41d0-bb36-e2c48739308a" }
+    let(:call_json_auth_token) { "sample-auth-token" }
+    let(:call_json_account_sid) { "sample-call-sid" }
 
     let(:asserted_voice_request_url) { call_json_voice_url }
     let(:asserted_voice_request_method) { call_json_voice_method }
@@ -50,7 +56,7 @@ describe DrbEndpoint do
       }
     end
 
-    let(:asserted_headers) {
+    def asserted_headers
       {
         "X-Adhearsion-Twilio-Status-Callback-Url" => asserted_status_callback_url,
         "X-Adhearsion-Twilio-Status-Callback-Method" => asserted_status_callback_method,
@@ -58,10 +64,9 @@ describe DrbEndpoint do
         "X-Adhearsion-Twilio-To" => asserted_adhearsion_twilio_to,
         "X-Adhearsion-Twilio-From" => asserted_adhearsion_twilio_from,
         "X-Adhearsion-Twilio-Direction" => asserted_call_direction,
-        "X-Adhearsion-Twilio-Account-Sid" => asserted_account_sid,
-        "X-Adhearsion-Twilio-Auth-Token" => asserted_auth_token,
+        "X-Adhearsion-Twilio-Account-Sid" => asserted_account_sid
       }
-    }
+    end
 
     before do
       setup_scenario
@@ -80,7 +85,7 @@ describe DrbEndpoint do
         :from => asserted_caller_id,
         :controller => CallController,
         :controller_metadata => asserted_controller_metadata,
-        :headers => asserted_headers
+        :headers => hash_including(asserted_headers)
       )
       expect(call).to receive(:register_event_handler).with(Adhearsion::Event::End)
     end
@@ -91,6 +96,25 @@ describe DrbEndpoint do
     end
 
     context "by default" do
+      def asserted_headers
+        super.merge("X-Adhearsion-Twilio-Auth-Token" => asserted_auth_token)
+      end
+
+      it { assert_outbound_call! }
+    end
+
+    context "encryption key is provided" do
+      before do
+        set_dummy_encryption_key
+      end
+
+      def asserted_headers
+        super.merge(
+          "X-Adhearsion-Twilio-Encrypted-Auth-Token" => anything,
+          "X-Adhearsion-Twilio-Encrypted-Auth-Token-IV" => anything
+        )
+      end
+
       it { assert_outbound_call! }
     end
 
@@ -136,6 +160,8 @@ describe DrbEndpoint do
     let(:header_billsec) { "0" }
     let(:header_account_sid) { "987654321" }
     let(:header_answer_epoch) { "" }
+    let(:header_encrypted_auth_token) { nil }
+    let(:header_encrypted_auth_token_iv) { nil }
 
     let(:asserted_status_callback_url) { header_status_callback_url }
     let(:asserted_status_callback_method) { header_status_callback_method }
@@ -176,8 +202,10 @@ describe DrbEndpoint do
   <header name="X-Adhearsion-Twilio-From" value="#{header_adhearsion_twilio_from}" />
   <header name="X-Adhearsion-Twilio-Call-Sid" value="#{header_call_sid}" />
   <header name="X-Adhearsion-Twilio-Direction" value="#{header_call_direction}" />
-  <header name="X-Adhearsion-Twilio-Auth-Token" value="#{header_auth_token}" />
   <header name="X-Adhearsion-Twilio-Account-Sid" value="#{header_account_sid}" />
+  <header name="X-Adhearsion-Twilio-Auth-Token" value="#{header_auth_token}" />
+  <header name="X-Adhearsion-Twilio-Encrypted-Auth-Token" value="#{header_encrypted_auth_token}" />
+  <header name="X-Adhearsion-Twilio-Encrypted-Auth-Token-IV" value="#{header_encrypted_auth_token_iv}" />
 </end>
       MESSAGE
     end
@@ -190,6 +218,10 @@ describe DrbEndpoint do
 
     def setup_scenario
       allow(http_client_class).to receive(:new).and_return(http_client)
+    end
+
+    def trigger_event
+      subject.send(:handle_event_end, event)
     end
 
     def assert_handle_event_end!
@@ -206,7 +238,7 @@ describe DrbEndpoint do
           :call_direction => asserted_call_direction,
         )
       )
-      subject.send(:handle_event_end, event)
+      trigger_event
     end
 
     before do
@@ -217,6 +249,18 @@ describe DrbEndpoint do
       let(:header_sip_term_status) { "480" }
       let(:asserted_notify_status_callback_url_status) { :no_answer }
       it { assert_handle_event_end! }
+
+      context "given the auth token is encrypted" do
+        before do
+          set_dummy_encryption_key
+        end
+
+        let(:header_encrypted_auth_token) { "3wCh/wuFmfl62z253vLTCBrpEig9IYD0Z77JrpHAMJ8=\n" }
+        let(:header_encrypted_auth_token_iv) { "xuNbWFfCbZUnMjgItwb8QA==\n" }
+        let(:header_auth_token) { "not-the-real-auth-token" }
+        let(:asserted_auth_token) { "sample-auth-token" }
+        it { assert_handle_event_end! }
+      end
     end
 
     context "given the call is cancelled by originator" do
@@ -240,7 +284,7 @@ describe DrbEndpoint do
     context "given the call is answered" do
       def assert_handle_event_end!
         expect(http_client).not_to receive(:notify_status_callback_url)
-        subject.send(:handle_event_end, event)
+        trigger_event
       end
 
       context "as defined by answer-epoch" do

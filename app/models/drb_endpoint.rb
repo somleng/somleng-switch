@@ -118,9 +118,25 @@ class DrbEndpoint
     add_adhearsion_twilio_header!(
       sip_header_util,
       headers,
-      "Auth-Token",
-      call_variables[:auth_token]
+      "Encrypted-Auth-Token",
+      call_variables[:encrypted_auth_token]
     )
+
+    add_adhearsion_twilio_header!(
+      sip_header_util,
+      headers,
+      "Encrypted-Auth-Token-IV",
+      call_variables[:encrypted_auth_token_iv]
+    )
+
+    if !call_variables[:encrypted_auth_token]
+      add_adhearsion_twilio_header!(
+        sip_header_util,
+        headers,
+        "Auth-Token",
+        call_variables[:auth_token]
+      )
+    end
 
     headers
   end
@@ -134,6 +150,11 @@ class DrbEndpoint
   def parse_event(event)
     sip_header_util = Adhearsion::Twilio::Util::SipHeader.new
     headers = event.headers
+
+    encrypted_auth_token = headers[sip_header_util.construct_header_name("Encrypted-Auth-Token")]
+    encrypted_auth_token_iv = headers[sip_header_util.construct_header_name("Encrypted-Auth-Token-IV")]
+    auth_token = encrypted_auth_token && !encrypted_auth_token.empty? && encrypted_auth_token_iv && !encrypted_auth_token.empty? ? decrypt(encrypted_auth_token, encrypted_auth_token_iv) : headers[sip_header_util.construct_header_name("Auth-Token")]
+
     {
       :sip_term_status => headers["variable-sip_term_status"],
       :call_duration => headers["variable-billsec"],
@@ -145,7 +166,7 @@ class DrbEndpoint
       :from => headers[sip_header_util.construct_header_name("From")],
       :direction => headers[sip_header_util.construct_header_name("Direction")],
       :account_sid => headers[sip_header_util.construct_header_name("Account-Sid")],
-      :auth_token => headers[sip_header_util.construct_header_name("Auth-Token")]
+      :auth_token => auth_token
     }
   end
 
@@ -225,6 +246,10 @@ class DrbEndpoint
     adhearsion_twilio_from = number_normalizer.normalize(caller_id)
     adhearsion_twilio_to = number_normalizer.normalize(dial_string)
 
+    if encrypt_auth_token?
+      encrypted_auth_token, encrypted_auth_token_iv = encrypt(auth_token)
+    end
+
     {
       :voice_request_url => voice_request_url,
       :voice_request_method => voice_request_method,
@@ -232,6 +257,8 @@ class DrbEndpoint
       :status_callback_method => status_callback_method,
       :account_sid => account_sid,
       :auth_token => auth_token,
+      :encrypted_auth_token => encrypted_auth_token,
+      :encrypted_auth_token_iv => encrypted_auth_token_iv,
       :call_sid => call_sid,
       :caller_id => caller_id,
       :destination => destination,
@@ -242,7 +269,7 @@ class DrbEndpoint
       :adhearsion_twilio_from => adhearsion_twilio_from,
       :adhearsion_twilio_to => adhearsion_twilio_to,
       :call_direction => call_direction,
-      :disable_originate => disable_originate
+      :disable_originate => disable_originate,
     }
   end
 
@@ -254,6 +281,45 @@ class DrbEndpoint
     ).sub(
       /\%\{gateway\}/, gateway.to_s
     )
+  end
+
+  def encrypt(value)
+    aes = OpenSSL::Cipher::Cipher.new(encryption_algorithm)
+    iv = OpenSSL::Cipher::Cipher.new(encryption_algorithm).random_iv
+    aes.encrypt
+    aes.key = encryption_key_digest
+    aes.iv = iv
+    cipher = aes.update(value)
+    cipher << aes.final
+    [Base64.encode64(cipher), Base64.encode64(iv)]
+  end
+
+  def decrypt(base64_value, base64_iv)
+    decode_cipher = OpenSSL::Cipher::Cipher.new(encryption_algorithm)
+    decode_cipher.decrypt
+    decode_cipher.key = encryption_key_digest
+    decode_cipher.iv = Base64.decode64(base64_iv)
+    plain = decode_cipher.update(Base64.decode64(base64_value))
+    plain << decode_cipher.final
+    plain
+  end
+
+  def encryption_key_digest
+    digest = Digest::SHA256.new
+    digest.update(encryption_key)
+    digest.digest
+  end
+
+  def encryption_algorithm
+    "AES-256-CBC"
+  end
+
+  def encrypt_auth_token?
+    !!encryption_key
+  end
+
+  def encryption_key
+    ENV["AHN_SOMLENG_ENCRYPTION_KEY"]
   end
 
   def default_destination
