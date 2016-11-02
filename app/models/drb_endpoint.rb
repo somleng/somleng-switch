@@ -170,7 +170,7 @@ class DrbEndpoint
     {
       :sip_term_status => headers["variable-sip_term_status"],
       :call_duration => headers["variable-billsec"],
-      :answer_epoch => headers["variable-answer-epoch"],
+      :answer_epoch => headers["variable-answer_epoch"],
       :status_callback_url => headers[sip_header_util.construct_header_name("Status-Callback-Url")],
       :status_callback_method => headers[sip_header_util.construct_header_name("Status-Callback-Method")],
       :call_sid => headers[sip_header_util.construct_header_name("Call-Sid")],

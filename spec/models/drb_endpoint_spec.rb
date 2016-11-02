@@ -195,7 +195,7 @@ describe DrbEndpoint do
   <!-- Signaling (e.g. SIP) Headers -->
   <header name="variable-sip_term_status" value="#{header_sip_term_status}" />
   <header name="variable-billsec" value="#{header_billsec}" />
-  <header name="variable-answer-epoch" value="#{header_answer_epoch}" />
+  <header name="variable-answer_epoch" value="#{header_answer_epoch}" />
   <header name="X-Adhearsion-Twilio-Status-Callback-Url" value="#{header_status_callback_url}" />
   <header name="X-Adhearsion-Twilio-Status-Callback-Method" value="#{header_status_callback_method}" />
   <header name="X-Adhearsion-Twilio-To" value="#{header_adhearsion_twilio_to}" />
