@@ -148,12 +148,21 @@ class DrbEndpoint
   end
 
   def parse_event(event)
+    logger.info("Parsing Event: #{event}")
+
     sip_header_util = Adhearsion::Twilio::Util::SipHeader.new
     headers = event.headers
 
     encrypted_auth_token = headers[sip_header_util.construct_header_name("Encrypted-Auth-Token")]
     encrypted_auth_token_iv = headers[sip_header_util.construct_header_name("Encrypted-Auth-Token-IV")]
-    auth_token = encrypted_auth_token && !encrypted_auth_token.empty? && encrypted_auth_token_iv && !encrypted_auth_token.empty? ? decrypt(encrypted_auth_token, encrypted_auth_token_iv) : headers[sip_header_util.construct_header_name("Auth-Token")]
+
+    if encrypted_auth_token && !encrypted_auth_token.empty? && encrypted_auth_token_iv && !encrypted_auth_token.empty?
+      logger.info("Auth Token Encrypted with Encryption Key: #{encryption_key}, digest #{encryption_key_digest}")
+      auth_token = decrypt(encrypted_auth_token, encrypted_auth_token_iv)
+    else
+      logger.warn("Auth token not encrypted! Set AHN_SOMLENG_ENCRYPTION_KEY to encrypt it")
+      auth_token = headers[sip_header_util.construct_header_name("Auth-Token")]
+    end
 
     {
       :sip_term_status => headers["variable-sip_term_status"],
