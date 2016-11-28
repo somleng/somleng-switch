@@ -245,18 +245,19 @@ class DrbEndpoint
     auth_token = call_params["account_auth_token"]
     call_sid = call_params["sid"]
     caller_id = routing_instructions["source"] || call_params["from"] || default_caller_id
+    address = routing_instructions["address"]
     destination = routing_instructions["destination"] || call_params["to"] || default_destination
     destination_host = routing_instructions["destination_host"] || default_destination_host
     gateway = routing_instructions["gateway"] || default_gateway
     dial_string_format = routing_instructions["dial_string_format"] || default_dial_string_format
     dial_string = routing_instructions["dial_string"] || default_dial_string || generate_dial_string(
-      dial_string_format, destination, destination_host, gateway
+      dial_string_format, destination, destination_host, gateway, address
     )
     disable_originate = routing_instructions["disable_originate"] || default_disable_originate
 
     number_normalizer = Adhearsion::Twilio::Util::NumberNormalizer.new
     adhearsion_twilio_from = number_normalizer.normalize(caller_id)
-    adhearsion_twilio_to = number_normalizer.normalize(dial_string)
+    adhearsion_twilio_to = number_normalizer.normalize(destination)
 
     if encrypt_auth_token?
       encrypted_auth_token, encrypted_auth_token_iv = encrypt(auth_token)
@@ -285,13 +286,15 @@ class DrbEndpoint
     }
   end
 
-  def generate_dial_string(dial_string_format, destination, destination_host, gateway)
+  def generate_dial_string(dial_string_format, destination, destination_host, gateway, address)
     dial_string_format.sub(
       /\%\{destination\}/, destination.to_s
     ).sub(
       /\%\{destination_host\}/, destination_host.to_s
     ).sub(
       /\%\{gateway\}/, gateway.to_s
+    ).sub(
+      /\%\{address\}/, address.to_s
     )
   end
 
