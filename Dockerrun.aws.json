@@ -27,6 +27,14 @@
           "protocol": "tcp"
         }
       ],
+      "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+              "awslogs-group": "awslogs-adhearsion",
+              "awslogs-region": "ap-southeast-1",
+              "awslogs-stream-prefix": "awslogs-adhearsion"
+          }
+      },
       "environment": [
         {
           "name": "SECRETS_BUCKET_NAME",
