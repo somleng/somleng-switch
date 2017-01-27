@@ -4,10 +4,7 @@
 
 ### Create a VPC
 
-1. Allocate an elastic IP address which will be used for your NAT Gateway for your private subnet. The NAT Gateway is used to enable instances in a private subnet to connect to the Internet or other AWS services, but prevent the Internet from initiating a connection with those instances.
-2. Create a new VPC using the wizard with a public and private subnet. Assign the elastic IP that you created above for the NAT Gateway.
-3. Add an additional public and private subnet in a different availability zone. (In total you should have 4 subnets in your VPC. 1 private, and 1 public for each availability zone.
-4. Connect both of your public subnets to the internet gateway, and both of your private subnets to the NAT Gateway.
+Follow [this guide](https://github.com/dwilkie/twilreapi/blob/master/docs/AWS_VPC_SETUP.md) to setup a VPC for your AWS account.
 
 ### Create a new Elastic Beanstalk Application
 
@@ -19,6 +16,10 @@ When prompted for the VPC details enter the VPC id. When prompted for EC2 and EL
 $ eb platform select --profile <profile-name>
 $ eb create --vpc -i t2.micro -k <key-pair-name> --profile <profile-name>
 ```
+
+### Configure a S3 bucket to sensitive or custom configuration
+
+Follow [this guide](https://github.com/dwilkie/freeswitch-config/tree/master/docs/S3_CONFIGURATION.md) to securely store Adhearsion configuration on S3.
 
 ### Update the Load Balancer Configuration
 
