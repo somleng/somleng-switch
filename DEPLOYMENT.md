@@ -36,7 +36,27 @@ To update the load balancer
 $ eb config
 ```
 
-And change the following:
+And change the configuration to look like the following:
+
+```
+  aws:elb:listener:80:
+    ListenerEnabled: 'false'
+  aws:elb:listener:9050:
+    InstancePort: '9050'
+    InstanceProtocol: TCP
+    ListenerEnabled: 'true'
+    ListenerProtocol: TCP
+    PolicyNames: null
+    SSLCertificateId: null
+  aws:elb:loadbalancer:
+    CrossZone: 'true'
+    LoadBalancerHTTPPort: 'OFF'
+    LoadBalancerHTTPSPort: 'OFF'
+    LoadBalancerPortProtocol: HTTP
+    LoadBalancerSSLPortProtocol: HTTPS
+```
+
+Note that you're adding another section for `aws:elb:listener:9050` and turning the listener `aws:elb:listener:80:` off. You're also turning the LoadBalancerHTTPPort 'OFF'
 
 ### Update the security group for the EC2 instances
 
@@ -46,6 +66,20 @@ To update the ELB security group select it from the AWS EC2 Console and edit the
 
 ### Update the security group for the ELB
 
-By default the ELB security group will be configured to only allow HTTP traffic on port `80`. This needs to be updated to port `9050` to allow traffic to the ELB.
+By default the ELB security group will be configured to only allow inbound and outbound HTTP traffic on port `80`. This needs to be updated to port `9050` to allow inbound and outbound traffic to the ELB.
 
-To update the ELB security group browse to the Load Balancer from the AWS EC2 Console the click the link to the ELB security group. Edit the inbound rul to allow traffic on TCP port `9050`.
+To update the ELB security group browse to the Load Balancer from the AWS EC2 Console the click the link to the ELB security group. Edit the inbound rule to allow traffic on TCP port `9050`. Edit the outbound rule to allow traffic on TCP port `9050`.
+
+### Configuration
+
+Upload configuration
+
+```
+$ aws s3 cp somleng_config.txt s3://SECRETS_BUCKET_NAME/somleng_config.txt --sse
+```
+
+Dowload configuration
+
+```
+$ aws s3 cp s3://SECRETS_BUCKET_NAME/somleng_config.txt .
+```
