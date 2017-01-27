@@ -1,11 +1,5 @@
 # Deployment
 
-## Heroku
-
-For testing purposes we recommend deploying to Heroku.
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
 ## AWS Elastic Beanstalk
 
 ### Create a VPC
