@@ -22,7 +22,7 @@ To get started we recommend using the FreeSwitch configuration available [here](
 
 ## Deployment
 
-See [DEPLOYMENT](https://github.com/dwilkie/somleng/tree/master/DEPLOYMENT.md).
+See [DEPLOYMENT](https://github.com/dwilkie/somleng/tree/master/docs/DEPLOYMENT.md)
 
 ## License
 
