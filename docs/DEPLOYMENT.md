@@ -17,10 +17,6 @@ $ eb platform select --profile <profile-name>
 $ eb create --vpc -i t2.micro -k <key-pair-name> --profile <profile-name>
 ```
 
-### Configure a S3 bucket to sensitive or custom configuration
-
-Follow [this guide](https://github.com/dwilkie/freeswitch-config/tree/master/docs/S3_CONFIGURATION.md) to securely store Adhearsion configuration on S3.
-
 ### Update the Load Balancer Configuration
 
 By default the load balancer will be configured to listen on port `80`. This needs to be updated to listen on port `9050` the default port which [Twilreapi](https://github.com/dwilkie/twilreapi) sends DRb requests to Somleng.
@@ -65,16 +61,13 @@ By default the ELB security group will be configured to only allow inbound and o
 
 To update the ELB security group browse to the Load Balancer from the AWS EC2 Console the click the link to the ELB security group. Edit the inbound rule to allow traffic on TCP port `9050`. Edit the outbound rule to allow traffic on TCP port `9050`.
 
-### Configuration
+### Adhearsion Configuration
 
-Upload configuration
+Follow [this guide](https://github.com/dwilkie/freeswitch-config/tree/master/docs/S3_CONFIGURATION.md) to securely store Adhearsion ENV Variables on S3.
+
+Upload and download your configuration with the following commands
 
 ```
 $ aws s3 cp somleng_config.txt s3://SECRETS_BUCKET_NAME/somleng_config.txt --sse
-```
-
-Dowload configuration
-
-```
 $ aws s3 cp s3://SECRETS_BUCKET_NAME/somleng_config.txt .
 ```
