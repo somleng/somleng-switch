@@ -288,9 +288,6 @@ class DrbEndpoint
     }
   end
 
-  #sofia/external/%{dial_string_number_prefix}%{number_to_dial}@%{voip_gateway_host}
-  #sofia/gateway/%{gateway}/%{address}
-
   def generate_dial_string(dial_string_format, destination, gateway_type, destination_host, gateway, address, dial_string_path)
     dial_string_format.sub(
       /\%\{destination\}/, destination.to_s
