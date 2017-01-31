@@ -1,4 +1,4 @@
-FROM ruby:latest
+FROM ruby:2.3
 MAINTAINER dwilkie <dwilkie@gmail.com>
 
 # Install the AWS CLI
