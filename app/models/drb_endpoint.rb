@@ -249,9 +249,11 @@ class DrbEndpoint
     destination = routing_instructions["destination"] || call_params["to"] || default_destination
     destination_host = routing_instructions["destination_host"] || default_destination_host
     gateway = routing_instructions["gateway"] || default_gateway
+    gateway_type = routing_instructions["gateway_type"] || default_gateway_type
+    dial_string_path = routing_instructions["dial_string_path"] || default_dial_string_path
     dial_string_format = routing_instructions["dial_string_format"] || default_dial_string_format
     dial_string = routing_instructions["dial_string"] || default_dial_string || generate_dial_string(
-      dial_string_format, destination, destination_host, gateway, address
+      dial_string_format, destination, gateway_type, destination_host, gateway, address, dial_string_path
     )
     disable_originate = routing_instructions["disable_originate"] || default_disable_originate
 
@@ -286,15 +288,22 @@ class DrbEndpoint
     }
   end
 
-  def generate_dial_string(dial_string_format, destination, destination_host, gateway, address)
+  #sofia/external/%{dial_string_number_prefix}%{number_to_dial}@%{voip_gateway_host}
+  #sofia/gateway/%{gateway}/%{address}
+
+  def generate_dial_string(dial_string_format, destination, gateway_type, destination_host, gateway, address, dial_string_path)
     dial_string_format.sub(
       /\%\{destination\}/, destination.to_s
+    ).sub(
+       /\%\{gateway_type\}/, gateway_type.to_s
     ).sub(
       /\%\{destination_host\}/, destination_host.to_s
     ).sub(
       /\%\{gateway\}/, gateway.to_s
     ).sub(
       /\%\{address\}/, address.to_s
+    ).sub(
+      /\%\{dial_string_path\}/, dial_string_path.to_s
     )
   end
 
@@ -347,6 +356,14 @@ class DrbEndpoint
 
   def default_dial_string
     ENV["AHN_SOMLENG_DEFAULT_DIAL_STRING"]
+  end
+
+  def default_dial_string_path
+    ENV["AHN_SOMLENG_DEFAULT_DIAL_STRING_PATH"]
+  end
+
+  def default_gateway_type
+    ENV["AHN_SOMLENG_DEFAULT_GATEWAY_TYPE"]
   end
 
   def default_gateway

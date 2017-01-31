@@ -123,9 +123,9 @@ describe DrbEndpoint do
       let(:call_json) { JSON.parse(sample_call_json).merge(call_params).to_json }
 
       context "dial_string_format" do
-        let(:routing_instructions) { { "dial_string_format" => "sip/gateways/%{gateway}/%{destination}@%{destination_host}/%{address}", "gateway" => "my_gateway", "destination" => "85512345678", "destination_host" => "somleng.io", "address" => "012345678"} }
+        let(:routing_instructions) { { "dial_string_format" => "sip/%{dial_string_path}/%{gateway_type}/%{gateway}/%{destination}@%{destination_host}/%{address}", "gateway_type" => "external", "gateway" => "my_gateway", "destination" => "85512345678", "destination_host" => "somleng.io", "address" => "012345678", "dial_string_path" => "path/to/dial_string"} }
 
-        let(:asserted_dial_string) { "sip/gateways/my_gateway/85512345678@somleng.io/012345678" }
+        let(:asserted_dial_string) { "sip/path/to/dial_string/external/my_gateway/85512345678@somleng.io/012345678" }
         let(:asserted_adhearsion_twilio_to) { "+85512345678" }
 
         it { assert_outbound_call! }
