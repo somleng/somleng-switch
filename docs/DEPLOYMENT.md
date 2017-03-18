@@ -71,3 +71,7 @@ Upload and download your configuration with the following commands
 $ aws s3 cp somleng_config.txt s3://SECRETS_BUCKET_NAME/somleng_config.txt --sse
 $ aws s3 cp s3://SECRETS_BUCKET_NAME/somleng_config.txt .
 ```
+
+### CI Deployment
+
+See [CI DEPLOYMENT](https://github.com/dwilkie/twilreapi/blob/master/docs/CI_DEPLOYMENT.md)
