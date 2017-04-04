@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby(File.read(".ruby-version").strip) if File.exist?(".ruby-version")
+ruby(File.read(".ruby-version").strip) if ENV["GEMFILE_LOAD_RUBY_VERSION"].to_i == 1 && File.exist?(".ruby-version")
 
 gem 'adhearsion', :github => "adhearsion/adhearsion"
 gem 'adhearsion-twilio', :github => "dwilkie/adhearsion-twilio"
