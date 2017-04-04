@@ -1,5 +1,5 @@
 GIT
-  remote: git://github.com/adhearsion/adhearsion.git
+  remote: https://github.com/adhearsion/adhearsion.git
   revision: 6db768c4675246a60b116e69de20d352be8cc4b5
   specs:
     adhearsion (3.0.0.rc1)
@@ -29,7 +29,7 @@ GIT
       virtus (~> 1.0)
 
 GIT
-  remote: git://github.com/dwilkie/adhearsion-drb.git
+  remote: https://github.com/dwilkie/adhearsion-drb.git
   revision: d459d70975ce69eff6905ff8cf49b8c04f829711
   branch: develop
   specs:
@@ -37,7 +37,7 @@ GIT
       adhearsion (~> 3.0.0.rc1)
 
 GIT
-  remote: git://github.com/dwilkie/adhearsion-twilio.git
+  remote: https://github.com/dwilkie/adhearsion-twilio.git
   revision: 795fa1c8bc62362e7bfcc4a0f687050362ccfb38
   specs:
     adhearsion-twilio (0.0.1)
