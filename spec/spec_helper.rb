@@ -1,3 +1,6 @@
+require 'simplecov'
+SimpleCov.start
+
 ENV["AHN_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'adhearsion/rspec'

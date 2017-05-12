@@ -10,3 +10,6 @@ vendor/ruby
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# SimpleCov
+coverage
