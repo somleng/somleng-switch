@@ -1,6 +1,7 @@
 # Somleng
 
 [![Build Status](https://travis-ci.org/dwilkie/somleng.svg?branch=master)](https://travis-ci.org/dwilkie/somleng)
+[![Test Coverage](https://codeclimate.com/github/dwilkie/somleng/badges/coverage.svg)](https://codeclimate.com/github/dwilkie/somleng/coverage)
 
 Somleng (សំឡេង meaning Voice in Khmer) is an Adhearsion application compatible with [Twilreapi](https://github.com/dwilkie/twilreapi) and [TwiML](https://www.twilio.com/docs/api/twiml). It can be used, for certain call flows, as a drop-in replacement for Twilio routing calls to a local telco a SIP provider.
 
