@@ -14,7 +14,7 @@ When prompted for the VPC details enter the VPC id. When prompted for EC2 and EL
 
 ```
 $ eb platform select --profile <profile-name>
-$ eb create --vpc -i t2.micro -k <key-pair-name> --profile <profile-name>
+$ eb create --vpc --profile <profile-name>
 ```
 
 ### Update the Load Balancer Configuration
@@ -24,7 +24,7 @@ By default the load balancer will be configured to listen on port `80`. This nee
 To update the load balancer
 
 ```
-$ eb config
+$ eb config --profile <profile-name>
 ```
 
 And change the configuration to look like the following:
@@ -49,17 +49,17 @@ And change the configuration to look like the following:
 
 Note that you're adding another section for `aws:elb:listener:9050` and turning the listener `aws:elb:listener:80:` off. You're also turning the LoadBalancerHTTPPort 'OFF'
 
-### Update the security group for the EC2 instances
+#### Check the security group for the EC2 instances
 
-By default the EC2 instance security group will be configured to only allow HTTP traffic on port `80`. This needs to be updated to port `9050` to allow traffic to the EC2 instance(s).
+Ensure that the EC2 security group is configured to allow traffice on port `9050`. To check the EC2 security group select it from the AWS EC2 Console next to the instance.
 
-To update the ELB security group select it from the AWS EC2 Console and edit the inbound rule to allow traffic on TCP port `9050`.
+#### Check the security group for the ELB
 
-### Update the security group for the ELB
+Ensure that the ELB security group is configured to only allow inbound and outbound traffic on port `9050`. To check the ELB security group browse to the Load Balancer from the AWS EC2 Console the click the link to the ELB security group.
 
-By default the ELB security group will be configured to only allow inbound and outbound HTTP traffic on port `80`. This needs to be updated to port `9050` to allow inbound and outbound traffic to the ELB.
+### Configure CloudWatch Logging
 
-To update the ELB security group browse to the Load Balancer from the AWS EC2 Console the click the link to the ELB security group. Edit the inbound rule to allow traffic on TCP port `9050`. Edit the outbound rule to allow traffic on TCP port `9050`.
+Follow [this guide](https://github.com/dwilkie/freeswitch-config/blob/master/docs/AWS_LOGGING.md) to configure CloudWatch logging. [Dockerrun.aws.json](https://github.com/dwilkie/somleng/blob/master/Dockerrun.aws.json) specifies the log group so this step must done for deployment to be successful.
 
 ### Adhearsion Configuration
 
