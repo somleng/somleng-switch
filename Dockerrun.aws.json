@@ -1,25 +1,11 @@
 {
   "AWSEBDockerrunVersion": 2,
-  "volumes": [
-    {
-      "name": "somleng-logs",
-      "host": {
-        "sourcePath": "/var/log/containers/somleng"
-      }
-    }
-  ],
   "containerDefinitions": [
     {
       "name": "somleng",
       "image": "dwilkie/somleng",
       "essential": true,
       "memory": 950,
-      "mountPoints": [
-        {
-          "sourceVolume": "somleng-logs",
-          "containerPath": "/usr/src/app/log"
-        }
-      ],
       "portMappings": [
         {
           "hostPort": 9050,
