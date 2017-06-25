@@ -9,7 +9,7 @@ if [ "$1" = 'ahn' ]; then
   fi
 
   eval $(aws s3 cp s3://${SECRETS_BUCKET_NAME}/${SECRETS_FILE_NAME} - | sed 's/^/export /')
-  exec bundle exec ahn start > /usr/src/app/log/adhearsion.log
+  exec bundle exec ahn start
 fi
 
 exec "$@"
