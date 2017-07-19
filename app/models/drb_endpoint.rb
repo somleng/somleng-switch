@@ -59,7 +59,7 @@ class DrbEndpoint
       :answer
     when "486"
       :busy
-    when "480", "487"
+    when "480", "487", "603"
       :no_answer
     else
       :error

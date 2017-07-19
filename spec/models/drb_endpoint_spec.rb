@@ -282,6 +282,13 @@ describe DrbEndpoint do
       it { assert_handle_event_end! }
     end
 
+    context "given a '603'" do
+      # https://en.wikipedia.org/wiki/List_of_SIP_response_codes#6xx.E2.80.94Global_Failure_Responses
+      let(:header_sip_term_status) { "603" }
+      let(:asserted_notify_status_callback_url_status) { :no_answer }
+      it { assert_handle_event_end! }
+    end
+
     context "given the call is answered" do
       def assert_handle_event_end!
         expect(http_client).not_to receive(:notify_status_callback_url)
