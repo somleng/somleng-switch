@@ -87,6 +87,8 @@ describe DrbEndpoint do
         :controller_metadata => asserted_controller_metadata,
         :headers => hash_including(asserted_headers)
       )
+      expect(call).to receive(:register_event_handler).with(Adhearsion::Event::Ringing)
+      expect(call).to receive(:register_event_handler).with(Adhearsion::Event::Answered)
       expect(call).to receive(:register_event_handler).with(Adhearsion::Event::End)
     end
 
@@ -144,6 +146,18 @@ describe DrbEndpoint do
       end
     end
   end
+
+#  describe "#handle_event_ringing(event)" do
+#    def trigger_event
+#      subject.send(:handle_event_ringing, event)
+#    end
+
+#    def assert_handle_event_ringing!
+#      trigger_event
+#    end
+
+#    it { assert_handle_event_ringing! }
+#  end
 
   describe "#handle_event_end(event)" do
     let(:http_client_class) { Adhearsion::Twilio::HttpClient }

@@ -30,17 +30,22 @@ class DrbEndpoint
     if call_variables[:disable_originate].to_i != 1
       logger.info("Initiating outbound call with: #{call_args}")
       outbound_call = Adhearsion::OutboundCall.originate(*call_args)
-      register_event_end(outbound_call)
+
+      outbound_call.register_event_handler(Adhearsion::Event::Ringing) { |event| handle_event_ringing(event) }
+      outbound_call.register_event_handler(Adhearsion::Event::Answered) { |event| handle_event_answered(event) }
+      outbound_call.register_event_handler(Adhearsion::Event::End) { |event| handle_event_end(event) }
       outbound_call.id
     end
   end
 
   private
 
-  def register_event_end(outbound_call)
-    outbound_call.register_event_handler(Adhearsion::Event::End) do |event|
-      handle_event_end(event)
-    end
+  def handle_event_ringing(event)
+    logger.info("handle_event_ringing: event: #{event}")
+  end
+
+  def handle_event_answered(event)
+    logger.info("handle_event_answered: event: #{event}")
   end
 
   def handle_event_end(event)
