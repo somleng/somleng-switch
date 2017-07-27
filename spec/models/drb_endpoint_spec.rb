@@ -163,7 +163,7 @@ describe DrbEndpoint do
     let(:asserted_call_sid) { header_call_sid }
     let(:basic_auth_credentials) { "user:secret" }
     let(:phone_call_events_url) {
-      "https://#{basic_auth_credentials}@somleng.example.com/api/admin/phone_calls/%{phone_call_id}/events/%{event_type}"
+      "https://#{basic_auth_credentials}@somleng.example.com/api/admin/phone_calls/:phone_call_id/events/:event_type"
     }
     let(:assert_notify_event) { true }
 
@@ -185,7 +185,7 @@ describe DrbEndpoint do
     def interpolate_phone_call_events_url(interpolations = {})
       event_url = phone_call_events_url.dup
       interpolations.each do |interpolation, value|
-        event_url.sub!("%{#{interpolation}}", value.to_s)
+        event_url.sub!(":#{interpolation}", value.to_s)
       end
       event_url.sub!("#{basic_auth_credentials}@", "")
       event_url

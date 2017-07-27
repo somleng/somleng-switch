@@ -412,7 +412,7 @@ class DrbEndpoint
   def phone_call_event_url(interpolations = {})
     if event_url = phone_call_events_url && phone_call_events_url.dup
       interpolations.each do |interpolation, value|
-        event_url.sub!("%{#{interpolation}}", value.to_s)
+        event_url.sub!(":#{interpolation}", value.to_s)
       end
       event_url
     end
