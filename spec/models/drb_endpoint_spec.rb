@@ -3,8 +3,18 @@ require 'spec_helper'
 describe DrbEndpoint do
   include EnvHelpers
 
-  def set_dummy_encryption_key
-    stub_env(:ahn_somleng_encryption_key => "shh-dont-tell")
+  let(:dummy_encryption_key) { "shh-dont-tell" }
+
+  def env
+    {}
+  end
+
+  def setup_scenario
+    stub_env(env)
+  end
+
+  before do
+    setup_scenario
   end
 
   describe "#initiate_outbound_call!(call_json)" do
@@ -68,11 +78,8 @@ describe DrbEndpoint do
       }
     end
 
-    before do
-      setup_scenario
-    end
-
     def setup_scenario
+      super
       allow(Adhearsion::OutboundCall).to receive(:originate).and_return(call)
       allow(call).to receive(:from).and_return(asserted_dial_string)
       allow(call).to receive(:to).and_return(asserted_caller_id)
@@ -106,8 +113,10 @@ describe DrbEndpoint do
     end
 
     context "encryption key is provided" do
-      before do
-        set_dummy_encryption_key
+      def env
+        super.merge(
+          :ahn_somleng_encryption_key => dummy_encryption_key
+        )
       end
 
       def asserted_headers
@@ -147,7 +156,8 @@ describe DrbEndpoint do
     end
   end
 
-  describe "event handlers", :focus do
+  describe "event handlers" do
+    let(:stanza) { build_rayo_event_stanza }
     let(:event) { Adhearsion::Rayo::RayoNode.from_xml(parse_stanza(stanza).root, '9f00061', '1') }
     let(:header_call_sid) { "abcdefghij" }
     let(:asserted_call_sid) { header_call_sid }
@@ -155,6 +165,7 @@ describe DrbEndpoint do
     let(:phone_call_events_url) {
       "https://#{basic_auth_credentials}@somleng.example.com/api/admin/phone_calls/%{phone_call_id}/events/%{event_type}"
     }
+    let(:assert_notify_event) { true }
 
     let(:phone_call_event_url) {
       interpolate_phone_call_events_url(
@@ -163,7 +174,7 @@ describe DrbEndpoint do
       )
     }
 
-    def trigger_event
+    def trigger_event!
       subject.send(event_handler, event)
     end
 
@@ -180,6 +191,48 @@ describe DrbEndpoint do
       event_url
     end
 
+    def rayo_event_stanza_headers
+      {
+        "X-Adhearsion-Twilio-Call-Sid" => header_call_sid
+      }
+    end
+
+    def rayo_event_stanza_children
+      rayo_event_stanza_children = []
+      rayo_event_stanza_headers.each do |key, value|
+        rayo_event_stanza_children << {
+          :element_type => :header,
+          :element_attributes => [
+            {
+              :name => key,
+              :value => value
+            }
+          ]
+        }
+      end
+      rayo_event_stanza_children
+    end
+
+    def build_rayo_event_stanza
+      children_xml = []
+      rayo_event_stanza_children.each do |child|
+        attributes = [child[:element_type]]
+        child[:element_attributes].each do |element_attribute|
+          element_attribute.each do |key, value|
+            attributes << "#{key}=\"#{value}\""
+          end
+        end
+
+        children_xml << "<#{attributes.join(' ')} />"
+      end
+
+      <<-MESSAGE
+        <#{rayo_event_type} xmlns="urn:xmpp:rayo:1">
+          #{children_xml.join("\n")}
+        </#{rayo_event_type}>
+      MESSAGE
+    end
+
     def assert_notify_event!
       expect(WebMock).to have_requested(
         :post, phone_call_event_url
@@ -190,51 +243,41 @@ describe DrbEndpoint do
       )
     end
 
-    def setup_notify_event_scenario
-      stub_env(:ahn_somleng_phone_call_events_url => phone_call_events_url)
-      stub_request(:post, phone_call_event_url)
+    def assert_event!
+      trigger_event!
+      assert_notify_event! if assert_notify_event
+    end
+
+    def env
+      super.merge(
+        :ahn_somleng_phone_call_events_url => phone_call_events_url
+      )
     end
 
     def setup_scenario
+      super
+      stub_request(:post, phone_call_event_url) if phone_call_events_url
     end
 
-    before do
-      setup_scenario
-    end
-
-    describe "#handle_event_ringing(event)", :focus do
+    describe "#handle_event_ringing(event)" do
       let(:event_handler) { :handle_event_ringing }
       let(:asserted_event_type) { :ringing }
+      let(:rayo_event_type) { :ringing }
+      it { assert_event! }
+    end
 
-      let(:stanza) do
-        <<-MESSAGE
-          <ringing xmlns="urn:xmpp:rayo:1">
-            <header name="X-Adhearsion-Twilio-Call-Sid" value="#{header_call_sid}" />
-          </ringing>
-        MESSAGE
-      end
-
-      def assert_handle_event_ringing!
-        trigger_event
-      end
-
-      context "AHN_SOMLENG_PHONE_CALL_EVENTS_URL is set" do
-        def setup_scenario
-          super
-          setup_notify_event_scenario
-        end
-
-        def assert_handle_event_ringing!
-          super
-          assert_notify_event!
-        end
-
-        it { assert_handle_event_ringing! }
-      end
+    describe "#handle_event_answered(event)" do
+      let(:event_handler) { :handle_event_answered }
+      let(:asserted_event_type) { :answered }
+      let(:rayo_event_type) { :answered }
+      it { assert_event! }
     end
 
     describe "#handle_event_end(event)" do
       let(:event_handler) { :handle_event_end }
+      let(:asserted_event_type) { :completed }
+      let(:rayo_event_type) { :end }
+      let(:notify_status_callback_url) { true }
 
       let(:http_client_class) { Adhearsion::Twilio::HttpClient }
       let(:http_client) { instance_double(http_client_class) }
@@ -276,26 +319,32 @@ describe DrbEndpoint do
         ].compact
       }
 
-      let :stanza do
-        <<-MESSAGE
-          <end xmlns="urn:xmpp:rayo:1">
-            <timeout platform-code="18" />
-            <!-- Signaling (e.g. SIP) Headers -->
-            <header name="variable-sip_term_status" value="#{header_sip_term_status}" />
-            <header name="variable-billsec" value="#{header_billsec}" />
-            <header name="variable-answer_epoch" value="#{header_answer_epoch}" />
-            <header name="X-Adhearsion-Twilio-Status-Callback-Url" value="#{header_status_callback_url}" />
-            <header name="X-Adhearsion-Twilio-Status-Callback-Method" value="#{header_status_callback_method}" />
-            <header name="X-Adhearsion-Twilio-To" value="#{header_adhearsion_twilio_to}" />
-            <header name="X-Adhearsion-Twilio-From" value="#{header_adhearsion_twilio_from}" />
-            <header name="X-Adhearsion-Twilio-Call-Sid" value="#{header_call_sid}" />
-            <header name="X-Adhearsion-Twilio-Direction" value="#{header_call_direction}" />
-            <header name="X-Adhearsion-Twilio-Account-Sid" value="#{header_account_sid}" />
-            <header name="X-Adhearsion-Twilio-Auth-Token" value="#{header_auth_token}" />
-            <header name="X-Adhearsion-Twilio-Encrypted-Auth-Token" value="#{header_encrypted_auth_token}" />
-            <header name="X-Adhearsion-Twilio-Encrypted-Auth-Token-IV" value="#{header_encrypted_auth_token_iv}" />
-          </end>
-        MESSAGE
+      def rayo_event_stanza_headers
+        super.merge(
+          "variable-sip_term_status" => header_sip_term_status,
+          "variable-billsec" => header_billsec,
+          "variable-answer_epoch" => header_answer_epoch,
+          "X-Adhearsion-Twilio-Status-Callback-Url" => header_status_callback_url,
+          "X-Adhearsion-Twilio-Status-Callback-Method" => header_status_callback_method,
+          "X-Adhearsion-Twilio-To" => header_adhearsion_twilio_to,
+          "X-Adhearsion-Twilio-From" => header_adhearsion_twilio_from,
+          "X-Adhearsion-Twilio-Direction" => header_call_direction,
+          "X-Adhearsion-Twilio-Account-Sid" => header_account_sid,
+          "X-Adhearsion-Twilio-Auth-Token" => header_auth_token,
+          "X-Adhearsion-Twilio-Encrypted-Auth-Token" => header_encrypted_auth_token,
+          "X-Adhearsion-Twilio-Encrypted-Auth-Token-IV" => header_encrypted_auth_token_iv,
+        )
+      end
+
+      def rayo_event_stanza_children
+        super << {
+          :element_type => :timeout,
+          :element_attributes => [
+            {
+              "platform-code" => "18"
+            }
+          ]
+        }
       end
 
       def setup_scenario
@@ -303,31 +352,38 @@ describe DrbEndpoint do
         allow(http_client_class).to receive(:new).and_return(http_client)
       end
 
-      def assert_handle_event_end!
-        expect(http_client).to receive(:notify_status_callback_url).with(*asserted_notify_status_callback_url_args)
-        expect(http_client_class).to receive(:new).with(
-          hash_including(
-            :status_callback_url => asserted_status_callback_url,
-            :status_callback_method => asserted_status_callback_method,
-            :call_to => asserted_call_to,
-            :call_from => asserted_call_from,
-            :call_sid => asserted_call_sid,
-            :account_sid => asserted_account_sid,
-            :auth_token => asserted_auth_token,
-            :call_direction => asserted_call_direction,
+      def assert_event!
+        if notify_status_callback_url
+          expect(http_client).to receive(:notify_status_callback_url).with(*asserted_notify_status_callback_url_args)
+          expect(http_client_class).to receive(:new).with(
+            hash_including(
+              :status_callback_url => asserted_status_callback_url,
+              :status_callback_method => asserted_status_callback_method,
+              :call_to => asserted_call_to,
+              :call_from => asserted_call_from,
+              :call_sid => asserted_call_sid,
+              :account_sid => asserted_account_sid,
+              :auth_token => asserted_auth_token,
+              :call_direction => asserted_call_direction,
+            )
           )
-        )
-        trigger_event
+        else
+          expect(http_client).not_to receive(:notify_status_callback_url)
+        end
+
+        super
       end
 
       context "given the call is not_answered" do
         let(:header_sip_term_status) { "480" }
         let(:asserted_notify_status_callback_url_status) { :no_answer }
-        it { assert_handle_event_end! }
+        it { assert_event! }
 
         context "given the auth token is encrypted" do
-          before do
-            set_dummy_encryption_key
+          def env
+            super.merge(
+              :ahn_somleng_encryption_key => dummy_encryption_key
+            )
           end
 
           let(:header_encrypted_auth_token) { "3wCh/wuFmfl62z253vLTCBrpEig9IYD0Z77JrpHAMJ8=&#10;" }
@@ -335,50 +391,48 @@ describe DrbEndpoint do
           let(:header_encrypted_auth_token_iv) { "xuNbWFfCbZUnMjgItwb8QA==&#38;&#35;10&#59;" }
           let(:header_auth_token) { "not-the-real-auth-token" }
           let(:asserted_auth_token) { "sample-auth-token" }
-          it { assert_handle_event_end! }
+
+          it { assert_event! }
         end
       end
 
       context "given the call is cancelled by originator" do
         let(:header_sip_term_status) { "487" }
         let(:asserted_notify_status_callback_url_status) { :no_answer }
-        it { assert_handle_event_end! }
+        it { assert_event! }
       end
 
       context "given the call is busy" do
         let(:header_sip_term_status) { "486" }
         let(:asserted_notify_status_callback_url_status) { :busy }
-        it { assert_handle_event_end! }
+        it { assert_event! }
       end
 
       context "given the number is wrong" do
         let(:header_sip_term_status) { "484" }
         let(:asserted_notify_status_callback_url_status) { :error }
-        it { assert_handle_event_end! }
+        it { assert_event! }
       end
 
       context "given a '603'" do
         # https://en.wikipedia.org/wiki/List_of_SIP_response_codes#6xx.E2.80.94Global_Failure_Responses
         let(:header_sip_term_status) { "603" }
         let(:asserted_notify_status_callback_url_status) { :no_answer }
-        it { assert_handle_event_end! }
+        it { assert_event! }
       end
 
       context "given the call is answered" do
-        def assert_handle_event_end!
-          expect(http_client).not_to receive(:notify_status_callback_url)
-          trigger_event
-        end
+        let(:notify_status_callback_url) { false }
 
         context "as defined by answer-epoch" do
           let(:header_answer_epoch) { "1478050584" }
           let(:header_sip_term_status) { nil }
-          it { assert_handle_event_end! }
+          it { assert_event! }
         end
 
         context "as defined by sip_term_status" do
           let(:header_sip_term_status) { "200" }
-          it { assert_handle_event_end! }
+          it { assert_event! }
         end
       end
     end

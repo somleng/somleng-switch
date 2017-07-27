@@ -55,19 +55,23 @@ class DrbEndpoint
     end
   end
 
-  def handle_event_ringing(event)
+  def handle_event(event, options = {})
     event_details = parse_event(event)
-    logger.info("handle_event_ringing - event details: #{event_details}")
-    notify_phone_call_event!(event_details[:call_sid], :ringing)
+    logger.info("Handling Event: #{event_details}")
+    notify_phone_call_event!(event_details[:call_sid], options[:phone_call_event_type])
+    event_details
+  end
+
+  def handle_event_ringing(event)
+    handle_event(event, :phone_call_event_type => :ringing)
   end
 
   def handle_event_answered(event)
-    logger.info("handle_event_answered: event: #{event}")
+    handle_event(event, :phone_call_event_type => :answered)
   end
 
   def handle_event_end(event)
-    event_details = parse_event(event)
-    logger.info("handle_event_end - event details: #{event_details}")
+    event_details = handle_event(event, :phone_call_event_type => :completed)
     notify_status_callback_url(event_details) if !answered?(event_details)
   end
 
