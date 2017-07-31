@@ -1,7 +1,9 @@
 language: ruby
+env:
+  - START_SIMPLECOV=1
 addons:
   code_climate:
     repo_token:
       secure: "yyNen+T2CrdWZIxHS24WyQlKBqcC1JEnim2XuIlLwHwxRVTzecf5BVrK3PRFUHI2N9KaLDO7FH9yagJnHxlgTZdiVk83A71Pr9kSCZ5GKjfXMiWJzcXv+jSzBoAKVtx4N6FlHulTzOOvCjtct1hJwSgpH/8z8AOTRdjWk3So/8K1K/q9eL/ZswqVc2DVK/vgDbzhvwGSQNDOKAsvLvEH87nf4Wmz7S4g3ahuV8bzREF+PqTOtHm65vuABAmEF3cbuu/2tp/w3k2h0YHL5vDcmIqhQKlExD77ESLz9UOEvwPQgrazmarW3FFa8Ny7yijJINb8OPxNN/t1yCqlmGCZs/Em+cicegm+iQogrNKK6mHS/YgTOkxORiF2MJ4+y6NnA79WN1FPAE+hTp7kazcIl0dZjc0StTBGnypIVYZpGI4mUWC1SiwvPRa3K91TGSK8oJD8poUrn8/Hy9BoVpto+HpFyIaJF379CoHvzLrdhnFpawXPMqtsPn46Az9C6lJGe9BVifF4TrHm8ARpgg1N3ZR1GN1ajCnGyCDaFPQo/tTkGHDCiCP8KG0LUNQQBRIruxr1m+CqeYeBD/nHwrP3t7ozEF6RJvlyosGJo0aoindtDFUYmGYPrMk4UDGGGMgE9CESZdD9YbrYo3SkCtFJhmJ0QDdzRAiHLmcXTdPNHtQ="
 after_success:
-- bundle exec codeclimate-test-reporter
+  - bundle exec codeclimate-test-reporter

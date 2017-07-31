@@ -1,5 +1,7 @@
-require 'simplecov'
-SimpleCov.start
+if ENV["START_SIMPLECOV"].to_i == 1
+  require 'simplecov'
+  SimpleCov.start
+end
 
 ENV["AHN_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
