@@ -7,7 +7,7 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'adhearsion', :github => "adhearsion/adhearsion"
+gem 'adhearsion', :github => "adhearsion/adhearsion", :branch => "develop"
 gem 'adhearsion-twilio', :github => "dwilkie/adhearsion-twilio"
 gem 'eventmachine', "~> 1.0.9"
 

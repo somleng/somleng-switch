@@ -1,6 +1,7 @@
 GIT
   remote: https://github.com/adhearsion/adhearsion.git
-  revision: 6db768c4675246a60b116e69de20d352be8cc4b5
+  revision: b8692af19b40a91a28d487746a72921bdd0d5a7d
+  branch: develop
   specs:
     adhearsion (3.0.0.rc1)
       activesupport (>= 3.0.0, < 5.0.0)
@@ -38,7 +39,7 @@ GIT
 
 GIT
   remote: https://github.com/dwilkie/adhearsion-twilio.git
-  revision: 61b5fc1efff41ec75bd4e04a8ba9959105839833
+  revision: d799a1567244d7ad3b5d6874539f896a12a2a5f9
   specs:
     adhearsion-twilio (0.0.1)
       adhearsion (~> 3.0.0.rc1)
@@ -100,7 +101,7 @@ GEM
       rubinius-actor
     has-guarded-handlers (1.6.3)
     hashdiff (0.3.0)
-    hitimes (1.2.5)
+    hitimes (1.2.6)
     http (0.9.9)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
@@ -110,7 +111,7 @@ GEM
       domain_name (~> 0.5)
     http-form_data (1.0.3)
     http_parser.rb (0.6.0)
-    httparty (0.15.5)
+    httparty (0.15.6)
       multi_xml (>= 0.5.2)
     i18n (0.8.6)
     ice_nine (0.11.2)
@@ -126,7 +127,7 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
     mini_portile (0.5.3)
-    minitest (5.10.2)
+    minitest (5.10.3)
     multi_json (1.12.1)
     multi_xml (0.6.0)
     niceogiri (1.1.2)

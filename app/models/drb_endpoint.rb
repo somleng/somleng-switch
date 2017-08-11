@@ -1,9 +1,3 @@
-require "openssl"
-require 'digest/sha2'
-require 'base64'
-require 'cgi'
-require "adhearsion/twilio/util/sip_header"
-
 class DrbEndpoint
   # Do not use instance variables in this class!
   # If an instance variable is set,
