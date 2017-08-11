@@ -22,219 +22,17 @@ class DrbEndpoint
       {
         :from => call_variables[:caller_id],
         :controller => CallController,
-        :controller_metadata => controller_metadata(call_variables),
-        :headers => construct_adhearsion_twilio_headers(call_variables)
+        :controller_metadata => controller_metadata(call_variables)
       }
     ]
 
     if call_variables[:disable_originate].to_i != 1
       logger.info("Initiating outbound call with: #{call_args}")
-      outbound_call = Adhearsion::OutboundCall.originate(*call_args)
-
-      outbound_call.register_event_handler(Adhearsion::Event::Ringing) { |event| handle_event_ringing(event) }
-      outbound_call.register_event_handler(Adhearsion::Event::Answered) { |event| handle_event_answered(event) }
-      outbound_call.register_event_handler(Adhearsion::Event::End) { |event| handle_event_end(event) }
-      outbound_call.id
+      Adhearsion::OutboundCall.originate(*call_args).id
     end
   end
 
   private
-
-  def notify_phone_call_event!(phone_call_id, event_type)
-    if phone_call_events_url
-      event_url = phone_call_event_url(
-        :phone_call_id => phone_call_id,
-        :event_type => event_type
-      )
-
-      request_options = {}
-      basic_auth, url = Adhearsion::Twilio::Util::Url.new(event_url).extract_auth
-      request_options.merge!(:basic_auth => basic_auth) if basic_auth.any?
-
-      HTTParty.post(url, request_options)
-    end
-  end
-
-  def handle_event(event, options = {})
-    event_details = parse_event(event)
-    logger.info("Handling Event: #{event_details}")
-    notify_phone_call_event!(event_details[:call_sid], options[:phone_call_event_type])
-    event_details
-  end
-
-  def handle_event_ringing(event)
-    handle_event(event, :phone_call_event_type => :ringing)
-  end
-
-  def handle_event_answered(event)
-    handle_event(event, :phone_call_event_type => :answered)
-  end
-
-  def handle_event_end(event)
-    event_details = handle_event(event, :phone_call_event_type => :completed)
-    notify_status_callback_url(event_details) if !answered?(event_details)
-  end
-
-  def answered?(event_details)
-    get_adhearsion_twilio_call_status(event_details) == :answer || event_details[:answer_epoch].to_i > 0
-  end
-
-  def get_adhearsion_twilio_call_status(event_details)
-    case event_details[:sip_term_status]
-    when "200"
-      :answer
-    when "486"
-      :busy
-    when "480", "487", "603"
-      :no_answer
-    else
-      :error
-    end
-  end
-
-  def construct_adhearsion_twilio_headers(call_variables)
-    sip_header_util = Adhearsion::Twilio::Util::SipHeader.new
-    headers = {}
-
-    add_adhearsion_twilio_header!(
-      sip_header_util,
-      headers,
-      "Status-Callback-Url",
-      call_variables[:status_callback_url]
-    )
-
-    add_adhearsion_twilio_header!(
-      sip_header_util,
-      headers,
-      "Status-Callback-Method",
-      call_variables[:status_callback_method]
-    )
-
-    add_adhearsion_twilio_header!(
-      sip_header_util,
-      headers,
-      "Call-Sid",
-      call_variables[:call_sid]
-    )
-
-    add_adhearsion_twilio_header!(
-      sip_header_util,
-      headers,
-      "To",
-      call_variables[:adhearsion_twilio_to]
-    )
-
-    add_adhearsion_twilio_header!(
-      sip_header_util,
-      headers,
-      "From",
-      call_variables[:adhearsion_twilio_from]
-    )
-
-    add_adhearsion_twilio_header!(
-      sip_header_util,
-      headers,
-      "Direction",
-      call_variables[:call_direction]
-    )
-
-    add_adhearsion_twilio_header!(
-      sip_header_util,
-      headers,
-      "Account-Sid",
-      call_variables[:account_sid]
-    )
-
-    add_adhearsion_twilio_header!(
-      sip_header_util,
-      headers,
-      "Encrypted-Auth-Token",
-      call_variables[:encrypted_auth_token]
-    )
-
-    add_adhearsion_twilio_header!(
-      sip_header_util,
-      headers,
-      "Encrypted-Auth-Token-IV",
-      call_variables[:encrypted_auth_token_iv]
-    )
-
-    if !call_variables[:encrypted_auth_token]
-      add_adhearsion_twilio_header!(
-        sip_header_util,
-        headers,
-        "Auth-Token",
-        call_variables[:auth_token]
-      )
-    end
-
-    headers
-  end
-
-  def add_adhearsion_twilio_header!(sip_header_util, headers, name, value)
-    headers.merge!(
-     sip_header_util.construct_header_name(name) => value
-    ) if value
-  end
-
-  def parse_event(event)
-    logger.info("Parsing Event: #{event}")
-
-    sip_header_util = Adhearsion::Twilio::Util::SipHeader.new
-    headers = event.headers
-
-    encrypted_auth_token = headers[sip_header_util.construct_header_name("Encrypted-Auth-Token")]
-    encrypted_auth_token_iv = headers[sip_header_util.construct_header_name("Encrypted-Auth-Token-IV")]
-
-    if encrypted_auth_token && !encrypted_auth_token.empty? && encrypted_auth_token_iv && !encrypted_auth_token.empty?
-      auth_token = decrypt(encrypted_auth_token, encrypted_auth_token_iv)
-    else
-      logger.warn("Auth token not encrypted! Set AHN_SOMLENG_ENCRYPTION_KEY to encrypt it")
-      auth_token = headers[sip_header_util.construct_header_name("Auth-Token")]
-    end
-
-    {
-      :sip_term_status => headers["variable-sip_term_status"],
-      :call_duration => headers["variable-billsec"],
-      :answer_epoch => headers["variable-answer_epoch"],
-      :status_callback_url => headers[sip_header_util.construct_header_name("Status-Callback-Url")],
-      :status_callback_method => headers[sip_header_util.construct_header_name("Status-Callback-Method")],
-      :call_sid => headers[sip_header_util.construct_header_name("Call-Sid")],
-      :to => headers[sip_header_util.construct_header_name("To")],
-      :from => headers[sip_header_util.construct_header_name("From")],
-      :direction => headers[sip_header_util.construct_header_name("Direction")],
-      :account_sid => headers[sip_header_util.construct_header_name("Account-Sid")],
-      :auth_token => auth_token
-    }
-  end
-
-  def notify_status_callback_url(event_details)
-    configuration = Adhearsion::Twilio::Configuration.new
-    http_client = Adhearsion::Twilio::HttpClient.new(
-      :status_callback_url => event_details[:status_callback_url] || configuration.status_callback_url,
-      :status_callback_method => event_details[:status_callback_method] || configuration.status_callback_method,
-      :call_sid => event_details[:call_sid],
-      :call_to => event_details[:to],
-      :call_from => event_details[:from],
-      :account_sid => event_details[:account_sid],
-      :auth_token => event_details[:auth_token],
-      :call_direction => event_details[:direction],
-      :logger => logger
-    )
-
-    request_options = {}
-
-    request_options.merge!(
-      "CallDuration" => event_details[:call_duration]
-    ) if event_details[:call_duration]
-
-    request_options.merge!(
-      "SipResponseCode" => event_details[:sip_term_status]
-    ) if event_details[:sip_term_status]
-
-    call_status = get_adhearsion_twilio_call_status(event_details)
-    http_client.notify_status_callback_url(call_status, request_options)
-  end
 
   def call_direction
     "outbound_api"
@@ -248,8 +46,6 @@ class DrbEndpoint
     {
       :voice_request_url => call_variables[:voice_request_url],
       :voice_request_method => call_variables[:voice_request_method],
-      :status_callback_url => call_variables[:status_callback_url],
-      :status_callback_method => call_variables[:status_callback_method],
       :account_sid => call_variables[:account_sid],
       :auth_token => call_variables[:auth_token],
       :call_sid => call_variables[:call_sid],
@@ -265,8 +61,6 @@ class DrbEndpoint
 
     voice_request_url = call_params["voice_url"]
     voice_request_method = call_params["voice_method"]
-    status_callback_url = call_params["status_callback_url"]
-    status_callback_method = call_params["status_callback_method"]
     account_sid = call_params["account_sid"]
     auth_token = call_params["account_auth_token"]
     call_sid = call_params["sid"]
@@ -287,19 +81,11 @@ class DrbEndpoint
     adhearsion_twilio_from = number_normalizer.normalize(caller_id)
     adhearsion_twilio_to = number_normalizer.normalize(destination)
 
-    if encrypt_auth_token?
-      encrypted_auth_token, encrypted_auth_token_iv = encrypt(auth_token)
-    end
-
     {
       :voice_request_url => voice_request_url,
       :voice_request_method => voice_request_method,
-      :status_callback_url => status_callback_url,
-      :status_callback_method => status_callback_method,
       :account_sid => account_sid,
       :auth_token => auth_token,
-      :encrypted_auth_token => encrypted_auth_token,
-      :encrypted_auth_token_iv => encrypted_auth_token_iv,
       :call_sid => call_sid,
       :caller_id => caller_id,
       :destination => destination,
@@ -328,45 +114,6 @@ class DrbEndpoint
     ).sub(
       /\%\{dial_string_path\}/, dial_string_path.to_s
     )
-  end
-
-  def encrypt(value)
-    aes = OpenSSL::Cipher::Cipher.new(encryption_algorithm)
-    iv = OpenSSL::Cipher::Cipher.new(encryption_algorithm).random_iv
-    aes.encrypt
-    aes.key = encryption_key_digest
-    aes.iv = iv
-    cipher = aes.update(value)
-    cipher << aes.final
-    [Base64.encode64(cipher), Base64.encode64(iv)]
-  end
-
-  def decrypt(html_escaped_base64_value, html_escaped_base64_iv)
-    decode_cipher = OpenSSL::Cipher::Cipher.new(encryption_algorithm)
-    decode_cipher.decrypt
-    decode_cipher.key = encryption_key_digest
-    decode_cipher.iv = Base64.decode64(CGI.unescapeHTML(html_escaped_base64_iv))
-    plain = decode_cipher.update(Base64.decode64(CGI.unescapeHTML(html_escaped_base64_value)))
-    plain << decode_cipher.final
-    plain
-  end
-
-  def encryption_key_digest
-    digest = Digest::SHA256.new
-    digest.update(encryption_key)
-    digest.digest
-  end
-
-  def encryption_algorithm
-    "AES-256-CBC"
-  end
-
-  def encrypt_auth_token?
-    !!encryption_key
-  end
-
-  def encryption_key
-    ENV["AHN_SOMLENG_ENCRYPTION_KEY"]
   end
 
   def default_destination
@@ -403,18 +150,5 @@ class DrbEndpoint
 
   def default_disable_originate
     ENV["AHN_SOMLENG_DISABLE_ORIGINATE"]
-  end
-
-  def phone_call_events_url
-    ENV["AHN_SOMLENG_PHONE_CALL_EVENTS_URL"]
-  end
-
-  def phone_call_event_url(interpolations = {})
-    if event_url = phone_call_events_url && phone_call_events_url.dup
-      interpolations.each do |interpolation, value|
-        event_url.sub!(":#{interpolation}", value.to_s)
-      end
-      event_url
-    end
   end
 end
