@@ -28,10 +28,6 @@ class DrbEndpoint
 
   private
 
-  def call_direction
-    "outbound_api"
-  end
-
   def get_routing_instructions(call_params)
     call_params["routing_instructions"] || {}
   end
@@ -45,7 +41,8 @@ class DrbEndpoint
       :call_sid => call_variables[:call_sid],
       :adhearsion_twilio_to => call_variables[:adhearsion_twilio_to],
       :adhearsion_twilio_from => call_variables[:adhearsion_twilio_from],
-      :call_direction => call_variables[:call_direction],
+      :direction => call_variables[:direction],
+      :api_version => call_variables[:api_version],
       :rest_api_enabled => false
     }
   end
@@ -58,6 +55,8 @@ class DrbEndpoint
     account_sid = call_params["account_sid"]
     auth_token = call_params["account_auth_token"]
     call_sid = call_params["sid"]
+    direction = call_params["direction"]
+    api_version = call_params["api_version"]
     caller_id = routing_instructions["source"] || call_params["from"] || default_caller_id
     address = routing_instructions["address"]
     destination = routing_instructions["destination"] || call_params["to"] || default_destination
@@ -89,7 +88,8 @@ class DrbEndpoint
       :dial_string => dial_string,
       :adhearsion_twilio_from => adhearsion_twilio_from,
       :adhearsion_twilio_to => adhearsion_twilio_to,
-      :call_direction => call_direction,
+      :direction => direction,
+      :api_version => api_version,
       :disable_originate => disable_originate,
     }
   end

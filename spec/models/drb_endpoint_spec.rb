@@ -9,7 +9,7 @@ describe DrbEndpoint do
   end
 
   describe "#initiate_outbound_call!(call_json)" do
-    let(:sample_call_json) { "{\"to\":\"#{call_json_to}\",\"from\":\"2442\",\"voice_url\":\"#{call_json_voice_url}\",\"voice_method\":\"#{call_json_voice_method}\",\"status_callback_url\":\"#{call_json_status_callback_url}\",\"status_callback_method\":\"#{call_json_status_callback_method}\",\"sid\":\"#{call_json_call_sid}\",\"account_sid\":\"#{call_json_account_sid}\",\"account_auth_token\":\"#{call_json_auth_token}\",\"routing_instructions\":{\"source\":\"2442\",\"destination\":\"+85512334667\"}}" }
+    let(:sample_call_json) { "{\"to\":\"#{call_json_to}\",\"from\":\"2442\",\"voice_url\":\"#{call_json_voice_url}\",\"voice_method\":\"#{call_json_voice_method}\",\"status_callback_url\":\"#{call_json_status_callback_url}\",\"status_callback_method\":\"#{call_json_status_callback_method}\",\"sid\":\"#{call_json_call_sid}\",\"account_sid\":\"#{call_json_account_sid}\",\"account_auth_token\":\"#{call_json_auth_token}\",\"direction\":\"#{call_json_direction}\",\"api_version\":\"#{call_json_api_version}\",\"routing_instructions\":{\"source\":\"2442\",\"destination\":\"+85512334667\"}}" }
 
     let(:call_json) { sample_call_json }
     let(:asserted_call_id) { call_id }
@@ -28,16 +28,19 @@ describe DrbEndpoint do
     let(:call_json_call_sid) { "91171124-2da9-40df-b21f-2531c895ff83" }
     let(:call_json_auth_token) { "sample-auth-token" }
     let(:call_json_account_sid) { "sample-call-sid" }
+    let(:call_json_direction) { "outbound-api" }
+    let(:call_json_api_version) { "2010-04-01" }
 
     let(:asserted_voice_request_url) { call_json_voice_url }
     let(:asserted_voice_request_method) { call_json_voice_method }
     let(:asserted_call_sid) { call_json_call_sid }
     let(:asserted_adhearsion_twilio_to) { call_json_to }
     let(:asserted_adhearsion_twilio_from) { "+2442" }
-    let(:asserted_call_direction) { "outbound_api" }
     let(:asserted_auth_token) { call_json_auth_token }
     let(:asserted_account_sid) { call_json_account_sid }
     let(:asserted_rest_api_enabled) { false }
+    let(:asserted_direction) { call_json_direction }
+    let(:asserted_api_version) { call_json_api_version }
 
     let(:asserted_controller_metadata) do
       {
@@ -46,9 +49,10 @@ describe DrbEndpoint do
         :account_sid => asserted_account_sid,
         :auth_token => asserted_auth_token,
         :call_sid => asserted_call_sid,
-        :call_direction => asserted_call_direction,
         :adhearsion_twilio_to => asserted_adhearsion_twilio_to,
         :adhearsion_twilio_from => asserted_adhearsion_twilio_from,
+        :direction => asserted_direction,
+        :api_version => asserted_api_version,
         :rest_api_enabled => asserted_rest_api_enabled
       }
     end
