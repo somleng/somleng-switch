@@ -39,12 +39,20 @@ GIT
 
 GIT
   remote: https://github.com/dwilkie/adhearsion-twilio.git
-  revision: d799a1567244d7ad3b5d6874539f896a12a2a5f9
+  revision: e7617d30c58320b23d57e0d3d557b3333927bb3e
   specs:
     adhearsion-twilio (0.0.1)
       adhearsion (~> 3.0.0.rc1)
       httparty
       mail
+      somleng-twilio_http_client
+
+GIT
+  remote: https://github.com/dwilkie/somleng-twilio_http_client.git
+  revision: 3c24b438d6cea4cb5a457d0943fd13c224dc5069
+  specs:
+    somleng-twilio_http_client (0.1.0)
+      httparty
 
 GEM
   remote: https://rubygems.org/
@@ -217,6 +225,7 @@ DEPENDENCIES
   rack-test
   rspec
   simplecov
+  somleng-twilio_http_client!
   vcr
   webmock
 

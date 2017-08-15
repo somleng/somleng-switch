@@ -9,6 +9,7 @@ end
 
 gem 'adhearsion', :github => "adhearsion/adhearsion", :branch => "develop"
 gem 'adhearsion-twilio', :github => "dwilkie/adhearsion-twilio"
+gem 'somleng-twilio_http_client', :github => "dwilkie/somleng-twilio_http_client"
 gem 'eventmachine', "~> 1.0.9"
 
 gem 'adhearsion-drb', :branch => :develop, :github => "dwilkie/adhearsion-drb"
