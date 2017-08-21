@@ -4,7 +4,7 @@
 
 ### Create a VPC
 
-Follow [this guide](https://github.com/dwilkie/twilreapi/blob/master/docs/AWS_VPC_SETUP.md) to setup a VPC for your AWS account.
+Follow [this guide](https://github.com/somleng/twilreapi/blob/master/docs/AWS_VPC_SETUP.md) to setup a VPC for your AWS account.
 
 ### Create a new Elastic Beanstalk Application
 
@@ -19,7 +19,7 @@ $ eb create --vpc --profile <profile-name>
 
 ### Update the Load Balancer Configuration
 
-By default the load balancer will be configured to listen on port `80`. This needs to be updated to listen on port `9050` the default port which [Twilreapi](https://github.com/dwilkie/twilreapi) sends DRb requests to Somleng.
+By default the load balancer will be configured to listen on port `80`. This needs to be updated to listen on port `9050` the default port which [Twilreapi](https://github.com/somleng/twilreapi) sends DRb requests to Somleng.
 
 To update the load balancer
 
@@ -59,11 +59,11 @@ Ensure that the ELB security group is configured to only allow inbound and outbo
 
 ### Configure CloudWatch Logging
 
-Follow [this guide](https://github.com/dwilkie/freeswitch-config/blob/master/docs/AWS_LOGGING.md) to configure CloudWatch logging. [Dockerrun.aws.json](https://github.com/dwilkie/somleng/blob/master/Dockerrun.aws.json) specifies the log group so this step must done for deployment to be successful.
+Follow [this guide](https://github.com/somleng/freeswitch-config/blob/master/docs/AWS_LOGGING.md) to configure CloudWatch logging. [Dockerrun.aws.json](https://github.com/somleng/somleng/blob/master/Dockerrun.aws.json) specifies the log group so this step must done for deployment to be successful.
 
 ### Adhearsion Configuration
 
-Follow [this guide](https://github.com/dwilkie/freeswitch-config/tree/master/docs/S3_CONFIGURATION.md) to securely store Adhearsion ENV Variables on S3.
+Follow [this guide](https://github.com/somleng/freeswitch-config/tree/master/docs/S3_CONFIGURATION.md) to securely store Adhearsion ENV Variables on S3.
 
 Upload and download your configuration with the following commands
 
@@ -74,4 +74,4 @@ $ aws s3 cp s3://SECRETS_BUCKET_NAME/somleng_config.txt .
 
 ### CI Deployment
 
-See [CI DEPLOYMENT](https://github.com/dwilkie/twilreapi/blob/master/docs/CI_DEPLOYMENT.md)
+See [CI DEPLOYMENT](https://github.com/somleng/twilreapi/blob/master/docs/CI_DEPLOYMENT.md)
