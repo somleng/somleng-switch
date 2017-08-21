@@ -38,8 +38,8 @@ GIT
       adhearsion (~> 3.0.0.rc1)
 
 GIT
-  remote: https://github.com/dwilkie/adhearsion-twilio.git
-  revision: e7617d30c58320b23d57e0d3d557b3333927bb3e
+  remote: https://github.com/somleng/adhearsion-twilio.git
+  revision: 30a36954f29f2ae1c3c1c3fd705188f80199b448
   specs:
     adhearsion-twilio (0.0.1)
       adhearsion (~> 3.0.0.rc1)
@@ -48,7 +48,7 @@ GIT
       somleng-twilio_http_client
 
 GIT
-  remote: https://github.com/dwilkie/somleng-twilio_http_client.git
+  remote: https://github.com/somleng/somleng-twilio_http_client.git
   revision: 3c24b438d6cea4cb5a457d0943fd13c224dc5069
   specs:
     somleng-twilio_http_client (0.1.0)
