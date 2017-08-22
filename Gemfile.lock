@@ -39,7 +39,7 @@ GIT
 
 GIT
   remote: https://github.com/somleng/adhearsion-twilio.git
-  revision: 2186bba1103cf91024af0919b39464612e075b3b
+  revision: 85a5a009ed632f8c6d8b13980fe24c90697da546
   specs:
     adhearsion-twilio (0.0.1)
       adhearsion (~> 3.0.0.rc1)
