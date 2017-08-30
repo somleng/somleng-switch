@@ -39,7 +39,7 @@ GIT
 
 GIT
   remote: https://github.com/somleng/adhearsion-twilio.git
-  revision: 37d4c7242d640e9df1c6c41cb680d10baa44f765
+  revision: c232deee7ed01b6c956358a8b4eb79ef459ce9bd
   specs:
     adhearsion-twilio (0.0.1)
       adhearsion (~> 3.0.0.rc1)
@@ -62,8 +62,8 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    addressable (2.5.1)
-      public_suffix (~> 2.0, >= 2.0.2)
+    addressable (2.5.2)
+      public_suffix (>= 2.0.2, < 4.0)
     adhearsion-loquacious (1.9.3)
     axiom-types (0.1.1)
       descendants_tracker (~> 0.0.4)
@@ -147,7 +147,7 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
-    public_suffix (2.0.5)
+    public_suffix (3.0.0)
     rack (2.0.3)
     rack-test (0.6.3)
       rack (>= 1.0)
