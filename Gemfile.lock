@@ -39,7 +39,7 @@ GIT
 
 GIT
   remote: https://github.com/somleng/adhearsion-twilio.git
-  revision: 02bcbded2ed4e1856923f7b58c7491f7d83ab796
+  revision: 0c2e7e175e23a79817494eb26f7790bead70f39e
   specs:
     adhearsion-twilio (0.0.1)
       adhearsion (~> 3.0.0.rc1)
@@ -82,7 +82,7 @@ GEM
       nio4r (>= 1.1.0)
     codeclimate-test-reporter (1.0.8)
       simplecov (<= 0.13)
-    coderay (1.1.1)
+    coderay (1.1.2)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
     connection_pool (1.2.0)
