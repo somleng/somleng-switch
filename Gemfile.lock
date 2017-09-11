@@ -39,7 +39,7 @@ GIT
 
 GIT
   remote: https://github.com/somleng/adhearsion-twilio.git
-  revision: 069859a37c82cc182da377528996ffed666bcb62
+  revision: bf7af5e307ed6492380a81f88f433aa6c7d62039
   specs:
     adhearsion-twilio (0.0.1)
       adhearsion (~> 3.0.0.rc1)
@@ -151,7 +151,7 @@ GEM
     rack (2.0.3)
     rack-test (0.6.3)
       rack (>= 1.0)
-    rake (12.0.0)
+    rake (12.1.0)
     reel (0.5.0)
       celluloid (>= 0.15.1)
       celluloid-io (>= 0.15.0)
