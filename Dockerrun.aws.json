@@ -23,12 +23,8 @@
       },
       "environment": [
         {
-          "name": "SECRETS_BUCKET_NAME",
-          "value": "somlengsecrets"
-        },
-        {
-          "name": "SECRETS_FILE_NAME",
-          "value": "somleng_config.txt"
+          "name": "ADHEARSION_CONFIG_S3_PATH",
+          "value": "s3://somlengsecrets/somleng_config.txt"
         }
       ]
     }
