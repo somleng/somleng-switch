@@ -4,7 +4,9 @@ Follow instructions below to get Somleng (Adhearsion) up and running on your loc
 
 ## Install and run FreeSWITCH
 
-Run the [FreeSWITCH](https://github.com/somleng/freeswitch-config/blob/master/docs/GETTING_STARTED.md) docker image optimized for Somleng.
+To get started we recommend using the FreeSWITCH configuration available [here](https://github.com/somleng/freeswitch-config).
+
+Follow the [GETTING STARTED guide for FreeSWITCH](https://github.com/somleng/freeswitch-config/blob/master/docs/GETTING_STARTED.md) to get FreeSWITCH up and running first.
 
 ## Run the Somleng (Adhearsion) docker image
 
@@ -18,4 +20,12 @@ Note: The environment variables above assume your using the default settings in 
 
 ```
 $ sudo docker logs -f $(sudo docker ps -qf "name=ahn-somleng")
+```
+
+## Show the available configuration
+
+Run the following rake task to show the adhearsion configuration
+
+```
+$ sudo docker run --rm dwilkie/somleng bundle exec rake config:show
 ```
