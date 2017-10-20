@@ -1,31 +1,23 @@
 # Getting Started
 
-Follow instructions below to get Somleng (Adhearsion) up and running on your local machine.
+This is the getting started guide for Somleng-Adhearsion. Follow instructions below to get Somleng-Adhearsion up and running on your local machine. If you want to get the full Somleng stack up and running see the [getting started guide for Somleng](https://github.com/somleng/somleng-project/blob/master/docs/GETTING_STARTED.md).
 
-## Install and run FreeSWITCH
-
-To get started we recommend using the FreeSWITCH configuration available [here](https://github.com/somleng/freeswitch-config).
-
-Follow the [GETTING STARTED guide for FreeSWITCH](https://github.com/somleng/freeswitch-config/blob/master/docs/GETTING_STARTED.md) to get FreeSWITCH up and running first.
-
-## Run the Somleng (Adhearsion) docker image
+## Pull the latest images
 
 ```
-$ sudo docker run -d --rm --name ahn-somleng -e AHN_CORE_HTTP_ENABLE=false -e AHN_CORE_HOST=$(sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(sudo docker ps -qf "name=fs-somleng")) -e AHN_CORE_PASSWORD=secret -e AHN_CORE_USERNAME=adhearsion@localhost -e AHN_ADHEARSION_DRB_PORT=9050 dwilkie/somleng
+$ sudo docker-compose pull
 ```
 
-Note: The environment variables above assume your using the default settings in the [FreeSWITCH configuration](https://github.com/somleng/freeswitch-config)
-
-## Check the logs
+## Run the Somleng-Adhearsion docker image
 
 ```
-$ sudo docker logs -f $(sudo docker ps -qf "name=ahn-somleng")
+$ sudo docker-compose up
 ```
 
-## Show the available configuration
+## Show the available configuration (optional)
 
 Run the following rake task to show the adhearsion configuration
 
 ```
-$ sudo docker run --rm dwilkie/somleng bundle exec rake config:show
+$ sudo docker run --rm dwilkie/somleng:spec bundle exec rake config:show
 ```

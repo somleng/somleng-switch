@@ -1,0 +1,16 @@
+version: '3'
+services:
+  adhearsion:
+    image: dwilkie/somleng:spec
+    environment:
+      - AHN_CORE_HTTP_ENABLE=false
+      - AHN_CORE_HOST=freeswitch
+      - AHN_CORE_PASSWORD=secret
+      - AHN_CORE_USERNAME=adhearsion@localhost
+      - AHN_ADHEARSION_DRB_PORT=9050
+    depends_on:
+      - freeswitch
+  freeswitch:
+    image: dwilkie/freeswitch-rayo
+    ports:
+      - "5060:5060"
