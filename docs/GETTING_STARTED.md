@@ -1,11 +1,11 @@
 # Getting Started
 
-This is the getting started guide for Somleng-Adhearsion. Follow instructions below to get Somleng-Adhearsion up and running on your local machine. If you want to get the full Somleng stack up and running see the [getting started guide for Somleng](https://github.com/somleng/somleng-project/blob/master/docs/GETTING_STARTED.md).
+This is the getting started guide for Somleng-Adhearsion. If you want to get the full Somleng stack up and running see the [getting started guide for Somleng](https://github.com/somleng/somleng-project/blob/master/docs/GETTING_STARTED.md).
 
 ## Pull the latest images
 
 ```
-$ sudo docker-compose pull
+$ docker-compose pull
 ```
 
 ## Run Somleng-Adhearsion
@@ -13,7 +13,7 @@ $ sudo docker-compose pull
 The following command will boot Adhearsion and connect it to FreeSWITCH
 
 ```
-$ sudo docker-compose up
+$ docker-compose up
 ```
 
 ## Show the available configuration (optional)
@@ -21,5 +21,5 @@ $ sudo docker-compose up
 Run the following rake task to show the configuration for Somleng-Adhearsion
 
 ```
-$ sudo docker run --rm dwilkie/somleng:spec bundle exec rake config:show
+$ docker-compose exec adhearsion /bin/bash -c 'bundle exec rake config:show'
 ```
