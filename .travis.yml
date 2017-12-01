@@ -1,6 +1,7 @@
 language: ruby
 env:
-  - START_SIMPLECOV=1
+  global:
+    - START_SIMPLECOV=1
 addons:
   code_climate:
     repo_token:
