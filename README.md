@@ -1,8 +1,8 @@
 # Somleng-Adhearsion
 
 [![Build Status](https://travis-ci.org/somleng/somleng.svg?branch=master)](https://travis-ci.org/somleng/somleng)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/c313002c11be50cf8b2f/test_coverage)](https://codeclimate.com/github/somleng/somleng/test_coverage)
-[![Maintainability](https://api.codeclimate.com/v1/badges/c313002c11be50cf8b2f/maintainability)](https://codeclimate.com/github/somleng/somleng/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/2e82d67a505f29bbf1dc/test_coverage)](https://codeclimate.com/github/somleng/somleng-adhearsion/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/2e82d67a505f29bbf1dc/maintainability)](https://codeclimate.com/github/somleng/somleng-adhearsion/maintainability)
 
 Somleng-Adhearsion is an Adhearsion application compatible with [Twilreapi](https://github.com/somleng/twilreapi) and [TwiML](https://www.twilio.com/docs/api/twiml). It can be used as a drop-in replacement for Twilio routing calls through local operator, SIP trunk or PBX.
 
