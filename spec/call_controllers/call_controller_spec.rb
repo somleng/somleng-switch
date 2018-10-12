@@ -1,27 +1,15 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe CallController do
-  subject { described_class.new(mock_call) }
-  let(:mock_call) { double("Call") }
-
   describe "#run" do
-    def setup_scenario
-      allow(subject).to receive(:notify_voice_request_url)
-    end
+    it "handles the call via adhearsion-twilio" do
+      call = instance_double(Adhearsion::Call)
+      call_controller = described_class.new(call)
+      allow(call_controller).to receive(:notify_voice_request_url)
 
-    def setup_expectations
-      expect(subject).to receive(:notify_voice_request_url)
-    end
+      call_controller.run
 
-    def assert_adhearsion_twilio_handled!
-      setup_expectations
-      subject.run
+      expect(call_controller).to have_received(:notify_voice_request_url)
     end
-
-    before do
-      setup_scenario
-    end
-
-    it { assert_adhearsion_twilio_handled! }
   end
 end

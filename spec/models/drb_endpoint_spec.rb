@@ -1,109 +1,100 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe DrbEndpoint do
-  def setup_scenario
-  end
-
-  before do
-    setup_scenario
-  end
-
   describe "#initiate_outbound_call!(call_json)" do
-    let(:sample_call_json) { "{\"to\":\"#{call_json_to}\",\"from\":\"2442\",\"voice_url\":\"#{call_json_voice_url}\",\"voice_method\":\"#{call_json_voice_method}\",\"status_callback_url\":\"#{call_json_status_callback_url}\",\"status_callback_method\":\"#{call_json_status_callback_method}\",\"sid\":\"#{call_json_call_sid}\",\"account_sid\":\"#{call_json_account_sid}\",\"account_auth_token\":\"#{call_json_auth_token}\",\"direction\":\"#{call_json_direction}\",\"api_version\":\"#{call_json_api_version}\",\"routing_instructions\":{\"source\":\"2442\",\"destination\":\"+85512334667\"}}" }
+    it "initiates an outbound call" do
+      params = generate_call_params(
+        "to" => "+85512334667",
+        "from" => "2442",
+        "voice_url" => "https://rapidpro.ngrok.com/handle/33/",
+        "voice_method" => "GET",
+        "status_callback_url" => "https://rapidpro.ngrok.com/handle/33/",
+        "status_callback_method" => "POST",
+        "sid" => "sample-call-sid",
+        "account_sid" => "sample-account-sid",
+        "account_auth_token" => "sample-auth-token",
+        "direction" => "outbound-api",
+        "api_version" => "2010-04-01",
+        "routing_instructions" => {
+          "source" => "2442",
+          "destination" => "+85512334667",
+          "dial_string_format" => "sip/%{dial_string_path}/%{gateway_type}/%{gateway}/%{destination}@%{destination_host}/%{address}",
+          "gateway_type" => "external",
+          "gateway" => "my_gateway",
+          "destination_host" => "somleng.io",
+          "address" => "012345678",
+          "dial_string_path" => "path/to/dial_string"
+        }
+      )
 
-    let(:call_json) { sample_call_json }
-    let(:asserted_call_id) { call_id }
-    let(:call) { instance_double(Adhearsion::OutboundCall, :id => call_id) }
-    let(:call_id) { "becf0231-3028-4e10-8f40-e77ec6c8fd6d" }
+      stub_originate_call(id: "call-id")
+      drb_endpoint = described_class.new
 
-    let(:asserted_dial_string) { "+85512334667" }
-    let(:asserted_caller_id) { "2442" }
-    let(:asserted_call_controller) { CallController }
+      result = drb_endpoint.initiate_outbound_call!(params)
 
-    let(:call_json_voice_url) { "https://rapidpro.ngrok.com/handle/33/" }
-    let(:call_json_voice_method) { "GET" }
-    let(:call_json_status_callback_url) { "https://rapidpro.ngrok.com/handle/33/" }
-    let(:call_json_status_callback_method) { "POST" }
-    let(:call_json_to) { "+85512334667" }
-    let(:call_json_call_sid) { "91171124-2da9-40df-b21f-2531c895ff83" }
-    let(:call_json_auth_token) { "sample-auth-token" }
-    let(:call_json_account_sid) { "sample-call-sid" }
-    let(:call_json_direction) { "outbound-api" }
-    let(:call_json_api_version) { "2010-04-01" }
-
-    let(:asserted_voice_request_url) { call_json_voice_url }
-    let(:asserted_voice_request_method) { call_json_voice_method }
-    let(:asserted_call_sid) { call_json_call_sid }
-    let(:asserted_adhearsion_twilio_to) { call_json_to }
-    let(:asserted_adhearsion_twilio_from) { "+2442" }
-    let(:asserted_auth_token) { call_json_auth_token }
-    let(:asserted_account_sid) { call_json_account_sid }
-    let(:asserted_rest_api_enabled) { false }
-    let(:asserted_direction) { call_json_direction }
-    let(:asserted_api_version) { call_json_api_version }
-
-    let(:asserted_controller_metadata) do
-      {
-        :voice_request_url => asserted_voice_request_url,
-        :voice_request_method => asserted_voice_request_method,
-        :account_sid => asserted_account_sid,
-        :auth_token => asserted_auth_token,
-        :call_sid => asserted_call_sid,
-        :adhearsion_twilio_to => asserted_adhearsion_twilio_to,
-        :adhearsion_twilio_from => asserted_adhearsion_twilio_from,
-        :direction => asserted_direction,
-        :api_version => asserted_api_version,
-        :rest_api_enabled => asserted_rest_api_enabled
-      }
-    end
-
-    def setup_scenario
-      super
-      allow(Adhearsion::OutboundCall).to receive(:originate).and_return(call)
-      allow(call).to receive(:from).and_return(asserted_dial_string)
-      allow(call).to receive(:to).and_return(asserted_caller_id)
-    end
-
-    def setup_expectations
-      expect(Adhearsion::OutboundCall).to receive(:originate).with(
-        asserted_dial_string,
-        :from => asserted_caller_id,
-        :controller => CallController,
-        :controller_metadata => asserted_controller_metadata
+      expect(result).to eq("call-id")
+      expect(Adhearsion::OutboundCall).to have_received(:originate).with(
+        "sip/path/to/dial_string/external/my_gateway/+85512334667@somleng.io/012345678",
+        from: "2442",
+        controller: CallController,
+        controller_metadata: {
+          voice_request_url: "https://rapidpro.ngrok.com/handle/33/",
+          voice_request_method: "GET",
+          account_sid: "sample-account-sid",
+          auth_token: "sample-auth-token",
+          call_sid: "sample-call-sid",
+          adhearsion_twilio_to: "+85512334667",
+          adhearsion_twilio_from: "+2442",
+          direction: "outbound-api",
+          api_version: "2010-04-01",
+          rest_api_enabled: false
+        }
       )
     end
 
-    def assert_outbound_call!
-      setup_expectations
-      expect(subject.initiate_outbound_call!(call_json)).to eq(asserted_call_id)
+    it "does not initiate an outbound call if disable originate is set to 1" do
+      params = generate_call_params(
+        "routing_instructions" => { "disable_originate" => "1" }
+      )
+
+      stub_originate_call
+      drb_endpoint = described_class.new
+
+      result = drb_endpoint.initiate_outbound_call!(params)
+
+      expect(result).to eq(nil)
+      expect(Adhearsion::OutboundCall).not_to have_received(:originate)
     end
 
-    it { assert_outbound_call! }
+    def stub_originate_call(id: "becf0231-3028-4e10-8f40-e77ec6c8fd6d")
+      outbound_call = instance_double(Adhearsion::OutboundCall, id: id)
+      allow(Adhearsion::OutboundCall).to receive(:originate).and_return(outbound_call)
+    end
 
-    context "#routing_instructions" do
-      let(:call_params) { { "routing_instructions" => routing_instructions } }
-      let(:call_json) { JSON.parse(sample_call_json).merge(call_params).to_json }
-
-      context "dial_string_format" do
-        let(:routing_instructions) { { "dial_string_format" => "sip/%{dial_string_path}/%{gateway_type}/%{gateway}/%{destination}@%{destination_host}/%{address}", "gateway_type" => "external", "gateway" => "my_gateway", "destination" => "85512345678", "destination_host" => "somleng.io", "address" => "012345678", "dial_string_path" => "path/to/dial_string"} }
-
-        let(:asserted_dial_string) { "sip/path/to/dial_string/external/my_gateway/85512345678@somleng.io/012345678" }
-        let(:asserted_adhearsion_twilio_to) { "+85512345678" }
-
-        it { assert_outbound_call! }
-      end
-
-      context "disable_originate" do
-        let(:routing_instructions) { { "disable_originate" => disable_originate } }
-        let(:disable_originate) { "1" }
-        let(:asserted_call_id) { nil }
-
-        def setup_expectations
-          expect(Adhearsion::OutboundCall).not_to receive(:originate)
-        end
-
-        it { assert_outbound_call! }
-      end
+    def generate_call_params(options = {})
+      {
+        "to" => "+85512334667",
+        "from" => "2442",
+        "voice_url" => "https://rapidpro.ngrok.com/handle/33/",
+        "voice_method" => "GET",
+        "status_callback_url" => "https://rapidpro.ngrok.com/handle/33/",
+        "status_callback_method" => "POST",
+        "sid" => "sample-call-sid",
+        "account_sid" => "sample-account-sid",
+        "account_auth_token" => "sample-auth-token",
+        "direction" => "outbound-api",
+        "api_version" => "2010-04-01",
+        "routing_instructions" => {
+          "source" => "2442",
+          "destination" => "+85512334667",
+          "dial_string_format" => "sip/%{dial_string_path}/%{gateway_type}/%{gateway}/%{destination}@%{destination_host}/%{address}",
+          "gateway_type" => "external",
+          "gateway" => "my_gateway",
+          "destination_host" => "somleng.io",
+          "address" => "012345678",
+          "dial_string_path" => "path/to/dial_string"
+        }
+      }.merge(options).to_json
     end
   end
 end
