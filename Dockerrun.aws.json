@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "somleng",
-      "image": "dwilkie/somleng",
+      "image": "somleng/somleng-adhearsion",
       "essential": true,
       "memory": 950,
       "portMappings": [
