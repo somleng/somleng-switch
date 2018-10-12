@@ -4,7 +4,7 @@ class DrbEndpoint
   # the next time this DrbEndpoint is invoked it will use the previous instance variable
   # DRb is not thread safe!
 
-  DEFAULT_DIAL_STRING_FORMAT = "%{destination}".freeze
+  DEFAULT_DIAL_STRING_FORMAT = "sofia/%{dial_string_path}".freeze
 
   def initiate_outbound_call!(call_json)
     logger.info("Receiving DRb request: #{call_json}")
