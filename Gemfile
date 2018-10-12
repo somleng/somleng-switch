@@ -8,11 +8,8 @@ gem "somleng-twilio_http_client", github: "somleng/somleng-twilio_http_client"
 
 gem "adhearsion-drb", branch: :develop, github: "dwilkie/adhearsion-drb"
 
-group :development do
-  gem "foreman"
-end
-
 group :test do
+  gem "codecov", require: false
   gem "rack-test"
   gem "rspec"
   gem "simplecov", require: false

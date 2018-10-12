@@ -1,10 +1,16 @@
 language: ruby
+cache: bundler
+addons:
 env:
   global:
-    - START_SIMPLECOV=1
-addons:
-  code_climate:
-    repo_token:
-      secure: "riZtfOmLGpxlzZ9FBIpyJ6yVVznEeiRdRilUIF3SpY9Hq0ZiWlpklQZKM5piw6XI2VKfz/b59Nwc2fFFZfNKD2iHZAc546T6sVo07cGiZ5Rvz6DZA/11X2fQ90N3bjJs+vOTE9pAdtIqIqYdV7JtDVsDdcaU3R2Xhct4WmWKG94SMDKsPr74LDtZX8DfhZumwYWCEwpRzs4HSZ61/2+maxZqiRY4f3X47K2xnhBL53EE+mqyTxc+N7HowWrYBQlpOpHscBXwnHb6hnO63lC4FIa0M1ZXUKAY707Ixfv+cgvZq3Spjsp6KCAYIqa0EFa3Di21vxdya8S78Zr7OzGzswLBwDJ+rBy0jOEpleIcfC5OakLJw4mfog4jsOpNcDTHH/2yvYCw9iIFXkfU6ctOzXX6MyljtTJ7rKgnotOoa4zTxzcCqUcOALMQT5qaoxfj6VHu88epoJT8b09YVdwnz7w2rrvu5REF5XURWvoKuyA6WqPSH21R9WA9+Ec3zqdoJ5o0HRio2F4JYI/dxf7cLK53WzW7YhopuVdkzoCVY1H17NcAklDR7Lr8vxd0RhFT93w/ofWs+D/TAxmaJi7M/NSIvwKfeFRfhjb3NRort8Iv+QE/2zEovGGhahemTbUcJ+hRmgPN3+mYQUf0Q4AS60G4tecQBFTVFGS2/7Ky9pk="
+    - AWS_REGION=ap-southeast-1
+    - CC_TEST_REPORTER_ID=dda6e39fff92f03327b728944253d3a58162a83e69a45f10918750786309a26a
+    - CODECOV_TOKEN=cbfe3a70-5a7b-49c6-87d9-a955ec96900e
+before_install:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - gem install bundler
+before_script:
+  - ./cc-test-reporter before-build
 after_success:
-  - bundle exec codeclimate-test-reporter
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
