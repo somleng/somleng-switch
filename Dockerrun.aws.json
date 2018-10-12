@@ -12,20 +12,6 @@
           "containerPort": 9050,
           "protocol": "tcp"
         }
-      ],
-      "logConfiguration": {
-          "logDriver": "awslogs",
-          "options": {
-              "awslogs-group": "awslogs-adhearsion",
-              "awslogs-region": "ap-southeast-1",
-              "awslogs-stream-prefix": "awslogs-adhearsion"
-          }
-      },
-      "environment": [
-        {
-          "name": "ADHEARSION_CONFIG_S3_PATH",
-          "value": "s3://somlengsecrets/somleng_config.txt"
-        }
       ]
     }
   ]
