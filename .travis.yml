@@ -6,6 +6,7 @@ env:
     - AWS_REGION=ap-southeast-1
     - CC_TEST_REPORTER_ID=dda6e39fff92f03327b728944253d3a58162a83e69a45f10918750786309a26a
     - CODECOV_TOKEN=cbfe3a70-5a7b-49c6-87d9-a955ec96900e
+    - secure: "VehVchZV3gPboMqvMBsiFLqDvwFaFI1fPCWiwMsWDvh2y150jhDY3SBfSa25gSbfbJXb8Coyg+NBpCeHwZssoFXRd+3Ve7FTXasdHcHmxSkuuIGfY+iWWL4dfWgnB6k/A9ksGESUMsdHd7U4esC8CLlUDSsHYlbybYJZFCQKDLsqfpM+rFLhGlmCJknH6ewlgDOjwSjCYPjAPiba/TOIkHX6o0Q7rdZk/NvxHOg7klSTkr6YhCqp+jtkwSQhAoB3A6ZolbXCtoELkpzIDUkqTT1HUFU9p3+ZxHDxts7hcfJm6LYkA8O46Rq08ZK4SyWY3CkDdOi+YEIRdWSZnfSLD6aOfJhabIyHSc0g8hpD8fDo//nayImG2JNtFYcbs5rqffAbitv3w3wDjA5DLLMOLe05bJHqGw5BlVDwJRKqRIn16Ty7Ihzj6NLKqD87O3PBbpNbtwOWLdBBqYpi9i91G2gpBwu7fJRsh7r1uBLDmlCt+GIcuEsC2k+nKO1S1bv2TZMrIW8OkSyI6WobYXcgpUS7n8HnTEt0a+of6bpgmo1b6p6xGjh8oTD2MVQ7HCBvxp8iH9ZcosCgDPR446hheXMfA4EnwrFbpJpMUzrpX3rr4vjYQ9VFUKGMiI1dmJVmx4BUE7pwvkUq1RDZ1fnPOgL0vk7B9DFESg0IpQSMRpw="
 before_install:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
