@@ -26,7 +26,7 @@ deploy:
   - provider: elasticbeanstalk
     app: somleng-adhearsion
     env: somleng-adhearsion-webserver
+    region: ap-southeast-1
     bucket_name: deploy.somleng.org
     on:
-      repo: somleng/somleng
       branch: master
