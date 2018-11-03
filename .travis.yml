@@ -14,3 +14,12 @@ before_script:
   - ./cc-test-reporter before-build
 after_success:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+deploy:
+  - provider: elasticbeanstalk
+    region: ap-southeast-1
+    app: somleng-adhearsion
+    env: somleng-adhearsion-webserver
+    bucket_name: deploy.somleng.org
+    on:
+      repo: somleng/somleng
+      branch: master
