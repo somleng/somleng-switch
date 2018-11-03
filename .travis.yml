@@ -1,12 +1,16 @@
 language: ruby
 cache: bundler
-addons:
+services:
+  - docker
 env:
   global:
     - AWS_REGION=ap-southeast-1
     - CC_TEST_REPORTER_ID=dda6e39fff92f03327b728944253d3a58162a83e69a45f10918750786309a26a
     - CODECOV_TOKEN=cbfe3a70-5a7b-49c6-87d9-a955ec96900e
+    # AWS Deployment Credentials
     - secure: "VehVchZV3gPboMqvMBsiFLqDvwFaFI1fPCWiwMsWDvh2y150jhDY3SBfSa25gSbfbJXb8Coyg+NBpCeHwZssoFXRd+3Ve7FTXasdHcHmxSkuuIGfY+iWWL4dfWgnB6k/A9ksGESUMsdHd7U4esC8CLlUDSsHYlbybYJZFCQKDLsqfpM+rFLhGlmCJknH6ewlgDOjwSjCYPjAPiba/TOIkHX6o0Q7rdZk/NvxHOg7klSTkr6YhCqp+jtkwSQhAoB3A6ZolbXCtoELkpzIDUkqTT1HUFU9p3+ZxHDxts7hcfJm6LYkA8O46Rq08ZK4SyWY3CkDdOi+YEIRdWSZnfSLD6aOfJhabIyHSc0g8hpD8fDo//nayImG2JNtFYcbs5rqffAbitv3w3wDjA5DLLMOLe05bJHqGw5BlVDwJRKqRIn16Ty7Ihzj6NLKqD87O3PBbpNbtwOWLdBBqYpi9i91G2gpBwu7fJRsh7r1uBLDmlCt+GIcuEsC2k+nKO1S1bv2TZMrIW8OkSyI6WobYXcgpUS7n8HnTEt0a+of6bpgmo1b6p6xGjh8oTD2MVQ7HCBvxp8iH9ZcosCgDPR446hheXMfA4EnwrFbpJpMUzrpX3rr4vjYQ9VFUKGMiI1dmJVmx4BUE7pwvkUq1RDZ1fnPOgL0vk7B9DFESg0IpQSMRpw="
+    # Docker Credentials
+    - secure: "td6SwugAaYQJ7Go/oNhBLerAm5Y3NJ5l+BWHT6eoFOm5IkGvwgOh1LiW9O5MYgt0Gn3ozLtiZ8fwsO8Hj9EnhQYXZjRgdSAH3FqQmAcYl8y3mLxbH345BOxJgAlsrXD+zl9ogTGopGgQbSDS42yZ1VvTLv/ygQveTXuqYbA6MJEuBVUc6cJ63UyNfyyZdW5gkL2zt8CPaEBYv5zDFkzZ6shx9RHqtL17jJ5RgDAuVmgeEs+ny7pIWKVYS9w7QnSrFlamkqQo+gmyaU9Rr5zZYvijR3EFtXrWPImM2T/PNomM3F+SV0MiF2pP3Fx0FClrnux3UGYwX/wVDErxABt2hsTCJiCa8BK8N87ivbbwiVtS/F/SEPehO8CXOwgxM4kFApyZepIyOm9lLV1lw/QyMbhU1yzM4DYI/LpZ02/2MHOA1K+kFQdIXYGIc+DR+qts6DQUlz0wvrEQl9y1JrlGU22H+KP0KRD9FFLeAMBX0Nvhz98V3w4LFixbE4vjlHo0nGZIiOZOY49u+KBRM1UDRWBtGJgXHcaR+NSchiJOVQ/kbouNA/j/4Yk1BqLaJN9ceNa3rVLf3KZPSDKKRFFDoYFPEJHuy9Kni0iSHM0eV7dEHpzk3ac2S1S0xnFKcfz2xl7UPkn9x8nlDdaoG6WuEootcs6bxPnTDyt6Vb9uJvs="
 before_install:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
@@ -15,6 +19,9 @@ before_script:
   - ./cc-test-reporter before-build
 after_success:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t somleng/somleng-adhearsion:latest .
+  - docker push somleng/somleng-adhearsion
 deploy:
   - provider: elasticbeanstalk
     app: somleng-adhearsion
