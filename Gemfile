@@ -2,7 +2,6 @@ source "https://rubygems.org"
 
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-gem "eventmachine", require: "em/pure_ruby"
 gem "adhearsion", github: "adhearsion/adhearsion", branch: "develop"
 gem "adhearsion-twilio", github: "somleng/adhearsion-twilio"
 gem "somleng-twilio_http_client", github: "somleng/somleng-twilio_http_client"

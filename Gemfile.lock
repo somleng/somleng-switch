@@ -213,7 +213,6 @@ DEPENDENCIES
   adhearsion-drb!
   adhearsion-twilio!
   codecov
-  eventmachine
   rack-test
   rspec
   simplecov

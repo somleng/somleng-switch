@@ -2,6 +2,10 @@ language: ruby
 cache: bundler
 services:
 - docker
+addons:
+  apt:
+    packages:
+      - docker-ce
 env:
   global:
   - AWS_REGION=ap-southeast-1
