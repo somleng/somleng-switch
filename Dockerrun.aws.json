@@ -12,7 +12,15 @@
           "containerPort": 9050,
           "protocol": "tcp"
         }
-      ]
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/aws/elasticbeanstalk/somleng-adhearsion-webserver/var/log/containers/adhearsion.log",
+          "awslogs-region": "ap-southeast-1",
+          "awslogs-stream-prefix": "awslogs-adhearsion"
+        }
+      }
     }
   ]
 }
