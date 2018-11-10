@@ -25,7 +25,7 @@ before_script:
 after_success:
 - "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-- docker build -t somleng/somleng-adhearsion:latest .
+- docker build -t somleng/somleng-adhearsion:latest "https://github.com/$TRAVIS_REPO_SLUG.git#$TRAVIS_BRANCH"
 - docker push somleng/somleng-adhearsion
 deploy:
 - provider: elasticbeanstalk
