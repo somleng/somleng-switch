@@ -16,9 +16,9 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-create-group": true,
           "awslogs-group": "/aws/elasticbeanstalk/somleng-adhearsion-webserver/var/log/containers/adhearsion.log",
-          "awslogs-region": "ap-southeast-1"
+          "awslogs-region": "ap-southeast-1",
+          "awslogs-stream-prefix": "awslogs-adhearsion"
         }
       }
     }
