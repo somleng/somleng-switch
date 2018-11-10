@@ -213,6 +213,7 @@ DEPENDENCIES
   adhearsion-drb!
   adhearsion-twilio!
   codecov
+  eventmachine
   rack-test
   rspec
   simplecov
@@ -221,4 +222,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   1.16.2
+   1.17.1
