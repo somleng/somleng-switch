@@ -5,14 +5,22 @@
       "name": "somleng",
       "image": "somleng/somleng-adhearsion",
       "essential": true,
-      "memory": 950,
+      "memoryReservation": 1024,
       "portMappings": [
         {
           "hostPort": 9050,
           "containerPort": 9050,
           "protocol": "tcp"
         }
-      ]
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-create-group": true,
+          "awslogs-group": "/aws/elasticbeanstalk/somleng-adhearsion-webserver/adhearsion.log",
+          "awslogs-region": "ap-southeast-1"
+        }
+      }
     }
   ]
 }
