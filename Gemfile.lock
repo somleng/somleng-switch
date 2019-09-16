@@ -176,7 +176,7 @@ GEM
       activesupport (>= 3.0.7, < 5.0.0)
       nokogiri (~> 1.8, >= 1.8.3)
     safe_yaml (1.0.5)
-    simplecov (0.17.0)
+    simplecov (0.17.1)
       docile (~> 1.1)
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
