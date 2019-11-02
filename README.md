@@ -1,6 +1,6 @@
 # Somleng-Adhearsion
 
-[![Build Status](https://travis-ci.org/somleng/somleng.svg?branch=master)](https://travis-ci.org/somleng/somleng)
+[![CircleCI](https://circleci.com/gh/somleng/somleng-adhearsion.svg?style=svg)](https://circleci.com/gh/somleng/somleng-adhearsion)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/2e82d67a505f29bbf1dc/test_coverage)](https://codeclimate.com/github/somleng/somleng-adhearsion/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/2e82d67a505f29bbf1dc/maintainability)](https://codeclimate.com/github/somleng/somleng-adhearsion/maintainability)
 
