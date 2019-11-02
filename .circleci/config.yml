@@ -4,33 +4,34 @@ orbs:
 executors:
   build_environment:
     docker:
-      - image: circleci/ruby:2.5
+      - image: circleci/ruby:2.6
         environment:
           BUNDLE_JOBS: 3
           BUNDLE_RETRY: 3
           BUNDLE_PATH: vendor/bundle
           RAILS_ENV: test
 
-  deploy_environment:
+  docker_deploy_environment:
     docker:
-      - image: circleci/ruby:2.5
-        environment:
-          BUNDLE_JOBS: 3
-          BUNDLE_RETRY: 3
-          BUNDLE_PATH: vendor/bundle
+      - image: circleci/buildpack-deps:buster
+
+  app_deploy_environment:
+    docker:
+      - image: circleci/ruby:2.6
 
 jobs:
   build_somleng_adhearsion:
-    working_directory: ~/somleng-adhearsion
     executor:
       name: build_environment
+
+    working_directory: ~/somleng-adhearsion
 
     steps:
       - checkout
       - install_dependencies
 
       - bundle_install:
-          cache_name: somleng-adhearsion-deps
+          cache_name: somleng-adhearsion-deps-v2
 
       - run:
           name: Run Specs
@@ -40,11 +41,32 @@ jobs:
           name: Upload Test Coverage
           path: coverage
 
-  deploy_production:
+  deploy_docker_image:
+    executor:
+      name: docker_deploy_environment
+
     working_directory: ~/somleng-adhearsion
 
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - run:
+          name: Build Docker Image
+          command: |
+              docker build -t somleng/somleng-adhearsion:latest "$CIRCLE_REPOSITORY_URL#$CIRCLE_BRANCH"
+
+      - run:
+          name: Deploy Docker Image
+          command: |
+              echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
+              docker push somleng/somleng-adhearsion
+
+  deploy_production:
     executor:
-      name: deploy_environment
+      name: app_deploy_environment
+
+    working_directory: ~/somleng-adhearsion
 
     steps:
       - aws-cli/install
@@ -58,7 +80,7 @@ jobs:
               echo "export DEPLOY_SESSION_TOKEN='$(echo $deploy_role | jq .Credentials.SessionToken | xargs)'" >> $BASH_ENV
 
       - checkout
-      - install_dependencies
+      - upgrade_bundler
       - bundle_source
 
       - run:
@@ -116,28 +138,12 @@ commands:
 
   bundle_source:
     steps:
-      - install_dependencies
-      - bundle_install:
-          cache_name: somleng-adhearsion-deps
-
-      # Re-run bundle without development and test
-      - run:
-          name: Bundle Install
-          command: |
-            bundle install --without test:development
-
-      - run:
-          name: Package Gems
-          command: |
-            bundle package
-
       - run:
           name: "Bundle source code"
           command: |
               SOURCE_BUNDLE="$(git rev-parse HEAD)-$(date +%s).zip" && \
               echo "export SOURCE_BUNDLE=$SOURCE_BUNDLE" >> $BASH_ENV && \
-              git archive -o $SOURCE_BUNDLE --format=zip HEAD && \
-              zip -ur $SOURCE_BUNDLE vendor/cache
+              git archive -o $SOURCE_BUNDLE --format=zip HEAD
 
 workflows:
   version: 2
@@ -157,10 +163,18 @@ workflows:
     jobs:
       - build_somleng_adhearsion:
           context: Somleng
+      - deploy_docker_image:
+          context: Somleng
+          requires:
+            - build_somleng_adhearsion
+          filters:
+            branches:
+              only: master
       - deploy_production:
           context: Somleng
           requires:
             - build_somleng_adhearsion
+            - deploy_docker_image
           filters:
             branches:
               only: master

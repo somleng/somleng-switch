@@ -1,11 +1,12 @@
 FROM ruby:latest
-MAINTAINER dwilkie <dwilkie@gmail.com>
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 ADD Gemfile /usr/src/app/Gemfile
 ADD Gemfile.lock /usr/src/app/Gemfile.lock
+RUN gem update --system
+RUN gem install bundler
 RUN bundle install --deployment --without development test
 ADD . /usr/src/app
 
