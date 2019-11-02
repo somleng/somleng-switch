@@ -163,4 +163,4 @@ workflows:
             - build_somleng_adhearsion
           filters:
             branches:
-              only: upgrades
+              only: master
