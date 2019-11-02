@@ -40,6 +40,33 @@ jobs:
           name: Upload Test Coverage
           path: coverage
 
+  deploy_production:
+    working_directory: ~/somleng-adhearsion
+
+    executor:
+      name: deploy_environment
+
+    steps:
+      - aws-cli/install
+      - aws-cli/configure
+      - run:
+          name: Assume Role
+          command: |
+              deploy_role=$(aws sts assume-role --role-arn "$AWS_DEPLOY_ROLE_ARN" --role-session-name "Deploy") && \
+              echo "export DEPLOY_ACCESS_KEY_ID='$(echo $deploy_role | jq .Credentials.AccessKeyId | xargs)'" >> $BASH_ENV && \
+              echo "export DEPLOY_SECRET_ACCESS_KEY='$(echo $deploy_role | jq .Credentials.SecretAccessKey | xargs)'" >> $BASH_ENV && \
+              echo "export DEPLOY_SESSION_TOKEN='$(echo $deploy_role | jq .Credentials.SessionToken | xargs)'" >> $BASH_ENV
+
+      - checkout
+      - install_dependencies
+      - bundle_source
+
+      - run:
+          name: Deploy Production
+          command: |
+              ./.circleci/deploy/eb_deploy create_app_version -a somleng-adhearsion -b $AWS_DEPLOY_BUCKET_NAME -c $CIRCLE_SHA1 -s $SOURCE_BUNDLE --access-key-id "$DEPLOY_ACCESS_KEY_ID" --secret-access-key "$DEPLOY_SECRET_ACCESS_KEY" --session-token "$DEPLOY_SESSION_TOKEN"
+              ./.circleci/deploy/eb_deploy -s $SOURCE_BUNDLE -e somleng-adhearsion-webserver --access-key-id "$DEPLOY_ACCESS_KEY_ID" --secret-access-key "$DEPLOY_SECRET_ACCESS_KEY" --session-token "$DEPLOY_SESSION_TOKEN"
+
 commands:
   install_dependencies:
     steps:
@@ -87,6 +114,31 @@ commands:
           paths:
             - << parameters.cache_path >>
 
+  bundle_source:
+    steps:
+      - install_dependencies
+      - bundle_install:
+          cache_name: somleng-adhearsion-deps
+
+      # Re-run bundle without development and test
+      - run:
+          name: Bundle Install
+          command: |
+            bundle install --without test:development
+
+      - run:
+          name: Package Gems
+          command: |
+            bundle package
+
+      - run:
+          name: "Bundle source code"
+          command: |
+              SOURCE_BUNDLE="$(git rev-parse HEAD)-$(date +%s).zip" && \
+              echo "export SOURCE_BUNDLE=$SOURCE_BUNDLE" >> $BASH_ENV && \
+              git archive -o $SOURCE_BUNDLE --format=zip HEAD && \
+              zip -ur $SOURCE_BUNDLE vendor/cache
+
 workflows:
   version: 2
   nightly:
@@ -105,3 +157,10 @@ workflows:
     jobs:
       - build_somleng_adhearsion:
           context: Somleng
+      - deploy_production:
+          context: Somleng
+          requires:
+            - build_somleng_adhearsion
+          filters:
+            branches:
+              only: upgrades
