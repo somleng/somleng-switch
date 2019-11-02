@@ -63,6 +63,7 @@ GEM
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
     adhearsion-loquacious (1.9.3)
+    ast (2.4.0)
     axiom-types (0.1.1)
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
@@ -118,6 +119,7 @@ GEM
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
+    jaro_winkler (1.5.4)
     json (2.2.0)
     little-plugger (1.1.4)
     logging (2.2.2)
@@ -139,6 +141,9 @@ GEM
     nio4r (2.5.2)
     nokogiri (1.10.4)
       mini_portile2 (~> 2.4.0)
+    parallel (1.18.0)
+    parser (2.6.5.0)
+      ast (~> 2.4.0)
     pry (0.12.2)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
@@ -146,6 +151,7 @@ GEM
     rack (2.0.7)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
+    rainbow (3.0.0)
     rake (13.0.0)
     reel (0.6.1)
       celluloid (>= 0.15.1)
@@ -169,6 +175,18 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.9.0)
     rspec-support (3.9.0)
+    rubocop (0.76.0)
+      jaro_winkler (~> 1.5.1)
+      parallel (~> 1.10)
+      parser (>= 2.6)
+      rainbow (>= 2.2.2, < 4.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 1.4.0, < 1.7)
+    rubocop-performance (1.5.0)
+      rubocop (>= 0.71.0)
+    rubocop-rspec (1.36.0)
+      rubocop (>= 0.68.1)
+    ruby-progressbar (1.10.1)
     ruby_ami (2.4.0)
       celluloid-io (~> 0.13)
     ruby_jid (1.0.0)
@@ -193,6 +211,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.6)
+    unicode-display_width (1.6.0)
     url (0.3.2)
     vcr (5.0.0)
     virtus (1.0.5)
@@ -218,10 +237,13 @@ DEPENDENCIES
   codecov
   rack-test
   rspec
+  rubocop
+  rubocop-performance
+  rubocop-rspec
   simplecov
   somleng-twilio_http_client!
   vcr
   webmock
 
 BUNDLED WITH
-   1.17.1
+   2.0.2

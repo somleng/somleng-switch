@@ -8,6 +8,12 @@ gem "somleng-twilio_http_client", github: "somleng/somleng-twilio_http_client"
 
 gem "adhearsion-drb", branch: :develop, github: "dwilkie/adhearsion-drb"
 
+group :development, :test do
+  gem "rubocop"
+  gem "rubocop-performance"
+  gem "rubocop-rspec"
+end
+
 group :test do
   gem "codecov", require: false
   gem "rack-test"

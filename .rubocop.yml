@@ -1,4 +1,6 @@
-require: rubocop-rspec
+require:
+  - rubocop-rspec
+  - rubocop-performance
 
 Style/FrozenStringLiteralComment:
   Enabled: false
@@ -10,4 +12,7 @@ Metrics/LineLength:
   Max: 100
 
 Style/Documentation:
+  Enabled: false
+
+RSpec/DescribedClass:
   Enabled: false

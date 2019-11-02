@@ -1,0 +1,114 @@
+version: 2.1
+orbs:
+  aws-cli: circleci/aws-cli@0.1.15
+executors:
+  build_environment:
+    docker:
+      - image: circleci/ruby:2.5
+        environment:
+          BUNDLE_JOBS: 3
+          BUNDLE_RETRY: 3
+          BUNDLE_PATH: vendor/bundle
+          RAILS_ENV: test
+
+  deploy_environment:
+    docker:
+      - image: circleci/ruby:2.5
+        environment:
+          BUNDLE_JOBS: 3
+          BUNDLE_RETRY: 3
+          BUNDLE_PATH: vendor/bundle
+
+jobs:
+  build_somleng_adhearsion:
+    working_directory: ~/somleng-adhearsion
+    executor:
+      name: build_environment
+
+    steps:
+      - checkout
+      - install_dependencies
+
+      - bundle_install:
+          cache_name: somleng-adhearsion-deps
+
+      - run:
+          name: Run Specs
+          command: bundle exec rspec spec
+
+      - store_artifacts:
+          name: Upload Test Coverage
+          path: coverage
+
+commands:
+  install_dependencies:
+    steps:
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo apt-get install cmake
+
+  upgrade_bundler:
+    steps:
+      - run:
+          name: Upgrade Bundler
+          command: |
+            gem update --system
+            gem install bundler
+
+  bundle_install:
+    parameters:
+      cache_name:
+        type: string
+      cache_path:
+        type: string
+        default: "vendor/bundle"
+      yarn_cache_path:
+        type: string
+        default: "~/.cache/yarn"
+      yarn_install:
+        type: boolean
+        default: true
+
+    steps:
+      - upgrade_bundler
+      - restore_cache:
+          keys:
+            - << parameters.cache_name >>-{{ checksum "Gemfile.lock" }}
+            - << parameters.cache_name >>-
+
+      - run:
+          name: Bundle Install
+          command: |
+              bundle install
+
+      - save_cache:
+          key: << parameters.cache_name >>-{{ checksum "Gemfile.lock" }}
+          paths:
+            - << parameters.cache_path >>
+
+workflows:
+  version: 2
+  nightly:
+    triggers:
+      - schedule:
+         cron: "0 0 * * *"
+         filters:
+           branches:
+             only:
+               - develop
+               - master
+    jobs:
+      - build_somleng_adhearsion
+
+  build-deploy:
+    jobs:
+      - build_somleng_adhearsion:
+          context: Somleng
+      - deploy_production:
+          context: Somleng
+          requires:
+            - build_somleng_adhearsion
+          filters:
+            branches:
+              only: master
