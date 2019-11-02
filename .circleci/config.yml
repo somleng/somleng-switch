@@ -52,10 +52,14 @@ jobs:
       - setup_remote_docker
 
       - run:
-          name: Push Image
+          name: Build Docker Image
+          command: |
+              docker build -t somleng/somleng-adhearsion:latest "$CIRCLE_REPOSITORY_URL#$CIRCLE_BRANCH"
+
+      - run:
+          name: Deploy Docker Image
           command: |
               echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
-              docker build -t somleng/somleng-adhearsion:latest "$CIRCLE_REPOSITORY_URL#$CIRCLE_BRANCH"
               docker push somleng/somleng-adhearsion
 
   deploy_production:
@@ -76,6 +80,7 @@ jobs:
               echo "export DEPLOY_SESSION_TOKEN='$(echo $deploy_role | jq .Credentials.SessionToken | xargs)'" >> $BASH_ENV
 
       - checkout
+      - upgrade_bundler
       - bundle_source
 
       - run:
