@@ -13,17 +13,14 @@ executors:
 
   deploy_environment:
     docker:
-      - image: circleci/ruby:2.5
-        environment:
-          BUNDLE_JOBS: 3
-          BUNDLE_RETRY: 3
-          BUNDLE_PATH: vendor/bundle
+      - image: circleci/buildpack-deps:buster
 
 jobs:
   build_somleng_adhearsion:
-    working_directory: ~/somleng-adhearsion
     executor:
       name: build_environment
+
+    working_directory: ~/somleng-adhearsion
 
     steps:
       - checkout
@@ -40,11 +37,28 @@ jobs:
           name: Upload Test Coverage
           path: coverage
 
-  deploy_production:
-    working_directory: ~/somleng-adhearsion
-
+  deploy_docker_image:
     executor:
       name: deploy_environment
+
+    working_directory: ~/somleng-adhearsion
+
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - run:
+          name: Push Image
+          command: |
+              echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
+              docker build -t somleng/somleng-adhearsion:latest "$CIRCLE_REPOSITORY_URL#$CIRCLE_BRANCH"
+              docker push somleng/somleng-adhearsion
+
+  deploy_production:
+    executor:
+      name: deploy_environment
+
+    working_directory: ~/somleng-adhearsion
 
     steps:
       - aws-cli/install
@@ -58,7 +72,6 @@ jobs:
               echo "export DEPLOY_SESSION_TOKEN='$(echo $deploy_role | jq .Credentials.SessionToken | xargs)'" >> $BASH_ENV
 
       - checkout
-      - install_dependencies
       - bundle_source
 
       - run:
@@ -116,28 +129,12 @@ commands:
 
   bundle_source:
     steps:
-      - install_dependencies
-      - bundle_install:
-          cache_name: somleng-adhearsion-deps
-
-      # Re-run bundle without development and test
-      - run:
-          name: Bundle Install
-          command: |
-            bundle install --without test:development
-
-      - run:
-          name: Package Gems
-          command: |
-            bundle package
-
       - run:
           name: "Bundle source code"
           command: |
               SOURCE_BUNDLE="$(git rev-parse HEAD)-$(date +%s).zip" && \
               echo "export SOURCE_BUNDLE=$SOURCE_BUNDLE" >> $BASH_ENV && \
-              git archive -o $SOURCE_BUNDLE --format=zip HEAD && \
-              zip -ur $SOURCE_BUNDLE vendor/cache
+              git archive -o $SOURCE_BUNDLE --format=zip HEAD
 
 workflows:
   version: 2
@@ -157,10 +154,18 @@ workflows:
     jobs:
       - build_somleng_adhearsion:
           context: Somleng
-      - deploy_production:
+      - deploy_docker_image:
           context: Somleng
           requires:
             - build_somleng_adhearsion
           filters:
             branches:
-              only: master
+              only: build_docker
+      - deploy_production:
+          context: Somleng
+          requires:
+            - build_somleng_adhearsion
+            - deploy_docker_image
+          filters:
+            branches:
+              only: build_docker
