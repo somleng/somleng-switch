@@ -4,7 +4,7 @@ orbs:
 executors:
   build_environment:
     docker:
-      - image: circleci/ruby:2.5
+      - image: circleci/ruby:2.6
         environment:
           BUNDLE_JOBS: 3
           BUNDLE_RETRY: 3
