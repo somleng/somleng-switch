@@ -11,9 +11,13 @@ executors:
           BUNDLE_PATH: vendor/bundle
           RAILS_ENV: test
 
-  deploy_environment:
+  docker_deploy_environment:
     docker:
       - image: circleci/buildpack-deps:buster
+
+  app_deploy_environment:
+    docker:
+      - image: circleci/ruby:2.6
 
 jobs:
   build_somleng_adhearsion:
@@ -27,7 +31,7 @@ jobs:
       - install_dependencies
 
       - bundle_install:
-          cache_name: somleng-adhearsion-deps
+          cache_name: somleng-adhearsion-deps-v2
 
       - run:
           name: Run Specs
@@ -39,7 +43,7 @@ jobs:
 
   deploy_docker_image:
     executor:
-      name: deploy_environment
+      name: docker_deploy_environment
 
     working_directory: ~/somleng-adhearsion
 
@@ -56,7 +60,7 @@ jobs:
 
   deploy_production:
     executor:
-      name: deploy_environment
+      name: app_deploy_environment
 
     working_directory: ~/somleng-adhearsion
 
