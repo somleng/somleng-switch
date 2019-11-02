@@ -169,7 +169,7 @@ workflows:
             - build_somleng_adhearsion
           filters:
             branches:
-              only: build_docker
+              only: master
       - deploy_production:
           context: Somleng
           requires:
@@ -177,4 +177,4 @@ workflows:
             - deploy_docker_image
           filters:
             branches:
-              only: build_docker
+              only: master
