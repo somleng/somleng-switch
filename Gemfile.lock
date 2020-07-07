@@ -79,13 +79,14 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    codecov (0.1.17)
+    codecov (0.1.19)
+      colorize
       json
       simplecov
-      url
     coderay (1.1.2)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
+    colorize (0.8.1)
     concurrent-ruby (1.1.6)
     countdownlatch (1.0.0)
     crack (0.4.3)
@@ -124,7 +125,7 @@ GEM
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
-    json (2.3.0)
+    json (2.3.1)
     little-plugger (1.1.4)
     logging (2.2.2)
       little-plugger (~> 1.1)
@@ -221,7 +222,6 @@ GEM
       unf_ext
     unf_ext (0.0.7.7)
     unicode-display_width (1.7.0)
-    url (0.3.2)
     vcr (6.0.0)
     virtus (1.0.5)
       axiom-types (~> 0.1)
