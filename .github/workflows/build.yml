@@ -54,6 +54,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/upgrade_infrastructure'
+    env:
+      GITHUB_ACTION: "deploy-somleng-adhearsion"
 
     strategy:
       matrix:
@@ -67,7 +69,7 @@ jobs:
 
       - name: Configure AWS credentials
         if: github.ref == matrix.app_env.branch
-        uses: sauln/configure-aws-credentials@c7bd6e7b2bfd7271f2127c2e85460310916a98d3
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
