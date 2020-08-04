@@ -212,6 +212,7 @@ GEM
       docile (~> 1.1)
       simplecov-html (~> 0.11)
     simplecov-html (0.12.2)
+    simplecov-lcov (0.8.0)
     state_machine (1.2.0)
     sucker_punch (2.1.2)
       concurrent-ruby (~> 1.0)
@@ -253,6 +254,7 @@ DEPENDENCIES
   rubocop-rspec
   shoryuken
   simplecov
+  simplecov-lcov
   somleng-twilio_http_client!
   vcr
   webmock

@@ -1,9 +1,8 @@
-if ENV["CI"]
+if ENV.key?("CI")
   require "simplecov"
-  SimpleCov.start
-
-  require "codecov"
-  SimpleCov.formatter = SimpleCov::Formatter::Codecov
+  require "simplecov-lcov"
+  SimpleCov.formatter = SimpleCov::Formatter::LcovFormatter
+  SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
 end
 
 ENV["AHN_ENV"] ||= "test"
@@ -12,7 +11,7 @@ require "adhearsion/rspec"
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
-Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each { |f| require f }
+Dir[File.dirname(__FILE__) + "/support/**/*.rb"].sort.each { |f| require f }
 
 RSpec.configure do |config|
   # ## Mock Framework
