@@ -1,0 +1,2 @@
+class OutboundCallWorker < ApplicationWorker
+end

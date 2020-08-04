@@ -56,6 +56,18 @@ GEM
       public_suffix (>= 2.0.2, < 5.0)
     adhearsion-loquacious (1.9.3)
     ast (2.4.1)
+    aws-eventstream (1.1.0)
+    aws-partitions (1.350.0)
+    aws-sdk-core (3.104.3)
+      aws-eventstream (~> 1, >= 1.0.2)
+      aws-partitions (~> 1, >= 1.239.0)
+      aws-sigv4 (~> 1.1)
+      jmespath (~> 1.0)
+    aws-sdk-sqs (1.30.0)
+      aws-sdk-core (~> 3, >= 3.99.0)
+      aws-sigv4 (~> 1.1)
+    aws-sigv4 (1.2.1)
+      aws-eventstream (~> 1, >= 1.0.2)
     axiom-types (0.1.1)
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
@@ -112,6 +124,7 @@ GEM
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
+    jmespath (1.4.0)
     little-plugger (1.1.4)
     logging (2.3.0)
       little-plugger (~> 1.1)
@@ -191,6 +204,10 @@ GEM
       activesupport (>= 3.0.7, < 5.0.0)
       nokogiri (~> 1.8, >= 1.8.3)
     safe_yaml (1.0.5)
+    shoryuken (5.0.4)
+      aws-sdk-core (>= 2)
+      concurrent-ruby
+      thor
     simplecov (0.18.5)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
@@ -228,11 +245,13 @@ PLATFORMS
 DEPENDENCIES
   adhearsion!
   adhearsion-twilio!
+  aws-sdk-sqs
   rack-test
   rspec
   rubocop
   rubocop-performance
   rubocop-rspec
+  shoryuken
   simplecov
   somleng-twilio_http_client!
   vcr

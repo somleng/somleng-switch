@@ -1,6 +1,6 @@
 require:
-  - rubocop-rspec
   - rubocop-performance
+  - rubocop-rspec
 
 Style/FrozenStringLiteralComment:
   Enabled: false
@@ -8,11 +8,45 @@ Style/FrozenStringLiteralComment:
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 100
+  Exclude:
+    - app/views/**/*.html.haml
 
 Style/Documentation:
   Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: true
+  Exclude:
+    - "**/spec/**/*.rb"
+
+Style/BlockDelimiters:
+  Enabled: true
+  Exclude:
+    - "**/spec/**/*.rb"
+
+Style/NumericLiterals:
+  Enabled: false
+
+Style/FormatStringToken:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Max: 30
+
+RSpec/DescribeClass:
+  Enabled: true
+  Exclude:
+    - "**/spec/system/**/*.rb"
+    - "**/spec/requests/**/*.rb"
+    - "**/spec/views/**/*.rb"
 
 RSpec/DescribedClass:
   Enabled: false

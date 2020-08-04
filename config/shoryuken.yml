@@ -1,0 +1,5 @@
+aws:
+  receive_message:
+    wait_time_seconds: 20
+queues:
+  - [<%= ENV.fetch("AWS_SQS_DEFAULT_QUEUE_NAME", "default") %>, 10]

@@ -2,6 +2,8 @@ source "https://rubygems.org"
 
 gem "adhearsion", github: "adhearsion/adhearsion", branch: "develop"
 gem "adhearsion-twilio", github: "somleng/adhearsion-twilio"
+gem "aws-sdk-sqs"
+gem "shoryuken"
 gem "somleng-twilio_http_client", github: "somleng/somleng-twilio_http_client"
 
 group :development, :test do
