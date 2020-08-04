@@ -1,15 +1,11 @@
 .git
 .circleci
-.ebextensions
 .bundle
 coverage
-doc
+docs
 docker
 infrastructure
 log
-node_modules
-service
 spec
-storage
 tmp
 vendor/bundle

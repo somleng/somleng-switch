@@ -5,7 +5,7 @@ ENV BUNDLE_APP_CONFIG="/app/.bundle"
 
 RUN apk update && \
     apk upgrade && \
-    apk add --update --no-cache build-base git && \
+    apk add --update --no-cache build-base git pcre-dev && \
     gem install bundler
 
 RUN mkdir -p $APP_ROOT
@@ -32,10 +32,9 @@ WORKDIR $APP_ROOT
 
 RUN apk update && \
     apk upgrade && \
-    apk add --update --no-cache build-base postgresql-dev && \
+    apk add --update --no-cache build-base pcre-dev && \
     gem install bundler
 
 COPY --from=build-env $APP_ROOT $APP_ROOT
 
-EXPOSE 3000
-CMD ["bundle", "exec", "ahn"]
+CMD ["bundle", "exec", "ahn", "start", "--no-console"]
