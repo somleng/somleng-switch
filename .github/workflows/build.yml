@@ -58,7 +58,7 @@ jobs:
     strategy:
       matrix:
         app_env:
-          - { identifier: 'somleng-adhearsion', name: 'production', branch: 'refs/heads/master' }
+          - { identifier: 'somleng-adhearsion', name: 'production', branch: 'refs/heads/upgrade_infrastructure' }
 
     steps:
       - name: Checkout
