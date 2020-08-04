@@ -6,10 +6,13 @@ log/*.log
 tmp
 vendor/ruby
 
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
-
 # SimpleCov
 coverage
+
+.idea
+
+# terraform
+terraform.tfstate.d/
+.terraform
+terraform.tfstate
+terraform.tfstate.*

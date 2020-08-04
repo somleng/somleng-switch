@@ -1,0 +1,10 @@
+{
+  "family": "somleng-adhearsion-worker",
+  "networkMode": "awsvpc",
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::324279636507:role/somleng-adhearsion-ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::324279636507:role/somleng-adhearsion-ecs-task-role",
+  "requiresCompatibilities": ["FARGATE"],
+  "containerDefinitions": [{"command":["bundle","exec","shoryuken","-C","config/shoryuken.yml"],"cpu":0,"environment":[{"name":"AHN_ENV","value":"production"}],"essential":true,"image":"324279636507.dkr.ecr.ap-southeast-1.amazonaws.com/somleng-adhearsion:latest","logConfiguration":{"logDriver":"awslogs","options":{"awslogs-group":"somleng-adhearsion-worker","awslogs-region":"ap-southeast-1","awslogs-stream-prefix":"production"}},"mountPoints":[],"name":"worker","portMappings":[],"volumesFrom":[]}]
+}
