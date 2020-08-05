@@ -11,7 +11,6 @@ data "template_file" "app_container_definitions" {
     region = var.aws_region
     aws_sqs_default_queue_name = aws_sqs_queue.this.name
     memory = var.memory
-    nginx_logs_group = aws_cloudwatch_log_group.nginx.name
     app_logs_group = aws_cloudwatch_log_group.app.name
     logs_group_region = var.aws_region
     app_environment = var.app_environment
