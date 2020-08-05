@@ -4,8 +4,8 @@ default: &default
 
 production:
   <<: *default
-  sentry_dsn: "<%= AppSettings.credentials.fetch(:sentry_dsn) %>"
-  ahn_core_password: "<%= AppSettings.credentials.fetch(:ahn_core_password) %>"
+  sentry_dsn: "<%= AppSettings.credentials.fetch('sentry_dsn') %>"
+  ahn_core_password: "<%= AppSettings.credentials.fetch('ahn_core_password') %>"
 
 development: &development
   <<: *default

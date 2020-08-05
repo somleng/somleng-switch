@@ -111,7 +111,7 @@ jobs:
           container-name: worker
           image: ${{ steps.build-image.outputs.app-image }}
 
-      - name: Deploy App Server
+      - name: Deploy App
         if: github.ref == matrix.app_env.branch
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
