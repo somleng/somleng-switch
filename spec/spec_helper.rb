@@ -6,6 +6,8 @@ if ENV.key?("CI")
 end
 
 ENV["AHN_ENV"] ||= "test"
+ENV["APP_ENV"] ||= "test"
+
 require File.expand_path("../config/environment", __dir__)
 require "adhearsion/rspec"
 

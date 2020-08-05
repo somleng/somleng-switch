@@ -78,6 +78,32 @@ resource "aws_iam_role" "task_execution_role" {
 EOF
 }
 
+resource "aws_iam_policy" "task_execution_custom_policy" {
+  name = "${var.app_identifier}-task-execution-custom-policy"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameters"
+      ],
+      "Resource": [
+        "${aws_ssm_parameter.application_master_key.arn}"
+      ]
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "task_execution_custom_policy" {
+  role = aws_iam_role.task_execution_role.id
+  policy_arn = aws_iam_policy.task_execution_custom_policy.arn
+}
+
 resource "aws_iam_role_policy_attachment" "task_execution_role_policy" {
   role = aws_iam_role.task_execution_role.id
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"

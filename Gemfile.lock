@@ -99,6 +99,8 @@ GEM
       unf (>= 0.0.5, < 1.0.0)
     equalizer (0.0.11)
     eventmachine (1.2.7)
+    faraday (1.0.1)
+      multipart-post (>= 1.2, < 3)
     ffi (1.13.1)
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
@@ -140,6 +142,7 @@ GEM
     minitest (5.14.1)
     multi_json (1.15.0)
     multi_xml (0.6.0)
+    multipart-post (2.1.1)
     niceogiri (1.1.2)
       nokogiri (~> 1.5)
     nio4r (2.5.2)
@@ -204,6 +207,8 @@ GEM
       activesupport (>= 3.0.7, < 5.0.0)
       nokogiri (~> 1.8, >= 1.8.3)
     safe_yaml (1.0.5)
+    sentry-raven (3.0.0)
+      faraday (>= 1.0)
     shoryuken (5.0.4)
       aws-sdk-core (>= 2)
       concurrent-ruby
@@ -252,6 +257,7 @@ DEPENDENCIES
   rubocop
   rubocop-performance
   rubocop-rspec
+  sentry-raven
   shoryuken
   simplecov
   simplecov-lcov

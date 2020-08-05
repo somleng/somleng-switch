@@ -3,6 +3,7 @@ source "https://rubygems.org"
 gem "adhearsion", github: "adhearsion/adhearsion", branch: "develop"
 gem "adhearsion-twilio", github: "somleng/adhearsion-twilio"
 gem "aws-sdk-sqs"
+gem "sentry-raven"
 gem "shoryuken"
 gem "somleng-twilio_http_client", github: "somleng/somleng-twilio_http_client"
 

@@ -15,6 +15,7 @@ data "template_file" "app_container_definitions" {
     app_logs_group = aws_cloudwatch_log_group.app.name
     logs_group_region = var.aws_region
     app_environment = var.app_environment
+    application_master_key_parameter_arn = aws_ssm_parameter.application_master_key.arn
   }
 }
 
@@ -74,6 +75,7 @@ data "template_file" "worker_container_definitions" {
     worker_logs_group = aws_cloudwatch_log_group.worker.name
     logs_group_region = var.aws_region
     app_environment = var.app_environment
+    application_master_key_parameter_arn = aws_ssm_parameter.application_master_key.arn
   }
 }
 

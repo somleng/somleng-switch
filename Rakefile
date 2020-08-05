@@ -1,14 +1,24 @@
-#!/usr/bin/env rake
+require "bundler"
 
-require File.expand_path('../config/environment',  __FILE__)
+Bundler.require(:default, :development)
 
-require 'adhearsion/tasks'
+require File.expand_path("config/environment", __dir__)
+require "adhearsion/tasks"
+
+require_relative "lib/encrypted_credentials"
 
 begin
-  require 'rspec/core/rake_task'
+  require "rspec/core/rake_task"
+
   RSpec::Core::RakeTask.new(:spec)
+
+  task default: :spec
 rescue LoadError
+  # no rspec available
 end
 
-task :default => :spec
-
+namespace :credentials do
+  task :edit do
+    EncryptedCredentials::EncryptedFile.new.edit
+  end
+end

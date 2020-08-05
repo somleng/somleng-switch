@@ -12,9 +12,19 @@
     },
     "command": ["bundle", "exec", "shoryuken", "-C", "config/shoryuken.yml"],
     "essential": true,
+    "secrets": [
+      {
+        "name": "APP_MASTER_KEY",
+        "valueFrom": "${application_master_key_parameter_arn}"
+      }
+    ],
     "environment": [
       {
         "name": "AHN_ENV",
+        "value": "${app_environment}"
+      },
+      {
+        "name": "APP_ENV",
         "value": "${app_environment}"
       }
     ]
