@@ -11,4 +11,6 @@ module "somleng_adhearsion" {
   container_instance_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets
   vpc_id = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_id
   ecs_worker_autoscale_min_instances = 0
+
+  ecs_app_autoscale_min_instances = 0
 }
