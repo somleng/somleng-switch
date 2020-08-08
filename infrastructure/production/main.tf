@@ -10,7 +10,7 @@ module "somleng_adhearsion" {
   aws_region = var.aws_region
   container_instance_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets
   vpc_id = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_id
-  ecs_worker_autoscale_min_instances = 1
+  ecs_worker_autoscale_min_instances = 0
 
   ecs_app_autoscale_min_instances = 0
 }

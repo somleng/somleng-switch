@@ -1,4 +1,5 @@
-require "adhearsion"
+require_relative "../../config/environment"
+require_relative "../call_controllers/call_controller"
 
 class OutboundCallWorker
   include Shoryuken::Worker
@@ -20,6 +21,8 @@ class OutboundCallWorker
   private
 
   def initiate_outbound_call!(params)
+    Adhearsion::Rayo::Initializer.init
+
     puts "Executing request: #{params}"
     call_variables = get_call_variables(params)
 
