@@ -1,6 +1,16 @@
-require_relative "application_worker"
+require "adhearsion"
 
-class OutboundCallWorker < ApplicationWorker
+class OutboundCallWorker
+  include Shoryuken::Worker
+
+  shoryuken_options(
+    auto_delete: true,
+    auto_visibility_timeout: true,
+    body_parser: :json,
+    queue: ENV.fetch("AWS_SQS_DEFAULT_QUEUE_NAME", "default"),
+    retry_intervals: ->(attempts) { ((12 * 60 * 60)**(attempts / 10.0)).to_i }
+  )
+
   DEFAULT_DIAL_STRING_FORMAT = "sofia/%{dial_string_path}".freeze
 
   def perform(_sqs_msg, body)
@@ -9,10 +19,9 @@ class OutboundCallWorker < ApplicationWorker
 
   private
 
-  def initiate_outbound_call!(call_json)
-    logger.info("Executing request: #{call_json}")
-    call_params = JSON.parse(call_json)
-    call_variables = get_call_variables(call_params)
+  def initiate_outbound_call!(params)
+    puts "Executing request: #{params}"
+    call_variables = get_call_variables(params)
 
     call_args = [
       call_variables[:dial_string],
@@ -25,7 +34,7 @@ class OutboundCallWorker < ApplicationWorker
 
     return nil if call_variables[:disable_originate].to_i == 1
 
-    logger.info("Initiating outbound call with: #{call_args}")
+    puts("Initiating outbound call with: #{call_args}")
     Adhearsion::OutboundCall.originate(*call_args).id
   end
 
