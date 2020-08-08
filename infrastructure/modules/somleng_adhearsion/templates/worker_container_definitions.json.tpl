@@ -26,6 +26,14 @@
       {
         "name": "APP_ENV",
         "value": "${app_environment}"
+      },
+      {
+        "name": "AWS_SQS_DEFAULT_QUEUE_NAME",
+        "value": "${aws_sqs_default_queue_name}"
+      },
+      {
+        "name": "AWS_DEFAULT_REGION",
+        "value": "${region}"
       }
     ]
   }
