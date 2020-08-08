@@ -1,3 +1,5 @@
+require_relative "application_worker"
+
 class OutboundCallWorker < ApplicationWorker
   DEFAULT_DIAL_STRING_FORMAT = "sofia/%{dial_string_path}".freeze
 
