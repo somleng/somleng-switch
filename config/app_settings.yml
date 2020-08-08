@@ -1,5 +1,5 @@
 default: &default
-  ahn_core_username: "rayo@somleng.org"
+  ahn_core_username: "rayo@rayo.somleng.org"
   ahn_core_password: "secret"
   ahn_core_port: 5222
 
