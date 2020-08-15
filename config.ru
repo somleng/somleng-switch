@@ -1,6 +1,21 @@
+require "rack"
 require "sinatra"
 
+LOGGING_BLACKLIST = ["/health_checks"].freeze
+
+class FilteredLogger < Rack::CommonLogger
+  def call(env)
+    log_request?(env) ? super : @app.call(env)
+  end
+
+  def log_request?(env)
+    !LOGGING_BLACKLIST.include?(env["PATH_INFO"])
+  end
+end
+
 set :root, Adhearsion.root
+disable :logging
+use FilteredLogger
 
 get "/" do
   "Hello world!"
