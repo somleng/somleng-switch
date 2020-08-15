@@ -6,7 +6,7 @@ get "/" do
   "Hello world!"
 end
 
-get "/heath_checks" do
+get "/health_checks" do
   content_type "application/json"
   cache_control :none
   checks = OkComputer::Registry.all
