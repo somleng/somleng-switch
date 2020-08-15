@@ -15,6 +15,7 @@ data "template_file" "appserver_container_definitions" {
     app_logs_group = aws_cloudwatch_log_group.app.name
     logs_group_region = var.aws_region
     app_environment = var.app_environment
+    ahn_core_host = var.ahn_core_host
   }
 }
 

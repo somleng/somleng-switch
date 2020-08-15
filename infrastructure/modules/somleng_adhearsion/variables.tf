@@ -11,6 +11,7 @@ variable "vpc_id" {}
 variable "codedeploy_role" {}
 variable "load_balancer_arn" {}
 variable "listener_arn" {}
+variable "ahn_core_host" {}
 
 variable "webserver_container_name" {
   default = "nginx"

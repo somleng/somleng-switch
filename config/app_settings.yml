@@ -2,16 +2,13 @@ default: &default
   ahn_http_port: 3000
   ahn_core_username: "rayo@rayo.somleng.org"
   ahn_core_password: "secret"
-  ahn_core_port: 5222
 
 production:
   <<: *default
   sentry_dsn: "<%= AppSettings.credentials.fetch('sentry_dsn') %>"
-  ahn_core_host: "freeswitch.somleng.org"
   ahn_core_password: "<%= AppSettings.credentials.fetch('ahn_core_password') %>"
 
 development: &development
-  ahn_core_host: "localhost"
   <<: *default
 
 test:
