@@ -89,7 +89,6 @@ jobs:
           NGINX_ECR_REPOSITORY: somleng-adhearsion-nginx
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          cp -R public/* docker/nginx/public
           docker build -t $ECR_REGISTRY/$NGINX_ECR_REPOSITORY:$IMAGE_TAG docker/nginx
           docker push $ECR_REGISTRY/$NGINX_ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=nginx-image::$ECR_REGISTRY/$NGINX_ECR_REPOSITORY:$IMAGE_TAG"
