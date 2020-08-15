@@ -52,11 +52,25 @@ resource "aws_iam_role_policy_attachment" "console_ssm" {
 }
 
 data "aws_ecs_task_definition" "console" {
-  task_definition = aws_ecs_task_definition.worker.family
+  task_definition = aws_ecs_task_definition.appserver.family
 }
 
 data "aws_ssm_parameter" "console" {
   name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended"
+}
+
+resource "aws_security_group" "console" {
+  name   = "${var.app_identifier}-console"
+  vpc_id = var.vpc_id
+}
+
+resource "aws_security_group_rule" "console_egress" {
+  type              = "egress"
+  to_port           = 0
+  protocol          = "-1"
+  from_port         = 0
+  security_group_id = aws_security_group.console.id
+  cidr_blocks = ["0.0.0.0/0"]
 }
 
 resource "aws_ecs_service" "console" {
@@ -71,7 +85,7 @@ resource "aws_ecs_service" "console" {
 
   network_configuration {
     subnets = var.container_instance_subnets
-    security_groups = [aws_security_group.worker.id]
+    security_groups = [aws_security_group.console.id]
   }
 }
 
@@ -79,7 +93,7 @@ resource "aws_launch_configuration" "console" {
   image_id                    = jsondecode(data.aws_ssm_parameter.console.value).image_id
   instance_type               = "t3.small"
   iam_instance_profile        = aws_iam_instance_profile.console.name
-  security_groups             = [aws_security_group.worker.id]
+  security_groups             = [aws_security_group.console.id]
   user_data                   = data.template_file.console_user_data.rendered
   key_name = aws_key_pair.console.key_name
 

@@ -33,7 +33,6 @@ jobs:
           gem install bundler
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
-          yarn install
 
       - name: Run Specs
         run: |
@@ -87,44 +86,44 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           APP_ECR_REPOSITORY: somleng-adhearsion
+          NGINX_ECR_REPOSITORY: somleng-adhearsion-nginx
           IMAGE_TAG: ${{ github.sha }}
         run: |
+          cp -R public/* docker/nginx/public
+          docker build -t $ECR_REGISTRY/$NGINX_ECR_REPOSITORY:$IMAGE_TAG docker/nginx
+          docker push $ECR_REGISTRY/$NGINX_ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=nginx-image::$ECR_REGISTRY/$NGINX_ECR_REPOSITORY:$IMAGE_TAG"
+
           docker build -t $ECR_REGISTRY/$APP_ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$APP_ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=app-image::$ECR_REGISTRY/$APP_ECR_REPOSITORY:$IMAGE_TAG"
 
-      - name: Prepare app task definition
+      - name: Prepare nginx task definition
         if: github.ref == matrix.app_env.branch
-        id: render-app-task-def
+        id: render-nginx-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: deploy/${{ matrix.app_env.name }}/app_task_definition.json
+          task-definition: deploy/${{ matrix.app_env.name }}/appserver_task_definition.json
+          container-name: nginx
+          image: ${{ steps.build-image.outputs.nginx-image }}
+
+      - name: Prepare app server task definition
+        if: github.ref == matrix.app_env.branch
+        id: render-appserver-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-nginx-task-def.outputs.task-definition }}
           container-name: app
           image: ${{ steps.build-image.outputs.app-image }}
 
-      - name: Prepare worker task definition
-        if: github.ref == matrix.app_env.branch
-        id: render-worker-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: deploy/${{ matrix.app_env.name }}/worker_task_definition.json
-          container-name: worker
-          image: ${{ steps.build-image.outputs.app-image }}
-
-      - name: Deploy App
+      - name: Deploy App Server
         if: github.ref == matrix.app_env.branch
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.render-app-task-def.outputs.task-definition }}
-          service: ${{ matrix.app_env.identifier }}-app
+          task-definition: ${{ steps.render-appserver-task-def.outputs.task-definition }}
+          service: ${{ matrix.app_env.identifier }}-appserver
           cluster: somleng
           wait-for-service-stability: true
-
-      - name: Deploy Worker
-        if: github.ref == matrix.app_env.branch
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.render-worker-task-def.outputs.task-definition }}
-          service: ${{ matrix.app_env.identifier }}-worker
-          cluster: somleng
-          wait-for-service-stability: true
+          codedeploy-appspec: deploy/appspec.yaml
+          codedeploy-application: ${{ matrix.app_env.identifier }}
+          codedeploy-deployment-group: ${{ matrix.app_env.identifier }}

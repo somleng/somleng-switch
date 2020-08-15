@@ -18,47 +18,6 @@ resource "aws_iam_role" "ecs_task_role" {
   assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role_policy.json
 }
 
-resource "aws_iam_policy" "ecs_task_policy" {
-  name = "${var.app_identifier}-ecs-task-policy"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "sqs:ChangeMessageVisibility",
-        "sqs:ChangeMessageVisibilityBatch",
-        "sqs:DeleteMessage",
-        "sqs:DeleteMessageBatch",
-        "sqs:GetQueueAttributes",
-        "sqs:GetQueueUrl",
-        "sqs:ReceiveMessage",
-        "sqs:SendMessage",
-        "sqs:SendMessageBatch"
-      ],
-      "Resource": [
-        "${aws_sqs_queue.this.arn}"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "sqs:ListQueues"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_task_policy" {
-  role = aws_iam_role.ecs_task_role.id
-  policy_arn = aws_iam_policy.ecs_task_policy.arn
-}
-
 resource "aws_iam_role" "task_execution_role" {
   name = "${var.app_identifier}-ecsTaskExecutionRole"
 
@@ -99,12 +58,12 @@ resource "aws_iam_policy" "task_execution_custom_policy" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "task_execution_custom_policy" {
-  role = aws_iam_role.task_execution_role.id
-  policy_arn = aws_iam_policy.task_execution_custom_policy.arn
-}
-
 resource "aws_iam_role_policy_attachment" "task_execution_role_policy" {
   role = aws_iam_role.task_execution_role.id
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "task_execution_custom_policy" {
+  role = aws_iam_role.task_execution_role.id
+  policy_arn = aws_iam_policy.task_execution_custom_policy.arn
 }

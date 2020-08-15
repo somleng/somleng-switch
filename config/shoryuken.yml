@@ -1,6 +1,0 @@
-aws:
-  receive_message:
-    wait_time_seconds: 20
-require: "./app/workers"
-queues:
-  - [<%= ENV.fetch("AWS_SQS_DEFAULT_QUEUE_NAME", "default") %>, 10]
