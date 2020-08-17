@@ -2,6 +2,8 @@ default: &default
   ahn_http_port: 3000
   ahn_core_username: "rayo@rayo.somleng.org"
   ahn_core_password: "secret"
+  ahn_http_username: "username"
+  ahn_http_password: "password"
 
 production:
   <<: *default

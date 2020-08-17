@@ -12,6 +12,7 @@ group :development, :test do
   gem "rubocop"
   gem "rubocop-performance"
   gem "rubocop-rspec"
+  gem "sinatra-contrib"
 end
 
 group :test do

@@ -72,6 +72,7 @@ GEM
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
+    backports (3.18.1)
     blather (2.0.0)
       activesupport (>= 2.3.11)
       eventmachine (~> 1.2, >= 1.2.6)
@@ -225,6 +226,13 @@ GEM
       rack (~> 2.0)
       rack-protection (= 2.0.8.1)
       tilt (~> 2.0)
+    sinatra-contrib (2.0.8.1)
+      backports (>= 2.8.2)
+      multi_json
+      mustermann (~> 1.0)
+      rack-protection (= 2.0.8.1)
+      sinatra (= 2.0.8.1)
+      tilt (~> 2.0)
     state_machine (1.2.0)
     sucker_punch (2.1.2)
       concurrent-ruby (~> 1.0)
@@ -270,6 +278,7 @@ DEPENDENCIES
   simplecov
   simplecov-lcov
   sinatra
+  sinatra-contrib
   somleng-twilio_http_client!
   vcr
   webmock
