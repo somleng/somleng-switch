@@ -24,9 +24,9 @@ module SomlengAdhearsion
         register Sinatra::Reloader
       end
 
-      get "/calls" do
+      post "/calls" do
         resource = OutboundCall.new(call_params: params).initiate
-        json(resource)
+        resource ? json(id: resource.id) : json({})
       end
     end
   end
