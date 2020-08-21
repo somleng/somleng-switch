@@ -6,8 +6,7 @@ Bundler.require :default, APP_ENV.to_sym
 require "sinatra/base"
 require "sinatra/json"
 
-require_relative "../../config/app_settings"
-require_relative "models/outbound_call"
+require_relative "../../config/environment"
 
 module SomlengAdhearsion
   module Web
