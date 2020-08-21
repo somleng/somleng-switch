@@ -6,13 +6,13 @@ gem "aws-sdk-sqs"
 gem "okcomputer"
 gem "sentry-raven"
 gem "sinatra"
+gem "sinatra-contrib"
 gem "somleng-twilio_http_client", github: "somleng/somleng-twilio_http_client"
 
 group :development, :test do
   gem "rubocop"
   gem "rubocop-performance"
   gem "rubocop-rspec"
-  gem "sinatra-contrib"
 end
 
 group :test do
