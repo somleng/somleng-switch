@@ -6,8 +6,6 @@ Bundler.require :default, APP_ENV.to_sym
 require "sinatra/base"
 require "sinatra/json"
 
-require_relative "../../config/environment"
-
 module SomlengAdhearsion
   module Web
     class Application < Sinatra::Base
@@ -25,8 +23,8 @@ module SomlengAdhearsion
       end
 
       post "/calls" do
-        resource = OutboundCall.new(call_params: params).initiate
-        resource ? json(id: resource.id) : json({})
+        payload = JSON.parse(request.body.read)
+        resource = OutboundCall.new(call_params: payload).initiate
       end
     end
   end

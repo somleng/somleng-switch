@@ -7,7 +7,7 @@ module RequestHelpers
 end
 
 RSpec.configure do |config|
-  config.before(web: true) do
+  config.before(web_application: true) do
     config.include Rack::Test::Methods
     config.include RequestHelpers
   end

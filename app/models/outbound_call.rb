@@ -1,5 +1,4 @@
 class OutboundCall
-  DEFAULT_DIAL_STRING_FORMAT = "sofia/%{dial_string_path}".freeze
   NUMBER_NORMALIZER = Adhearsion::Twilio::Util::NumberNormalizer.new.freeze
 
   attr_reader :call_params
@@ -15,7 +14,7 @@ class OutboundCall
       dial_string,
       from: caller_id,
       controller: CallController,
-      controller_metadata:{
+      controller_metadata: {
         voice_request_url: call_params["voice_url"],
         voice_request_method: call_params["voice_method"],
         account_sid: call_params["account_sid"],
@@ -45,22 +44,6 @@ class OutboundCall
   end
 
   def dial_string
-    routing_instructions.fetch("dial_string") do
-      format = routing_instructions.fetch("dial_string_format") { DEFAULT_DIAL_STRING_FORMAT }
-
-      format.sub(
-        /\%\{destination\}/, destination.to_s
-      ).sub(
-        /\%\{gateway_type\}/, routing_instructions["gateway_type"].to_s
-      ).sub(
-        /\%\{destination_host\}/, routing_instructions["destination_host"].to_s
-      ).sub(
-        /\%\{gateway\}/, routing_instructions["gateway"].to_s
-      ).sub(
-        /\%\{address\}/, routing_instructions["address"].to_s
-      ).sub(
-        /\%\{dial_string_path\}/, routing_instructions["dial_string_path"].to_s
-      )
-    end
+    ["sofia/external", routing_instructions.fetch("dial_string")].join("/")
   end
 end
