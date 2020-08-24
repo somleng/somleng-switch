@@ -79,14 +79,12 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    codecov (0.2.7)
-      colorize
+    codecov (0.2.8)
       json
       simplecov
     coderay (1.1.2)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
-    colorize (0.8.1)
     concurrent-ruby (1.1.6)
     countdownlatch (1.0.0)
     crack (0.4.3)
