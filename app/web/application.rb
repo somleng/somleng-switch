@@ -23,8 +23,9 @@ module SomlengAdhearsion
       end
 
       post "/calls" do
-        payload = JSON.parse(request.body.read)
-        resource = OutboundCall.new(call_params: payload).initiate
+        call_params = JSON.parse(request.body.read)
+        resource = OutboundCall.new(call_params).initiate
+        resource ? json(resource) : json({})
       end
     end
   end

@@ -3,7 +3,7 @@ class OutboundCall
 
   attr_reader :call_params
 
-  def initialize(call_params:, logger: Logger.new(STDOUT))
+  def initialize(call_params)
     @call_params = call_params
   end
 
