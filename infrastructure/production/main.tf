@@ -18,5 +18,5 @@ module "somleng_adhearsion" {
 
   ecs_appserver_autoscale_min_instances = 1
 
-  ahn_core_host = "freeswitch.somleng.org"
+  ahn_core_host = "freeswitch2.somleng.org"
 }
