@@ -15,6 +15,9 @@ module SomlengAdhearsion
 
       describe "POST /calls" do
         it "initiates an outbound call" do
+          outbound_call = instance_double(Adhearsion::OutboundCall, id: "123456")
+          allow(Adhearsion::OutboundCall).to receive(:originate).and_return(outbound_call)
+
           basic_authorize "username", "password"
           post(
             "/calls",
@@ -42,7 +45,7 @@ module SomlengAdhearsion
           )
 
           expect(last_response.status).to eq(200)
-          expect(json_response["id"]).not_to be_empty
+          expect(json_response["id"]).to eq("123456")
         end
       end
     end
