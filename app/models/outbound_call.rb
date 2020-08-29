@@ -8,8 +8,6 @@ class OutboundCall
   end
 
   def initiate
-    return if routing_instructions["disable_originate"].to_i == 1
-
     Adhearsion::OutboundCall.originate(
       dial_string,
       from: caller_id,

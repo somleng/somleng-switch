@@ -45,14 +45,4 @@ RSpec.describe OutboundCall do
       }
     )
   end
-
-  it "does not initiate an outbound call if disable originate is set to 1" do
-    call_params = {
-      "routing_instructions" => { "disable_originate" => "1" }
-    }
-
-    result = OutboundCall.new(call_params).initiate
-
-    expect(result).to eq(nil)
-  end
 end

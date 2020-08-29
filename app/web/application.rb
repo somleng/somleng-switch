@@ -25,7 +25,7 @@ module SomlengAdhearsion
       post "/calls" do
         call_params = JSON.parse(request.body.read)
         resource = OutboundCall.new(call_params).initiate
-        resource ? json(id: resource.id) : json({})
+        json(id: resource.id)
       end
     end
   end
