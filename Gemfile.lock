@@ -79,7 +79,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    codecov (0.2.11)
+    codecov (0.2.12)
       json
       simplecov
     coderay (1.1.2)
@@ -207,7 +207,7 @@ GEM
     simplecov (0.19.0)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
-    simplecov-html (0.12.2)
+    simplecov-html (0.12.3)
     state_machine (1.2.0)
     sucker_punch (2.1.2)
       concurrent-ruby (~> 1.0)
