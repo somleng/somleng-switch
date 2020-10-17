@@ -15,8 +15,6 @@ RSpec.describe OutboundCall do
       "direction" => "outbound-api",
       "api_version" => "2010-04-01",
       "routing_instructions" => {
-        "source" => "2442",
-        "destination" => "+85512334667",
         "dial_string" => "85512334667@127.0.0.1"
       }
     }

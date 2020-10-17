@@ -1,5 +1,3 @@
-require_relative "app_settings"
-
 Adhearsion.config do |config|
   # Core Settings
   config.core.http.enable = true

@@ -28,16 +28,6 @@ GIT
       virtus (~> 1.0)
 
 GIT
-  remote: https://github.com/somleng/adhearsion-twilio.git
-  revision: 66c904b3fbda78fde13e61bab9e3d09e17d548db
-  specs:
-    adhearsion-twilio (0.0.1)
-      adhearsion (~> 3.0.0.rc1)
-      httparty
-      mail
-      somleng-twilio_http_client (~> 0.1.1)
-
-GIT
   remote: https://github.com/somleng/somleng-twilio_http_client.git
   revision: db84fa5cda98038565997ee70f1b80a92ab3e743
   specs:
@@ -266,8 +256,9 @@ PLATFORMS
 
 DEPENDENCIES
   adhearsion!
-  adhearsion-twilio!
   aws-sdk-sqs
+  httparty
+  mail
   okcomputer
   rack-test
   rspec

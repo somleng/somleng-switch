@@ -13,15 +13,15 @@ class OutboundCall
       from: caller_id,
       controller: CallController,
       controller_metadata: {
-        voice_request_url: call_params["voice_url"],
-        voice_request_method: call_params["voice_method"],
-        account_sid: call_params["account_sid"],
-        auth_token: call_params["account_auth_token"],
-        call_sid: call_params["sid"],
+        voice_request_url: call_params.fetch("voice_url"),
+        voice_request_method: call_params.fetch("voice_method"),
+        account_sid: call_params.fetch("account_sid"),
+        auth_token: call_params.fetch("account_auth_token"),
+        call_sid: call_params.fetch("sid"),
         adhearsion_twilio_from: NUMBER_NORMALIZER.normalize(caller_id),
         adhearsion_twilio_to: NUMBER_NORMALIZER.normalize(destination),
-        direction: call_params["direction"],
-        api_version: call_params["api_version"],
+        direction: call_params.fetch("direction"),
+        api_version: call_params.fetch("api_version"),
         rest_api_enabled: false
       }
     )
@@ -34,11 +34,11 @@ class OutboundCall
   end
 
   def caller_id
-    routing_instructions.fetch("source") { call_params["from"] }
+    call_params.fetch("from")
   end
 
   def destination
-    routing_instructions.fetch("destination") { call_params["to"] }
+    call_params.fetch("to")
   end
 
   def dial_string

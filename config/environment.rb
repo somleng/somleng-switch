@@ -6,6 +6,7 @@ Bundler.require(:default, Adhearsion.environment)
 
 $LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
 require "encrypted_credentials"
+require "adhearsion-twilio"
 
 require_relative "app_settings"
 Dir[__dir__ + "/../app/models/**/*.rb"].sort.each { |f| require f }
