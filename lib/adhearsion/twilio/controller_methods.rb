@@ -11,7 +11,7 @@ require "somleng/twilio_http_client/request"
 module Adhearsion::Twilio::ControllerMethods
   extend ActiveSupport::Concern
 
-  INFINITY = 100
+  MAX_LOOP = 100
   SLEEP_BETWEEN_REDIRECTS = 1
   DEFAULT_TWILIO_RECORD_TIMEOUT = 5
   DEFAULT_TWILIO_MAX_LENGTH = 3600
@@ -77,8 +77,8 @@ module Adhearsion::Twilio::ControllerMethods
   def default_twilio_http_request_options
     {
       client: http_client,
-      call_from: call_from,
-      call_to: call_to,
+      call_from: twilio_call.from,
+      call_to: twilio_call.to,
       call_sid: call_sid,
       call_direction: call_direction,
       account_sid: account_sid,
@@ -273,10 +273,6 @@ module Adhearsion::Twilio::ControllerMethods
     }
   end
 
-  def options_for_twilio_play(_options = {})
-    {}
-  end
-
   def options_for_twilio_dial(options = {})
     global = options.delete(:global)
     global = true unless global == false
@@ -338,7 +334,7 @@ module Adhearsion::Twilio::ControllerMethods
 
   def twilio_play(path, options = {})
     twilio_loop(options).each do
-      play_audio(path, options_for_twilio_play)
+      play_audio(path)
     end
   end
 
@@ -365,9 +361,10 @@ module Adhearsion::Twilio::ControllerMethods
     logger.error(e.message)
   end
 
-  def twilio_loop(twilio_options, options = {})
-    infinite_loop = options.delete(:finite) ? INFINITY.times : loop
-    twilio_options["loop"].to_s == "0" ? infinite_loop : (twilio_options["loop"] || 1).to_i.times
+  def twilio_loop(twilio_options)
+    return MAX_LOOP.times if twilio_options["loop"].to_s == "0"
+
+    [twilio_options.fetch("loop", 1).to_i, MAX_LOOP].min.times
   end
 
   def twilio_options(node)
@@ -403,14 +400,6 @@ module Adhearsion::Twilio::ControllerMethods
 
   def voice_request_method
     resolve_configuration(:voice_request_method)
-  end
-
-  def call_to
-    metadata[:adhearsion_twilio_to] || twilio_request_to || twilio_call.to
-  end
-
-  def call_from
-    metadata[:adhearsion_twilio_from] || resolve_configuration(:from, false) || twilio_call.from
   end
 
   def call_direction
