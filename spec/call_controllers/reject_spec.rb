@@ -17,11 +17,6 @@ RSpec.describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
     # to prevent Twilio from answering a call.
     # Any other response will result in an answered call and your account will be billed.
 
-    # <?xml version="1.0" encoding="UTF-8"?>
-    # <Response>
-    #   <Reject/>
-    # </Response>
-
     it "rejects the call" do
       controller = build_controller(stub_voice_commands: :reject)
       stub_twiml_request(controller, response: <<~TWIML)

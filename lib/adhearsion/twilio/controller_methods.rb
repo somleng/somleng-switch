@@ -222,9 +222,10 @@ module Adhearsion::Twilio::ControllerMethods
       end
 
       nested_verb_options = twilio_options(nested_verb_node)
-      output_count = twilio_loop(nested_verb_options, finite: true).count
-      ask_options.merge!(send("options_for_twilio_#{verb.downcase}", nested_verb_options))
-      ask_params << Array.new(output_count, nested_verb_node.content)
+      output_count = twilio_loop(nested_verb_options).count
+      output_params = { value: nested_verb_node.content }
+      output_params.merge!(options_for_twilio_say(nested_verb_options)) if verb == "Say"
+      ask_params << Array.new(output_count, output_params)
     end
 
     ask_options[:timeout] = options.fetch("timeout", 5).to_i.seconds
@@ -278,7 +279,7 @@ module Adhearsion::Twilio::ControllerMethods
     global = true unless global == false
     params = {}
     params[:from] = options["callerId"] if options["callerId"]
-    params[:ringback] = options["ringback"] if options["ringback"]
+    params[:ringback] = options["ringToneUrl"] if options["ringToneUrl"]
     params[:for] = (options["timeout"] ? options["timeout"].to_i.seconds : 30.seconds) if global
     params
   end

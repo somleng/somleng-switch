@@ -142,8 +142,7 @@ RSpec.describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
 
         it "falls through the the next verb in the TwiML document if no input is received" do
           controller = build_controller(
-            stub_voice_commands: [:play_audio, ask: build_input_result(nil)],
-            metadata: { voice_request_url: "https://www.example.com/gather.xml" }
+            stub_voice_commands: [:play_audio, ask: build_input_result(nil)]
           )
 
           stub_twiml_request(controller, response: <<~TWIML)
@@ -161,84 +160,47 @@ RSpec.describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
       end
 
       describe "method" do
-        # From: https://www.twilio.com/docs/api/twiml/gather
-
-        # The method attribute takes the value 'GET' or 'POST'.
-        # This tells Twilio whether to request the 'action' URL via HTTP GET or POST.
-        # This attribute is modeled after the HTML form 'method' attribute.
-        # 'POST' is the default value.
-
         it "executes a GET request" do
-          # <?xml version="1.0" encoding="UTF-8"?>
-          # <Response>
-          #   <Gather action="https://www.example.com/gather_results.xml" method="GET"/>
-          # </Response>
-
-          controller = build_gather_controller(gather_result: "1")
-          erb = generate_cassette_erb(
-            action: "https://www.example.com/gather_results.xml",
-            method_attribute: :get,
-            redirect_url: "https://www.example.com/gather_results.xml"
+          controller = build_controller(
+            stub_voice_commands: { ask: build_input_result("1") },
+            metadata: { voice_request_url: "https://www.example.com/gather.xml" }
           )
 
-          VCR.use_cassette(:gather_with_action_and_method, erb: erb) do
-            controller.run
-          end
+          stub_twiml_request(controller, response: <<~TWIML)
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <Response>
+              <Gather action="https://www.example.com/gather_results.xml" method="GET"/>
+            </Response>
+          TWIML
 
-          results_request = WebMock.requests.last
-          expect(results_request.method).to eq(:get)
-        end
+          stub_request(:any, "https://www.example.com/gather_results.xml").to_return(body: <<~TWIML)
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <Response>
+              <Hangup/>
+            </Response>
+          TWIML
 
-        it "executes a POST request" do
-          # <?xml version="1.0" encoding="UTF-8"?>
-          # <Response>
-          #   <Gather action="http://localhost:3000/some_other_endpoint.xml" method="POST"/>
-          # </Response>
+          controller.run
 
-          controller = build_gather_controller(gather_result: "1")
-          erb = generate_cassette_erb(
-            action: "https://www.example.com/gather_results.xml",
-            method_attribute: :post,
-            redirect_url: "https://www.example.com/gather_results.xml"
-          )
-
-          VCR.use_cassette(:gather_with_action_and_method, erb: erb) do
-            controller.run
-          end
-
-          results_request = WebMock.requests.last
-          expect(results_request.method).to eq(:post)
+          expect(WebMock).to have_requested(:get, "https://www.example.com/gather_results.xml")
         end
       end
 
       describe "timeout" do
-        # From: https://www.twilio.com/docs/api/twiml/gather
-
-        # The timeout attribute sets the limit in seconds that Twilio
-        # will wait for the caller to press another digit before moving on
-        # and making a request to the 'action' URL.
-        # For example, if timeout is '10', Twilio will wait ten seconds
-        # for the caller to press another key before submitting the previously
-        # entered digits to the 'action' URL.
-        # Twilio waits until completing the execution of all nested verbs
-        # before beginning the timeout period.
-
         it "defaults to 5s" do
-          # From: https://www.twilio.com/docs/api/twiml/gather
+          controller = build_controller(
+            stub_voice_commands: { ask: build_input_result(nil) },
+            metadata: { voice_request_url: "https://www.example.com/gather.xml" }
+          )
 
-          # | Attribute Name | Allowed Values           | Default Value        |
-          # | timeout        | positive integer         | 5 seconds            |
+          stub_twiml_request(controller, response: <<~TWIML)
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <Response>
+              <Gather/>
+            </Response>
+          TWIML
 
-          # <?xml version="1.0" encoding="UTF-8"?>
-          # <Response>
-          #   <Gather/>
-          # </Response>
-
-          controller = build_gather_controller
-
-          VCR.use_cassette(:gather, erb: generate_cassette_erb) do
-            controller.run
-          end
+          controller.run
 
           expect(controller).to have_received(:ask) do |_outputs, options|
             expect(options.fetch(:timeout)).to eq(5.seconds)
@@ -246,23 +208,19 @@ RSpec.describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
         end
 
         it "sets the timeout from the TwiML" do
-          # From: https://www.twilio.com/docs/api/twiml/gather
+          controller = build_controller(
+            stub_voice_commands: { ask: build_input_result(nil) },
+            metadata: { voice_request_url: "https://www.example.com/gather.xml" }
+          )
 
-          # "For example, if 'timeout' is '10', Twilio will wait ten seconds
-          # for the caller to press another key before submitting the previously
-          # entered digits to the 'action' URL."
+          stub_twiml_request(controller, response: <<~TWIML)
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <Response>
+              <Gather timeout="10"/>
+            </Response>
+          TWIML
 
-          # <?xml version="1.0" encoding="UTF-8"?>
-          # <Response>
-          #   <Gather timeout="10"/>
-          # </Response>
-
-          controller = build_gather_controller
-          erb = generate_cassette_erb(timeout: "10")
-
-          VCR.use_cassette(:gather_with_timeout, erb: erb) do
-            controller.run
-          end
+          controller.run
 
           expect(controller).to have_received(:ask) do |_outputs, options|
             expect(options.fetch(:timeout)).to eq(10.seconds)
@@ -288,27 +246,19 @@ RSpec.describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
         # The default 'finishOnKey' value is '#'. The value can only be a single character.
 
         it "defaults to #" do
-          # From: https://www.twilio.com/docs/api/twiml/gather
+          controller = build_controller(
+            stub_voice_commands: { ask: build_input_result(nil) },
+            metadata: { voice_request_url: "https://www.example.com/gather.xml" }
+          )
 
-          # | Attribute Name | Allowed Values           | Default Value        |
-          # | finishOnKey    | any digit, #, *          | #                    |
+          stub_twiml_request(controller, response: <<~TWIML)
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <Response>
+              <Gather/>
+            </Response>
+          TWIML
 
-          # "The default 'finishOnKey' value is '#'."
-
-          # "For example, if you set 'finishOnKey' to '#' and the user enters '1234#',
-          # Twilio will immediately stop waiting for more input when the '#' is received
-          # and will submit "Digits=1234" to the 'action' URL."
-
-          # <?xml version="1.0" encoding="UTF-8"?>
-          # <Response>
-          #   <Gather/>
-          # </Response>
-
-          controller = build_gather_controller
-
-          VCR.use_cassette(:gather, erb: generate_cassette_erb) do
-            controller.run
-          end
+          controller.run
 
           expect(controller).to have_received(:ask) do |_outputs, options|
             expect(options.fetch(:terminator)).to eq("#")
@@ -316,26 +266,19 @@ RSpec.describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
         end
 
         it "specifying an empty string turns off the terminator" do
-          # From: https://www.twilio.com/docs/api/twiml/gather
+          controller = build_controller(
+            stub_voice_commands: { ask: build_input_result(nil) },
+            metadata: { voice_request_url: "https://www.example.com/gather.xml" }
+          )
 
-          # "(set 'finishOnKey' to '')"
+          stub_twiml_request(controller, response: <<~TWIML)
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <Response>
+              <Gather finishOnKey=""/>
+            </Response>
+          TWIML
 
-          # "If the empty string is used, <Gather> captures all input and no key will
-          # end the <Gather> when pressed.
-          # In this case Twilio will submit the entered digits to the 'action' URL only
-          # after the timeout has been reached."
-
-          # <?xml version="1.0" encoding="UTF-8"?>
-          # <Response>
-          #   <Gather finishOnKey=""/>
-          # </Response>
-
-          controller = build_gather_controller
-          erb = generate_cassette_erb(finish_on_key: "")
-
-          VCR.use_cassette(:gather_with_finish_on_key, erb: erb) do
-            controller.run
-          end
+          controller.run
 
           expect(controller).to have_received(:ask) do |_outputs, options|
             expect(options).not_to have_key(:terminator)
@@ -343,68 +286,26 @@ RSpec.describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
         end
 
         it "sets the finishOnKey from the TwiML" do
-          # From: https://www.twilio.com/docs/api/twiml/gather
+          controller = build_controller(
+            stub_voice_commands: { ask: build_input_result(nil) },
+            metadata: { voice_request_url: "https://www.example.com/gather.xml" }
+          )
 
-          # | Attribute Name | Allowed Values           | Default Value        |
-          # | finishOnKey    | any digit, #, *          | #                    |
+          stub_twiml_request(controller, response: <<~TWIML)
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <Response>
+              <Gather finishOnKey="*"/>
+            </Response>
+          TWIML
 
-          # "The allowed values are
-          # the digits 0-9, '#' , '*' and the empty string (set 'finishOnKey' to '')."
-
-          # "For example, if you set 'finishOnKey' to '*' and the user enters '1234*',
-          # Twilio will immediately stop waiting for more input when the '*' is received
-          # and will submit "Digits=1234" to the 'action' URL."
-
-          # <?xml version="1.0" encoding="UTF-8"?>
-          # <Response>
-          #   <Gather finishOnKey="*"/>
-          # </Response>
-
-          controller = build_gather_controller
-          erb = generate_cassette_erb(finish_on_key: "*")
-
-          VCR.use_cassette(:gather_with_finish_on_key, erb: erb) do
-            controller.run
-          end
+          controller.run
 
           expect(controller).to have_received(:ask) do |_outputs, options|
             expect(options.fetch(:terminator)).to eq("*")
           end
         end
 
-        it "allows specifying a single digit" do
-          # From: https://www.twilio.com/docs/api/twiml/gather
-
-          # | Attribute Name | Allowed Values           | Default Value        |
-          # | finishOnKey    | any digit, #, *          | #                    |
-
-          # "The allowed values are
-          # the digits 0-9, '#' , '*' and the empty string (set 'finishOnKey' to '')."
-
-          # "For example, if you set 'finishOnKey' to '*' and the user enters '1234*',
-          # Twilio will immediately stop waiting for more input when the '*' is received
-          # and will submit "Digits=1234" to the 'action' URL."
-
-          # <?xml version="1.0" encoding="UTF-8"?>
-          # <Response>
-          #   <Gather finishOnKey="0"/>
-          # </Response>
-
-          controller = build_gather_controller
-          erb = generate_cassette_erb(finish_on_key: "0")
-
-          VCR.use_cassette(:gather_with_finish_on_key, erb: erb) do
-            controller.run
-          end
-
-          expect(controller).to have_received(:ask) do |_outputs, options|
-            expect(options.fetch(:terminator)).to eq("0")
-          end
-        end
-
         xit "handles pressing the finishOnKey before receiving any input" do
-          # From: https://www.twilio.com/docs/api/twiml/gather
-
           # If the caller enters the 'finishOnKey' value before entering any other digits,
           # Twilio will not make a request to the 'action' URL but instead
           # continue processing the current TwiML document with the verb immediately
@@ -421,8 +322,6 @@ RSpec.describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
       end
 
       describe "numDigits" do
-        # From: https://www.twilio.com/docs/api/twiml/gather
-
         # The 'numDigits' attribute lets you set the number of digits you are expecting,
         # and submits the data to the 'action' URL once the caller enters that number of digits.
         # For example, one might set 'numDigits' to '5' and ask the caller
@@ -430,22 +329,19 @@ RSpec.describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
         # Twilio will immediately submit the data to the 'action' URL.
 
         it "is unlimited by default" do
-          # From: https://www.twilio.com/docs/api/twiml/gather
+          controller = build_controller(
+            stub_voice_commands: { ask: build_input_result(nil) },
+            metadata: { voice_request_url: "https://www.example.com/gather.xml" }
+          )
 
-          # | Attribute Name | Allowed Values           | Default Value        |
-          # | numDigits      | integer >= 1             | unlimited            |
+          stub_twiml_request(controller, response: <<~TWIML)
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <Response>
+              <Gather/>
+            </Response>
+          TWIML
 
-          # <?xml version="1.0" encoding="UTF-8"?>
-          # <Response>
-          #   <Gather/>
-
-          # </Response>
-
-          controller = build_gather_controller
-
-          VCR.use_cassette(:gather, erb: generate_cassette_erb) do
-            controller.run
-          end
+          controller.run
 
           expect(controller).to have_received(:ask) do |_outputs, options|
             expect(options).not_to have_key(:limit)
@@ -453,23 +349,19 @@ RSpec.describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
         end
 
         it "sets the numDigits from the TwiML" do
-          # From: https://www.twilio.com/docs/api/twiml/gather
+          controller = build_controller(
+            stub_voice_commands: { ask: build_input_result(nil) },
+            metadata: { voice_request_url: "https://www.example.com/gather.xml" }
+          )
 
-          # "For example, one might set 'numDigits' to '5' and ask the caller
-          # to enter a 5 digit zip code. When the caller enters the fifth digit of '94117',
-          # Twilio will immediately submit the data to the 'action' URL."
+          stub_twiml_request(controller, response: <<~TWIML)
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <Response>
+              <Gather numDigits="5"/>
+            </Response>
+          TWIML
 
-          # <?xml version="1.0" encoding="UTF-8"?>
-          # <Response>
-          #   <Gather numDigits="5"/>
-          # </Response>
-
-          controller = build_gather_controller
-          erb = generate_cassette_erb(num_digits: "5")
-
-          VCR.use_cassette(:gather_with_num_digits, erb: erb) do
-            controller.run
-          end
+          controller.run
 
           expect(controller).to have_received(:ask) do |_outputs, options|
             expect(options.fetch(:limit)).to eq(5)
@@ -484,100 +376,89 @@ RSpec.describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
         # it will continue on to the next TwiML instruction.
 
         it "always send to status" do
-          # <?xml version="1.0" encoding="UTF-8"?>
-          # <Response>
-          #   <Gather actionOnEmptyResult="true" action="https://www.example.com/gather_results.xml">
-          #     <Say>
-          #       Please enter your account number, followed by the pound sign
-          #     </Say>
-          #   </Gather>
-          #   <Play>foo.mp3</Play>
-          # </Response>
-
-          controller = build_gather_controller(allow: :play_audio, gather_result: nil)
-          erb = generate_cassette_erb(
-            action: "https://www.example.com/gather_results.xml",
-            redirect_url: "https://www.example.com/gather_results.xml",
-            action_on_empty_result: "true"
+          controller = build_controller(
+            stub_voice_commands: { ask: build_input_result(nil) },
+            metadata: { voice_request_url: "https://www.example.com/gather.xml" }
           )
 
-          VCR.use_cassette(:gather_with_action_on_empty_result, erb: erb) do
-            controller.run
-          end
+          stub_twiml_request(controller, response: <<~TWIML)
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <Response>
+              <Gather actionOnEmptyResult="true" action="https://www.example.com/gather_results.xml"/>
+              <Play>foo.mp3</Play>
+            </Response>
+          TWIML
 
-          results_request = WebMock.requests.last
-          expect(WebMock.requests.count).to eq(2)
-          expect(results_request.uri.host).to eq("www.example.com")
-          expect(results_request.uri.path).to eq("/gather_results.xml")
+          stub_request(:any, "https://www.example.com/gather_results.xml").to_return(body: <<~TWIML)
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <Response>
+              <Hangup/>
+            </Response>
+          TWIML
+
+          controller.run
+
+          expect(WebMock).to have_requested(:post, "https://www.example.com/gather_results.xml")
         end
       end
     end
 
     describe "Nested Verbs" do
       it "handles nested <Play>" do
-        # From: https://www.twilio.com/docs/api/twiml/gather
-
         # "After the caller enters digits on the keypad,
         # Twilio sends them in a request to the current URL.
         # We also add a nested <Play> verb.
         # This means that input can be gathered at any time during <Play>."
 
-        # <?xml version="1.0" encoding="UTF-8" ?>
-        # <Response>
-        #   <Gather>
-        #     <Play loop="0">http://api.twilio.com/cowbell.mp3</Play>
-        #   </Gather>
-        # </Response>
-
-        controller = build_gather_controller
-        erb = generate_cassette_erb(
-          file_url: "https://api.twilio.com/cowbell.mp3",
-          loop: "0"
+        controller = build_controller(
+          stub_voice_commands: { ask: build_input_result(nil) },
+          metadata: { voice_request_url: "https://www.example.com/gather.xml" }
         )
 
-        VCR.use_cassette(:gather_play, erb: erb) do
-          controller.run
-        end
+        stub_twiml_request(controller, response: <<~TWIML)
+          <?xml version="1.0" encoding="UTF-8" ?>
+          <Response>
+            <Gather>
+              <Play loop="3">https://api.twilio.com/cowbell.mp3</Play>
+            </Gather>
+          </Response>
+        TWIML
+
+        controller.run
 
         expect(controller).to have_received(:ask) do |*outputs|
           _options = outputs.extract_options!
-          expect(outputs).to eq(Array.new(100, "https://api.twilio.com/cowbell.mp3"))
+          expect(outputs).to eq(
+            Array.new(3, { value: "https://api.twilio.com/cowbell.mp3" })
+          )
         end
       end
 
       it "handles nested <Say>" do
-        # From: https://www.twilio.com/docs/api/twiml/gather
-
-        # "After the caller enters digits on the keypad,
-        # Twilio sends them in a request to the current URL.
-        # We also add a nested <Say> verb.
-        # This means that input can be gathered at any time during <Say>."
-
-        # <?xml version="1.0" encoding="UTF-8"?>
-        # <Response>
-        #   <Gather>
-        #     <Say voice="woman", language="de" loop="0">
-        #       Hello World
-        #     </Say>
-        #   </Gather>
-        # </Response>
-
-        controller = build_gather_controller
-        erb = generate_cassette_erb(
-          words: "Hello World",
-          voice: "woman",
-          language: "de",
-          loop: "0"
+        controller = build_controller(
+          stub_voice_commands: { ask: build_input_result(nil) },
+          metadata: { voice_request_url: "https://www.example.com/gather.xml" }
         )
 
-        VCR.use_cassette(:gather_say, erb: erb) do
-          controller.run
-        end
+        stub_twiml_request(controller, response: <<~TWIML)
+          <?xml version="1.0" encoding="UTF-8" ?>
+          <Response>
+            <Gather>
+              <Say voice="woman" language="de" loop="3">Hello World</Say>
+              <Say voice="man" language="en" loop="5">Foobar</Say>
+            </Gather>
+          </Response>
+        TWIML
+
+        controller.run
 
         expect(controller).to have_received(:ask) do |*outputs|
-          options = outputs.extract_options!
-          expect(outputs).to eq(Array.new(100, "Hello World"))
-          expect(options).to include(name: "woman", language: "de")
+          _options = outputs.extract_options!
+          expect(outputs).to eq(
+            Array.new(3, { value: "Hello World", name: "woman", language: "de" }).concat(
+              Array.new(5, { value: "Foobar", name: "man", language: "en" })
+            )
+          )
         end
       end
     end

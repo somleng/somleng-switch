@@ -12,10 +12,16 @@ module CallControllerHelpers
       auth_token: SecureRandom.alphanumeric
     )
     controller = CallController.new(call, metadata)
-    (%i[hangup answer reject sleep] + Array(options[:stub_voice_commands])).each do |arg|
-      arg, return_value = Array(arg).first
+
+    %i[hangup answer reject sleep].each do |arg|
+      allow(controller).to receive(arg)
+    end
+
+    Array(options[:stub_voice_commands]).each do |arg|
+      arg, return_value = arg.is_a?(Hash) ? arg.first : arg
       allow(controller).to receive(arg).and_return(return_value)
     end
+
     controller
   end
 
