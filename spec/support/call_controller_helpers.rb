@@ -1,8 +1,6 @@
 module CallControllerHelpers
-  def build_controller(options = {})
-    call = options.delete(:call) || build_fake_call
-    metadata = options.fetch(:metadata, {})
-    metadata.reverse_merge!(
+  def build_controller(call: build_fake_call, call_properties: {}, **options)
+    call_properties.reverse_merge!(
       voice_request_url: "https://example.com/twiml",
       voice_request_method: "POST",
       call_sid: SecureRandom.uuid,
@@ -11,7 +9,7 @@ module CallControllerHelpers
       api_version: "2010-04-01",
       auth_token: SecureRandom.alphanumeric
     )
-    controller = CallController.new(call, metadata)
+    controller = CallController.new(call, call_properties: CallProperties.new(call_properties))
 
     %i[hangup answer reject sleep].each do |arg|
       allow(controller).to receive(arg)
@@ -47,7 +45,7 @@ module CallControllerHelpers
 
   def stub_twiml_request(controller, response:)
     responses = Array(response).map { |body| { body: body } }
-    stub_request(:any, controller.metadata.fetch(:voice_request_url)).to_return(*responses)
+    stub_request(:any, controller.metadata.fetch(:call_properties).voice_request_url).to_return(*responses)
   end
 end
 

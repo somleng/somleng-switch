@@ -18,3 +18,4 @@ terraform.tfstate
 terraform.tfstate.*
 
 master.key
+examples.txt

@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
+describe CallController, type: :call_controller do
   describe "<Redirect>" do
     # From: https://www.twilio.com/docs/api/twiml/redirect
 
@@ -8,7 +8,7 @@ describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
     # All verbs after <Redirect> are unreachable and ignored.
 
     it "redirects the call to absolute url" do
-      controller = build_controller(metadata: { voice_request_url: "https://www.example.com/twiml.xml" })
+      controller = build_controller(call_properties: { voice_request_url: "https://www.example.com/twiml.xml" })
 
       stub_request(:any, "https://www.example.com/twiml.xml").to_return(body: <<~TWIML)
         <?xml version="1.0" encoding="UTF-8" ?>
@@ -31,7 +31,7 @@ describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
     end
 
     it "redirects the call to relative url" do
-      controller = build_controller(metadata: { voice_request_url: "https://www.example.com/twiml.xml" })
+      controller = build_controller(call_properties: { voice_request_url: "https://www.example.com/twiml.xml" })
 
       stub_request(:any, "https://www.example.com/twiml.xml").to_return(body: <<~TWIML)
         <?xml version="1.0" encoding="UTF-8" ?>
@@ -61,7 +61,7 @@ describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
 
       describe "method" do
         it "executes a GET request" do
-          controller = build_controller(metadata: { voice_request_url: "https://www.example.com/twiml.xml" })
+          controller = build_controller(call_properties: { voice_request_url: "https://www.example.com/twiml.xml" })
 
           stub_request(:any, "https://www.example.com/twiml.xml").to_return(body: <<~TWIML)
             <?xml version="1.0" encoding="UTF-8" ?>

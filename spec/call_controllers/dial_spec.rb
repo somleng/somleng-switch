@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
+RSpec.describe CallController, type: :call_controller do
   describe "<Dial>" do
     # From: https://www.twilio.com/docs/api/twiml/dial
 
@@ -167,7 +167,7 @@ RSpec.describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
 
         controller = build_controller(
           stub_voice_commands: { dial: build_dial_status(:answer, joins: { outbound_call => joins_status}) },
-          metadata: { voice_request_url: "https://www.example.com/dial.xml" }
+          call_properties: { voice_request_url: "https://www.example.com/dial.xml" }
         )
 
         stub_request(:any, "https://www.example.com/dial.xml").to_return(body: <<~TWIML)
@@ -208,7 +208,7 @@ RSpec.describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
               }
             )
           },
-          metadata: { voice_request_url: "https://www.example.com/dial.xml" }
+          call_properties: { voice_request_url: "https://www.example.com/dial.xml" }
         )
 
         stub_request(:any, "https://www.example.com/dial.xml").to_return(body: <<~TWIML)

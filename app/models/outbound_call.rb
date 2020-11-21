@@ -8,17 +8,18 @@ class OutboundCall
   def initiate
     Adhearsion::OutboundCall.originate(
       dial_string,
-      from: caller_id,
+      from: call_params.fetch("from"),
       controller: CallController,
       controller_metadata: {
-        voice_request_url: call_params.fetch("voice_url"),
-        voice_request_method: call_params.fetch("voice_method"),
-        account_sid: call_params.fetch("account_sid"),
-        auth_token: call_params.fetch("account_auth_token"),
-        call_sid: call_params.fetch("sid"),
-        direction: call_params.fetch("direction"),
-        api_version: call_params.fetch("api_version"),
-        rest_api_enabled: false
+        call_properties: CallProperties.new(
+          voice_request_url: call_params.fetch("voice_url"),
+          voice_request_method: call_params.fetch("voice_method"),
+          account_sid: call_params.fetch("account_sid"),
+          auth_token: call_params.fetch("account_auth_token"),
+          call_sid: call_params.fetch("sid"),
+          direction: call_params.fetch("direction"),
+          api_version: call_params.fetch("api_version")
+        )
       }
     )
   end
@@ -27,14 +28,6 @@ class OutboundCall
 
   def routing_instructions
     call_params.fetch("routing_instructions", {})
-  end
-
-  def caller_id
-    call_params.fetch("from")
-  end
-
-  def destination
-    call_params.fetch("to")
   end
 
   def dial_string

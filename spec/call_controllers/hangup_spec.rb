@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe Adhearsion::Twilio::ControllerMethods, type: :call_controller do
+RSpec.describe CallController, type: :call_controller do
   describe "<Hangup>" do
     # From: https://www.twilio.com/docs/api/twiml/hangup
 

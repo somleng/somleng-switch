@@ -16,13 +16,6 @@ class Adhearsion::Twilio::RestApi::PhoneCallEvent < Adhearsion::Twilio::RestApi:
     Adhearsion::Event::End => {
       :type => :completed,
       :event_parser => Proc.new { |event| event.parse_end_event }
-    },
-    Adhearsion::Event::Complete => {
-      :event_parser => Proc.new { |event| event.parse_complete_event }
-    },
-    Adhearsion::Twilio::Event::RecordingStarted => {
-      :type => :recording_started,
-      :event_parser => Proc.new { |event| event.parse_recording_started_event }
     }
   }
 
@@ -57,15 +50,6 @@ class Adhearsion::Twilio::RestApi::PhoneCallEvent < Adhearsion::Twilio::RestApi:
     build_request_options(phone_call_id_from_headers, default_request_params)
   end
 
-  def parse_recording_started_event
-    build_request_options(
-      event.call_id,
-      default_request_params.merge(
-        :params => compact_hash(event.params)
-      )
-    )
-  end
-
   def parse_end_event
     build_request_options(
       phone_call_id_from_headers,
@@ -76,20 +60,6 @@ class Adhearsion::Twilio::RestApi::PhoneCallEvent < Adhearsion::Twilio::RestApi:
         )
       )
     )
-  end
-
-  def parse_complete_event
-    if recording = event.recording
-      build_request_options(
-        event.target_call_id,
-        :type => :recording_completed,
-        :params => compact_hash(
-          :recording_duration => recording.duration.to_s,
-          :recording_size => recording.size.to_s,
-          :recording_uri => recording.uri
-        )
-      )
-    end
   end
 
   def event
