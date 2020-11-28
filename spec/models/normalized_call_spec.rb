@@ -1,11 +1,11 @@
 require "spec_helper"
 
-RSpec.describe Call do
+RSpec.describe NormalizedCall do
   describe "#from" do
     it "normalizes a simple number" do
       phone_call = build_phone_call(from: "85516701721")
 
-      call = Call.new(phone_call)
+      call = NormalizedCall.new(phone_call)
 
       expect(call.from).to eq("85516701721")
     end
@@ -16,7 +16,7 @@ RSpec.describe Call do
         variables: { "variable_sip_p_asserted_identity" => "85510212050" }
       )
 
-      call = Call.new(phone_call)
+      call = NormalizedCall.new(phone_call)
 
       expect(call.from).to eq("85510212050")
     end
@@ -27,7 +27,7 @@ RSpec.describe Call do
         variables: { "variable_sip_p_asserted_identity" => "invalid-sip-address" }
       )
 
-      call = Call.new(phone_call)
+      call = NormalizedCall.new(phone_call)
 
       expect(call.from).to eq("invalid")
     end
@@ -37,19 +37,9 @@ RSpec.describe Call do
     it "normalizes to number" do
       phone_call = build_phone_call(to: "85512345678")
 
-      call = Call.new(phone_call)
+      call = NormalizedCall.new(phone_call)
 
       expect(call.to).to eq("85512345678")
-    end
-  end
-
-  describe "#duration" do
-    it "normalizes the duration" do
-      phone_call = build_phone_call(duration: "26.4")
-
-      call = Call.new(phone_call)
-
-      expect(call.duration).to eq(26)
     end
   end
 
@@ -57,7 +47,7 @@ RSpec.describe Call do
     it "normalizes a simple number" do
       phone_call = build_phone_call(from: "85516701721")
 
-      call = Call.new(phone_call)
+      call = NormalizedCall.new(phone_call)
 
       expect(call.from).to eq("85516701721")
     end
@@ -65,7 +55,7 @@ RSpec.describe Call do
     it "normalizes an address" do
       phone_call = build_phone_call(from: "<85516701721@127.0.0.1>")
 
-      call = Call.new(phone_call)
+      call = NormalizedCall.new(phone_call)
 
       expect(call.from).to eq("85516701721")
     end
@@ -73,7 +63,7 @@ RSpec.describe Call do
     it "normalizes a SIP address" do
       phone_call = build_phone_call(from: "sip:85516701721@127.0.0.1:5060")
 
-      call = Call.new(phone_call)
+      call = NormalizedCall.new(phone_call)
 
       expect(call.from).to eq("85516701721")
     end
@@ -83,7 +73,7 @@ RSpec.describe Call do
         to: "sofia/gateway/pin_kh_01/85512345678"
       )
 
-      call = Call.new(phone_call)
+      call = NormalizedCall.new(phone_call)
 
       expect(call.to).to eq("85512345678")
     end

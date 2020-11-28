@@ -19,13 +19,15 @@ class NotifyCallEvent
   private
 
   def call_event_data
+    call_variables = {
+      sip_term_status: event.headers["variable-sip_term_status"].presence,
+      answer_epoch: event.headers["variable-answer_epoch"].presence
+    }.compact
+
     {
       type: EVENT_TYPES.fetch(event.class),
       phone_call: event.headers.fetch("variable-uuid"),
-      variables: {
-        sip_term_status: event.headers["variable-sip_term_status"].presence,
-        answer_epoch: event.headers["variable-answer_epoch"].presence
-      }.compact
+      variables: call_variables
     }
   end
 end

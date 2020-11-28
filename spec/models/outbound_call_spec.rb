@@ -30,16 +30,15 @@ RSpec.describe OutboundCall do
       from: "2442",
       controller: CallController,
       controller_metadata: {
-        voice_request_url: "https://rapidpro.ngrok.com/handle/33/",
-        voice_request_method: "GET",
-        account_sid: "sample-account-sid",
-        auth_token: "sample-auth-token",
-        call_sid: "sample-call-sid",
-        adhearsion_twilio_to: "+85512334667",
-        adhearsion_twilio_from: "+2442",
-        direction: "outbound-api",
-        api_version: "2010-04-01",
-        rest_api_enabled: false
+        call_properties: CallProperties.new(
+          voice_request_url: "https://rapidpro.ngrok.com/handle/33/",
+          voice_request_method: "GET",
+          account_sid: "sample-account-sid",
+          auth_token: "sample-auth-token",
+          call_sid: "sample-call-sid",
+          direction: "outbound-api",
+          api_version: "2010-04-01"
+        )
       }
     )
   end
