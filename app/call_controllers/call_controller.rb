@@ -5,7 +5,6 @@ require "somleng/twilio_http_client/request"
 class CallController < Adhearsion::CallController
   MAX_LOOP = 100
   SLEEP_BETWEEN_REDIRECTS = 1
-  DEFAULT_TWILIO_MAX_LENGTH = 3600
   DEFAULT_TWILIO_VOICE = "man".freeze
   DEFAULT_TWILIO_LANGUAGE = "en".freeze
 
@@ -22,24 +21,36 @@ class CallController < Adhearsion::CallController
   before :register_event_handlers
 
   def run
-    @call_properties = build_call_properties
+    self.call_properties = build_call_properties
 
-    twiml_document = request_twiml
-    execute_twiml(twiml_document)
+    endpoint = TwiMLEndpoint.new(
+      url: call_properties.voice_request_url,
+      http_method: call_properties.voice_request_method,
+      auth_token: call_properties.auth_token
+    )
+    @last_response = endpoint.request(
+      "From" => normalized_call.from,
+      "To" => normalized_call.to,
+      "CallSid" => call_properties.call_sid,
+      "CallStatus" => "ringing",
+      "Direction" => call_properties.direction,
+      "AccountSid" => call_properties.account_sid,
+      "ApiVersion" => call_properties.api_version
+    )
+
+    execute_twiml(@last_response.body)
   end
 
   private
 
-  attr_reader :call_properties
+  attr_accessor :call_properties
 
   def normalized_call
     @normalized_call ||= NormalizedCall.new(call)
   end
 
   def register_event_handlers
-    NotifyCallEvent::EVENT_TYPES.keys.each do |event_type|
-      call.register_event_handler(event_type) { |event| NotifyCallEvent.new(event).call }
-    end
+    NotifyCallEvent.subscribe_events(call)
   end
 
   def build_call_properties
@@ -57,68 +68,61 @@ class CallController < Adhearsion::CallController
     )
   end
 
-  def request_twiml
-    http_request = build_twilio_http_request(
-      request_url: call_properties.voice_request_url,
-      request_method: call_properties.voice_request_method,
-      call_status: "ringing"
-    )
+  def execute_twiml(document)
+    logger.info("Parsing TwiML: #{document}")
 
-    response = http_request.execute!
-    response.body
-  end
+    twiml = TwiMLParser.new(document).parse
 
-  def execute_twiml(response)
-    redirection = nil
-    with_twiml(response) do |node|
-      content = node.content
-      options = twilio_options(node)
-      case node.name
-      when "Reject"
-        execute_twiml_verb(:reject, false, options)
-        break
-      when "Play"
-        execute_twiml_verb(:play, true, content, options)
-      when "Gather"
-        break if (redirection = execute_twiml_verb(:gather, true, node, options))
-      when "Redirect"
-        redirection = execute_twiml_verb(:redirect, false, content, options)
-        break
-      when "Hangup"
-        break
-      when "Say"
-        execute_twiml_verb(:say, true, content, options)
-      when "Pause"
-        not_yet_supported!
-      when "Bridge"
-        not_yet_supported!
-      when "Dial"
-        break if (redirection = execute_twiml_verb(:dial, true, node, options))
-      else
-        raise(ArgumentError, "Invalid element '#{node.name}'")
+    redirect_args = catch(:redirect) do
+      twiml.each do |node|
+        content = node.content
+        options = twilio_options(node)
+
+        answer if !answered? && %w[Play Gather Redirect Say Dial].include?(node.name)
+
+        case node.name
+        when "Reject"
+          reject(options["reason"] == "busy" ? :busy : :decline)
+
+          break
+        when "Play"
+          twilio_loop(options).each do
+            play_audio(content)
+          end
+        when "Gather"
+          twilio_gather(node, options)
+        when "Redirect"
+          raise Errors::TwiMLError, "Redirect must contain a URL" if content.blank?
+
+          sleep(SLEEP_BETWEEN_REDIRECTS)
+          throw(:redirect, [content, options])
+        when "Hangup"
+          hangup
+          break
+        when "Say"
+          voice_params = options_for_twilio_say(options)
+          twilio_loop(options).each do
+            doc = RubySpeech::SSML.draw do
+              voice(voice_params) do
+                string(content)
+              end
+            end
+
+            say(doc)
+          end
+        when "Dial"
+          twilio_dial(node, options)
+        else
+          raise Errors::TwiMLError, "Invalid element '#{node.name}'"
+        end
       end
+
+      false
     end
-    redirection ? redirect(*redirection) : hangup
-  end
 
-  def build_twilio_http_request(options = {})
-    Somleng::TwilioHttpClient::Request.new(
-      client: http_client,
-      call_from: normalized_call.from,
-      call_to: normalized_call.to,
-      call_sid: call_properties.call_sid,
-      call_direction: call_properties.direction,
-      account_sid: call_properties.account_sid,
-      api_version: call_properties.api_version,
-      auth_token: call_properties.auth_token,
-      **options
-    )
-  end
-
-  def http_client
-    @http_client ||= Somleng::TwilioHttpClient::Client.new(
-      logger: logger
-    )
+    redirect(*redirect_args) if redirect_args.present?
+  rescue Errors::TwiMLError => e
+    logger.error(e.message)
   end
 
   def answered?
@@ -127,40 +131,26 @@ class CallController < Adhearsion::CallController
     normalized_call.answer_time
   end
 
-  def answer!
-    answer unless answered?
-  end
-
   def redirect(url = nil, options = {})
-    http_request = build_twilio_http_request(
-      request_method: options.delete("method") || "post",
-      request_url: relative_or_absolute_uri(url),
-      call_status: "in-progress",
-      body: options
+    endpoint = TwiMLEndpoint.new(
+      url: URI.join(@last_response.env.url, url.to_s).to_s,
+      http_method: options.delete("method"),
+      auth_token: call_properties.auth_token
     )
 
-    response = http_request.execute!
-    execute_twiml(response.body)
-  end
+    request_params = {
+      "From" => normalized_call.from,
+      "To" => normalized_call.to,
+      "CallSid" => call_properties.call_sid,
+      "CallStatus" => "in-progress",
+      "Direction" => call_properties.direction,
+      "AccountSid" => call_properties.account_sid,
+      "ApiVersion" => call_properties.api_version
+    }.merge(options)
 
-  def relative_or_absolute_uri(uri)
-    URI.join(http_client.last_request_url, uri.to_s).to_s
-  end
+    @last_response = endpoint.request(request_params)
 
-  def execute_twiml_verb(verb, answer_call, *args)
-    answer! if answer_call
-    send("twilio_#{verb}", *args)
-  end
-
-  def twilio_reject(options = {})
-    reject(options["reason"] == "busy" ? :busy : :decline)
-  end
-
-  def twilio_redirect(url, options = {})
-    raise(Adhearsion::Twilio::TwimlError, "invalid redirect url") if url&.empty?
-
-    sleep(SLEEP_BETWEEN_REDIRECTS)
-    [url, options]
+    execute_twiml(@last_response.body)
   end
 
   def twilio_gather(node, options = {})
@@ -206,20 +196,7 @@ class CallController < Adhearsion::CallController
     action_payload["method"] = options["method"]
     action_payload["Digits"] = digits if digits.present?
 
-    [options["action"], action_payload]
-  end
-
-  def twilio_say(words, options = {})
-    voice_params = options_for_twilio_say(options)
-    twilio_loop(options).each do
-      doc = RubySpeech::SSML.draw do
-        voice(voice_params) do
-          string(words)
-        end
-      end
-
-      say(doc)
-    end
+    throw(:redirect, [options["action"], action_payload])
   end
 
   def options_for_twilio_say(options = {})
@@ -278,43 +255,17 @@ class CallController < Adhearsion::CallController
       dial_call_status_options["DialCallDuration"] = dial_status.joins[outbound_call].duration.to_i
     end
 
-    if options["action"]
+    return if options["action"].blank?
+
+    throw(
+      :redirect,
       [
         options["action"],
         {
           "method" => options["method"]
         }.merge(dial_call_status_options)
       ]
-    end
-  end
-
-  def twilio_play(path, options = {})
-    twilio_loop(options).each do
-      play_audio(path)
-    end
-  end
-
-  def parse_twiml(xml)
-    logger.info("Parsing TwiML: #{xml}")
-    begin
-      doc = ::Nokogiri::XML(xml) do |config|
-        config.options = Nokogiri::XML::ParseOptions::NOBLANKS
-      end
-    rescue Nokogiri::XML::SyntaxError => e
-      raise(Adhearsion::Twilio::TwimlError, "Error while parsing XML: #{e.message}. XML Document: #{xml}")
-    end
-    raise(Adhearsion::Twilio::TwimlError, "The root element must be the '<Response>' element") if doc.root.name != "Response"
-
-    doc.root.children
-  end
-
-  def with_twiml(raw_response)
-    doc = parse_twiml(raw_response)
-    doc.each do |node|
-      yield node
-    end
-  rescue Adhearsion::Twilio::TwimlError => e
-    logger.error(e.message)
+    )
   end
 
   def twilio_loop(twilio_options)
@@ -324,14 +275,8 @@ class CallController < Adhearsion::CallController
   end
 
   def twilio_options(node)
-    options = {}
-    node.attributes.each do |key, attribute|
+    node.attributes.each_with_object({}) do |(key, attribute), options|
       options[key] = attribute.value
     end
-    options
-  end
-
-  def not_yet_supported!
-    raise ArgumentError, "Not yet supported"
   end
 end

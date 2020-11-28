@@ -12,6 +12,12 @@ class NotifyCallEvent
     @client = client
   end
 
+  def self.subscribe_events(call)
+    EVENT_TYPES.keys.each do |event_type|
+      call.register_event_handler(event_type) { |event| new(event).call }
+    end
+  end
+
   def call
     client.notify_call_event(call_event_data)
   end
