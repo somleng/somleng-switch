@@ -1,8 +1,5 @@
-require 'call_controllers/call_controller'
+require "call_controllers/call_controller"
 
 Adhearsion.router do
-
-  # Specify your call routes, directing calls with particular attributes to a controller
-
-  route 'default', CallController
+  route "default", CallController
 end

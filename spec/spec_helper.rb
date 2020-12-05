@@ -9,7 +9,6 @@ ENV["AHN_ENV"] ||= "test"
 ENV["APP_ENV"] ||= "test"
 
 require File.expand_path("../config/environment", __dir__)
-require "adhearsion/rspec"
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.

@@ -7,10 +7,7 @@ gem "sentry-raven"
 gem "sinatra"
 gem "sinatra-contrib"
 
-# Adhearsion-Twilio
-gem "httparty"
 gem "mail"
-gem "somleng-twilio_http_client", github: "somleng/somleng-twilio_http_client"
 
 group :development, :test do
   gem "rubocop"

@@ -4,7 +4,4 @@ Adhearsion.config do |config|
   config.core.type = :xmpp
   config.core.username = AppSettings.fetch(:ahn_core_username)
   config.core.password = AppSettings.fetch(:ahn_core_password)
-
-  # Twilio Settings
-  config.twilio.rest_api_enabled = "1"
 end

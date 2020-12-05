@@ -202,7 +202,7 @@ RSpec.describe CallController, type: :call_controller do
 
           controller.run
 
-          expect(controller).to have_received(:ask) do |_outputs, options|
+          expect(controller).to have_received(:ask) do |*, options|
             expect(options.fetch(:timeout)).to eq(5.seconds)
           end
         end
@@ -222,7 +222,7 @@ RSpec.describe CallController, type: :call_controller do
 
           controller.run
 
-          expect(controller).to have_received(:ask) do |_outputs, options|
+          expect(controller).to have_received(:ask) do |*, options|
             expect(options.fetch(:timeout)).to eq(10.seconds)
           end
         end
@@ -260,7 +260,7 @@ RSpec.describe CallController, type: :call_controller do
 
           controller.run
 
-          expect(controller).to have_received(:ask) do |_outputs, options|
+          expect(controller).to have_received(:ask) do |*, options|
             expect(options.fetch(:terminator)).to eq("#")
           end
         end
@@ -280,7 +280,7 @@ RSpec.describe CallController, type: :call_controller do
 
           controller.run
 
-          expect(controller).to have_received(:ask) do |_outputs, options|
+          expect(controller).to have_received(:ask) do |*, options|
             expect(options).not_to have_key(:terminator)
           end
         end
@@ -300,7 +300,7 @@ RSpec.describe CallController, type: :call_controller do
 
           controller.run
 
-          expect(controller).to have_received(:ask) do |_outputs, options|
+          expect(controller).to have_received(:ask) do |*, options|
             expect(options.fetch(:terminator)).to eq("*")
           end
         end
@@ -343,7 +343,7 @@ RSpec.describe CallController, type: :call_controller do
 
           controller.run
 
-          expect(controller).to have_received(:ask) do |_outputs, options|
+          expect(controller).to have_received(:ask) do |*, options|
             expect(options).not_to have_key(:limit)
           end
         end
@@ -363,7 +363,7 @@ RSpec.describe CallController, type: :call_controller do
 
           controller.run
 
-          expect(controller).to have_received(:ask) do |_outputs, options|
+          expect(controller).to have_received(:ask) do |*, options|
             expect(options.fetch(:limit)).to eq(5)
           end
         end
@@ -454,11 +454,23 @@ RSpec.describe CallController, type: :call_controller do
 
         expect(controller).to have_received(:ask) do |*outputs|
           _options = outputs.extract_options!
-          expect(outputs).to eq(
-            Array.new(3, { value: "Hello World", name: "woman", language: "de" }).concat(
-              Array.new(5, { value: "Foobar", name: "man", language: "en" })
-            )
-          )
+          expect(outputs.size).to eq(8)
+
+          outputs.first(3).each do |item|
+            ssml = item.fetch(:value)
+            node = ssml.voice.children.first
+            expect(node.content).to eq("Hello World")
+            expect(node.attributes.fetch("name").value).to eq("woman")
+            expect(node.attributes.fetch("lang").value).to eq("de")
+          end
+
+          outputs.last(5).each do |item|
+            ssml = item.fetch(:value)
+            node = ssml.voice.children.first
+            expect(node.content).to eq("Foobar")
+            expect(node.attributes.fetch("name").value).to eq("man")
+            expect(node.attributes.fetch("lang").value).to eq("en")
+          end
         end
       end
     end
