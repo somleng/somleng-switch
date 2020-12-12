@@ -73,10 +73,6 @@
       {
         "name": "AHN_CORE_HTTP_PORT",
         "value": "${app_port}"
-      },
-      {
-        "name": "AHN_CORE_HOST",
-        "value": "${ahn_core_host}"
       }
     ]
   }

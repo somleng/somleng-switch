@@ -17,6 +17,4 @@ module "somleng_adhearsion" {
   listener_arn = data.terraform_remote_state.core_infrastructure.outputs.https_listener.arn
 
   ecs_appserver_autoscale_min_instances = 1
-
-  ahn_core_host = "freeswitch.somleng.org"
 }
