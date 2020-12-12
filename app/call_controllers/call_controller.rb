@@ -5,8 +5,8 @@ class CallController < Adhearsion::CallController
     @call_properties = build_call_properties
 
     twiml = request_twiml(
-      call_properties.voice_request_url,
-      call_properties.voice_request_method,
+      call_properties.voice_url,
+      call_properties.voice_method,
       "CallStatus" => "ringing"
     )
 
@@ -27,6 +27,10 @@ class CallController < Adhearsion::CallController
 
   attr_reader :call_properties
 
+  def call_platform_client
+    CallPlatform::Client.new
+  end
+
   def register_event_handlers
     NotifyCallEvent.subscribe_events(call)
   end
@@ -34,10 +38,19 @@ class CallController < Adhearsion::CallController
   def build_call_properties
     return metadata[:call_properties] if metadata[:call_properties].present?
 
-    response = call_platform_client.create_call(to: normalized_call.to)
+    response = call_platform_client.create_call(
+      to: normalized_call.to,
+      from: normalized_call.from,
+      external_id: call.id,
+      variables: {
+        sip_from_host: call.variables["variable_sip_from_host"],
+        sip_to_host: call.variables["variable_sip_to_host"],
+        sip_network_ip: call.variables["variable_sip_network_ip"]
+      }
+    )
     CallProperties.new(
-      voice_request_url: response.voice_request_url,
-      voice_request_method: response.voice_request_method,
+      voice_url: response.voice_url,
+      voice_method: response.voice_method,
       account_sid: response.account_sid,
       auth_token: response.auth_token,
       call_sid: response.call_sid,
@@ -51,9 +64,7 @@ class CallController < Adhearsion::CallController
   end
 
   def twiml_endpoint
-    @twiml_endpoint ||= TwiMLEndpoint.new(
-      auth_token: call_properties.auth_token
-    )
+    @twiml_endpoint ||= TwiMLEndpoint.new(auth_token: call_properties.auth_token)
   end
 
   def request_twiml(url, http_method, params)

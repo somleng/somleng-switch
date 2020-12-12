@@ -63,7 +63,7 @@ RSpec.describe CallController, type: :call_controller do
         it "POSTS to the current document's URL by default" do
           controller = build_controller(
             stub_voice_commands: { ask: build_input_result("1") },
-            call_properties: { voice_request_url: "https://www.example.com/gather.xml" }
+            call_properties: { voice_url: "https://www.example.com/gather.xml" }
           )
 
           first_response = <<~TWIML
@@ -93,7 +93,7 @@ RSpec.describe CallController, type: :call_controller do
         it "POSTS to an absolute action URL" do
           controller = build_controller(
             stub_voice_commands: { ask: build_input_result("1") },
-            call_properties: { voice_request_url: "https://www.example.com/gather.xml" }
+            call_properties: { voice_url: "https://www.example.com/gather.xml" }
           )
 
           stub_request(:any, "https://www.example.com/gather.xml").to_return(body: <<~TWIML)
@@ -118,7 +118,7 @@ RSpec.describe CallController, type: :call_controller do
         it "POSTS to a relative action URL" do
           controller = build_controller(
             stub_voice_commands: { ask: build_input_result("1") },
-            call_properties: { voice_request_url: "https://www.example.com/gather.xml" }
+            call_properties: { voice_url: "https://www.example.com/gather.xml" }
           )
 
           stub_request(:any, "https://www.example.com/gather.xml").to_return(body: <<~TWIML)
@@ -163,7 +163,7 @@ RSpec.describe CallController, type: :call_controller do
         it "executes a GET request" do
           controller = build_controller(
             stub_voice_commands: { ask: build_input_result("1") },
-            call_properties: { voice_request_url: "https://www.example.com/gather.xml" }
+            call_properties: { voice_url: "https://www.example.com/gather.xml" }
           )
 
           stub_twiml_request(controller, response: <<~TWIML)
@@ -190,7 +190,7 @@ RSpec.describe CallController, type: :call_controller do
         it "defaults to 5s" do
           controller = build_controller(
             stub_voice_commands: { ask: build_input_result(nil) },
-            call_properties: { voice_request_url: "https://www.example.com/gather.xml" }
+            call_properties: { voice_url: "https://www.example.com/gather.xml" }
           )
 
           stub_twiml_request(controller, response: <<~TWIML)
@@ -210,7 +210,7 @@ RSpec.describe CallController, type: :call_controller do
         it "sets the timeout from the TwiML" do
           controller = build_controller(
             stub_voice_commands: { ask: build_input_result(nil) },
-            call_properties: { voice_request_url: "https://www.example.com/gather.xml" }
+            call_properties: { voice_url: "https://www.example.com/gather.xml" }
           )
 
           stub_twiml_request(controller, response: <<~TWIML)
@@ -248,7 +248,7 @@ RSpec.describe CallController, type: :call_controller do
         it "defaults to #" do
           controller = build_controller(
             stub_voice_commands: { ask: build_input_result(nil) },
-            call_properties: { voice_request_url: "https://www.example.com/gather.xml" }
+            call_properties: { voice_url: "https://www.example.com/gather.xml" }
           )
 
           stub_twiml_request(controller, response: <<~TWIML)
@@ -268,7 +268,7 @@ RSpec.describe CallController, type: :call_controller do
         it "specifying an empty string turns off the terminator" do
           controller = build_controller(
             stub_voice_commands: { ask: build_input_result(nil) },
-            call_properties: { voice_request_url: "https://www.example.com/gather.xml" }
+            call_properties: { voice_url: "https://www.example.com/gather.xml" }
           )
 
           stub_twiml_request(controller, response: <<~TWIML)
@@ -288,7 +288,7 @@ RSpec.describe CallController, type: :call_controller do
         it "sets the finishOnKey from the TwiML" do
           controller = build_controller(
             stub_voice_commands: { ask: build_input_result(nil) },
-            call_properties: { voice_request_url: "https://www.example.com/gather.xml" }
+            call_properties: { voice_url: "https://www.example.com/gather.xml" }
           )
 
           stub_twiml_request(controller, response: <<~TWIML)
@@ -331,7 +331,7 @@ RSpec.describe CallController, type: :call_controller do
         it "is unlimited by default" do
           controller = build_controller(
             stub_voice_commands: { ask: build_input_result(nil) },
-            call_properties: { voice_request_url: "https://www.example.com/gather.xml" }
+            call_properties: { voice_url: "https://www.example.com/gather.xml" }
           )
 
           stub_twiml_request(controller, response: <<~TWIML)
@@ -351,7 +351,7 @@ RSpec.describe CallController, type: :call_controller do
         it "sets the numDigits from the TwiML" do
           controller = build_controller(
             stub_voice_commands: { ask: build_input_result(nil) },
-            call_properties: { voice_request_url: "https://www.example.com/gather.xml" }
+            call_properties: { voice_url: "https://www.example.com/gather.xml" }
           )
 
           stub_twiml_request(controller, response: <<~TWIML)
@@ -378,7 +378,7 @@ RSpec.describe CallController, type: :call_controller do
         it "always send to status" do
           controller = build_controller(
             stub_voice_commands: { ask: build_input_result(nil) },
-            call_properties: { voice_request_url: "https://www.example.com/gather.xml" }
+            call_properties: { voice_url: "https://www.example.com/gather.xml" }
           )
 
           stub_twiml_request(controller, response: <<~TWIML)
@@ -412,7 +412,7 @@ RSpec.describe CallController, type: :call_controller do
 
         controller = build_controller(
           stub_voice_commands: { ask: build_input_result(nil) },
-          call_properties: { voice_request_url: "https://www.example.com/gather.xml" }
+          call_properties: { voice_url: "https://www.example.com/gather.xml" }
         )
 
         stub_twiml_request(controller, response: <<~TWIML)
@@ -437,7 +437,7 @@ RSpec.describe CallController, type: :call_controller do
       it "handles nested <Say>" do
         controller = build_controller(
           stub_voice_commands: { ask: build_input_result(nil) },
-          call_properties: { voice_request_url: "https://www.example.com/gather.xml" }
+          call_properties: { voice_url: "https://www.example.com/gather.xml" }
         )
 
         stub_twiml_request(controller, response: <<~TWIML)

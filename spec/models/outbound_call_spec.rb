@@ -31,8 +31,8 @@ RSpec.describe OutboundCall do
       controller: CallController,
       controller_metadata: {
         call_properties: CallProperties.new(
-          voice_request_url: "https://rapidpro.ngrok.com/handle/33/",
-          voice_request_method: "GET",
+          voice_url: "https://rapidpro.ngrok.com/handle/33/",
+          voice_method: "GET",
           account_sid: "sample-account-sid",
           auth_token: "sample-auth-token",
           call_sid: "sample-call-sid",

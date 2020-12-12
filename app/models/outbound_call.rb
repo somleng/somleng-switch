@@ -12,8 +12,8 @@ class OutboundCall
       controller: CallController,
       controller_metadata: {
         call_properties: CallProperties.new(
-          voice_request_url: call_params.fetch("voice_url"),
-          voice_request_method: call_params.fetch("voice_method"),
+          voice_url: call_params.fetch("voice_url"),
+          voice_method: call_params.fetch("voice_method"),
           account_sid: call_params.fetch("account_sid"),
           auth_token: call_params.fetch("account_auth_token"),
           call_sid: call_params.fetch("sid"),

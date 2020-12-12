@@ -1,11 +1,12 @@
 source "https://rubygems.org"
 
 gem "adhearsion", github: "adhearsion/adhearsion", branch: "develop"
-gem "aws-sdk-sqs"
+gem "faraday"
+gem "faraday_middleware"
 gem "okcomputer"
 gem "sentry-raven"
 gem "sinatra"
-gem "sinatra-contrib"
+gem "sinatra-contrib", require: false
 
 gem "mail"
 

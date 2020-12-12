@@ -42,6 +42,7 @@ class TwiMLEndpoint
       conn.headers["accept"] = "*/*"
       conn.headers["cache-control"] = "max-age=#{72.hours.seconds}"
 
+      conn.use FaradayMiddleware::FollowRedirects
       conn.adapter Faraday.default_adapter
     end
   end

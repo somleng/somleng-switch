@@ -1,12 +1,14 @@
 require "spec_helper"
 
 RSpec.describe CallController, type: :call_controller do
-  it "handles inbound calls" do
-    call = build_fake_call
+  it "handles inbound calls", :vcr, cassette: :inbound_call do
+    call = build_fake_call(to: "1234")
     controller = CallController.new(call)
+    stub_controller_voice_commands(controller, voice_commands: %i[say play_audio])
 
     controller.run
 
-    expect(controller).to have_received(:hangup)
+    expect(controller).to have_received(:say)
+    expect(controller).to have_received(:play_audio)
   end
 end

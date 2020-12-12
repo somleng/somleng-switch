@@ -1,0 +1,53 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://localhost:3000/services/phone_call_events
+    body:
+      encoding: UTF-8
+      string: '{"type":"completed","phone_call":"5c8102f2-262a-418a-96b9-aa79789af621","variables":{"sip_term_status":"200","answer_epoch":"1607752961"}}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      Authorization:
+      - Basic c2VydmljZXM6cGFzc3dvcmQ=
+      User-Agent:
+      - Faraday v1.0.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/json; charset=utf-8
+      Etag:
+      - W/"a66e39e1ab0a073787ed252e615ab8cb"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      X-Request-Id:
+      - e4453483-af55-4459-8c5a-f0209c80faf9
+      X-Runtime:
+      - '0.080083'
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: '{"api_version":"2010-04-01","created_at":"2020-12-12T06:09:19Z","updated_at":"2020-12-12T06:09:19Z","type":"completed"}'
+  recorded_at: Sat, 12 Dec 2020 06:09:20 GMT
+recorded_with: VCR 6.0.0
