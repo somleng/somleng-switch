@@ -12,7 +12,7 @@ production:
   <<: *default
   sentry_dsn: "<%= AppSettings.credentials.fetch('sentry_dsn') %>"
   ahn_core_password: "<%= AppSettings.credentials.fetch('ahn_core_password') %>"
-  services_host: "https://twilreapi.somleng.org"
+  services_host: "https://twilreapi2.somleng.org"
   call_platform_username: "services"
   call_platform_password: "<%= AppSettings.credentials.fetch('call_platform_password') %>"
 
