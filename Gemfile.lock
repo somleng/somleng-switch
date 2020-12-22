@@ -79,7 +79,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    codecov (0.2.14)
+    codecov (0.2.15)
       simplecov (>= 0.15, < 0.21)
     coderay (1.1.2)
     coercible (1.0.0)
