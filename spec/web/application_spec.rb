@@ -18,7 +18,7 @@ module SomlengAdhearsion
           outbound_call = instance_double(Adhearsion::OutboundCall, id: "123456")
           allow(Adhearsion::OutboundCall).to receive(:originate).and_return(outbound_call)
 
-          basic_authorize "username", "password"
+          basic_authorize "adhearsion", "password"
           post(
             "/calls",
             {
