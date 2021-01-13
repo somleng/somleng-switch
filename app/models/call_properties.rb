@@ -6,5 +6,7 @@ CallProperties = Struct.new(
   :call_sid,
   :direction,
   :api_version,
+  :to,
+  :from,
   keyword_init: true
 )

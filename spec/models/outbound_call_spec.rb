@@ -37,7 +37,9 @@ RSpec.describe OutboundCall do
           auth_token: "sample-auth-token",
           call_sid: "sample-call-sid",
           direction: "outbound-api",
-          api_version: "2010-04-01"
+          api_version: "2010-04-01",
+          to: "+85512334667",
+          from: "2442"
         )
       }
     )

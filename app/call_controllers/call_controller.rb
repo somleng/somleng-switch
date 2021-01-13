@@ -69,8 +69,8 @@ class CallController < Adhearsion::CallController
 
   def request_twiml(url, http_method, params)
     request_params = {
-      "From" => normalized_call.from,
-      "To" => normalized_call.to,
+      "From" => call_properties.from,
+      "To" => call_properties.to,
       "CallSid" => call_properties.call_sid,
       "Direction" => call_properties.direction,
       "AccountSid" => call_properties.account_sid,

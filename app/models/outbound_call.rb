@@ -18,7 +18,9 @@ class OutboundCall
           auth_token: call_params.fetch("account_auth_token"),
           call_sid: call_params.fetch("sid"),
           direction: call_params.fetch("direction"),
-          api_version: call_params.fetch("api_version")
+          api_version: call_params.fetch("api_version"),
+          from: call_params.fetch("from"),
+          to: call_params.fetch("to")
         )
       }
     )
