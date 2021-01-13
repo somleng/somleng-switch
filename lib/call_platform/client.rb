@@ -10,6 +10,8 @@ module CallPlatform
       :call_sid,
       :direction,
       :api_version,
+      :to,
+      :from,
       keyword_init: true
     )
 
@@ -34,6 +36,8 @@ module CallPlatform
         auth_token: json_response.fetch("account_auth_token"),
         call_sid: json_response.fetch("sid"),
         direction: json_response.fetch("direction"),
+        to: json_response.fetch("to"),
+        from: json_response.fetch("from"),
         api_version: json_response.fetch("api_version")
       )
     end

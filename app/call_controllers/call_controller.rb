@@ -55,7 +55,9 @@ class CallController < Adhearsion::CallController
       auth_token: response.auth_token,
       call_sid: response.call_sid,
       direction: response.direction,
-      api_version: response.api_version
+      api_version: response.api_version,
+      to: response.to,
+      from: response.from
     )
   end
 
