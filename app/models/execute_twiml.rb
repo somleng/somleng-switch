@@ -138,6 +138,7 @@ class ExecuteTwiML
     end
 
     ask_result = ask(*ask_params, ask_options)
+    logger.info("Ask Result: #{ask_result.to_h}")
 
     digits = ask_result.utterance
     if digits.present? || attributes["actionOnEmptyResult"] == "true"
