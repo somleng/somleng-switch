@@ -9,6 +9,7 @@ gem "sinatra"
 gem "sinatra-contrib", require: false
 
 gem "mail"
+gem "phony"
 
 group :development, :test do
   gem "rubocop"

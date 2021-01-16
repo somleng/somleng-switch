@@ -7,7 +7,9 @@ module CallControllerHelpers
       direction: "outbound-api",
       account_sid: SecureRandom.uuid,
       api_version: "2010-04-01",
-      auth_token: SecureRandom.alphanumeric
+      auth_token: SecureRandom.alphanumeric,
+      from: "1000",
+      to: "85512456869"
     )
     controller = CallController.new(call, call_properties: CallProperties.new(call_properties))
 

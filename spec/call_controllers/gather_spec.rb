@@ -63,7 +63,11 @@ RSpec.describe CallController, type: :call_controller do
         it "POSTS to the current document's URL by default" do
           controller = build_controller(
             stub_voice_commands: { ask: build_input_result("1") },
-            call_properties: { voice_url: "https://www.example.com/gather.xml" }
+            call_properties: {
+              voice_url: "https://www.example.com/gather.xml",
+              from: "85512456869",
+              to: "1000"
+            }
           )
 
           first_response = <<~TWIML
@@ -86,7 +90,7 @@ RSpec.describe CallController, type: :call_controller do
           controller.run
 
           expect(WebMock).to(have_requested(:post, "https://www.example.com/gather.xml").with { |request|
-            request.body.include?("Digits=1")
+            request.body.include?("Digits=1") && request.body.include?("To=1000") && request.body.include?("From=%2B85512456869")
           })
         end
 
