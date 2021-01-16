@@ -1,10 +1,16 @@
-# encoding: utf-8
-
-require 'bundler'
+require "bundler"
 Bundler.setup
 
-require 'adhearsion'
-
+require "adhearsion"
+require "active_support/all"
 Bundler.require(:default, Adhearsion.environment)
 
-$LOAD_PATH.unshift(File.expand_path(File.join(File.dirname(__FILE__), '../app/')))
+$LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
+require "encrypted_credentials"
+require "call_platform"
+
+require_relative "app_settings"
+Dir[__dir__ + "/../app/**/*.rb"].sort.each { |f| require f }
+Dir[__dir__ + "/initializers/**/*.rb"].sort.each { |f| require f }
+
+$LOAD_PATH.unshift(File.expand_path(File.join(File.dirname(__FILE__), "../app/")))

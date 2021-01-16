@@ -1,13 +1,8 @@
-require_relative "../app/models/drb_endpoint"
-
 Adhearsion.config do |config|
   # Core Settings
-  config.core.http.enable = false
-
-  # DRb Settings
-  config.adhearsion_drb.shared_object = DrbEndpoint.new
-  config.adhearsion_drb.acl.allow = "all"
-
-  # Twilio Settings
-  config.twilio.rest_api_enabled = "1"
+  config.core.http.enable = true
+  config.core.type = :xmpp
+  config.core.host = AppSettings.fetch(:ahn_core_host)
+  config.core.username = AppSettings.fetch(:ahn_core_username)
+  config.core.password = AppSettings.fetch(:ahn_core_password)
 end

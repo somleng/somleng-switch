@@ -1,12 +1,14 @@
 source "https://rubygems.org"
 
-git_source(:github) { |repo| "https://github.com/#{repo}.git" }
-
 gem "adhearsion", github: "adhearsion/adhearsion", branch: "develop"
-gem "adhearsion-twilio", github: "somleng/adhearsion-twilio"
-gem "somleng-twilio_http_client", github: "somleng/somleng-twilio_http_client"
+gem "faraday"
+gem "faraday_middleware"
+gem "okcomputer"
+gem "sentry-raven"
+gem "sinatra"
+gem "sinatra-contrib", require: false
 
-gem "adhearsion-drb", branch: :develop, github: "dwilkie/adhearsion-drb"
+gem "mail"
 
 group :development, :test do
   gem "rubocop"
@@ -15,10 +17,10 @@ group :development, :test do
 end
 
 group :test do
-  gem "codecov", require: false
   gem "rack-test"
   gem "rspec"
   gem "simplecov", require: false
+  gem "simplecov-lcov", require: false
   gem "vcr"
   gem "webmock"
 end
