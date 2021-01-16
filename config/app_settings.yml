@@ -14,7 +14,7 @@ production:
   ahn_core_host: "freeswitch.somleng.org"
   ahn_core_password: "<%= AppSettings.credentials.fetch('ahn_core_password') %>"
   ahn_http_password: "<%= AppSettings.credentials.fetch('ahn_http_password') %>"
-  call_platform_host: "https://twilreapi2.somleng.org"
+  call_platform_host: "https://twilreapi.somleng.org"
   call_platform_password: "<%= AppSettings.credentials.fetch('call_platform_password') %>"
 
 development: &development
