@@ -57,7 +57,7 @@ class TwiMLEndpoint
   end
 
   def parse_twiml(content)
-    doc = ::Nokogiri::XML(content) do |config|
+    doc = ::Nokogiri::XML(content, nil, "UTF-8") do |config|
       config.options = Nokogiri::XML::ParseOptions::NOBLANKS
     end
 
