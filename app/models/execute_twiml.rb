@@ -95,6 +95,9 @@ class ExecuteTwiML
     answer unless answered?
 
     attributes = twiml_attributes(verb)
+    logger.info("Executing Say with: ")
+    logger.info(say_options(verb.content, attributes))
+
     twiml_loop(attributes).each do
       say(say_options(verb.content, attributes))
     end
