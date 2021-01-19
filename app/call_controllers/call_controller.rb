@@ -82,7 +82,8 @@ class CallController < Adhearsion::CallController
     twiml_endpoint.request(
       url,
       http_method,
-      request_params
+      request_params,
+      logger: logger
     )
   end
 

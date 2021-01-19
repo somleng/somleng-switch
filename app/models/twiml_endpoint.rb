@@ -10,7 +10,7 @@ class TwiMLEndpoint
     @auth_token = options.fetch(:auth_token)
   end
 
-  def request(url, http_method, params)
+  def request(url, http_method, params, logger:)
     url = resolve_url(url)
     http_method = HTTP_METHODS.fetch(http_method, :post)
 
@@ -23,6 +23,9 @@ class TwiMLEndpoint
         params: params
       )
     )
+
+    logger.info("TwiML Response: ")
+    logger.info(last_response.body)
 
     parse_twiml(last_response.body)
   end
