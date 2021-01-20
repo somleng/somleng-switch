@@ -21,8 +21,9 @@ RSpec.describe CallController, type: :call_controller do
       it "outputs SSML" do
         controller = build_controller(stub_voice_commands: :say)
         stub_twiml_request(controller, response: <<~TWIML)
-          <?xml version="1.0" encoding="UTF-8" ?>
-          <Response>
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <!-- Handles whitespace -->
+            <Response>
             <!-- Test Comment -->
             <Say>Hello World</Say>
           </Response>
