@@ -32,6 +32,8 @@ class ExecuteTwiML
   def call
     redirect_args = catch(:redirect) do
       twiml.each do |verb|
+        next if verb.comment?
+
         case verb.name
         when "Reject"
           execute_reject(verb)

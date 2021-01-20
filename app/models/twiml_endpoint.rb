@@ -57,7 +57,7 @@ class TwiMLEndpoint
   end
 
   def parse_twiml(content)
-    doc = ::Nokogiri::XML(content, nil, "UTF-8") do |config|
+    doc = ::Nokogiri::XML(content) do |config|
       config.options = Nokogiri::XML::ParseOptions::NOBLANKS
     end
 
@@ -65,6 +65,6 @@ class TwiMLEndpoint
 
     doc.root.children
   rescue Nokogiri::XML::SyntaxError => e
-    raise Errors::TwiMLError, "Error while parsing XML: #{e.message}. XML Document: #{xml}"
+    raise Errors::TwiMLError, "Error while parsing XML: #{e.message}. XML Document: #{content}"
   end
 end
