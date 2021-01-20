@@ -53,7 +53,7 @@ class TwiMLEndpoint
   def twilio_signature(url:, params:)
     data = url + params.sort.join
     digest = OpenSSL::Digest.new("sha1")
-    Base64.encode64(OpenSSL::HMAC.digest(digest, auth_token, data)).strip
+    Base64.strict_encode64(OpenSSL::HMAC.digest(digest, auth_token, data))
   end
 
   def parse_twiml(content)
