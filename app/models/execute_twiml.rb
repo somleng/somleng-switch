@@ -215,11 +215,14 @@ class ExecuteTwiML
       language: attributes.fetch("language", DEFAULT_TWILIO_LANGUAGE)
     }
 
-    RubySpeech::SSML.draw do
+    ssml = RubySpeech::SSML.draw do
       voice(voice_params) do
+        puts method(:string).source_location
         string(content)
       end
     end
+    ssml.document.encoding = "UTF-8"
+    ssml
   end
 
   def twiml_loop(attributes)

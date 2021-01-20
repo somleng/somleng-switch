@@ -25,7 +25,7 @@ RSpec.describe CallController, type: :call_controller do
             <!-- Handles whitespace -->
             <Response>
             <!-- Test Comment -->
-            <Say>Hello World</Say>
+            <Say>Hola, buen día</Say>
           </Response>
         TWIML
 
@@ -33,7 +33,8 @@ RSpec.describe CallController, type: :call_controller do
 
         expect(controller).to have_received(:say) do |ssml|
           expect(ssml).to be_a(RubySpeech::SSML::Speak)
-          expect(ssml.text).to eq("Hello World")
+          expect(ssml.text).to eq("Hola, buen día")
+          expect(ssml.to_xml).to include("Hola, buen día")
         end
       end
     end
