@@ -128,7 +128,7 @@ class ExecuteTwiML
 
       nested_verb_attributes = twiml_attributes(nested_verb)
       content = nested_verb.name == "Say" ? say_options(nested_verb.content, nested_verb_attributes) : nested_verb.content
-      result.concat(Array.new(twiml_loop(nested_verb_attributes).count, { value: content }))
+      result.concat(Array.new(twiml_loop(nested_verb_attributes).count, content))
     end
 
     ask_options = {}
