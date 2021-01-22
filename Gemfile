@@ -22,6 +22,7 @@ group :test do
   gem "rspec"
   gem "simplecov", require: false
   gem "simplecov-lcov", require: false
+  gem "twilio-ruby"
   gem "vcr"
   gem "webmock"
 end

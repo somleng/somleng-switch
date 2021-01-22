@@ -433,7 +433,7 @@ RSpec.describe CallController, type: :call_controller do
         expect(controller).to have_received(:ask) do |*outputs|
           _options = outputs.extract_options!
           expect(outputs).to eq(
-            Array.new(3, { value: "https://api.twilio.com/cowbell.mp3" })
+            Array.new(3, "https://api.twilio.com/cowbell.mp3")
           )
         end
       end
@@ -460,16 +460,14 @@ RSpec.describe CallController, type: :call_controller do
           _options = outputs.extract_options!
           expect(outputs.size).to eq(8)
 
-          outputs.first(3).each do |item|
-            ssml = item.fetch(:value)
+          outputs.first(3).each do |ssml|
             node = ssml.voice.children.first
             expect(node.content).to eq("Hello World")
             expect(node.attributes.fetch("name").value).to eq("woman")
             expect(node.attributes.fetch("lang").value).to eq("de")
           end
 
-          outputs.last(5).each do |item|
-            ssml = item.fetch(:value)
+          outputs.last(5).each do |ssml|
             node = ssml.voice.children.first
             expect(node.content).to eq("Foobar")
             expect(node.attributes.fetch("name").value).to eq("man")

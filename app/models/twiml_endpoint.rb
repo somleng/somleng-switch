@@ -50,11 +50,11 @@ class TwiMLEndpoint
   def twilio_signature(url:, params:)
     data = url + params.sort.join
     digest = OpenSSL::Digest.new("sha1")
-    Base64.encode64(OpenSSL::HMAC.digest(digest, auth_token, data)).strip
+    Base64.strict_encode64(OpenSSL::HMAC.digest(digest, auth_token, data))
   end
 
   def parse_twiml(content)
-    doc = ::Nokogiri::XML(content) do |config|
+    doc = ::Nokogiri::XML(content.strip) do |config|
       config.options = Nokogiri::XML::ParseOptions::NOBLANKS
     end
 
@@ -62,6 +62,6 @@ class TwiMLEndpoint
 
     doc.root.children
   rescue Nokogiri::XML::SyntaxError => e
-    raise Errors::TwiMLError, "Error while parsing XML: #{e.message}. XML Document: #{xml}"
+    raise Errors::TwiMLError, "Error while parsing XML: #{e.message}. XML Document: #{content}"
   end
 end

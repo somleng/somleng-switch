@@ -32,6 +32,8 @@ class ExecuteTwiML
   def call
     redirect_args = catch(:redirect) do
       twiml.each do |verb|
+        next if verb.comment?
+
         case verb.name
         when "Reject"
           execute_reject(verb)
@@ -95,6 +97,7 @@ class ExecuteTwiML
     answer unless answered?
 
     attributes = twiml_attributes(verb)
+
     twiml_loop(attributes).each do
       say(say_options(verb.content, attributes))
     end
@@ -123,7 +126,7 @@ class ExecuteTwiML
 
       nested_verb_attributes = twiml_attributes(nested_verb)
       content = nested_verb.name == "Say" ? say_options(nested_verb.content, nested_verb_attributes) : nested_verb.content
-      result.concat(Array.new(twiml_loop(nested_verb_attributes).count, { value: content }))
+      result.concat(Array.new(twiml_loop(nested_verb_attributes).count, content))
     end
 
     ask_options = {}
@@ -210,11 +213,13 @@ class ExecuteTwiML
       language: attributes.fetch("language", DEFAULT_TWILIO_LANGUAGE)
     }
 
-    RubySpeech::SSML.draw do
+    ssml = RubySpeech::SSML.draw do
       voice(voice_params) do
         string(content)
       end
     end
+    ssml.document.encoding = "UTF-8"
+    ssml
   end
 
   def twiml_loop(attributes)

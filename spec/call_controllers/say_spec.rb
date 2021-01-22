@@ -21,9 +21,11 @@ RSpec.describe CallController, type: :call_controller do
       it "outputs SSML" do
         controller = build_controller(stub_voice_commands: :say)
         stub_twiml_request(controller, response: <<~TWIML)
-          <?xml version="1.0" encoding="UTF-8" ?>
-          <Response>
-            <Say>Hello World</Say>
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <!-- Handles whitespace -->
+            <Response>
+            <!-- Test Comment -->
+            <Say>Hola, buen día</Say>
           </Response>
         TWIML
 
@@ -31,7 +33,8 @@ RSpec.describe CallController, type: :call_controller do
 
         expect(controller).to have_received(:say) do |ssml|
           expect(ssml).to be_a(RubySpeech::SSML::Speak)
-          expect(ssml.text).to eq("Hello World")
+          expect(ssml.text).to eq("Hola, buen día")
+          expect(ssml.to_xml).to include("Hola, buen día")
         end
       end
     end
