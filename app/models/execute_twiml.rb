@@ -97,8 +97,6 @@ class ExecuteTwiML
     answer unless answered?
 
     attributes = twiml_attributes(verb)
-    logger.info("Executing Say with: ")
-    logger.info(say_options(verb.content, attributes))
 
     twiml_loop(attributes).each do
       say(say_options(verb.content, attributes))
@@ -217,7 +215,6 @@ class ExecuteTwiML
 
     ssml = RubySpeech::SSML.draw do
       voice(voice_params) do
-        puts method(:string).source_location
         string(content)
       end
     end

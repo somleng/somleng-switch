@@ -11,7 +11,7 @@ RSpec.describe TwiMLEndpoint do
 
     endpoint = TwiMLEndpoint.new(auth_token: "auth_token")
     params = { foo: :bar }
-    twiml = endpoint.request("https://example.com/twiml", "GET", params, logger: Logger.new(IO::NULL))
+    twiml = endpoint.request("https://example.com/twiml", "GET", params)
 
     expect(twiml.to_xml).to eq("<Say>Hello World</Say>")
     expect(WebMock).to(have_requested(:any, "https://example.com/twiml").with { |request|

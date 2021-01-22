@@ -79,15 +79,11 @@ class CallController < Adhearsion::CallController
       "ApiVersion" => call_properties.api_version
     }.merge(params)
 
-    result = twiml_endpoint.request(
+    twiml_endpoint.request(
       url,
       http_method,
-      request_params,
-      logger: logger
+      request_params
     )
-
-    logger.info("Parsed TwiML: #{result.inspect}")
-    result
   end
 
   def execute_twiml(twiml)
