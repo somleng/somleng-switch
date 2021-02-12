@@ -93,4 +93,8 @@ class CallController < Adhearsion::CallController
   def format_number(number)
     Phony.plausible?(number) ? "+#{number}" : number
   end
+
+  def output_formatter
+    SSMLFormatter.new
+  end
 end
