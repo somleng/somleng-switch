@@ -15,7 +15,6 @@ module "somleng_adhearsion" {
 
   load_balancer_arn = data.terraform_remote_state.core_infrastructure.outputs.application_load_balancer.arn
   listener_arn = data.terraform_remote_state.core_infrastructure.outputs.https_listener.arn
-  rayo_security_group_id = data.terraform_remote_state.somleng_freeswitch.outputs.rayo_security_group.id
 
   ecs_appserver_autoscale_min_instances = 1
 }
