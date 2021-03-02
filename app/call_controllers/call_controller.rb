@@ -23,13 +23,13 @@ class CallController < Adhearsion::CallController
     execute_twiml(twiml)
   end
 
-  private
-
-  attr_reader :call_properties
-
   def call_platform_client
     CallPlatform::Client.new
   end
+
+  private
+
+  attr_reader :call_properties
 
   def register_event_handlers
     NotifyCallEvent.subscribe_events(call)

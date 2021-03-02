@@ -1,0 +1,153 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://localhost:3000/services/dial_string
+    body:
+      encoding: UTF-8
+      string: '{"phone_number":"85516701721"}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      Authorization:
+      - Basic c2VydmljZXM6cGFzc3dvcmQ=
+      User-Agent:
+      - Faraday v1.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/json; charset=utf-8
+      Etag:
+      - W/"9a887236b8d518a24a02c051e676f35c"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      X-Request-Id:
+      - '008166dd-95fb-4259-887c-9cbeec4ef662'
+      X-Runtime:
+      - '0.008880'
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: '{"dial_string":"016701721@27.109.112.140"}'
+  recorded_at: Tue, 02 Mar 2021 07:45:59 GMT
+- request:
+    method: post
+    uri: http://localhost:3000/services/dial_string
+    body:
+      encoding: UTF-8
+      string: '{"phone_number":"855715100860"}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      Authorization:
+      - Basic c2VydmljZXM6cGFzc3dvcmQ=
+      User-Agent:
+      - Faraday v1.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/json; charset=utf-8
+      Etag:
+      - W/"047d5528f2c3c095043c48b7fb7779c3"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      X-Request-Id:
+      - 2e0dd7e8-c47d-48bc-8279-6dbba267c3cf
+      X-Runtime:
+      - '0.008235'
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: '{"dial_string":"0715100860@175.100.93.13"}'
+  recorded_at: Tue, 02 Mar 2021 07:45:59 GMT
+- request:
+    method: post
+    uri: http://localhost:3000/services/dial_string
+    body:
+      encoding: UTF-8
+      string: '{"phone_number":"85510555777"}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      Authorization:
+      - Basic c2VydmljZXM6cGFzc3dvcmQ=
+      User-Agent:
+      - Faraday v1.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/json; charset=utf-8
+      Etag:
+      - W/"efe510bfdb0ad2b140bc391c96273100"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      X-Request-Id:
+      - 94ab4b41-51ad-4abc-9778-542e744c7961
+      X-Runtime:
+      - '0.007063'
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: '{"dial_string":"010555777@27.109.112.140"}'
+  recorded_at: Tue, 02 Mar 2021 07:45:59 GMT
+recorded_with: VCR 6.0.0

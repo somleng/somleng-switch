@@ -2,7 +2,7 @@ class ExecuteTwiML
   attr_reader :context, :twiml
 
   delegate :logger, to: :context
-  delegate :ask, :dial, :hangup, :say, :play_audio, :answer, :reject, :redirect, to: :context
+  delegate :ask, :dial, :hangup, :say, :play_audio, :answer, :reject, :redirect, :call_platform_client, to: :context
 
   NESTED_GATHER_VERBS = %w[Say Play].freeze
   MAX_LOOP = 100
@@ -160,7 +160,7 @@ class ExecuteTwiML
     attributes = twiml_attributes(verb)
 
     to = verb.children.each_with_object({}) do |nested_noun, result|
-      dial_string = Utils.build_dial_string(nested_noun.content.strip)
+      dial_string = build_dial_string(nested_noun.content.strip)
       break dial_string if nested_noun.text?
 
       unless ["Number"].include?(nested_noun.name)
@@ -233,5 +233,11 @@ class ExecuteTwiML
     node.attributes.each_with_object({}) do |(key, attribute), options|
       options[key] = attribute.value
     end
+  end
+
+  def build_dial_string(number)
+    Utils.build_dial_string(
+      call_platform_client.build_dial_string(number)
+    )
   end
 end

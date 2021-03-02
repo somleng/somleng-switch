@@ -23,6 +23,16 @@ module CallPlatform
       end
     end
 
+    def build_dial_string(phone_number)
+      response = http_client.post("/services/dial_string", { phone_number: phone_number }.to_json)
+
+      unless response.success?
+        Raven.capture_message("Invalid building a dial string", extra: { response_body: response.body })
+      end
+
+      JSON.parse(response.body).fetch("dial_string")
+    end
+
     def create_call(params)
       response = http_client.post("/services/inbound_phone_calls", params.to_json)
 
