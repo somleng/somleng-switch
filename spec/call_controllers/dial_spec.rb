@@ -383,6 +383,6 @@ RSpec.describe CallController, type: :call_controller do
   end
 
   def dial_string(number)
-    start_with("sofia/external/#{number}@")
+    match(%r{sofia/external/#{number}@.+})
   end
 end
