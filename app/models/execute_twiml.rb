@@ -160,14 +160,15 @@ class ExecuteTwiML
     attributes = twiml_attributes(verb)
 
     to = verb.children.each_with_object({}) do |nested_noun, result|
-      break nested_noun.content.strip if nested_noun.text?
+      dial_string = Utils.build_dial_string(nested_noun.content.strip)
+      break dial_string if nested_noun.text?
 
       unless ["Number"].include?(nested_noun.name)
         raise Errors::TwiMLError, "Nested noun <#{nested_noun.name}> not allowed within <Dial>"
       end
 
       nested_noun_attributes = twiml_attributes(nested_noun)
-      result[nested_noun.content.strip] = {
+      result[dial_string] = {
         from: nested_noun_attributes["callerId"],
         ringback: nested_noun_attributes["ringToneUrl"]
       }.compact

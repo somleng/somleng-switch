@@ -40,7 +40,10 @@ RSpec.describe CallController, type: :call_controller do
 
       controller.run
 
-      expect(controller).to have_received(:dial).with("+415-123-4567", for: 30.seconds)
+      expect(controller).to have_received(:dial).with(
+        dial_string("+415-123-4567"),
+        for: 30.seconds
+      )
       expect(controller).to have_received(:play_audio).with("foo.mp3")
     end
 
@@ -64,9 +67,9 @@ RSpec.describe CallController, type: :call_controller do
 
       expect(controller).to have_received(:dial).with(
         {
-          "858-987-6543" => {},
-          "415-123-4567" => {},
-          "619-765-4321" => {}
+          dial_string("858-987-6543") => {},
+          dial_string("415-123-4567") => {},
+          dial_string("619-765-4321") => {}
         },
         any_args
       )
@@ -92,9 +95,9 @@ RSpec.describe CallController, type: :call_controller do
 
       expect(controller).to have_received(:dial).with(
         {
-          "858-987-6543" => { from: "2442" },
-          "415-123-4567" => { from: "2443" },
-          "619-765-4321" => {}
+          dial_string("858-987-6543") => { from: "2442" },
+          dial_string("415-123-4567") => { from: "2443" },
+          dial_string("619-765-4321") => {}
         },
         any_args
       )
@@ -313,7 +316,10 @@ RSpec.describe CallController, type: :call_controller do
 
         controller.run
 
-        expect(controller).to have_received(:dial).with("+415-123-4567", hash_including(from: "2442"))
+        expect(controller).to have_received(:dial).with(
+          dial_string("+415-123-4567"),
+          hash_including(from: "2442")
+        )
       end
     end
 
@@ -332,7 +338,10 @@ RSpec.describe CallController, type: :call_controller do
 
         controller.run
 
-        expect(controller).to have_received(:dial).with("+415-123-4567", hash_including(for: 10.seconds))
+        expect(controller).to have_received(:dial).with(
+          dial_string("+415-123-4567"),
+          hash_including(for: 10.seconds)
+        )
       end
     end
 
@@ -354,7 +363,8 @@ RSpec.describe CallController, type: :call_controller do
         controller.run
 
         expect(controller).to have_received(:dial).with(
-          "+415-123-4567", hash_including(ringback: "http://api.twilio.com/cowbell.mp3")
+          dial_string("+415-123-4567"),
+          hash_including(ringback: "http://api.twilio.com/cowbell.mp3")
         )
       end
     end
@@ -370,5 +380,9 @@ RSpec.describe CallController, type: :call_controller do
 
   def build_outbound_call(options = {})
     instance_double(Adhearsion::OutboundCall, options)
+  end
+
+  def dial_string(number)
+    Utils.build_dial_string(number)
   end
 end
