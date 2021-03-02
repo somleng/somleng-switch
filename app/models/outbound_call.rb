@@ -33,6 +33,6 @@ class OutboundCall
   end
 
   def dial_string
-    ["sofia/external", routing_instructions.fetch("dial_string")].join("/")
+    Utils.build_dial_string(routing_instructions.fetch("dial_string"))
   end
 end

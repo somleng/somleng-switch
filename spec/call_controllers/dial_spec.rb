@@ -25,7 +25,7 @@ RSpec.describe CallController, type: :call_controller do
     # | <Queue>      | A nested XML element identifying a queue                          |
     # |              | that this call should be connected to.                            |
 
-    it "dials to plain text" do
+    it "dials to plain text", :vcr, cassette: :build_dial_string do
       controller = build_controller(
         stub_voice_commands: [:play_audio, dial: build_dial_status]
       )
@@ -33,18 +33,21 @@ RSpec.describe CallController, type: :call_controller do
       stub_twiml_request(controller, response: <<~TWIML)
         <?xml version="1.0" encoding="UTF-8" ?>
         <Response>
-          <Dial>+415-123-4567</Dial>
+          <Dial>85516701721</Dial>
           <Play>foo.mp3</Play>
         </Response>
       TWIML
 
       controller.run
 
-      expect(controller).to have_received(:dial).with("+415-123-4567", for: 30.seconds)
+      expect(controller).to have_received(:dial).with(
+        dial_string("016701721"),
+        for: 30.seconds
+      )
       expect(controller).to have_received(:play_audio).with("foo.mp3")
     end
 
-    it "dials to <Number>" do
+    it "dials to <Number>", :vcr, cassette: :build_multiple_dial_strings do
       controller = build_controller(
         stub_voice_commands: { dial: build_dial_status }
       )
@@ -53,9 +56,9 @@ RSpec.describe CallController, type: :call_controller do
         <?xml version="1.0" encoding="UTF-8" ?>
         <Response>
           <Dial>
-            <Number>858-987-6543</Number>
-            <Number>415-123-4567</Number>
-            <Number>619-765-4321</Number>
+            <Number>85516701721</Number>
+            <Number>855715100860</Number>
+            <Number>85510555777</Number>
           </Dial>
         </Response>
       TWIML
@@ -63,16 +66,16 @@ RSpec.describe CallController, type: :call_controller do
       controller.run
 
       expect(controller).to have_received(:dial).with(
-        {
-          "858-987-6543" => {},
-          "415-123-4567" => {},
-          "619-765-4321" => {}
-        },
+        include(
+          dial_string("016701721") => {},
+          dial_string("0715100860") => {},
+          dial_string("010555777") => {}
+        ),
         any_args
       )
     end
 
-    it "supports callerId" do
+    it "supports callerId", :vcr, cassette: :build_multiple_dial_strings do
       controller = build_controller(
         stub_voice_commands: { dial: build_dial_status }
       )
@@ -81,9 +84,9 @@ RSpec.describe CallController, type: :call_controller do
         <?xml version="1.0" encoding="UTF-8" ?>
         <Response>
           <Dial>
-            <Number callerId="2442">858-987-6543</Number>
-            <Number callerId="2443">415-123-4567</Number>
-            <Number>619-765-4321</Number>
+            <Number callerId="2442">85516701721</Number>
+            <Number callerId="2443">855715100860</Number>
+            <Number>85510555777</Number>
           </Dial>
         </Response>
       TWIML
@@ -91,11 +94,11 @@ RSpec.describe CallController, type: :call_controller do
       controller.run
 
       expect(controller).to have_received(:dial).with(
-        {
-          "858-987-6543" => { from: "2442" },
-          "415-123-4567" => { from: "2443" },
-          "619-765-4321" => {}
-        },
+        include(
+          dial_string("016701721") => { from: "2442" },
+          dial_string("0715100860") => { from: "2443" },
+          dial_string("010555777") => {}
+        ),
         any_args
       )
     end
@@ -161,7 +164,7 @@ RSpec.describe CallController, type: :call_controller do
       # |           | a properly formatted but non-existent phone number.                       |
       # | canceled  | The call was canceled via the REST API before it was answered.            |
 
-      it "POSTS to the action url" do
+      it "POSTS to the action url", :vcr, cassette: :build_dial_string do
         outbound_call = build_outbound_call(id: "481f77b9-a95b-4c6a-bbb1-23afcc42c959")
         joins_status = build_dial_join_status(:joined, duration: 23.7)
 
@@ -173,7 +176,7 @@ RSpec.describe CallController, type: :call_controller do
         stub_request(:any, "https://www.example.com/dial.xml").to_return(body: <<~TWIML)
           <?xml version="1.0" encoding="UTF-8" ?>
           <Response>
-            <Dial action="https://www.example.com/dial_results.xml">+415-123-4567</Dial>
+            <Dial action="https://www.example.com/dial_results.xml">+855 16 701721</Dial>
             <Play>foo.mp3</Play>
           </Response>
         TWIML
@@ -194,7 +197,7 @@ RSpec.describe CallController, type: :call_controller do
         })
       end
 
-      it "handles multiple calls" do
+      it "handles multiple calls", :vcr, cassette: :build_multiple_dial_strings do
         joined_outbound_call = build_outbound_call(id: "481f77b9-a95b-4c6a-bbb1-23afcc42c959")
         no_answer_outbound_call = build_outbound_call
 
@@ -215,8 +218,8 @@ RSpec.describe CallController, type: :call_controller do
           <?xml version="1.0" encoding="UTF-8" ?>
           <Response>
             <Dial action="https://www.example.com/dial_results.xml">
-              <Number>+415-123-4567</Number>
-              <Number>+415-123-4568</Number>
+              <Number>85516701721</Number>
+              <Number>855715100860</Number>
             </Dial>
           </Response>
         TWIML
@@ -244,7 +247,7 @@ RSpec.describe CallController, type: :call_controller do
       # This attribute is modeled after the HTML form 'method' attribute.
       # 'POST' is the default value.
 
-      it "executes a GET request" do
+      it "executes a GET request", :vcr, cassette: :build_dial_string do
         controller = build_controller(
           stub_voice_commands: { dial: build_dial_status },
         )
@@ -252,7 +255,7 @@ RSpec.describe CallController, type: :call_controller do
         stub_twiml_request(controller, response: <<~TWIML)
           <?xml version="1.0" encoding="UTF-8" ?>
           <Response>
-            <Dial action="https://www.example.com/dial_results.xml" method="GET">+415-123-4567</Dial>
+            <Dial action="https://www.example.com/dial_results.xml" method="GET">+855 16 701 721</Dial>
           </Response>
         TWIML
 
@@ -299,7 +302,7 @@ RSpec.describe CallController, type: :call_controller do
       # | callerId  | a valid phone number, or client identifier | Caller's callerId |
       # |           | if you are dialing a <Client>.             |                   |
 
-      it "sets the callerId" do
+      it "sets the callerId", :vcr, cassette: :build_dial_string do
         controller = build_controller(
           stub_voice_commands: { dial: build_dial_status }
         )
@@ -307,54 +310,61 @@ RSpec.describe CallController, type: :call_controller do
         stub_twiml_request(controller, response: <<~TWIML)
           <?xml version="1.0" encoding="UTF-8" ?>
           <Response>
-            <Dial callerId="2442">+415-123-4567</Dial>
-          </Response>
-        TWIML
-
-        controller.run
-
-        expect(controller).to have_received(:dial).with("+415-123-4567", hash_including(from: "2442"))
-      end
-    end
-
-    describe "timeout" do
-      it "handles timeout" do
-        controller = build_controller(
-          stub_voice_commands: { dial: build_dial_status }
-        )
-
-        stub_twiml_request(controller, response: <<~TWIML)
-          <?xml version="1.0" encoding="UTF-8" ?>
-          <Response>
-            <Dial timeout="10">+415-123-4567</Dial>
-          </Response>
-        TWIML
-
-        controller.run
-
-        expect(controller).to have_received(:dial).with("+415-123-4567", hash_including(for: 10.seconds))
-      end
-    end
-
-    describe "ringToneUrl" do
-      # Not supported by Twilio
-
-      it "handles a ringToneUrl" do
-        controller = build_controller(
-          stub_voice_commands: { dial: build_dial_status }
-        )
-
-        stub_twiml_request(controller, response: <<~TWIML)
-          <?xml version="1.0" encoding="UTF-8" ?>
-          <Response>
-            <Dial ringToneUrl="http://api.twilio.com/cowbell.mp3">+415-123-4567</Dial>
+            <Dial callerId="2442">+85516701721</Dial>
           </Response>
         TWIML
 
         controller.run
 
         expect(controller).to have_received(:dial).with(
-          "+415-123-4567", hash_including(ringback: "http://api.twilio.com/cowbell.mp3")
+          dial_string("016701721"),
+          hash_including(from: "2442")
+        )
+      end
+    end
+
+    describe "timeout" do
+      it "handles timeout", :vcr, cassette: :build_multiple_dial_strings do
+        controller = build_controller(
+          stub_voice_commands: { dial: build_dial_status }
+        )
+
+        stub_twiml_request(controller, response: <<~TWIML)
+          <?xml version="1.0" encoding="UTF-8" ?>
+          <Response>
+            <Dial timeout="10">85516701721</Dial>
+          </Response>
+        TWIML
+
+        controller.run
+
+        expect(controller).to have_received(:dial).with(
+          dial_string("016701721"),
+          hash_including(for: 10.seconds)
+        )
+      end
+    end
+
+    describe "ringToneUrl" do
+      # Not supported by Twilio
+
+      it "handles a ringToneUrl", :vcr, cassette: :build_dial_string do
+        controller = build_controller(
+          stub_voice_commands: { dial: build_dial_status }
+        )
+
+        stub_twiml_request(controller, response: <<~TWIML)
+          <?xml version="1.0" encoding="UTF-8" ?>
+          <Response>
+            <Dial ringToneUrl="http://api.twilio.com/cowbell.mp3">+85516701721</Dial>
+          </Response>
+        TWIML
+
+        controller.run
+
+        expect(controller).to have_received(:dial).with(
+          dial_string("016701721"),
+          hash_including(ringback: "http://api.twilio.com/cowbell.mp3")
         )
       end
     end
@@ -370,5 +380,9 @@ RSpec.describe CallController, type: :call_controller do
 
   def build_outbound_call(options = {})
     instance_double(Adhearsion::OutboundCall, options)
+  end
+
+  def dial_string(number)
+    match(%r{sofia/external/#{number}@.+})
   end
 end
