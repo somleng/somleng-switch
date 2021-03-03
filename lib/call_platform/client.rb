@@ -1,6 +1,7 @@
 module CallPlatform
   class Client
     class InvalidPhoneCallError < StandardError; end
+    class UnsupportedGatewayError < StandardError; end
 
     InboundPhoneCallResponse = Struct.new(
       :voice_url,
@@ -26,9 +27,7 @@ module CallPlatform
     def build_dial_string(phone_number)
       response = http_client.post("/services/dial_string", { phone_number: phone_number }.to_json)
 
-      unless response.success?
-        Raven.capture_message("Invalid building a dial string", extra: { response_body: response.body })
-      end
+      raise UnsupportedGatewayError, response.body unless response.success?
 
       JSON.parse(response.body).fetch("dial_string")
     end
