@@ -66,6 +66,7 @@ jobs:
 
       - name: Configure AWS credentials
         if: github.ref == matrix.app_env.branch
+        id: aws-login
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -88,15 +89,18 @@ jobs:
           APP_ECR_REPOSITORY: somleng-adhearsion
           NGINX_ECR_REPOSITORY: somleng-adhearsion-nginx
           IMAGE_TAG: ${{ github.sha }}
+          AWS_REGION: us-east-1
         run: |
-          docker build -t $ECR_REGISTRY/$NGINX_ECR_REPOSITORY:$IMAGE_TAG docker/nginx
-          docker push $ECR_REGISTRY/$NGINX_ECR_REPOSITORY:$IMAGE_TAG
-          echo "::set-output name=nginx-image::$ECR_REGISTRY/$NGINX_ECR_REPOSITORY:$IMAGE_TAG"
+          ECR_PUBLIC_REGISTRY=$(aws ecr-public describe-registries --output text --query 'registries[0].registryUri')
+          aws ecr-public get-login-password | docker login --username AWS --password-stdin public.ecr.aws
 
-          docker build -t $ECR_REGISTRY/$APP_ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$APP_ECR_REPOSITORY:$IMAGE_TAG
-          echo "::set-output name=app-image::$ECR_REGISTRY/$APP_ECR_REPOSITORY:$IMAGE_TAG"
+          docker build -t $ECR_PUBLIC_REGISTRY/$NGINX_ECR_REPOSITORY:$IMAGE_TAG -t $ECR_PUBLIC_REGISTRY/$NGINX_ECR_REPOSITORY:latest docker/nginx
+          docker push --all-tags $ECR_PUBLIC_REGISTRY/$NGINX_ECR_REPOSITORY
+          echo "::set-output name=nginx-image::$ECR_PUBLIC_REGISTRY/$NGINX_ECR_REPOSITORY:$IMAGE_TAG"
 
+          docker build -t $ECR_PUBLIC_REGISTRY/$APP_ECR_REPOSITORY:$IMAGE_TAG -t $ECR_PUBLIC_REGISTRY/$APP_ECR_REPOSITORY:latest .
+          docker push --all-tags $ECR_PUBLIC_REGISTRY/$APP_ECR_REPOSITORY
+          echo "::set-output name=app-image::$ECR_PUBLIC_REGISTRY/$APP_ECR_REPOSITORY:$IMAGE_TAG"
       - name: Prepare nginx task definition
         if: github.ref == matrix.app_env.branch
         id: render-nginx-task-def
