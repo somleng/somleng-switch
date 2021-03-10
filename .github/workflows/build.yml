@@ -96,11 +96,11 @@ jobs:
 
           docker build -t $ECR_PUBLIC_REGISTRY/$NGINX_ECR_REPOSITORY:$IMAGE_TAG -t $ECR_PUBLIC_REGISTRY/$NGINX_ECR_REPOSITORY:latest docker/nginx
           docker push --all-tags $ECR_PUBLIC_REGISTRY/$NGINX_ECR_REPOSITORY
-          echo "::set-output name=image::$ECR_PUBLIC_REGISTRY/$NGINX_ECR_REPOSITORY:$IMAGE_TAG"
+          echo "::set-output name=nginx-image::$ECR_PUBLIC_REGISTRY/$NGINX_ECR_REPOSITORY:$IMAGE_TAG"
 
           docker build -t $ECR_PUBLIC_REGISTRY/$APP_ECR_REPOSITORY:$IMAGE_TAG -t $ECR_PUBLIC_REGISTRY/$APP_ECR_REPOSITORY:latest .
           docker push --all-tags $ECR_PUBLIC_REGISTRY/$APP_ECR_REPOSITORY
-          echo "::set-output name=image::$ECR_PUBLIC_REGISTRY/$APP_ECR_REPOSITORY:$IMAGE_TAG"
+          echo "::set-output name=app-image::$ECR_PUBLIC_REGISTRY/$APP_ECR_REPOSITORY:$IMAGE_TAG"
       - name: Prepare nginx task definition
         if: github.ref == matrix.app_env.branch
         id: render-nginx-task-def
