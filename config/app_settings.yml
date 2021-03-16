@@ -1,10 +1,10 @@
 default: &default
-  ahn_core_host: "localhost"
+  ahn_core_host: <%= ENV.fetch("AHN_CORE_HOST") { "localhost" } %>
   ahn_core_username: "rayo@rayo.somleng.org"
   ahn_core_password: "secret"
   ahn_http_username: "adhearsion"
   ahn_http_password: "password"
-  call_platform_host: "http://localhost:3000"
+  call_platform_host: <%= ENV.fetch("CALL_PLATFORM_HOST") { "http://localhost:3000" } %>
   call_platform_username: "services"
   call_platform_password: "password"
 
