@@ -4,7 +4,7 @@ resource "aws_cloudwatch_metric_alarm" "appserver_cpu_utilization_high" {
   evaluation_periods  = "1"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/ECS"
-  period              = "300"
+  period              = "60"
   statistic           = "Average"
   threshold           = var.ecs_as_cpu_high_threshold_per
 

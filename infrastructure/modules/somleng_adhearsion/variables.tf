@@ -46,5 +46,5 @@ variable "ecs_as_cpu_low_threshold_per" {
 # If the average CPU utilization over a minute rises to this threshold,
 # the number of containers will be increased (but not above ecs_autoscale_max_instances).
 variable "ecs_as_cpu_high_threshold_per" {
-  default = "80"
+  default = "70"
 }
