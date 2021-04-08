@@ -11,6 +11,8 @@ gem "sinatra-contrib", require: false
 gem "mail"
 gem "phony"
 
+gem "bigdecimal", "~> 1.4.0" # To support Ruby 2.7 with ActiveSupport 4.2
+
 group :development, :test do
   gem "rubocop"
   gem "rubocop-performance"
