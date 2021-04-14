@@ -207,6 +207,10 @@ GEM
       rack-protection (= 2.1.0)
       sinatra (= 2.1.0)
       tilt (~> 2.0)
+    skylight (4.3.2)
+      skylight-core (= 4.3.2)
+    skylight-core (4.3.2)
+      activesupport (>= 4.2.0)
     state_machine (1.2.0)
     sucker_punch (2.1.2)
       concurrent-ruby (~> 1.0)
@@ -260,6 +264,7 @@ DEPENDENCIES
   simplecov-lcov
   sinatra
   sinatra-contrib
+  skylight
   twilio-ruby
   vcr
   webmock

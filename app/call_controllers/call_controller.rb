@@ -1,6 +1,9 @@
 class CallController < Adhearsion::CallController
+  include Skylight::Helpers
+
   before :register_event_handlers
 
+  instrument_method
   def run
     @call_properties = build_call_properties
 

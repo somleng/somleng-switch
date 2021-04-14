@@ -7,6 +7,7 @@ gem "okcomputer"
 gem "sentry-raven"
 gem "sinatra"
 gem "sinatra-contrib", require: false
+gem "skylight"
 
 gem "mail"
 gem "phony"
