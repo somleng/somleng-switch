@@ -17,6 +17,12 @@ module SomlengAdhearsion
         register Sinatra::Reloader
       end
 
+      configure :production do
+        require "skylight/sinatra"
+
+        Skylight.start!(file: File.join(__dir__, "../../config/skylight.yml"))
+      end
+
       post "/calls" do
         call_params = JSON.parse(request.body.read)
         resource = OutboundCall.new(call_params).initiate
