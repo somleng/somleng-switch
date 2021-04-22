@@ -20,7 +20,10 @@ module SomlengAdhearsion
       configure :production do
         require "skylight/sinatra"
 
-        Skylight.start!(file: File.join(__dir__, "../../config/skylight.yml"))
+        Skylight.start!(
+          file: File.join(__dir__, "../../config/skylight.yml"),
+          env: :production
+        )
       end
 
       post "/calls" do
