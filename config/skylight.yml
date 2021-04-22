@@ -2,5 +2,4 @@ ignored_endpoints:
   - OkComputer::OkComputerController#show
   - OkComputer::OkComputerController#index
 
-production: &production
-  authentication: "<%= AppSettings.credentials.fetch('skylight_authentication_token') %>"
+authentication: "<%= AppSettings.credentials.fetch('skylight_authentication_token') %>"
