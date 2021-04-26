@@ -1,5 +1,5 @@
 on: push
-name: Build Somleng Adhearsion
+name: Build
 
 jobs:
   build:
