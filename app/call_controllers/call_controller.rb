@@ -1,6 +1,8 @@
 class CallController < Adhearsion::CallController
   include Skylight::Helpers
 
+  attr_reader :call_properties
+
   before :register_event_handlers
 
   instrument_method
@@ -31,8 +33,6 @@ class CallController < Adhearsion::CallController
   end
 
   private
-
-  attr_reader :call_properties
 
   def register_event_handlers
     NotifyCallEvent.subscribe_events(call)

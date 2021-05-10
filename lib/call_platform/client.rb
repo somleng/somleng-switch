@@ -24,8 +24,8 @@ module CallPlatform
       end
     end
 
-    def build_dial_string(phone_number)
-      response = http_client.post("/services/dial_string", { phone_number: phone_number }.to_json)
+    def build_dial_string(params)
+      response = http_client.post("/services/dial_string", params.to_json)
 
       raise UnsupportedGatewayError, response.body unless response.success?
 

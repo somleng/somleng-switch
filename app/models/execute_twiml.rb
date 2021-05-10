@@ -2,7 +2,7 @@ class ExecuteTwiML
   attr_reader :context, :twiml
 
   delegate :logger, to: :context
-  delegate :ask, :dial, :hangup, :say, :play_audio, :answer, :reject, :redirect, :call_platform_client, to: :context
+  delegate :ask, :dial, :hangup, :say, :play_audio, :answer, :reject, :redirect, :call_platform_client, :call_properties, to: :context
 
   NESTED_GATHER_VERBS = %w[Say Play].freeze
   MAX_LOOP = 100
@@ -237,7 +237,10 @@ class ExecuteTwiML
 
   def build_dial_string(number)
     Utils.build_dial_string(
-      call_platform_client.build_dial_string(number)
+      call_platform_client.build_dial_string(
+        phone_number: number,
+        account_sid: call_properties.account_sid
+      )
     )
   end
 end

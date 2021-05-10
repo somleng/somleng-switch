@@ -5,7 +5,7 @@ http_interactions:
     uri: http://localhost:3000/services/dial_string
     body:
       encoding: UTF-8
-      string: '{"phone_number":"85516701721"}'
+      string: '{"phone_number":"85516701721","account_sid":"77281eec-094c-49e1-8761-3082156e000e"}'
     headers:
       Accept:
       - application/json
@@ -41,13 +41,13 @@ http_interactions:
       Cache-Control:
       - max-age=0, private, must-revalidate
       X-Request-Id:
-      - cb910d08-b290-4f93-a3f4-48f942beb4eb
+      - c8aabb83-ff3e-4de3-b5d9-19b41a92a332
       X-Runtime:
-      - '0.009147'
+      - '0.312425'
       Transfer-Encoding:
       - chunked
     body:
       encoding: UTF-8
       string: '{"dial_string":"016701721@27.109.112.140"}'
-  recorded_at: Tue, 02 Mar 2021 07:45:44 GMT
+  recorded_at: Mon, 10 May 2021 10:07:54 GMT
 recorded_with: VCR 6.0.0
