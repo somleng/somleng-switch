@@ -27,7 +27,10 @@ RSpec.describe CallController, type: :call_controller do
 
     it "dials to plain text", :vcr, cassette: :build_dial_string do
       controller = build_controller(
-        stub_voice_commands: [:play_audio, dial: build_dial_status]
+        stub_voice_commands: [:play_audio, { dial: build_dial_status }],
+        call_properties: {
+          account_sid: "77281eec-094c-49e1-8761-3082156e000e"
+        }
       )
 
       stub_twiml_request(controller, response: <<~TWIML)
@@ -49,7 +52,10 @@ RSpec.describe CallController, type: :call_controller do
 
     it "dials to <Number>", :vcr, cassette: :build_multiple_dial_strings do
       controller = build_controller(
-        stub_voice_commands: { dial: build_dial_status }
+        stub_voice_commands: { dial: build_dial_status },
+        call_properties: {
+          account_sid: "77281eec-094c-49e1-8761-3082156e000e"
+        }
       )
 
       stub_twiml_request(controller, response: <<~TWIML)
