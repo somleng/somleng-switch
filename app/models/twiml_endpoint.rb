@@ -30,9 +30,9 @@ class TwiMLEndpoint
   private
 
   def resolve_url(url)
-    return url if @last_response.blank?
-
-    URI.join(@last_response.env.url, url.to_s).to_s
+    uri = @last_response ? URI.join(@last_response.env.url, url.to_s) : URI(url)
+    uri.query = Faraday::Utils.sort_query_params(uri.query)
+    uri.to_s
   end
 
   def http_client
