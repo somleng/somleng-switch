@@ -80,8 +80,6 @@ GEM
     faraday-excon (1.1.0)
     faraday-net_http (1.0.1)
     faraday-net_http_persistent (1.1.0)
-    faraday_middleware (1.0.0)
-      faraday (~> 1.0)
     ffi (1.15.0)
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
@@ -90,22 +88,23 @@ GEM
     has-guarded-handlers (1.6.3)
     hashdiff (1.0.1)
     hitimes (2.0.0)
-    http (4.4.1)
+    http (5.0.0)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
       http-form_data (~> 2.2)
-      http-parser (~> 1.2.0)
+      llhttp-ffi (~> 0.0.1)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     http-form_data (2.3.0)
-    http-parser (1.2.3)
-      ffi-compiler (>= 1.0, < 2.0)
     http_parser.rb (0.6.0)
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     jwt (2.2.2)
     little-plugger (1.1.4)
+    llhttp-ffi (0.0.1)
+      ffi-compiler (~> 1.0)
+      rake (~> 13.0)
     logging (2.3.0)
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
@@ -253,8 +252,7 @@ PLATFORMS
 DEPENDENCIES
   adhearsion!
   bigdecimal (~> 1.4.0)
-  faraday
-  faraday_middleware
+  http
   mail
   okcomputer
   phony

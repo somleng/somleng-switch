@@ -265,7 +265,7 @@ RSpec.describe CallController, type: :call_controller do
           </Response>
         TWIML
 
-        stub_request(:any, "https://www.example.com/dial_results.xml").to_return(body: <<~TWIML)
+        stub_request(:any, %r{www.example.com/dial_results.xml}).to_return(body: <<~TWIML)
           <?xml version="1.0" encoding="UTF-8" ?>
           <Response>
             <Hangup/>
@@ -274,7 +274,7 @@ RSpec.describe CallController, type: :call_controller do
 
         controller.run
 
-        expect(WebMock).to have_requested(:get, "https://www.example.com/dial_results.xml")
+        expect(WebMock).to have_requested(:get, %r{\Ahttps://www.example.com/dial_results.xml\?.+})
       end
     end
 
