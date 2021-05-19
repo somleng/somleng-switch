@@ -1,8 +1,7 @@
 source "https://rubygems.org"
 
 gem "adhearsion", github: "adhearsion/adhearsion", branch: "develop"
-gem "faraday"
-gem "faraday_middleware"
+gem "http"
 gem "okcomputer"
 gem "sentry-raven"
 gem "sinatra"

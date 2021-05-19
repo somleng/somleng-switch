@@ -5,7 +5,7 @@ http_interactions:
     uri: http://localhost:3000/services/inbound_phone_calls
     body:
       encoding: UTF-8
-      string: '{"to":"1234","from":"1000","external_id":"5c8102f2-262a-418a-96b9-aa79789af621","variables":{"sip_from_host":"192.168.1.1","sip_to_host":"192.168.2.1","sip_network_ip":"192.168.3.1"}}'
+      string: '{"to":"1234","from":"1000","external_id":"69118d23-c426-426c-a829-36ec22d54ce8","variables":{"sip_from_host":"192.168.1.1","sip_to_host":"192.168.2.1","sip_network_ip":"192.168.3.1"}}'
     headers:
       Accept:
       - application/json
@@ -14,7 +14,7 @@ http_interactions:
       Authorization:
       - Basic c2VydmljZXM6cGFzc3dvcmQ=
       User-Agent:
-      - Faraday v1.0.1
+      - Faraday v1.4.1
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
   response:
@@ -37,65 +37,24 @@ http_interactions:
       Content-Type:
       - application/json; charset=utf-8
       Etag:
-      - W/"523829bca29c22974542afab5ac81a2e"
+      - W/"e19023b600f787951294a0a1fa476a93"
       Cache-Control:
       - max-age=0, private, must-revalidate
       X-Request-Id:
-      - 3497a9d9-1d2e-446b-971d-6ec5f601cf47
+      - ac7e34cd-2827-4127-b22a-5c1096bc7ebc
       X-Runtime:
-      - '0.024456'
+      - '0.565030'
       Transfer-Encoding:
       - chunked
     body:
       encoding: UTF-8
-      string: '{"api_version":"2010-04-01","created_at":"2020-12-12T05:17:05Z","updated_at":"2020-12-12T05:17:05Z","voice_url":"http://demo.twilio.com/docs/voice.xml","voice_method":"GET","status_callback_url":null,"status_callback_method":null,"to":"1234","from":"1000","sid":"75ebb40e-0245-4f65-9dea-02e323ce015f","account_sid":"ef035382-e303-49b3-a71b-df1e884e09ca","account_auth_token":"2d241ec31a91e4c3f2bc71c42fe1fc27db669204908a2a8ee942218eb837e963","direction":"inbound"}'
-  recorded_at: Sat, 12 Dec 2020 05:17:05 GMT
+      string: '{"api_version":"2010-04-01","created_at":"2021-05-19T07:19:14Z","updated_at":"2021-05-19T07:19:14Z","voice_url":"https://demo.twilio.com/docs/voice.xml","voice_method":"GET","status_callback_url":null,"status_callback_method":null,"to":"1234","from":"1000","sid":"5dd535f4-9905-4fc9-88a0-4870ee441ecf","account_sid":"370834af-480b-49c3-bb0a-1f3967a8c239","account_auth_token":"hcZIxvzMiUTZQJdpmh0r8R2V4N_bxn9uZIkx7Vtbblo","direction":"inbound"}'
+  recorded_at: Wed, 19 May 2021 07:19:14 GMT
 - request:
     method: get
-    uri: http://demo.twilio.com/docs/voice.xml
+    uri: https://demo.twilio.com/docs/voice.xml?AccountSid=370834af-480b-49c3-bb0a-1f3967a8c239&ApiVersion=2010-04-01&CallSid=5dd535f4-9905-4fc9-88a0-4870ee441ecf&CallStatus=ringing&Direction=inbound&From=1000&To=1234
     body:
       encoding: UTF-8
-      string: AccountSid=ef035382-e303-49b3-a71b-df1e884e09ca&ApiVersion=2010-04-01&CallSid=75ebb40e-0245-4f65-9dea-02e323ce015f&CallStatus=ringing&Direction=inbound&From=1000&To=1234
-    headers:
-      Content-Type:
-      - application/x-www-form-urlencoded; charset=utf-8
-      User-Agent:
-      - TwilioProxy/1.1
-      Accept:
-      - "*/*"
-      Cache-Control:
-      - max-age=259200
-      X-Twilio-Signature:
-      - O/VSgi5EZGwogDKOV7gQpvhK4qE=
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 301
-      message: Moved Permanently
-    headers:
-      Server:
-      - awselb/2.0
-      Date:
-      - Sat, 12 Dec 2020 05:17:05 GMT
-      Content-Type:
-      - text/html
-      Content-Length:
-      - '134'
-      Connection:
-      - keep-alive
-      Location:
-      - https://demo.twilio.com:443/docs/voice.xml
-    body:
-      encoding: UTF-8
-      string: "<html>\r\n<head><title>301 Moved Permanently</title></head>\r\n<body>\r\n<center><h1>301
-        Moved Permanently</h1></center>\r\n</body>\r\n</html>\r\n"
-  recorded_at: Sat, 12 Dec 2020 05:17:05 GMT
-- request:
-    method: get
-    uri: https://demo.twilio.com/docs/voice.xml
-    body:
-      encoding: US-ASCII
       string: ''
     headers:
       Content-Type:
@@ -103,26 +62,28 @@ http_interactions:
       User-Agent:
       - TwilioProxy/1.1
       Accept:
-      - "*/*"
+      - text/xml, application/xml, text/html
       Cache-Control:
       - max-age=259200
       X-Twilio-Signature:
-      - O/VSgi5EZGwogDKOV7gQpvhK4qE=
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      - ZQ1I9Q71oI0dMRcJpuaTcim1FZQ=
+      Connection:
+      - close
+      Host:
+      - demo.twilio.com
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 12 Dec 2020 05:17:06 GMT
+      - Wed, 19 May 2021 07:19:15 GMT
       Content-Type:
       - text/xml
-      Transfer-Encoding:
-      - chunked
+      Content-Length:
+      - '192'
       Connection:
-      - keep-alive
+      - close
       Server:
       - nginx
       Last-Modified:
@@ -130,10 +91,12 @@ http_interactions:
       Vary:
       - Accept-Encoding
       Etag:
-      - W/"5d9b8821-c0"
+      - '"5d9b8821-c0"'
       X-Shenanigans:
       - none
       - none
+      Accept-Ranges:
+      - bytes
     body:
       encoding: ASCII-8BIT
       string: |
@@ -142,5 +105,5 @@ http_interactions:
             <Say voice="alice">Thanks for trying our documentation. Enjoy!</Say>
             <Play>http://demo.twilio.com/docs/classic.mp3</Play>
         </Response>
-  recorded_at: Sat, 12 Dec 2020 05:17:06 GMT
+  recorded_at: Wed, 19 May 2021 07:19:15 GMT
 recorded_with: VCR 6.0.0
