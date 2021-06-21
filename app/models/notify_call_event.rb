@@ -13,7 +13,7 @@ class NotifyCallEvent
   end
 
   def self.subscribe_events(call)
-    EVENT_TYPES.keys.each do |event_type|
+    EVENT_TYPES.each_key do |event_type|
       call.register_event_handler(event_type) { |event| new(event).call }
     end
   end
