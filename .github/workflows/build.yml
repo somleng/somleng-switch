@@ -115,7 +115,7 @@ jobs:
 
       - name: Prepare nginx task definition
         id: render-nginx-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1.0.21
+        uses: aws-actions/amazon-ecs-render-task-definition@v1.0.22
         with:
           task-definition: deploy/production/appserver_task_definition.json
           container-name: nginx
@@ -123,7 +123,7 @@ jobs:
 
       - name: Prepare app server task definition
         id: render-appserver-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1.0.21
+        uses: aws-actions/amazon-ecs-render-task-definition@v1.0.22
         with:
           task-definition: ${{ steps.render-nginx-task-def.outputs.task-definition }}
           container-name: app
