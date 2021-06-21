@@ -130,7 +130,7 @@ jobs:
           image: ${{ env.APP_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
 
       - name: Deploy App Server
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1.4.5
         with:
           task-definition: ${{ steps.render-appserver-task-def.outputs.task-definition }}
           service: ${{ env.APP_IDENTIFIER }}-appserver
