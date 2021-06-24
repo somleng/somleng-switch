@@ -160,10 +160,11 @@ class ExecuteTwiML
     attributes = twiml_attributes(verb)
 
     to = verb.children.each_with_object({}) do |nested_noun, result|
-      dial_string = build_dial_string(nested_noun.content.strip)
+      dial_string = build_dial_string(nested_noun.content.strip) if nested_noun.text? || nested_noun.name == "Number"
+      dial_string = Utils.build_dial_string(nested_noun.content.strip.delete_prefix("sip:")) if nested_noun.name == "Sip"
       break dial_string if nested_noun.text?
 
-      unless ["Number"].include?(nested_noun.name)
+      unless ["Number", "Sip"].include?(nested_noun.name)
         raise Errors::TwiMLError, "Nested noun <#{nested_noun.name}> not allowed within <Dial>"
       end
 
