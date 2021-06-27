@@ -160,10 +160,14 @@ class ExecuteTwiML
     attributes = twiml_attributes(verb)
 
     to = verb.children.each_with_object({}) do |nested_noun, result|
-      dial_string = build_dial_string(nested_noun.content.strip)
+      dial_content = nested_noun.content.strip
+      target = build_dial_number_target(dial_content) if nested_noun.text? || nested_noun.name == "Number"
+      target = dial_content.delete_prefix("sip:")     if nested_noun.name == "Sip"
+      dial_string = Utils.build_dial_string(target)
+
       break dial_string if nested_noun.text?
 
-      unless ["Number"].include?(nested_noun.name)
+      unless ["Number", "Sip"].include?(nested_noun.name)
         raise Errors::TwiMLError, "Nested noun <#{nested_noun.name}> not allowed within <Dial>"
       end
 
@@ -235,12 +239,10 @@ class ExecuteTwiML
     end
   end
 
-  def build_dial_string(number)
-    Utils.build_dial_string(
-      call_platform_client.build_dial_string(
-        phone_number: number,
-        account_sid: call_properties.account_sid
-      )
+  def build_dial_number_target(number)
+    call_platform_client.build_dial_string(
+      phone_number: number,
+      account_sid: call_properties.account_sid
     )
   end
 end

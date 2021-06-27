@@ -81,6 +81,34 @@ RSpec.describe CallController, type: :call_controller do
       )
     end
 
+    it "dials to <Sip>" do
+      controller = build_controller(
+        stub_voice_commands: { dial: build_dial_status },
+        call_properties: {
+          account_sid: "77281eec-094c-49e1-8761-3082156e000e"
+        }
+      )
+
+      stub_twiml_request(controller, response: <<~TWIML)
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <Response>
+          <Dial>
+            <Sip>sip:alice@sip.example.com</Sip>
+          </Dial>
+        </Response>
+      TWIML
+
+      controller.run
+
+      expect(controller).to have_received(:dial).with(
+        include(
+          "sofia/external/alice@sip.example.com" => {}
+        ),
+        any_args
+      )
+    end
+
+
     it "supports callerId", :vcr, cassette: :build_multiple_dial_strings do
       controller = build_controller(
         stub_voice_commands: { dial: build_dial_status }
