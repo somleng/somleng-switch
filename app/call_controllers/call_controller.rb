@@ -9,12 +9,7 @@ class CallController < Adhearsion::CallController
   def run
     @call_properties = build_call_properties
 
-    twiml = request_twiml(
-      call_properties.voice_url,
-      call_properties.voice_method,
-      "CallStatus" => "ringing"
-    )
-
+    twiml = prepare_twiml(call_properties)
     execute_twiml(twiml)
   end
 
@@ -55,6 +50,7 @@ class CallController < Adhearsion::CallController
     CallProperties.new(
       voice_url: response.voice_url,
       voice_method: response.voice_method,
+      twiml: response.twiml,
       account_sid: response.account_sid,
       auth_token: response.auth_token,
       call_sid: response.call_sid,
@@ -71,6 +67,16 @@ class CallController < Adhearsion::CallController
 
   def twiml_endpoint
     @twiml_endpoint ||= TwiMLEndpoint.new(auth_token: call_properties.auth_token)
+  end
+
+  def prepare_twiml(call_properties)
+    return call_properties.twiml if call_properties.voice_url.blank?
+
+    request_twiml(
+      call_properties.voice_url,
+      call_properties.voice_method,
+      "CallStatus" => "ringing"
+    )
   end
 
   def request_twiml(url, http_method, params)

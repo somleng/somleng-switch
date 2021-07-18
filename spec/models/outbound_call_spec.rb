@@ -9,6 +9,7 @@ RSpec.describe OutboundCall do
       "voice_method" => "GET",
       "status_callback_url" => "https://rapidpro.ngrok.com/handle/33/",
       "status_callback_method" => "POST",
+      "twiml" => "twiml payload",
       "sid" => "sample-call-sid",
       "account_sid" => "sample-account-sid",
       "account_auth_token" => "sample-auth-token",
@@ -33,6 +34,7 @@ RSpec.describe OutboundCall do
         call_properties: CallProperties.new(
           voice_url: "https://rapidpro.ngrok.com/handle/33/",
           voice_method: "GET",
+          twiml: "twiml payload",
           account_sid: "sample-account-sid",
           auth_token: "sample-auth-token",
           call_sid: "sample-call-sid",

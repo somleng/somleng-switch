@@ -16,7 +16,7 @@ RSpec.describe TwiMLEndpoint do
     endpoint = TwiMLEndpoint.new(auth_token: auth_token)
     twiml = endpoint.request(voice_url, "POST", call_data)
 
-    expect(twiml.to_xml).to eq("<Say>Hello World</Say>")
+    expect(twiml).to include("<Say>Hello World</Say>")
     expect(WebMock).to(have_requested(:any, voice_url).with { |request|
       validator = Twilio::Security::RequestValidator.new(auth_token)
       expect(validator.validate(voice_url, call_data, request.headers["X-Twilio-Signature"])).to eq(true)
@@ -39,7 +39,7 @@ RSpec.describe TwiMLEndpoint do
     endpoint = TwiMLEndpoint.new(auth_token: auth_token)
     twiml = endpoint.request(voice_url, "GET", call_data)
 
-    expect(twiml.to_xml).to eq("<Say>Hello World</Say>")
+    expect(twiml).to include("<Say>Hello World</Say>")
     expect(WebMock).to(have_requested(:any, expected_voice_url).with { |request|
       validator = Twilio::Security::RequestValidator.new(auth_token)
       expect(validator.validate(expected_voice_url, {}, request.headers["X-Twilio-Signature"])).to eq(true)

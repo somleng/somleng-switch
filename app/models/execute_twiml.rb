@@ -31,7 +31,7 @@ class ExecuteTwiML
 
   def call
     redirect_args = catch(:redirect) do
-      twiml.each do |verb|
+      twiml_doc.each do |verb|
         next if verb.comment?
 
         case verb.name
@@ -244,5 +244,17 @@ class ExecuteTwiML
       phone_number: number,
       account_sid: call_properties.account_sid
     )
+  end
+
+  def twiml_doc
+    doc = ::Nokogiri::XML(twiml.strip) do |config|
+      config.options = Nokogiri::XML::ParseOptions::NOBLANKS
+    end
+
+    raise(Errors::TwiMLError, "The root element must be the '<Response>' element") if doc.root.name != "Response"
+
+    doc.root.children
+  rescue Nokogiri::XML::SyntaxError => e
+    raise Errors::TwiMLError, "Error while parsing XML: #{e.message}. XML Document: #{content}"
   end
 end
