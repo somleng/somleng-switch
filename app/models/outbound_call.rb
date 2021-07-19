@@ -14,6 +14,7 @@ class OutboundCall
         call_properties: CallProperties.new(
           voice_url: call_params.fetch("voice_url"),
           voice_method: call_params.fetch("voice_method"),
+          twiml: call_params["twiml"],
           account_sid: call_params.fetch("account_sid"),
           auth_token: call_params.fetch("account_auth_token"),
           call_sid: call_params.fetch("sid"),

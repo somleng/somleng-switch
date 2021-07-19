@@ -6,6 +6,7 @@ module CallPlatform
     InboundPhoneCallResponse = Struct.new(
       :voice_url,
       :voice_method,
+      :twiml,
       :account_sid,
       :auth_token,
       :call_sid,
@@ -41,6 +42,7 @@ module CallPlatform
       InboundPhoneCallResponse.new(
         voice_url: json_response.fetch("voice_url"),
         voice_method: json_response.fetch("voice_method"),
+        twiml: json_response.fetch("twiml"),
         account_sid: json_response.fetch("account_sid"),
         auth_token: json_response.fetch("account_auth_token"),
         call_sid: json_response.fetch("sid"),

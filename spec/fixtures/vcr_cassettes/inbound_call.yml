@@ -48,7 +48,7 @@ http_interactions:
       - chunked
     body:
       encoding: UTF-8
-      string: '{"api_version":"2010-04-01","created_at":"2021-06-23T09:02:30Z","updated_at":"2021-06-23T09:02:30Z","voice_url":"https://demo.twilio.com/docs/voice.xml","voice_method":"GET","status_callback_url":null,"status_callback_method":null,"to":"1234","from":"1000","sid":"574f0314-8d52-4a79-a7aa-2ff9898f7b79","account_sid":"0f82ec1a-c776-4669-a0b6-c2b11bef156a","account_auth_token":"pd-eZBeCozOHqtdcwYOpGcPaZNByMFQjryK73K3Pm14","direction":"inbound"}'
+      string: '{"api_version":"2010-04-01","created_at":"2021-06-23T09:02:30Z","updated_at":"2021-06-23T09:02:30Z","voice_url":"https://demo.twilio.com/docs/voice.xml","voice_method":"GET","status_callback_url":null,"status_callback_method":null,"to":"1234","from":"1000","sid":"574f0314-8d52-4a79-a7aa-2ff9898f7b79","account_sid":"0f82ec1a-c776-4669-a0b6-c2b11bef156a","account_auth_token":"pd-eZBeCozOHqtdcwYOpGcPaZNByMFQjryK73K3Pm14","direction":"inbound","twiml":null}'
   recorded_at: Wed, 23 Jun 2021 09:02:30 GMT
 - request:
     method: get

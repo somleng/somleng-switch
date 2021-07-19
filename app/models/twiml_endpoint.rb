@@ -32,7 +32,7 @@ class TwiMLEndpoint
       )
     end
 
-    parse_twiml(last_response.to_s)
+    last_response.to_s
   end
 
   private
@@ -57,17 +57,5 @@ class TwiMLEndpoint
     data = uri.to_s + payload.sort.join
     digest = OpenSSL::Digest.new("sha1")
     Base64.strict_encode64(OpenSSL::HMAC.digest(digest, auth_token, data))
-  end
-
-  def parse_twiml(content)
-    doc = ::Nokogiri::XML(content.strip) do |config|
-      config.options = Nokogiri::XML::ParseOptions::NOBLANKS
-    end
-
-    raise(Errors::TwiMLError, "The root element must be the '<Response>' element") if doc.root.name != "Response"
-
-    doc.root.children
-  rescue Nokogiri::XML::SyntaxError => e
-    raise Errors::TwiMLError, "Error while parsing XML: #{e.message}. XML Document: #{content}"
   end
 end
