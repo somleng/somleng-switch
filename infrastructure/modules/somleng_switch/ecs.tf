@@ -15,6 +15,19 @@ data "template_file" "appserver_container_definitions" {
     app_logs_group = aws_cloudwatch_log_group.app.name
     logs_group_region = var.aws_region
     app_environment = var.app_environment
+
+    database_password_parameter_arn = var.db_password_parameter_arn
+    rayo_password_parameter_arn = aws_ssm_parameter.rayo_password.arn
+    json_cdr_url = var.json_cdr_url
+    json_cdr_password_parameter_arn = var.json_cdr_password_parameter_arn
+    database_name = "freeswitch"
+    database_username = var.db_username
+    database_host = var.db_host
+    database_port = var.db_port
+    external_sip_ip = var.external_sip_ip
+    external_rtp_ip = var.external_rtp_ip
+    rayo_host = var.rayo_host
+    rayo_user = var.rayo_user
   }
 }
 
@@ -57,13 +70,25 @@ resource "aws_ecs_service" "appserver" {
   }
   network_configuration {
     subnets = var.container_instance_subnets
-    security_groups = [aws_security_group.appserver.id]
+    security_groups = [aws_security_group.appserver.id, var.db_security_group, data.aws_security_group.inbound_sip_trunks.id]
   }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.this[0].arn
     container_name   = var.webserver_container_name
     container_port   = var.webserver_container_port
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.rayo.arn
+    container_name   = "freeswitch"
+    container_port   = var.rayo_port
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.sip.arn
+    container_name   = "freeswitch"
+    container_port   = var.sip_port
   }
 
   lifecycle {

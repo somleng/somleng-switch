@@ -15,6 +15,7 @@ variable "listener_arn" {}
 variable "webserver_container_name" {
   default = "nginx"
 }
+
 variable "webserver_container_port" {
   default = 80
 }
@@ -48,3 +49,29 @@ variable "ecs_as_cpu_low_threshold_per" {
 variable "ecs_as_cpu_high_threshold_per" {
   default = "70"
 }
+
+variable "rayo_port" {
+  default = 5222
+}
+
+variable "sip_port" {
+  default = 5060
+}
+
+variable "db_host" {
+}
+
+variable "db_port" {
+}
+
+variable "db_security_group" {
+}
+
+variable "db_username" {}
+variable "db_password_parameter_arn" {}
+variable "json_cdr_password_parameter_arn" {}
+variable "rayo_user" {}
+variable "rayo_host" {}
+variable "external_sip_ip" {}
+variable "external_rtp_ip" {}
+variable "json_cdr_url" {}

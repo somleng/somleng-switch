@@ -50,12 +50,40 @@ resource "aws_iam_policy" "task_execution_custom_policy" {
         "ssm:GetParameters"
       ],
       "Resource": [
-        "${aws_ssm_parameter.application_master_key.arn}"
+        "${aws_ssm_parameter.application_master_key.arn}",
+        "${aws_ssm_parameter.rayo_password.arn}",
+        "${var.json_cdr_password_parameter_arn}",
+        "${var.db_password_parameter_arn}"
       ]
     }
   ]
 }
 EOF
+}
+
+resource "aws_iam_policy" "ecs_task_policy" {
+  name = "${var.app_identifier}-ecs-task-policy"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "polly:DescribeVoices",
+        "polly:SynthesizeSpeech"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_policy" {
+  role = aws_iam_role.ecs_task_role.id
+  policy_arn = aws_iam_policy.ecs_task_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "task_execution_role_policy" {

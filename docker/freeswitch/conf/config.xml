@@ -1,0 +1,26 @@
+<!--
+  Static config goes here. For dynamic content use environment variables. See env.xml for details.
+  Do NOT comment out variables in this file as it will have no affect.
+-->
+
+<!-- Database -->
+<X-PRE-PROCESS cmd="set" data="database_username=postgres"/>
+<X-PRE-PROCESS cmd="set" data="database_password=password"/>
+<X-PRE-PROCESS cmd="set" data="database_host=host.docker.internal"/>
+<X-PRE-PROCESS cmd="set" data="database_port=5432"/>
+<X-PRE-PROCESS cmd="set" data="database_name=freeswitch"/>
+
+<!-- IP Addresses -->
+<X-PRE-PROCESS cmd="set" data="external_sip_ip=0.0.0.0"/>
+<X-PRE-PROCESS cmd="set" data="external_rtp_ip=0.0.0.0"/>
+
+<!-- mod_json_cdr -->
+<X-PRE-PROCESS cmd="set" data="mod_json_cdr_url=https://www.example.com/path"/>
+<X-PRE-PROCESS cmd="set" data="mod_json_cdr_password=password"/>
+
+<!-- mod_rayo -->
+<X-PRE-PROCESS cmd="set" data="mod_rayo_host=rayo.somleng.org"/>
+<X-PRE-PROCESS cmd="set" data="mod_rayo_port=5222"/>
+<X-PRE-PROCESS cmd="set" data="mod_rayo_user=rayo"/>
+<X-PRE-PROCESS cmd="set" data="mod_rayo_password=secret"/>
+<X-PRE-PROCESS cmd="set" data="mod_rayo_record_file_prefix=/freeswitch-recordings"/>

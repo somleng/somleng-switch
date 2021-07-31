@@ -1,0 +1,28 @@
+<!-- https://freeswitch.org/stash/projects/FS/repos/freeswitch/browse/src/mod/formats/mod_ssml/conf/autoload_configs/ssml.conf.xml -->
+
+<configuration name="ssml.conf" description="SSML parser config">
+  <!-- voices in order of preference -->
+  <tts-voices>
+    <voice name="man" language="en-US" gender="male" prefix="tts://flite|kal|"/>
+    <voice name="woman" language="en-US" gender="female" prefix="tts://flite|slt|"/>
+    <X-PRE-PROCESS cmd="include" data="polly_voices.xml"/>
+  </tts-voices>
+
+  <!-- maps ISO language to say module -->
+  <!-- <language-map> -->
+  <!--   <language iso="en-US" say-module="en" language="en"/> -->
+  <!-- </language-map> -->
+
+  <!-- say voices in order of preference -->
+  <!-- <say-voices> -->
+  <!--   <voice name="callie" language="en-US" gender="female" prefix="$${sounds_dir}/en/us/callie/"/> -->
+  <!-- </say-voices> -->
+
+  <!-- map interpret-as to say macros -->
+  <!-- <macros> -->
+  <!--   <macro name="ordinal" type="number" method="counted"/> -->
+  <!--   <macro name="cardinal" type="number" method="pronounced"/> -->
+  <!--   <macro name="characters" type="name_spelled" method="pronounced"/> -->
+  <!--   <macro name="telephone" type="telephone_number" method="pronounced"/> -->
+  <!-- </macros> -->
+</configuration>

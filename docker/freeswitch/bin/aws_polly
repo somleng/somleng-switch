@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+text="$1"
+file="$2"
+voice_id="$3"
+
+aws polly synthesize-speech --output-format mp3 --voice-id "$voice_id" --text "$text" "$file.mp3"
+mpg123 -w "$file" "$file.mp3"
