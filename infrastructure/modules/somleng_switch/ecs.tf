@@ -26,8 +26,6 @@ data "template_file" "appserver_container_definitions" {
     database_port = var.db_port
     external_sip_ip = var.external_sip_ip
     external_rtp_ip = var.external_rtp_ip
-    rayo_host = var.rayo_host
-    rayo_user = var.rayo_user
   }
 }
 
@@ -77,12 +75,6 @@ resource "aws_ecs_service" "appserver" {
     target_group_arn = aws_lb_target_group.this[0].arn
     container_name   = var.webserver_container_name
     container_port   = var.webserver_container_port
-  }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.rayo.arn
-    container_name   = "freeswitch"
-    container_port   = var.rayo_port
   }
 
   load_balancer {

@@ -5,10 +5,10 @@
     <param name="add-variables-to-events" value="true"/>
   </settings>
 
-  <domain name="$${mod_rayo_host}" shared-secret="$${mod_rayo_password}">
+  <domain name="rayo.somleng.org" shared-secret="$${mod_rayo_password}">
     <listen type="c2s" port="$${mod_rayo_port}" address="0.0.0.0" acl=""/>
     <users>
-      <user name="$${mod_rayo_user}" password="$${mod_rayo_password}"/>
+      <user name="rayo" password="$${mod_rayo_password}"/>
     </users>
   </domain>
 

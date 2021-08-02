@@ -27,13 +27,10 @@ module "somleng_switch" {
   json_cdr_url = "https://twilreapi.somleng.org/services/call_data_records"
   external_sip_ip = data.terraform_remote_state.core_infrastructure.outputs.nlb_eips[0].public_ip
   external_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
-  rayo_user = "rayo"
-  rayo_host = "rayo.somleng.org"
 
   load_balancer_arn = data.terraform_remote_state.core_infrastructure.outputs.application_load_balancer.arn
   listener_arn = data.terraform_remote_state.core_infrastructure.outputs.https_listener.arn
   inbound_sip_trunks_security_group_name = "twilreapi-inbound-sip-trunks"
-
 
   ecs_appserver_autoscale_min_instances = 1
 }

@@ -147,14 +147,6 @@
         "value": "${rayo_port}"
       },
       {
-        "name": "FS_MOD_RAYO_HOST",
-        "value": "${rayo_host}"
-      },
-      {
-        "name": "FS_MOD_RAYO_USER",
-        "value": "${rayo_user}"
-      },
-      {
         "name": "FS_MOD_JSON_CDR_URL",
         "value": "${json_cdr_url}"
       }

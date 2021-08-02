@@ -3,6 +3,8 @@ variable "app_identifier" {}
 variable "app_environment" {}
 variable "app_image" {}
 variable "nginx_image" {}
+
+variable "freeswitch_image" {}
 variable "memory" {}
 variable "cpu" {}
 variable "aws_region" {}
@@ -70,8 +72,8 @@ variable "db_security_group" {
 variable "db_username" {}
 variable "db_password_parameter_arn" {}
 variable "json_cdr_password_parameter_arn" {}
-variable "rayo_user" {}
-variable "rayo_host" {}
 variable "external_sip_ip" {}
 variable "external_rtp_ip" {}
 variable "json_cdr_url" {}
+
+variable "inbound_sip_trunks_security_group_name" {}
