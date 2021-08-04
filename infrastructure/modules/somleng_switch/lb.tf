@@ -16,7 +16,7 @@ resource "aws_lb_target_group" "this" {
 }
 
 resource "aws_lb_listener_rule" "this" {
-  priority = 20
+  priority = 100
 
   listener_arn = var.listener_arn
 
@@ -27,7 +27,7 @@ resource "aws_lb_listener_rule" "this" {
 
   condition {
     host_header {
-      values = ["ahn.somleng.org"]
+      values = ["ahn2.somleng.org"]
     }
   }
 
@@ -50,7 +50,7 @@ resource "aws_lb_target_group" "sip" {
 }
 
 resource "aws_lb_listener" "sip" {
-  load_balancer_arn = var.load_balancer_arn
+  load_balancer_arn = var.network_load_balancer_arn
   port              = var.sip_port
   protocol          = "UDP"
   # https://github.com/hashicorp/terraform-provider-aws/issues/17227

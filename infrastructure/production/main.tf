@@ -29,8 +29,12 @@ module "somleng_switch" {
   external_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
 
   load_balancer_arn = data.terraform_remote_state.core_infrastructure.outputs.application_load_balancer.arn
+  network_load_balancer_arn = data.terraform_remote_state.core_infrastructure.outputs.network_load_balancer.arn
   listener_arn = data.terraform_remote_state.core_infrastructure.outputs.https_listener.arn
   inbound_sip_trunks_security_group_name = "twilreapi-inbound-sip-trunks"
 
   ecs_appserver_autoscale_min_instances = 1
+
+  webserver_container_port = 8080
+  sip_port = 5061
 }

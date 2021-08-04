@@ -6,6 +6,7 @@ data "template_file" "appserver_container_definitions" {
     app_port = var.app_port
     app_image      = var.app_image
     nginx_image      = var.nginx_image
+    freeswitch_image = var.freeswitch_image
     webserver_container_name = var.webserver_container_name
     webserver_container_port = var.webserver_container_port
     region = var.aws_region
@@ -18,6 +19,7 @@ data "template_file" "appserver_container_definitions" {
 
     database_password_parameter_arn = var.db_password_parameter_arn
     rayo_password_parameter_arn = aws_ssm_parameter.rayo_password.arn
+    rayo_port = var.rayo_port
     json_cdr_url = var.json_cdr_url
     json_cdr_password_parameter_arn = var.json_cdr_password_parameter_arn
     database_name = "freeswitch"
@@ -26,6 +28,7 @@ data "template_file" "appserver_container_definitions" {
     database_port = var.db_port
     external_sip_ip = var.external_sip_ip
     external_rtp_ip = var.external_rtp_ip
+    sip_port = var.sip_port
   }
 }
 

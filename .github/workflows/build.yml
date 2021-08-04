@@ -38,13 +38,14 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/combine_adhearsion_and_freeswitch_into_one_repo'
     env:
       IMAGE_TAG: ${{ github.sha }}
-      APP_IDENTIFIER: somleng-adhearsion
+      APP_IDENTIFIER: somleng-switch
       ECR_PUBLIC_REGISTRY: public.ecr.aws
-      APP_ECR_REPOSITORY_URI: public.ecr.aws/somleng/somleng-adhearsion
-      NGINX_ECR_REPOSITORY_URI: public.ecr.aws/somleng/somleng-adhearsion-nginx
+      APP_ECR_REPOSITORY_URI: public.ecr.aws/somleng/somleng-switch
+      NGINX_ECR_REPOSITORY_URI: public.ecr.aws/somleng/somleng-switch-nginx
+      FREESWITCH_ECR_REPOSITORY_URI: public.ecr.aws/somleng/somleng-switch-freeswitch
 
     steps:
       - name: Checkout
@@ -103,6 +104,17 @@ jobs:
             ${{ env.NGINX_ECR_REPOSITORY_URI }}:latest
             ${{ env.NGINX_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG  }}
 
+      - name: Build and push to AWS ECR `freeswitch`
+        uses: docker/build-push-action@v2
+        with:
+          context: "docker/freeswitch"
+          push: true
+          cache-from: type=local,src=/tmp/.buildx-cache/.buildx-cache-${{ env.APP_IDENTIFIER }}-freeswitch
+          cache-to: type=local,dest=/tmp/.buildx-cache-${{ env.APP_IDENTIFIER }}-freeswitch
+          tags: |
+            ${{ env.FREESWITCH_ECR_REPOSITORY_URI }}:latest
+            ${{ env.FREESWITCH_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG  }}
+
       - name: Move docker layer caches
         # Temp fix
         # https://github.com/docker/build-push-action/issues/252
@@ -112,6 +124,7 @@ jobs:
           mkdir /tmp/.buildx-cache
           mv /tmp/.buildx-cache-${{ env.APP_IDENTIFIER }} /tmp/.buildx-cache
           mv /tmp/.buildx-cache-${{ env.APP_IDENTIFIER }}-nginx /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-${{ env.APP_IDENTIFIER }}-freeswitch /tmp/.buildx-cache
 
       - name: Prepare nginx task definition
         id: render-nginx-task-def
@@ -120,6 +133,14 @@ jobs:
           task-definition: deploy/production/appserver_task_definition.json
           container-name: nginx
           image: ${{ env.NGINX_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
+
+      - name: Prepare freeswitch task definition
+        id: render-freeswitch-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1.0.21
+        with:
+          task-definition: deploy/production/appserver_task_definition.json
+          container-name: freeswitch
+          image: ${{ env.FREESWITCH_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
 
       - name: Prepare app server task definition
         id: render-appserver-task-def
