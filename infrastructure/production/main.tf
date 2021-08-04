@@ -34,6 +34,4 @@ module "somleng_switch" {
   inbound_sip_trunks_security_group_name = "twilreapi-inbound-sip-trunks"
 
   ecs_appserver_autoscale_min_instances = 1
-
-  sip_port = 5061
 }

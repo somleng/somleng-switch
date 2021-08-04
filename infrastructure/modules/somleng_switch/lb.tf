@@ -15,7 +15,7 @@ resource "aws_lb_target_group" "this" {
 }
 
 resource "aws_lb_listener_rule" "this" {
-  priority = 100
+  priority = 20
 
   listener_arn = var.listener_arn
 
@@ -26,7 +26,7 @@ resource "aws_lb_listener_rule" "this" {
 
   condition {
     host_header {
-      values = ["ahn2.somleng.org"]
+      values = ["ahn.somleng.org"]
     }
   }
 
