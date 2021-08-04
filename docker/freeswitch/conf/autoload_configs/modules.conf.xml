@@ -1,0 +1,34 @@
+<configuration name="modules.conf" description="Modules">
+  <modules>
+    <!-- Loggers -->
+    <load module="mod_console"/>
+
+    <!-- Event Handlers -->
+    <load module="mod_rayo"/>
+    <load module="mod_ssml"/>
+
+    <!-- Endpoints -->
+    <load module="mod_sofia"/>
+
+    <!-- Dialplan Interfaces -->
+    <load module="mod_dialplan_xml"/>
+
+    <!-- Applications -->
+    <load module="mod_commands"/>
+    <load module="mod_dptools"/>
+    <load module="mod_httapi"/>
+
+    <!-- File Format Interfaces -->
+    <load module="mod_sndfile"/>
+    <load module="mod_native_file"/>
+    <load module="mod_shout"/>
+    <load module="mod_tone_stream"/>
+
+    <!-- CDR -->
+    <load module="mod_json_cdr"/>
+
+    <!-- TTS -->
+    <load module="mod_flite"/>
+    <load module="mod_tts_commandline"/>
+  </modules>
+</configuration>

@@ -1,0 +1,10 @@
+<include>
+  <context name="default">
+    <extension name="adhearsion">
+      <action application="start_dtmf"/>
+      <condition>
+        <action application="rayo"/>
+      </condition>
+    </extension>
+  </context>
+</include>

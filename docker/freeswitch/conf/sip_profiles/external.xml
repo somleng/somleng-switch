@@ -1,0 +1,26 @@
+<profile name="external">
+  <!-- http://wiki.freeswitch.org/wiki/Sofia_Configuration_Files -->
+  <!-- This profile is only for outbound registrations to providers -->
+  <gateways>
+    <X-PRE-PROCESS cmd="include" data="external/*.xml"/>
+  </gateways>
+
+  <settings>
+    <param name="sip-trace" value="yes"/>
+
+    <param name="sip-ip" value="$${local_ip_v4}"/>
+    <param name="rtp-ip" value="$${local_ip_v4}"/>
+
+    <param name="ext-sip-ip" value="$${external_sip_ip}"/>
+    <param name="ext-rtp-ip" value="$${external_rtp_ip}"/>
+
+    <param name="bind-params" value="transport=udp"/>
+    <param name="inbound-codec-prefs" value="G722,PCMU,PCMA,GSM"/>
+    <param name="outbound-codec-prefs" value="G722,PCMU,PCMA,GSM"/>
+
+    <param name="context" value="default"/>
+    <param name="disable-register" value="true"/>
+    <param name="rtp-timer-name" value="soft"/>
+  </settings>
+</profile>
+

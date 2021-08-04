@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# Modified from:
+# https://starkandwayne.com/blog/bash-for-loop-over-json-array-using-jq/
+
+output_file="$1"
+
+export_polly_voices ()
+{
+  local voices_content=()
+  voices_content+=("<!-- This file is generated automatically by $0. Do not modify. -->")
+
+  for row in $(aws polly describe-voices --query 'Voices' | jq -r '.[] | @base64'); do
+    _jq() {
+      echo ${row} | base64 --decode | jq -r ${1}
+    }
+
+    local name="Polly.$(_jq '.Id')"
+    local language_code="$(_jq '.LanguageCode')"
+    local gender="$(_jq '.Gender')"
+
+    voices_content+=("<voice name=\"$name\" language=\"$language_code\" gender=\"$gender\" prefix=\"tts://tts_commandline|$name|\"/>")
+  done
+
+  printf "%s\n" "${voices_content[@]}" > $output_file
+}
+
+export_polly_voices

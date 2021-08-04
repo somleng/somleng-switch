@@ -1,0 +1,55 @@
+<configuration name="httapi.conf" description="HT-TAPI Hypertext Telephony API">
+  <settings>
+    <!-- print xml on the consol -->
+    <param name="debug" value="true"/>
+    <!-- time to keep audio files when discoverd they were deleted from the http server -->
+    <param name="file-not-found-expires" value="300"/>
+    <!-- how often to re-check the server to make sure the remote file has not changed -->
+    <param name="file-cache-ttl" value="300"/>
+  </settings>
+  <profiles>
+    <profile name="default">
+
+      <!-- default params for conference action tags -->
+      <conference>
+    <param name="default-profile" value="default"/>
+      </conference>
+
+      <dial>
+    <param name="context" value="default"/>
+    <param name="dialplan" value="XML"/>
+      </dial>
+      <permissions>
+    <permission name="set-params" value="true"/>
+    <permission name="set-vars" value="false">
+    </permission>
+    <permission name="get-vars" value="false">
+    </permission>
+    <permission name="extended-data" value="false"/>
+    <permission name="execute-apps" value="true">
+      <!-- default to "deny" or "allow" -->
+      <application-list default="deny">
+        <!-- type attr can be "deny" or "allow" nothing defaults to opposite of the list default so allow in this case -->
+        <application name="info"/>
+        <application name="hangup"/>
+      </application-list>
+    </permission>
+    <permission name="expand-vars-in-tag-body" value="false">
+    </permission>
+    <permission name="dial" value="true"/>
+    <permission name="dial-set-context" value="false"/>
+    <permission name="dial-set-dialplan" value="false"/>
+    <permission name="dial-set-cid-name" value="false"/>
+    <permission name="dial-set-cid-number" value="false"/>
+    <permission name="dial-full-originate" value="false"/>
+    <permission name="conference" value="true"/>
+    <permission name="conference-set-profile" value="false"/>
+      </permissions>
+
+      <params>
+        <param name="gateway-url" value="http://www.freeswitch.org/api/index.cgi" />
+      </params>
+
+    </profile>
+  </profiles>
+</configuration>

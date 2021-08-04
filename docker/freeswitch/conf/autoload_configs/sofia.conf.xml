@@ -1,0 +1,5 @@
+<configuration name="sofia.conf">
+  <profiles>
+    <X-PRE-PROCESS cmd="include" data="../sip_profiles/*.xml"/>
+  </profiles>
+</configuration>

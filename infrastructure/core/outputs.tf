@@ -5,3 +5,7 @@ output "app_ecr_repository" {
 output "nginx_ecr_repository" {
   value = aws_ecrpublic_repository.nginx.repository_uri
 }
+
+output "freeswitch_ecr_repository" {
+  value = aws_ecrpublic_repository.freeswitch.repository_uri
+}

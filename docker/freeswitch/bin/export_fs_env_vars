@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+output_file="$1"
+
+export_fs_env_vars ()
+{
+  local preprocessor_vars=()
+  preprocessor_vars+=("<!-- This file is generated automatically by $0. Do not modify. -->")
+
+  while IFS='=' read -r -d '' n v; do
+    if  [[ $n == FS_* ]] ;
+    then
+      local export_name=${n#"FS_"} # remove prefix
+      export_name="${export_name,,}" # convert to lowercase
+      preprocessor_vars+=("<X-PRE-PROCESS cmd=\"set\" data=\"$export_name=$v\"/>")
+    fi
+  done < <(env -0)
+
+  printf "%s\n" "${preprocessor_vars[@]}" > $output_file
+}
+
+export_fs_env_vars

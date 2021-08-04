@@ -1,0 +1,13 @@
+<!-- https://freeswitch.org/stash/projects/FS/repos/freeswitch/browse/src/mod/event_handlers/mod_json_cdr/conf/autoload_configs/json_cdr.conf.xml -->
+<configuration name="json_cdr.conf" description="JSON CDR">
+  <settings>
+    <param name="log-b-leg" value="true"/>
+    <param name="url" value="$${mod_json_cdr_url}"/>
+    <param name="cred" value="services:$${mod_json_cdr_password}"/>
+    <param name="auth-scheme" value="basic"/>
+    <param name="retries" value="30"/>
+    <param name="delay" value="60000"/>
+    <param name="log-dir" value=""/>
+    <param name="rotate" value="false"/>
+  </settings>
+</configuration>

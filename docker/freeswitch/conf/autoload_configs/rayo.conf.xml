@@ -1,0 +1,19 @@
+<!-- https://freeswitch.org/stash/projects/FS/repos/freeswitch/browse/src/mod/event_handlers/mod_rayo/conf/autoload_configs/rayo.conf.xml -->
+<configuration name="rayo.conf" description="Rayo server config">
+  <settings>
+    <param name="max-idle-sec" value="300"/>
+    <param name="add-variables-to-events" value="true"/>
+  </settings>
+
+  <domain name="rayo.somleng.org" shared-secret="$${mod_rayo_password}">
+    <listen type="c2s" port="$${mod_rayo_port}" address="0.0.0.0" acl=""/>
+    <users>
+      <user name="rayo" password="$${mod_rayo_password}"/>
+    </users>
+  </domain>
+
+  <!-- this should match the value in Dockerrun.aws.json -->
+  <record>
+    <param name="record-file-prefix" value="$${mod_rayo_record_file_prefix}/"/>
+  </record>
+</configuration>
