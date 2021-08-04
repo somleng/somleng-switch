@@ -82,7 +82,7 @@
     "logConfiguration": {
       "logDriver": "awslogs",
        "options": {
-         "awslogs-group": "${app_logs_group}",
+         "awslogs-group": "${freeswitch_logs_group}",
          "awslogs-region": "${logs_group_region}",
          "awslogs-stream-prefix": "${app_environment}"
        }

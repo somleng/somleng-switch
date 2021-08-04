@@ -13,6 +13,7 @@ data "template_file" "appserver_container_definitions" {
     application_master_key_parameter_arn = aws_ssm_parameter.application_master_key.arn
     memory = var.memory
     nginx_logs_group = aws_cloudwatch_log_group.nginx.name
+    freeswitch_logs_group = aws_cloudwatch_log_group.freeswitch.name
     app_logs_group = aws_cloudwatch_log_group.app.name
     logs_group_region = var.aws_region
     app_environment = var.app_environment
