@@ -66,16 +66,14 @@ resource "aws_ecs_service" "appserver" {
   task_definition = aws_ecs_task_definition.appserver.arn
   desired_count   = var.ecs_appserver_autoscale_min_instances
   launch_type = var.launch_type
-  deployment_controller {
-    type = "CODE_DEPLOY"
-  }
+
   network_configuration {
     subnets = var.container_instance_subnets
     security_groups = [aws_security_group.appserver.id, var.db_security_group, data.aws_security_group.inbound_sip_trunks.id]
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.this[0].arn
+    target_group_arn = aws_lb_target_group.this.arn
     container_name   = var.webserver_container_name
     container_port   = var.webserver_container_port
   }

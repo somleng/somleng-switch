@@ -1,6 +1,5 @@
 resource "aws_lb_target_group" "this" {
-  count = 2
-  name = "${var.app_identifier}-${count.index}"
+  name = var.app_identifier
   port = var.webserver_container_port
   protocol = "HTTP"
   vpc_id = var.vpc_id
@@ -22,7 +21,7 @@ resource "aws_lb_listener_rule" "this" {
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.this[0].id
+    target_group_arn = aws_lb_target_group.this.id
   }
 
   condition {
