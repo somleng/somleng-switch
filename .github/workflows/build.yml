@@ -157,6 +157,3 @@ jobs:
           service: ${{ env.APP_IDENTIFIER }}-appserver
           cluster: somleng
           wait-for-service-stability: true
-          codedeploy-appspec: deploy/appspec.yaml
-          codedeploy-application: ${{ env.APP_IDENTIFIER }}
-          codedeploy-deployment-group: ${{ env.APP_IDENTIFIER }}
