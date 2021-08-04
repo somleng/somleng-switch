@@ -35,6 +35,5 @@ module "somleng_switch" {
 
   ecs_appserver_autoscale_min_instances = 1
 
-  webserver_container_port = 8080
   sip_port = 5061
 }

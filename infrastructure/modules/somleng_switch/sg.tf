@@ -12,9 +12,9 @@ resource "aws_security_group" "appserver" {
 
 resource "aws_security_group_rule" "appserver_ingress" {
   type              = "ingress"
-  to_port           = 80
+  to_port           = var.webserver_container_port
   protocol          = "TCP"
-  from_port         = 80
+  from_port         = var.webserver_container_port
   security_group_id = aws_security_group.appserver.id
   cidr_blocks = ["0.0.0.0/0"]
 }
