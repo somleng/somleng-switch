@@ -38,7 +38,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/combine_adhearsion_and_freeswitch_into_one_repo'
+    if: github.ref == 'refs/heads/master'
     env:
       IMAGE_TAG: ${{ github.sha }}
       APP_IDENTIFIER: somleng-switch

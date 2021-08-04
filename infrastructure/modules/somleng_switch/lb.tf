@@ -42,6 +42,9 @@ resource "aws_lb_target_group" "sip" {
   target_type = "ip"
   vpc_id      = var.vpc_id
 
+  # https://github.com/hashicorp/terraform-provider-aws/issues/17227
+  # connection_termination = true
+
   health_check {
     port = var.rayo_port
     protocol = "TCP"
@@ -52,8 +55,6 @@ resource "aws_lb_listener" "sip" {
   load_balancer_arn = var.network_load_balancer_arn
   port              = var.sip_port
   protocol          = "UDP"
-  # https://github.com/hashicorp/terraform-provider-aws/issues/17227
-  # connection_termination = true
 
   default_action {
     type = "forward"
