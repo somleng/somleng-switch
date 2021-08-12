@@ -1,7 +1,7 @@
 FROM somleng/docker-freeswitch:latest
 
 # Install jq for parsing JSON
-RUN apt-get update && apt-get -y install jq libpq-dev libc-dev groff less
+RUN apt-get update && apt-get -y install jq netcat libpq-dev libc-dev groff less
 
 # Install the AWS CLI
 RUN apt-get -y install curl unzip && \
@@ -35,4 +35,7 @@ RUN chown freeswitch:freeswitch /var/log/freeswitch/freeswitch.log
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
+HEALTHCHECK --interval=10s --timeout=5s --retries=10 \
+  CMD nc -z localhost 5222
+
 CMD ["freeswitch"]
