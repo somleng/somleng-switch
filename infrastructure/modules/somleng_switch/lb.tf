@@ -47,6 +47,7 @@ resource "aws_lb_target_group" "sip" {
 
   health_check {
     protocol = "HTTP"
+    port = var.webserver_container_port
     path = "/health_checks/freeswitch"
     healthy_threshold = 3
     interval = 10
