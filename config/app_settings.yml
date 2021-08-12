@@ -1,5 +1,6 @@
 default: &default
   ahn_core_host: <%= ENV.fetch("AHN_CORE_HOST") { "localhost" } %>
+  ahn_core_port: 5222
   ahn_core_username: "rayo@rayo.somleng.org"
   ahn_core_password: "secret"
   ahn_http_username: "adhearsion"

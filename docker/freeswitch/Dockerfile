@@ -20,6 +20,9 @@ RUN apt-get update && apt-get install -y freeswitch-mod-console freeswitch-mod-l
 # Convert mp3 to wav
 RUN apt-get update && apt-get install -y mpg123
 
+# Healthcheck
+RUN apt-get update && apt-get install -y netcat
+
 # Copy the Freeswitch configuration
 COPY conf /etc/freeswitch
 

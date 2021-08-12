@@ -5,6 +5,8 @@ require "adhearsion"
 require "active_support/all"
 Bundler.require(:default, Adhearsion.environment)
 
+I18n.load_path << Dir[File.expand_path("locales/*.yml")]
+
 $LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
 require "encrypted_credentials"
 require "call_platform"

@@ -2,8 +2,8 @@ require "spec_helper"
 
 module SomlengAdhearsion
   module Web
-    RSpec.describe Application, :web_application do
-      let(:app) { Application.new }
+    RSpec.describe API, :web_application do
+      let(:app) { API.new }
 
       it "requires basic authentication" do
         basic_authorize "username", "wrong-password"

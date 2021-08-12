@@ -20,6 +20,10 @@
       {
         "containerName": "app",
         "condition": "HEALTHY"
+      },
+      {
+        "containerName": "freeswitch",
+        "condition": "HEALTHY"
       }
     ]
   },
@@ -88,6 +92,12 @@
        }
     },
     "startTimeout": 120,
+    "healthCheck": {
+      "command": [ "CMD-SHELL", "nc -z -w 1 localhost ${rayo_port}" ],
+      "interval": 10,
+      "retries": 10,
+      "timeout": 5
+    },
     "essential": true,
     "secrets": [
       {
