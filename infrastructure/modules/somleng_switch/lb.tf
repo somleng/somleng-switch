@@ -46,8 +46,11 @@ resource "aws_lb_target_group" "sip" {
   # connection_termination = true
 
   health_check {
-    port = var.rayo_port
-    protocol = "TCP"
+    protocol = "HTTP"
+    port = var.webserver_container_port
+    path = "/health_checks/freeswitch"
+    healthy_threshold = 3
+    interval = 10
   }
 }
 

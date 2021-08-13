@@ -14,7 +14,6 @@ set -e
 
 if [ "$1" = 'freeswitch' ]; then
   export_fs_env_vars "$FREESWITCH_CONTAINER_CONFIG_DIRECTORY/env.xml"
-  export_aws_polly_voices "$FREESWITCH_CONTAINER_CONFIG_DIRECTORY/autoload_configs/polly_voices.xml"
 
   # Setup recordings directory
   mkdir -p ${FS_MOD_RAYO_RECORD_FILE_PREFIX}

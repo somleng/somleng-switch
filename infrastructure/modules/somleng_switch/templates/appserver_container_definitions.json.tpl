@@ -53,6 +53,12 @@
         "containerPort": ${app_port}
       }
     ],
+    "dependsOn": [
+      {
+        "containerName": "freeswitch",
+        "condition": "HEALTHY"
+      }
+    ],
     "environment": [
       {
         "name": "AHN_ENV",
@@ -73,6 +79,10 @@
       {
         "name": "AHN_CORE_HTTP_PORT",
         "value": "${app_port}"
+      },
+      {
+        "name": "AHN_CORE_PORT",
+        "value": "${rayo_port}"
       }
     ]
   },
@@ -88,6 +98,12 @@
        }
     },
     "startTimeout": 120,
+    "healthCheck": {
+      "command": [ "CMD-SHELL", "nc -z -w 5 localhost ${rayo_port}" ],
+      "interval": 10,
+      "retries": 10,
+      "timeout": 5
+    },
     "essential": true,
     "secrets": [
       {

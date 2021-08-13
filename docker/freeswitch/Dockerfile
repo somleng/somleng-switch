@@ -1,7 +1,6 @@
 FROM somleng/docker-freeswitch:latest
 
-# Install jq for parsing JSON
-RUN apt-get update && apt-get -y install jq libpq-dev libc-dev groff less
+RUN apt-get update && apt-get -y install jq libpq-dev libc-dev groff less netcat mpg123
 
 # Install the AWS CLI
 RUN apt-get -y install curl unzip && \
@@ -17,9 +16,6 @@ RUN apt-get -y install curl unzip && \
 RUN apt-get update && apt-get install -y freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-rayo freeswitch-mod-sofia freeswitch-mod-dialplan-xml freeswitch-mod-commands freeswitch-mod-dptools freeswitch-mod-http-cache freeswitch-mod-httapi freeswitch-mod-sndfile freeswitch-mod-native-file freeswitch-mod-shout freeswitch-mod-json-cdr freeswitch-mod-flite freeswitch-mod-tone-stream freeswitch-mod-tts-commandline freeswitch-mod-pgsql \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Convert mp3 to wav
-RUN apt-get update && apt-get install -y mpg123
-
 # Copy the Freeswitch configuration
 COPY conf /etc/freeswitch
 
@@ -33,6 +29,11 @@ RUN chown freeswitch:freeswitch /var/log/freeswitch/freeswitch.log
 
 # Install the entrypoint script
 COPY docker-entrypoint.sh /docker-entrypoint.sh
+
+EXPOSE 5060/udp
+EXPOSE 5222/tcp
+
+HEALTHCHECK --interval=10s --timeout=5s --retries=10 CMD nc -z -w 5 localhost 5222
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["freeswitch"]

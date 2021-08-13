@@ -70,7 +70,7 @@ resource "aws_ecs_service" "appserver" {
 
   network_configuration {
     subnets = var.container_instance_subnets
-    security_groups = [aws_security_group.appserver.id, aws_security_group.freeswitch.id, var.db_security_group, data.aws_security_group.inbound_sip_trunks.id]
+    security_groups = [aws_security_group.appserver.id, var.db_security_group, data.aws_security_group.inbound_sip_trunks.id]
   }
 
   load_balancer {
