@@ -71,7 +71,6 @@ resource "aws_iam_policy" "ecs_task_policy" {
     {
       "Effect": "Allow",
       "Action": [
-        "polly:DescribeVoices",
         "polly:SynthesizeSpeech"
       ],
       "Resource": "*"

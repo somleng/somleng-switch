@@ -1,4 +1,5 @@
-<!-- https://freeswitch.org/stash/projects/FS/repos/freeswitch/browse/src/mod/event_handlers/mod_rayo/conf/autoload_configs/rayo.conf.xml -->
+<!-- https://github.com/signalwire/freeswitch/blob/master/src/mod/event_handlers/mod_rayo/conf/autoload_configs/rayo.conf.xml -->
+
 <configuration name="rayo.conf" description="Rayo server config">
   <settings>
     <param name="max-idle-sec" value="300"/>

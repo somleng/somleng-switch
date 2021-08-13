@@ -1,4 +1,4 @@
-<!-- https://freeswitch.org/stash/projects/FS/repos/freeswitch/browse/src/mod/formats/mod_ssml/conf/autoload_configs/ssml.conf.xml -->
+<!-- https://github.com/signalwire/freeswitch/blob/master/src/mod/formats/mod_ssml/conf/autoload_configs/ssml.conf.xml -->
 
 <configuration name="ssml.conf" description="SSML parser config">
   <!-- voices in order of preference -->

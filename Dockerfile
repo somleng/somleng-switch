@@ -39,6 +39,4 @@ RUN apk update && \
 
 COPY --from=build-env $APP_ROOT $APP_ROOT
 
-EXPOSE 3000
-
 CMD ["bundle", "exec", "ahn", "start", "--no-console"]
