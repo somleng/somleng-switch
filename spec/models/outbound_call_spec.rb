@@ -43,6 +43,9 @@ RSpec.describe OutboundCall do
           to: "+85512334667",
           from: "2442"
         )
+      },
+      headers: {
+        "X-Somleng-AccountSid" => "sample-account-sid"
       }
     )
   end
