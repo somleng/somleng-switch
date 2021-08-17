@@ -45,6 +45,7 @@ RSpec.describe OutboundCall do
         )
       },
       headers: {
+        "X-Somleng-CallSid" => "sample-call-sid",
         "X-Somleng-AccountSid" => "sample-account-sid"
       }
     )

@@ -25,6 +25,7 @@ class OutboundCall
         )
       },
       headers: {
+        "X-Somleng-CallSid" => call_params.fetch("call_sid"),
         "X-Somleng-AccountSid" => call_params.fetch("account_sid")
       }
     )
