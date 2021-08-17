@@ -37,13 +37,20 @@ module CallControllerHelpers
       "variable_sip_network_ip" => "192.168.3.1"
     )
 
-    instance_spy(
+    fake_call = instance_spy(
       Adhearsion::Call,
       from: "Extension 1000 <#{options.fetch(:from) { '1000' }}@192.168.42.234>",
       to: "#{options.fetch(:to) { '85512456869' }}@192.168.42.234",
       id: options.fetch(:id) { SecureRandom.uuid },
-      variables: variables
+      variables: variables,
+      present?: true
     )
+    allow(fake_call).to receive(:answer_time).and_return(
+      *Array(
+        options.fetch(:answer_time) { [nil, Time.now] }
+      )
+    )
+    fake_call
   end
 
   def stub_twiml_request(controller, response:)

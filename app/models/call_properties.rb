@@ -9,5 +9,6 @@ CallProperties = Struct.new(
   :api_version,
   :to,
   :from,
+  :sip_headers,
   keyword_init: true
 )

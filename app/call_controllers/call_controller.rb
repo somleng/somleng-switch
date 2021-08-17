@@ -57,7 +57,8 @@ class CallController < Adhearsion::CallController
       direction: response.direction,
       api_version: response.api_version,
       to: response.to,
-      from: response.from
+      from: response.from,
+      sip_headers: SIPHeaders.new(call_sid: response.call_sid, account_sid: response.account_sid)
     )
   end
 
