@@ -30,6 +30,8 @@ data "template_file" "appserver_container_definitions" {
     external_sip_ip = var.external_sip_ip
     external_rtp_ip = var.external_rtp_ip
     sip_port = var.sip_port
+
+    tts_cache_bucket = aws_s3_bucket.tts_cache.id
   }
 }
 

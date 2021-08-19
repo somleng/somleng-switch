@@ -6,5 +6,5 @@ voice="$3"
 
 if [[ "$voice" =~ ^Polly\..+ ]]; then
   # extract Polly.from voice and execute aws_polly
-  ./aws_polly "$text" "$file" "${voice#"Polly."}"
+  aws_polly "$text" "$file" "${voice#"Polly."}"
 fi
