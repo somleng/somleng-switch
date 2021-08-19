@@ -5,19 +5,6 @@ file="$2"
 voice="$3"
 
 if [[ "$voice" =~ ^Polly\..+ ]]; then
-
-tts_checksum=$(echo -n "$voice$text" | sha256sum | head -c 64)
-
-aws s3api head-object --bucket "$TTS_CACHE_BUCKET" --key "$tts_checksum" || no_hit=true
-
-# https://stackoverflow.com/questions/41871948/aws-s3-how-to-check-if-a-file-exists-in-a-bucket-using-bash
-if [ $no_hit ]; then
-  if [[ "$voice" =~ ^Polly\..+ ]]; then
-    # extract Polly.from voice and execute aws_polly
-    aws_polly "$text" "$file" "${voice#"Polly."}"
-    # upload result
-  fi
-else
-  echo "it exists"
-  # download from s3
+  # extract Polly.from voice and execute aws_polly
+  ./aws_polly "$text" "$file" "${voice#"Polly."}"
 fi
