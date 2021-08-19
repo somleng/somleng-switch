@@ -40,11 +40,12 @@ class CallController < Adhearsion::CallController
       to: normalized_call.to,
       from: normalized_call.from,
       external_id: call.id,
-      source_ip: call.variables["variable_sip_network_ip"],
+      source_ip: call.variables["variable_sip_via_host"],
       variables: {
         sip_from_host: call.variables["variable_sip_from_host"],
         sip_to_host: call.variables["variable_sip_to_host"],
-        sip_network_ip: call.variables["variable_sip_network_ip"]
+        sip_network_ip: call.variables["variable_sip_network_ip"],
+        sip_via_host: call.variables["variable_sip_via_host"]
       }
     )
     CallProperties.new(
