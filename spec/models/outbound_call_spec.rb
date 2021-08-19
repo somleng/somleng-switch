@@ -41,8 +41,13 @@ RSpec.describe OutboundCall do
           direction: "outbound-api",
           api_version: "2010-04-01",
           to: "+85512334667",
-          from: "2442"
+          from: "2442",
+          sip_headers: SIPHeaders.new(call_sid: "sample-call-sid", account_sid: "sample-account-sid")
         )
+      },
+      headers: {
+        "X-Somleng-CallSid" => "sample-call-sid",
+        "X-Somleng-AccountSid" => "sample-account-sid"
       }
     )
   end

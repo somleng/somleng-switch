@@ -28,7 +28,7 @@ RSpec.describe CallController, type: :call_controller do
 
       controller.run
 
-      expect(controller).to have_received(:reject).with(:decline)
+      expect(controller).to have_received(:reject).with(:decline, any_args)
     end
   end
 
@@ -58,7 +58,7 @@ RSpec.describe CallController, type: :call_controller do
 
         controller.run
 
-        expect(controller).to have_received(:reject).with(:busy)
+        expect(controller).to have_received(:reject).with(:busy, any_args)
       end
     end
   end
