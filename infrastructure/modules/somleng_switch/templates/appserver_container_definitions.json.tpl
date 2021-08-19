@@ -135,6 +135,10 @@
         "value": "${region}"
       },
       {
+        "name": "TTS_CACHE_BUCKET",
+        "value": "${tts_cache_bucket}"
+      },
+      {
         "name": "FS_DATABASE_NAME",
         "value": "${database_name}"
       },
