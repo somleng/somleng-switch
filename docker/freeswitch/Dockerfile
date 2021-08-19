@@ -1,6 +1,6 @@
 FROM somleng/docker-freeswitch:latest
 
-RUN apt-get update && apt-get -y install jq libpq-dev libc-dev groff less netcat mpg123
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install libpq-dev libc-dev groff less netcat mpg123
 
 # Install the AWS CLI
 RUN apt-get -y install curl unzip && \
