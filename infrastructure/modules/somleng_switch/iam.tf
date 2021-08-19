@@ -74,6 +74,14 @@ resource "aws_iam_policy" "ecs_task_policy" {
         "polly:SynthesizeSpeech"
       ],
       "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject"
+      ],
+      "Resource": "${aws_s3_bucket.tts_cache.arn}/*"
     }
   ]
 }
