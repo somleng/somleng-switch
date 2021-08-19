@@ -2,7 +2,7 @@ class ExecuteTwiML
   attr_reader :context, :twiml
 
   delegate :logger, to: :context
-  delegate :ask, :dial, :hangup, :say, :play_audio, :answer, :reject, :redirect, :call_platform_client, :call_properties, to: :context
+  delegate :ask, :dial, :say, :play_audio, :redirect, :call_platform_client, :call_properties, to: :context
 
   NESTED_GATHER_VERBS = %w[Say Play].freeze
   MAX_LOOP = 100
@@ -64,6 +64,18 @@ class ExecuteTwiML
     logger.error(e.message)
   end
 
+  def answer(headers = {})
+    context.answer(sip_headers.reverse_merge(headers))
+  end
+
+  def hangup(headers = {})
+    context.hangup(sip_headers.reverse_merge(headers))
+  end
+
+  def reject(reason, headers = {})
+    context.reject(reason, sip_headers.reverse_merge(headers))
+  end
+
   private
 
   def phone_call
@@ -77,7 +89,7 @@ class ExecuteTwiML
   def answered?
     return if phone_call.blank?
 
-    normalized_call.answer_time
+    normalized_call.answer_time.present?
   end
 
   def execute_reject(verb)
@@ -256,5 +268,9 @@ class ExecuteTwiML
     doc.root.children
   rescue Nokogiri::XML::SyntaxError => e
     raise Errors::TwiMLError, "Error while parsing XML: #{e.message}. XML Document: #{content}"
+  end
+
+  def sip_headers
+    call_properties.sip_headers.to_h
   end
 end

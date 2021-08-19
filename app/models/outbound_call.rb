@@ -6,6 +6,10 @@ class OutboundCall
   end
 
   def initiate
+    sip_headers = SIPHeaders.new(
+      call_sid: call_params.fetch("sid"),
+      account_sid: call_params.fetch("account_sid")
+    )
     Adhearsion::OutboundCall.originate(
       dial_string,
       from: call_params.fetch("from"),
@@ -21,9 +25,11 @@ class OutboundCall
           direction: call_params.fetch("direction"),
           api_version: call_params.fetch("api_version"),
           from: call_params.fetch("from"),
-          to: call_params.fetch("to")
+          to: call_params.fetch("to"),
+          sip_headers: sip_headers
         )
-      }
+      },
+      headers: sip_headers.to_h
     )
   end
 

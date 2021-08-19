@@ -11,6 +11,10 @@ RSpec.describe CallController, type: :call_controller do
 
     controller.run
 
+    expect(controller).to have_received(:answer).with(
+      "X-Somleng-CallSid" => be_present,
+      "X-Somleng-AccountSid" => be_present
+    )
     expect(controller).to have_received(:say)
     expect(controller).to have_received(:play_audio)
   end
