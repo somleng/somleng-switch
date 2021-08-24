@@ -49,7 +49,6 @@ class ExecuteTwiML
         when "Dial"
           execute_dial(verb)
         when "Hangup"
-          hangup
           break
         else
           raise Errors::TwiMLError, "Invalid element '#{verb.name}'"
@@ -66,10 +65,6 @@ class ExecuteTwiML
 
   def answer(headers = {})
     context.answer(sip_headers.reverse_merge(headers))
-  end
-
-  def hangup(headers = {})
-    context.hangup(sip_headers.reverse_merge(headers))
   end
 
   def reject(reason, headers = {})
