@@ -132,7 +132,7 @@ jobs:
 
       - name: Prepare nginx task definition
         id: render-nginx-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1.0.21
+        uses: aws-actions/amazon-ecs-render-task-definition@v1.0.24
         with:
           task-definition: deploy/production/appserver_task_definition.json
           container-name: nginx
@@ -140,7 +140,7 @@ jobs:
 
       - name: Prepare freeswitch task definition
         id: render-freeswitch-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1.0.21
+        uses: aws-actions/amazon-ecs-render-task-definition@v1.0.24
         with:
           task-definition: deploy/production/appserver_task_definition.json
           container-name: freeswitch
@@ -148,7 +148,7 @@ jobs:
 
       - name: Prepare app server task definition
         id: render-appserver-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1.0.21
+        uses: aws-actions/amazon-ecs-render-task-definition@v1.0.24
         with:
           task-definition: ${{ steps.render-nginx-task-def.outputs.task-definition }}
           container-name: app
