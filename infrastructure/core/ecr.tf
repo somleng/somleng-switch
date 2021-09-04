@@ -5,7 +5,7 @@ resource "aws_ecrpublic_repository" "app" {
   catalog_data {
     about_text        = "Somleng Switch"
     architectures     = ["Linux"]
-    description       = "Somleng-Switch is an Adhearsion application compatible with Twilreapi and TwiML. It can be used as a drop-in replacement for Twilio routing calls through local operator, SIP trunk or PBX."
+    description       = "SomlengSWITCH is the switch layer for Somleng. It includes an open source TwiML interpreter"
   }
 }
 
