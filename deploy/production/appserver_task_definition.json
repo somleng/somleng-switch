@@ -1,8 +1,8 @@
 {
   "family": "somleng-switch-appserver",
   "networkMode": "awsvpc",
-  "cpu": "1024",
-  "memory": "2048",
+  "cpu": "2048",
+  "memory": "4096",
   "executionRoleArn": "arn:aws:iam::324279636507:role/somleng-switch-ecsTaskExecutionRole",
   "taskRoleArn": "arn:aws:iam::324279636507:role/somleng-switch-ecs-task-role",
   "requiresCompatibilities": ["FARGATE"],

@@ -12,8 +12,8 @@ module "somleng_switch" {
   app_image = data.terraform_remote_state.core.outputs.app_ecr_repository
   nginx_image = data.terraform_remote_state.core.outputs.nginx_ecr_repository
   freeswitch_image = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository
-  memory = 2048
-  cpu = 1024
+  memory = 4096
+  cpu = 2048
   aws_region = var.aws_region
   container_instance_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets
   vpc_id = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_id
