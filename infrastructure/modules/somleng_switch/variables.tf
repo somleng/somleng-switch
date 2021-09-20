@@ -29,9 +29,6 @@ variable "app_port" {
 variable "network_mode" {
   default = "awsvpc"
 }
-variable "launch_type" {
-  default = "FARGATE"
-}
 variable "enable_dashboard" {
   default = false
 }

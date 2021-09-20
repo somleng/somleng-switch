@@ -15,7 +15,7 @@ resource "aws_key_pair" "console" {
 }
 
 resource "aws_iam_role" "console" {
-  name = "${var.app_identifier}_ecs_instance_role"
+  name = "${var.app_identifier}_ecs_console_instance_role"
 
   assume_role_policy = <<EOF
 {
@@ -34,7 +34,7 @@ EOF
 }
 
 resource "aws_iam_instance_profile" "console" {
-  name = "${var.app_identifier}_ecs_instance_profile"
+  name = "${var.app_identifier}_console_ecs_instance_profile"
   role = aws_iam_role.console.name
 }
 
@@ -52,11 +52,13 @@ resource "aws_iam_role_policy_attachment" "console_ssm" {
 }
 
 data "aws_ecs_task_definition" "console" {
-  task_definition = aws_ecs_task_definition.appserver.family
+  task_definition = aws_ecs_task_definition.appserver_old.family
 }
 
+# https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
+# https://aws.amazon.com/ec2/instance-types/t4/
 data "aws_ssm_parameter" "console" {
-  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended"
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/arm64/recommended"
 }
 
 resource "aws_security_group" "console" {
@@ -90,8 +92,9 @@ resource "aws_ecs_service" "console" {
 }
 
 resource "aws_launch_configuration" "console" {
+  name                        = "${var.app_identifier}-console"
   image_id                    = jsondecode(data.aws_ssm_parameter.console.value).image_id
-  instance_type               = "t3.small"
+  instance_type               = "t4g.small"
   iam_instance_profile        = aws_iam_instance_profile.console.name
   security_groups             = [aws_security_group.console.id]
   user_data                   = data.template_file.console_user_data.rendered

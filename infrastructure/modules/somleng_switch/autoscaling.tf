@@ -1,6 +1,6 @@
 resource "aws_appautoscaling_target" "appserver_scale_target" {
   service_namespace  = "ecs"
-  resource_id        = "service/${var.ecs_cluster.name}/${aws_ecs_service.appserver.name}"
+  resource_id        = "service/${var.ecs_cluster.name}/${aws_ecs_service.appserver_old.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   max_capacity       = var.ecs_appserver_autoscale_max_instances
   min_capacity       = var.ecs_appserver_autoscale_min_instances
@@ -18,7 +18,7 @@ resource "aws_appautoscaling_policy" "appserver_policy" {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
 
-    target_value = 75
+    target_value = 30
     scale_in_cooldown = 300
     scale_out_cooldown = 60
   }
