@@ -1,3 +1,12 @@
+locals {
+  cluster_name = var.app_identifier
+}
+
+resource "aws_ecs_cluster" "cluster" {
+  name = local.cluster_name
+  capacity_providers = [aws_ecs_capacity_provider.container_instance.name]
+}
+
 data "template_file" "appserver_container_definitions" {
   template = file("${path.module}/templates/appserver_container_definitions.json.tpl")
 
@@ -151,11 +160,15 @@ resource "aws_ecs_service" "appserver_old" {
   lifecycle {
     ignore_changes = [load_balancer, task_definition]
   }
+
+  depends_on = [
+    aws_iam_role.ecs_task_role
+  ]
 }
 
 resource "aws_ecs_service" "service" {
   name            = var.app_identifier
-  cluster         = var.ecs_cluster.id
+  cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.task_definition.arn
   desired_count   = var.ecs_appserver_autoscale_min_instances
 
@@ -184,6 +197,10 @@ resource "aws_ecs_service" "service" {
   # lifecycle {
   #   ignore_changes = [load_balancer, task_definition]
   # }
+
+  depends_on = [
+    aws_iam_role.ecs_task_role
+  ]
 }
 
 resource "aws_ecs_capacity_provider" "container_instance" {

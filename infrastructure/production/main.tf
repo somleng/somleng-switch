@@ -33,5 +33,5 @@ module "somleng_switch" {
   listener_arn = data.terraform_remote_state.core_infrastructure.outputs.https_listener.arn
   inbound_sip_trunks_security_group_name = "somleng-inbound-sip-trunks"
 
-  ecs_appserver_autoscale_min_instances = 1
+  ecs_appserver_autoscale_min_instances = 2
 }

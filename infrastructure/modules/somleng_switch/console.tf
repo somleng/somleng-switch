@@ -77,7 +77,7 @@ resource "aws_security_group_rule" "console_egress" {
 
 resource "aws_ecs_service" "console" {
   name = "${var.app_identifier}-console"
-  cluster = var.ecs_cluster.name
+  cluster = aws_ecs_cluster.cluster.name
   task_definition = data.aws_ecs_task_definition.console.id
   launch_type = "EC2"
 
@@ -89,10 +89,14 @@ resource "aws_ecs_service" "console" {
     subnets = var.container_instance_subnets
     security_groups = [aws_security_group.console.id]
   }
+
+  depends_on = [
+    aws_iam_role.ecs_task_role
+  ]
 }
 
 resource "aws_launch_configuration" "console" {
-  name                        = "${var.app_identifier}-console"
+  name_prefix                 = "${var.app_identifier}-console"
   image_id                    = jsondecode(data.aws_ssm_parameter.console.value).image_id
   instance_type               = "t4g.small"
   iam_instance_profile        = aws_iam_instance_profile.console.name
@@ -106,7 +110,7 @@ resource "aws_launch_configuration" "console" {
 }
 
 resource "aws_autoscaling_group" "console" {
-  name                 = "${var.app_identifier}-console"
+  name_prefix          = "${var.app_identifier}-console"
   launch_configuration = aws_launch_configuration.console.name
   vpc_zone_identifier  = var.container_instance_subnets
   max_size             = 1
@@ -137,6 +141,6 @@ data "template_file" "console_user_data" {
   template = file("${path.module}/templates/console_user_data.sh")
 
   vars = {
-    cluster_name = var.ecs_cluster.name
+    cluster_name = local.cluster_name
   }
 }

@@ -40,11 +40,11 @@ resource "aws_iam_role_policy_attachment" "container_instance_ecs_ec2_role" {
 
 resource "aws_iam_role_policy_attachment" "container_instance_ssm" {
   role       = aws_iam_role.container_instance.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
 resource "aws_launch_configuration" "container_instance" {
-  name                        = "${var.app_identifier}-container-instance"
+  name_prefix                 = var.app_identifier
   image_id                    = jsondecode(data.aws_ssm_parameter.container_instance.value).image_id
   instance_type               = "t4g.small"
   iam_instance_profile        = aws_iam_instance_profile.container_instance.name
@@ -71,7 +71,7 @@ resource "aws_security_group_rule" "container_instance_egress" {
 }
 
 resource "aws_autoscaling_group" "container_instance" {
-  name                 = var.app_identifier
+  name_prefix          = var.app_identifier
   launch_configuration = aws_launch_configuration.container_instance.name
   vpc_zone_identifier  = var.container_instance_subnets
   max_size             = 10
@@ -91,12 +91,17 @@ resource "aws_autoscaling_group" "container_instance" {
     value               = ""
     propagate_at_launch = true
   }
+
+  lifecycle {
+    ignore_changes = [desired_capacity]
+    create_before_destroy = true
+  }
 }
 
 data "template_file" "container_instance_user_data" {
   template = file("${path.module}/templates/container_instance_user_data.sh")
 
   vars = {
-    cluster_name = var.ecs_cluster.name
+    cluster_name = local.cluster_name
   }
 }
