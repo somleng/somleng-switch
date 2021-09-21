@@ -96,9 +96,9 @@ jobs:
         with:
           context: .
           push: true
+          platforms: linux/amd64,linux/arm64
           cache-from: type=local,src=/tmp/.buildx-cache/.buildx-cache-${{ env.APP_IDENTIFIER }}
           cache-to: type=local,dest=/tmp/.buildx-cache-${{ env.APP_IDENTIFIER }}
-          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.APP_ECR_REPOSITORY_URI }}:latest
             ${{ env.APP_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG  }}
