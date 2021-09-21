@@ -227,7 +227,9 @@ class ExecuteTwiML
 
     ssml = RubySpeech::SSML.draw do
       voice(voice_params) do
-        string(content)
+        # mod ssml doesn't support non-ascii characters
+        # https://github.com/signalwire/freeswitch/issues/1348
+        string("~" + content)
       end
     end
     ssml.document.encoding = "UTF-8"
