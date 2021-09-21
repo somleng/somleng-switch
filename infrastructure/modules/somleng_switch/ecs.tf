@@ -137,7 +137,7 @@ resource "aws_ecs_service" "appserver_old" {
   name            = "${var.app_identifier}-appserver"
   cluster         = var.ecs_cluster.id
   task_definition = aws_ecs_task_definition.appserver_old.arn
-  desired_count   = var.ecs_appserver_autoscale_min_instances
+  desired_count   = 2
   launch_type = "FARGATE"
 
   network_configuration {
@@ -170,7 +170,7 @@ resource "aws_ecs_service" "service" {
   name            = var.app_identifier
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.task_definition.arn
-  desired_count   = var.ecs_appserver_autoscale_min_instances
+  desired_count   = 1
 
   network_configuration {
     subnets = var.container_instance_subnets

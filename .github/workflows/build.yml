@@ -106,6 +106,7 @@ jobs:
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache/.buildx-cache-${{ env.APP_IDENTIFIER }}-nginx
           cache-to: type=local,dest=/tmp/.buildx-cache-${{ env.APP_IDENTIFIER }}-nginx
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.NGINX_ECR_REPOSITORY_URI }}:latest
             ${{ env.NGINX_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG  }}

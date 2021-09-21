@@ -71,7 +71,7 @@ resource "aws_security_group_rule" "container_instance_egress" {
 }
 
 resource "aws_autoscaling_group" "container_instance" {
-  name_prefix          = var.app_identifier
+  name                 = var.app_identifier
   launch_configuration = aws_launch_configuration.container_instance.name
   vpc_zone_identifier  = var.container_instance_subnets
   max_size             = 10

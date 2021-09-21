@@ -57,8 +57,14 @@ data "aws_ecs_task_definition" "console" {
 
 # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
 # https://aws.amazon.com/ec2/instance-types/t4/
-data "aws_ssm_parameter" "console" {
+data "aws_ssm_parameter" "console_arm64" {
   name = "/aws/service/ecs/optimized-ami/amazon-linux-2/arm64/recommended"
+}
+
+# https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
+# https://aws.amazon.com/ec2/instance-types/t4/
+data "aws_ssm_parameter" "console" {
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended"
 }
 
 resource "aws_security_group" "console" {
@@ -98,7 +104,7 @@ resource "aws_ecs_service" "console" {
 resource "aws_launch_configuration" "console" {
   name_prefix                 = "${var.app_identifier}-console"
   image_id                    = jsondecode(data.aws_ssm_parameter.console.value).image_id
-  instance_type               = "t4g.small"
+  instance_type               = "t3.small"
   iam_instance_profile        = aws_iam_instance_profile.console.name
   security_groups             = [aws_security_group.console.id]
   user_data                   = data.template_file.console_user_data.rendered
@@ -110,7 +116,7 @@ resource "aws_launch_configuration" "console" {
 }
 
 resource "aws_autoscaling_group" "console" {
-  name_prefix          = "${var.app_identifier}-console"
+  name                 = "${var.app_identifier}-console"
   launch_configuration = aws_launch_configuration.console.name
   vpc_zone_identifier  = var.container_instance_subnets
   max_size             = 1

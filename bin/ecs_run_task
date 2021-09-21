@@ -12,12 +12,12 @@ options = {
 OptionParser.new do |opts|
   opts.banner = "Usage: ecs_run_task -h"
 
-  opts.on("--command COMMAND", "Command to run") do |value|
-    options[:command] = value
-  end
-
   opts.on("--service SERVICE", "Service name") do |value|
     options[:service] = value
+  end
+
+  opts.on("--command command", "Command to run") do |value|
+    options[:command] = value
   end
 
   opts.on("--cluster cluster", "Cluster") do |value|
@@ -54,15 +54,18 @@ run_task_options = {
   "cluster": options.fetch(:cluster),
   "launchType": options.fetch(:launch_type),
   "taskDefinition": options.fetch(:task_definition, options.fetch(:service)),
-  "networkConfiguration": JSON.parse(network_configuration),
-  "overrides": {
-    "containerOverrides": [
+  "networkConfiguration": JSON.parse(network_configuration)
+}
+
+if options.key?(:command)
+  run_task_options["overrides"] = {
+    "containerOverrides" => [
       {
-        "name": "somleng-freeswitch",
-        "command": Shellwords.split(options.fetch(:command))
+        "name" => "freeswitch",
+        "command" => Shellwords.split(options.fetch(:command))
       }
     ]
   }
-}
+end
 
 puts `aws ecs run-task --cli-input-json '#{run_task_options.to_json}'`
