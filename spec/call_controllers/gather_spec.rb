@@ -463,14 +463,14 @@ RSpec.describe CallController, type: :call_controller do
 
           outputs.first(3).each do |ssml|
             node = ssml.voice.children.first
-            expect(node.content).to eq("~Hello World")
+            expect(node.content).to eq("Hello World.")
             expect(node.attributes.fetch("name").value).to eq("woman")
             expect(node.attributes.fetch("lang").value).to eq("de")
           end
 
           outputs.last(5).each do |ssml|
             node = ssml.voice.children.first
-            expect(node.content).to eq("~Foobar")
+            expect(node.content).to eq("Foobar.")
             expect(node.attributes.fetch("name").value).to eq("man")
             expect(node.attributes.fetch("lang").value).to eq("en")
           end
