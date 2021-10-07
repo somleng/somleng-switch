@@ -170,7 +170,7 @@ resource "aws_ecs_service" "service" {
   name            = var.app_identifier
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.task_definition.arn
-  desired_count   = 0
+  desired_count   = 1
 
   network_configuration {
     subnets = var.container_instance_subnets
