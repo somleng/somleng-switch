@@ -229,7 +229,7 @@ class ExecuteTwiML
       voice(voice_params) do
         # mod ssml doesn't support non-ascii characters
         # https://github.com/signalwire/freeswitch/issues/1348
-        string("~" + content)
+        string(content + ".")
       end
     end
     ssml.document.encoding = "UTF-8"
