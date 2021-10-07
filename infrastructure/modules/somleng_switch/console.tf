@@ -15,7 +15,7 @@ resource "aws_key_pair" "console" {
 }
 
 resource "aws_iam_role" "console" {
-  name = "${var.app_identifier}_ecs_instance_role"
+  name = "${var.app_identifier}_ecs_console_instance_role"
 
   assume_role_policy = <<EOF
 {
@@ -34,7 +34,7 @@ EOF
 }
 
 resource "aws_iam_instance_profile" "console" {
-  name = "${var.app_identifier}_ecs_instance_profile"
+  name = "${var.app_identifier}_console_ecs_instance_profile"
   role = aws_iam_role.console.name
 }
 
@@ -52,9 +52,16 @@ resource "aws_iam_role_policy_attachment" "console_ssm" {
 }
 
 data "aws_ecs_task_definition" "console" {
-  task_definition = aws_ecs_task_definition.appserver.family
+  task_definition = aws_ecs_task_definition.task_definition.family
 }
 
+# https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
+# https://aws.amazon.com/ec2/instance-types/t4/
+data "aws_ssm_parameter" "console_arm64" {
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/arm64/recommended"
+}
+
+# https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
 data "aws_ssm_parameter" "console" {
   name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended"
 }
@@ -75,7 +82,7 @@ resource "aws_security_group_rule" "console_egress" {
 
 resource "aws_ecs_service" "console" {
   name = "${var.app_identifier}-console"
-  cluster = var.ecs_cluster.name
+  cluster = aws_ecs_cluster.cluster.name
   task_definition = data.aws_ecs_task_definition.console.id
   launch_type = "EC2"
 
@@ -87,10 +94,15 @@ resource "aws_ecs_service" "console" {
     subnets = var.container_instance_subnets
     security_groups = [aws_security_group.console.id]
   }
+
+  depends_on = [
+    aws_iam_role.ecs_task_role
+  ]
 }
 
 resource "aws_launch_configuration" "console" {
-  image_id                    = jsondecode(data.aws_ssm_parameter.console.value).image_id
+  name_prefix                 = "${var.app_identifier}-console"
+  image_id                    = jsondecode(data.aws_ssm_parameter.console_arm64.value).image_id
   instance_type               = "t3.small"
   iam_instance_profile        = aws_iam_instance_profile.console.name
   security_groups             = [aws_security_group.console.id]
@@ -134,6 +146,6 @@ data "template_file" "console_user_data" {
   template = file("${path.module}/templates/console_user_data.sh")
 
   vars = {
-    cluster_name = var.ecs_cluster.name
+    cluster_name = local.cluster_name
   }
 }

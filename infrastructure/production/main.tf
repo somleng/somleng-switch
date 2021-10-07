@@ -5,15 +5,11 @@ data "aws_ssm_parameter" "somleng_services_password" {
 module "somleng_switch" {
   source = "../modules/somleng_switch"
 
-  ecs_cluster = data.terraform_remote_state.core_infrastructure.outputs.ecs_cluster
-  codedeploy_role = data.terraform_remote_state.core_infrastructure.outputs.codedeploy_role
   app_identifier = "somleng-switch"
   app_environment = "production"
   app_image = data.terraform_remote_state.core.outputs.app_ecr_repository
   nginx_image = data.terraform_remote_state.core.outputs.nginx_ecr_repository
   freeswitch_image = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository
-  memory = 4096
-  cpu = 2048
   aws_region = var.aws_region
   container_instance_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets
   vpc_id = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_id
@@ -32,6 +28,4 @@ module "somleng_switch" {
   network_load_balancer_arn = data.terraform_remote_state.core_infrastructure.outputs.network_load_balancer.arn
   listener_arn = data.terraform_remote_state.core_infrastructure.outputs.https_listener.arn
   inbound_sip_trunks_security_group_name = "somleng-inbound-sip-trunks"
-
-  ecs_appserver_autoscale_min_instances = 1
 }

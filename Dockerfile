@@ -23,7 +23,7 @@ RUN mkdir -p tmp/pids
 RUN rm -rf vendor/bundle/ruby/*/cache/ && find vendor/ -name "*.o" -delete && find vendor/ -name "*.c"
 
 
-FROM ruby:2.7-alpine3.13
+FROM ruby:2.7-alpine
 
 ARG APP_ROOT="/app"
 ENV BUNDLE_APP_CONFIG="/app/.bundle"

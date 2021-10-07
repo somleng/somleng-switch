@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v2
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -42,6 +42,8 @@ jobs:
     env:
       IMAGE_TAG: ${{ github.sha }}
       APP_IDENTIFIER: somleng-switch
+      SERVICE_NAME: somleng-switch
+      CLUSTER: somleng-switch
       ECR_PUBLIC_REGISTRY: public.ecr.aws
       APP_ECR_REPOSITORY_URI: public.ecr.aws/somleng/somleng-switch
       NGINX_ECR_REPOSITORY_URI: public.ecr.aws/somleng/somleng-switch-nginx
@@ -49,7 +51,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v2
 
       - name: Configure AWS credentials
         id: aws-login
@@ -75,49 +77,55 @@ jobs:
         run: |
           ./docker/freeswitch/bin/export_aws_polly_voices "docker/freeswitch/conf/autoload_configs/polly_voices.xml"
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1.3.0
+        uses: docker/setup-buildx-action@v1
 
       - name: Cache Docker layers
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-${{ env.APP_IDENTIFIER }}-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-${{ env.APP_IDENTIFIER }}-
 
-      - name: Build and push to AWS ECR `${{ env.APP_IDENTIFIER }}`
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: true
-          cache-from: type=local,src=/tmp/.buildx-cache/.buildx-cache-${{ env.APP_IDENTIFIER }}
-          cache-to: type=local,dest=/tmp/.buildx-cache-${{ env.APP_IDENTIFIER }}
-          tags: |
-            ${{ env.APP_ECR_REPOSITORY_URI }}:latest
-            ${{ env.APP_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG  }}
-
-      - name: Build and push to AWS ECR `nginx`
+      - name: Build and push nginx
         uses: docker/build-push-action@v2
         with:
           context: "docker/nginx"
           push: true
+          platforms: linux/amd64,linux/arm64
           cache-from: type=local,src=/tmp/.buildx-cache/.buildx-cache-${{ env.APP_IDENTIFIER }}-nginx
           cache-to: type=local,dest=/tmp/.buildx-cache-${{ env.APP_IDENTIFIER }}-nginx
           tags: |
             ${{ env.NGINX_ECR_REPOSITORY_URI }}:latest
             ${{ env.NGINX_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG  }}
 
-      - name: Build and push to AWS ECR `freeswitch`
+      - name: Build and push freeswitch
         uses: docker/build-push-action@v2
         with:
           context: "docker/freeswitch"
           push: true
+          platforms: linux/amd64
           cache-from: type=local,src=/tmp/.buildx-cache/.buildx-cache-${{ env.APP_IDENTIFIER }}-freeswitch
           cache-to: type=local,dest=/tmp/.buildx-cache-${{ env.APP_IDENTIFIER }}-freeswitch
           tags: |
             ${{ env.FREESWITCH_ECR_REPOSITORY_URI }}:latest
             ${{ env.FREESWITCH_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG  }}
+
+      - name: Build and push somleng-switch
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          cache-from: type=local,src=/tmp/.buildx-cache/.buildx-cache-${{ env.APP_IDENTIFIER }}
+          cache-to: type=local,dest=/tmp/.buildx-cache-${{ env.APP_IDENTIFIER }}
+          tags: |
+            ${{ env.APP_ECR_REPOSITORY_URI }}:latest
+            ${{ env.APP_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG  }}
 
       - name: Move docker layer caches
         # Temp fix
@@ -130,34 +138,34 @@ jobs:
           mv /tmp/.buildx-cache-${{ env.APP_IDENTIFIER }}-nginx /tmp/.buildx-cache
           mv /tmp/.buildx-cache-${{ env.APP_IDENTIFIER }}-freeswitch /tmp/.buildx-cache
 
-      - name: Prepare nginx task definition
+      - name: Prepare NGINX task definition
         id: render-nginx-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1.0.21
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: deploy/production/appserver_task_definition.json
+          task-definition: deploy/production/ecs_task_definition.json
           container-name: nginx
           image: ${{ env.NGINX_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
 
-      - name: Prepare freeswitch task definition
+      - name: Prepare FreeSWITCH task definition
         id: render-freeswitch-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1.0.21
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: deploy/production/appserver_task_definition.json
+          task-definition: ${{ steps.render-nginx-task-def.outputs.task-definition }}
           container-name: freeswitch
           image: ${{ env.FREESWITCH_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
 
-      - name: Prepare app server task definition
+      - name: Prepare AppServer task definition
         id: render-appserver-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1.0.21
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ steps.render-nginx-task-def.outputs.task-definition }}
+          task-definition: ${{ steps.render-freeswitch-task-def.outputs.task-definition }}
           container-name: app
           image: ${{ env.APP_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
 
       - name: Deploy App Server
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1.4.5
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.render-appserver-task-def.outputs.task-definition }}
-          service: ${{ env.APP_IDENTIFIER }}-appserver
-          cluster: somleng
+          service: ${{ env.SERVICE_NAME }}
+          cluster: ${{ env.CLUSTER }}
           wait-for-service-stability: true

@@ -1,5 +1,14 @@
-data "template_file" "appserver_container_definitions" {
-  template = file("${path.module}/templates/appserver_container_definitions.json.tpl")
+locals {
+  cluster_name = var.app_identifier
+}
+
+resource "aws_ecs_cluster" "cluster" {
+  name = local.cluster_name
+  capacity_providers = [aws_ecs_capacity_provider.container_instance.name]
+}
+
+data "template_file" "container_definitions" {
+  template = file("${path.module}/templates/container_definitions.json.tpl")
 
   vars = {
     name = var.app_identifier
@@ -11,7 +20,6 @@ data "template_file" "appserver_container_definitions" {
     webserver_container_port = var.webserver_container_port
     region = var.aws_region
     application_master_key_parameter_arn = aws_ssm_parameter.application_master_key.arn
-    memory = var.memory
     nginx_logs_group = aws_cloudwatch_log_group.nginx.name
     freeswitch_logs_group = aws_cloudwatch_log_group.freeswitch.name
     app_logs_group = aws_cloudwatch_log_group.app.name
@@ -35,44 +43,44 @@ data "template_file" "appserver_container_definitions" {
   }
 }
 
-resource "aws_ecs_task_definition" "appserver" {
-  family                   = "${var.app_identifier}-appserver"
+resource "aws_ecs_task_definition" "task_definition" {
+  family                   = var.app_identifier
   network_mode             = var.network_mode
-  requires_compatibilities = [var.launch_type]
-  container_definitions = data.template_file.appserver_container_definitions.rendered
+  requires_compatibilities = ["EC2"]
+  container_definitions = data.template_file.container_definitions.rendered
   task_role_arn = aws_iam_role.ecs_task_role.arn
   execution_role_arn = aws_iam_role.task_execution_role.arn
-  cpu = var.cpu
-  memory = var.memory
 }
 
-resource "local_file" "appserver_task_definition" {
-  filename = "${path.module}/../../../deploy/${var.app_environment}/appserver_task_definition.json"
+resource "local_file" "task_definition" {
+  filename = "${path.module}/../../../deploy/${var.app_environment}/ecs_task_definition.json"
   file_permission = "644"
   content = <<EOF
 {
-  "family": "${aws_ecs_task_definition.appserver.family}",
-  "networkMode": "${aws_ecs_task_definition.appserver.network_mode}",
-  "cpu": "${aws_ecs_task_definition.appserver.cpu}",
-  "memory": "${aws_ecs_task_definition.appserver.memory}",
-  "executionRoleArn": "${aws_ecs_task_definition.appserver.execution_role_arn}",
-  "taskRoleArn": "${aws_ecs_task_definition.appserver.task_role_arn}",
-  "requiresCompatibilities": ["${var.launch_type}"],
-  "containerDefinitions": ${aws_ecs_task_definition.appserver.container_definitions}
+  "family": "${aws_ecs_task_definition.task_definition.family}",
+  "networkMode": "${aws_ecs_task_definition.task_definition.network_mode}",
+  "executionRoleArn": "${aws_ecs_task_definition.task_definition.execution_role_arn}",
+  "taskRoleArn": "${aws_ecs_task_definition.task_definition.task_role_arn}",
+  "requiresCompatibilities": ["EC2"],
+  "containerDefinitions": ${aws_ecs_task_definition.task_definition.container_definitions}
 }
 EOF
 }
 
-resource "aws_ecs_service" "appserver" {
-  name            = "${var.app_identifier}-appserver"
-  cluster         = var.ecs_cluster.id
-  task_definition = aws_ecs_task_definition.appserver.arn
-  desired_count   = var.ecs_appserver_autoscale_min_instances
-  launch_type = var.launch_type
+resource "aws_ecs_service" "service" {
+  name            = var.app_identifier
+  cluster         = aws_ecs_cluster.cluster.id
+  task_definition = aws_ecs_task_definition.task_definition.arn
+  desired_count   = var.min_tasks
 
   network_configuration {
     subnets = var.container_instance_subnets
     security_groups = [aws_security_group.appserver.id, var.db_security_group, data.aws_security_group.inbound_sip_trunks.id]
+  }
+
+  capacity_provider_strategy {
+    capacity_provider = aws_ecs_capacity_provider.container_instance.name
+    weight = 1
   }
 
   load_balancer {
@@ -88,6 +96,26 @@ resource "aws_ecs_service" "appserver" {
   }
 
   lifecycle {
-    ignore_changes = [load_balancer, task_definition]
+    ignore_changes = [task_definition]
+  }
+
+  depends_on = [
+    aws_iam_role.ecs_task_role
+  ]
+}
+
+resource "aws_ecs_capacity_provider" "container_instance" {
+  name = var.app_identifier
+
+  auto_scaling_group_provider {
+    auto_scaling_group_arn         = aws_autoscaling_group.container_instance.arn
+    managed_termination_protection = "ENABLED"
+
+    managed_scaling {
+      maximum_scaling_step_size = 1000
+      minimum_scaling_step_size = 1
+      status                    = "ENABLED"
+      target_capacity           = 100
+    }
   }
 }
