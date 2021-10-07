@@ -1,7 +1,12 @@
 # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
 # https://aws.amazon.com/ec2/instance-types/t4/
-data "aws_ssm_parameter" "container_instance" {
+data "aws_ssm_parameter" "container_instance_arm64" {
   name = "/aws/service/ecs/optimized-ami/amazon-linux-2/arm64/recommended"
+}
+
+# https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
+data "aws_ssm_parameter" "container_instance" {
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended"
 }
 
 resource "aws_iam_role" "container_instance" {
@@ -46,7 +51,7 @@ resource "aws_iam_role_policy_attachment" "container_instance_ssm" {
 resource "aws_launch_configuration" "container_instance" {
   name_prefix                 = var.app_identifier
   image_id                    = jsondecode(data.aws_ssm_parameter.container_instance.value).image_id
-  instance_type               = "t4g.small"
+  instance_type               = "t3.small"
   iam_instance_profile        = aws_iam_instance_profile.container_instance.name
   security_groups             = [aws_security_group.container_instance.id]
   user_data                   = data.template_file.container_instance_user_data.rendered
