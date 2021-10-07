@@ -1,2 +1,3 @@
 ruby 2.7.4
 terraform 0.14.7
+golang 1.17.1
