@@ -17,6 +17,7 @@ RUN apt-get update --allow-releaseinfo-change && apt-get -y install libpq-dev li
 RUN apt-get update && apt-get install -y \
     freeswitch \
     freeswitch-mod-console \
+    freeswitch-mod-event-socket \
     freeswitch-mod-logfile \
     freeswitch-mod-rayo \
     freeswitch-mod-sofia \
