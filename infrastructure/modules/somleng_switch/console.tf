@@ -52,7 +52,7 @@ resource "aws_iam_role_policy_attachment" "console_ssm" {
 }
 
 data "aws_ecs_task_definition" "console" {
-  task_definition = aws_ecs_task_definition.appserver_old.family
+  task_definition = aws_ecs_task_definition.task_definition.family
 }
 
 # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html

@@ -1,4 +1,3 @@
-variable "ecs_cluster" {}
 variable "app_identifier" {}
 variable "app_environment" {}
 variable "app_image" {}
@@ -32,10 +31,10 @@ variable "network_mode" {
 variable "enable_dashboard" {
   default = false
 }
-variable "ecs_appserver_autoscale_max_instances" {
+variable "max_tasks" {
   default = 4
 }
-variable "ecs_appserver_autoscale_min_instances" {
+variable "min_tasks" {
   default = 1
 }
 # If the average CPU utilization over a minute drops to this threshold,
