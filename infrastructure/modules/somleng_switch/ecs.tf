@@ -20,7 +20,6 @@ data "template_file" "container_definitions" {
     webserver_container_port = var.webserver_container_port
     region = var.aws_region
     application_master_key_parameter_arn = aws_ssm_parameter.application_master_key.arn
-    memory = var.memory
     nginx_logs_group = aws_cloudwatch_log_group.nginx.name
     freeswitch_logs_group = aws_cloudwatch_log_group.freeswitch.name
     app_logs_group = aws_cloudwatch_log_group.app.name
