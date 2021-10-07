@@ -11,7 +11,7 @@
        }
     },
     "essential": true,
-    "memoryReservation": 4,
+    "memoryReservation": 8,
     "portMappings": [
       {
         "containerPort": ${webserver_container_port}
