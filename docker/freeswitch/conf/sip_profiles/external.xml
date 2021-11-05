@@ -15,8 +15,8 @@
     <param name="ext-rtp-ip" value="$${external_rtp_ip}"/>
 
     <param name="bind-params" value="transport=udp"/>
-    <param name="inbound-codec-prefs" value="G722,PCMU,PCMA,GSM"/>
-    <param name="outbound-codec-prefs" value="G722,PCMU,PCMA,GSM"/>
+    <param name="inbound-codec-prefs" value="G722,PCMA,PCMU,GSM"/>
+    <param name="outbound-codec-prefs" value="G722,PCMA,PCMU,GSM"/>
 
     <param name="context" value="default"/>
     <param name="disable-register" value="true"/>
