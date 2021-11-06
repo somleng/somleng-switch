@@ -51,6 +51,7 @@ jobs:
         app_env:
           - { identifier: 'somleng-switch-staging', branch: 'refs/heads/deploy_staging', task_definition: 'deploy/staging/ecs_task_definition.json', image_tag: 'staging', ecs_service: 'somleng-switch-staging', ecs_cluster: 'somleng-switch-staging' }
 
+    steps:
       - name: Checkout
         uses: actions/checkout@v2
 
