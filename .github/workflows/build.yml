@@ -38,7 +38,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == matrix.app_env.branch
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/deploy_staging'
     env:
       IMAGE_TAG: ${{ github.sha }}
       ECR_PUBLIC_REGISTRY: public.ecr.aws

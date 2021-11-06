@@ -14,7 +14,7 @@ module "somleng_switch_staging" {
   container_instance_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets
   vpc_id = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_id
 
-  db_name = "freeswitch-staging"
+  db_name = "freeswitch_staging"
   db_username = data.terraform_remote_state.core_infrastructure.outputs.db.rds_cluster_master_username
   db_password_parameter_arn = data.terraform_remote_state.core_infrastructure.outputs.db_master_password_parameter.arn
   db_host = data.terraform_remote_state.core_infrastructure.outputs.db.rds_cluster_endpoint
