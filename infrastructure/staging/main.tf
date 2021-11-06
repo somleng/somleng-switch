@@ -36,4 +36,5 @@ module "somleng_switch_staging" {
   tts_cache_bucket_name = "tts-cache-staging.somleng.org"
   sip_port = 6060
   listener_rule_priority = 120
+  min_tasks = 0
 }
