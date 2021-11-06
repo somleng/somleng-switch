@@ -49,7 +49,6 @@ jobs:
     strategy:
       matrix:
         app_env:
-          # - { identifier: 'somleng-switch', branch: 'refs/heads/master', task_definition: 'deploy/production/ecs_task_definition.json', image_tag: 'latest', ecs_service: 'somleng-switch', ecs_cluster: 'somleng-switch' }
           - { identifier: 'somleng-switch-staging', branch: 'refs/heads/deploy_staging', task_definition: 'deploy/staging/ecs_task_definition.json', image_tag: 'staging', ecs_service: 'somleng-switch-staging', ecs_cluster: 'somleng-switch-staging' }
 
       - name: Checkout
