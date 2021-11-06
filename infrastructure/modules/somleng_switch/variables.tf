@@ -7,9 +7,12 @@ variable "freeswitch_image" {}
 variable "aws_region" {}
 variable "container_instance_subnets" {}
 variable "vpc_id" {}
-variable "load_balancer_arn" {}
-variable "network_load_balancer_arn" {}
+variable "load_balancer" {}
+variable "network_load_balancer" {}
 variable "listener_arn" {}
+variable "sip_subdomain" {}
+variable "switch_subdomain" {}
+variable "route53_zone" {}
 
 variable "webserver_container_name" {
   default = "nginx"

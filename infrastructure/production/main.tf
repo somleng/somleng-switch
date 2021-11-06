@@ -24,8 +24,11 @@ module "somleng_switch" {
   external_sip_ip = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
   external_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
 
-  load_balancer_arn = data.terraform_remote_state.core_infrastructure.outputs.application_load_balancer.arn
-  network_load_balancer_arn = data.terraform_remote_state.core_infrastructure.outputs.network_load_balancer.arn
+  load_balancer = data.terraform_remote_state.core_infrastructure.outputs.application_load_balancer
+  network_load_balancer = data.terraform_remote_state.core_infrastructure.outputs.network_load_balancer
+  route53_zone = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_somleng_org
   listener_arn = data.terraform_remote_state.core_infrastructure.outputs.https_listener.arn
   inbound_sip_trunks_security_group_name = "somleng-inbound-sip-trunks"
+  sip_subdomain = "sip"
+  switch_subdomain = "ahn"
 }
