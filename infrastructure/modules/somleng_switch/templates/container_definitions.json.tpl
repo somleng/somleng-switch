@@ -48,6 +48,10 @@
       {
         "name": "APP_MASTER_KEY",
         "valueFrom": "${application_master_key_parameter_arn}"
+      },
+      {
+        "name": "AHN_CORE_PASSWORD",
+        "valueFrom": "${rayo_password_parameter_arn}"
       }
     ],
     "portMappings": [
