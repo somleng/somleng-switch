@@ -48,7 +48,7 @@ jobs:
 
     strategy:
       matrix:
-        branch: ['refs/heads/master', 'refs/heads/staging']
+        branch: ['refs/heads/deploy_staging']
         include:
           - branch: refs/heads/master
             identifer: somleng-switch
