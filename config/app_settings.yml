@@ -5,14 +5,14 @@ default: &default
   ahn_core_password: "secret"
   ahn_http_username: "adhearsion"
   ahn_http_password: "password"
-  call_platform_host: <%= ENV.fetch("CALL_PLATFORM_HOST") { "http://localhost:3000" } %>
+  call_platform_host: <%= ENV.fetch('CALL_PLATFORM_HOST') { "http://localhost:3000" } %>
   call_platform_username: "services"
   call_platform_password: "password"
 
 production: &production
   <<: *default
   sentry_dsn: "<%= AppSettings.credentials.fetch('sentry_dsn') %>"
-  ahn_core_password: "<%= ENV.fetch("AHN_CORE_PASSWORD") %>"
+  ahn_core_password: "<%= ENV.fetch('AHN_CORE_PASSWORD') %>"
   ahn_http_password: "<%= AppSettings.credentials.fetch('ahn_http_password') %>"
   call_platform_host: "https://api.somleng.org"
   call_platform_password: "<%= AppSettings.credentials.fetch('call_platform_password') %>"
