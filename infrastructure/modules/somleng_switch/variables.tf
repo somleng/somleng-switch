@@ -58,6 +58,9 @@ variable "rayo_port" {
 variable "sip_port" {
   default = 5060
 }
+variable "load_balancer_sip_port" {
+  default = 5060
+}
 variable "db_name" {}
 variable "db_host" {}
 variable "db_port" {}

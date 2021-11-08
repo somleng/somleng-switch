@@ -56,7 +56,7 @@ resource "aws_lb_target_group" "sip" {
 
 resource "aws_lb_listener" "sip" {
   load_balancer_arn = var.network_load_balancer.arn
-  port              = var.sip_port
+  port              = var.load_balancer_sip_port
   protocol          = "UDP"
 
   default_action {
