@@ -68,4 +68,4 @@ EXPOSE 5222/tcp
 HEALTHCHECK --interval=10s --timeout=5s --retries=10 CMD nc -z -w 5 localhost 5222
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["freeswitch", "-nonat"]
+CMD ["freeswitch"]
