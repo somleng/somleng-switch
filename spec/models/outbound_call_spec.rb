@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe OutboundCall do
-  xit "initiates an outbound call" do
+  it "initiates an outbound call" do
     call_params = {
       "to" => "+85512334667",
       "from" => "2442",

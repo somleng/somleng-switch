@@ -1,12 +1,10 @@
 module Utils
-  DEFAULT_VARIABLES = {
-    "sip-force-contact" => "NDLB-connectile-dysfunction"
-  }.freeze
+  DEFAULT_VARIABLES = {}.freeze
 
   def self.build_dial_string(address, variables = {})
     variables.merge!(DEFAULT_VARIABLES)
-    prefix = variables.map { |k, v| "#{k}=#{v}" }.join(",")
-    prefix = "{#{prefix}}" if prefix.present?
-    "#{prefix}sofia/external/#{address}"
+    vars = variables.map { |k, v| "#{k}=#{v}" }.join(",")
+    vars = "{#{prefix}}" if vars.present?
+    "#{vars}sofia/external/#{address}"
   end
 end

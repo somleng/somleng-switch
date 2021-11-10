@@ -11,8 +11,8 @@
     <param name="sip-ip" value="$${local_ip_v4}"/>
     <param name="rtp-ip" value="$${local_ip_v4}"/>
 
-    <param name="ext-sip-ip" value="$${local_ip_v4}"/>
-    <param name="ext-rtp-ip" value="$${local_ip_v4}"/>
+    <param name="ext-sip-ip" value="$${external_sip_ip}"/>
+    <param name="ext-rtp-ip" value="$${external_rtp_ip}"/>
 
     <param name="bind-params" value="transport=udp"/>
     <param name="inbound-codec-prefs" value="G722,PCMU,PCMA,GSM"/>
