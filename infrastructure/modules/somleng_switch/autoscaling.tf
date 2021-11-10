@@ -2,7 +2,7 @@ resource "aws_appautoscaling_target" "appserver_scale_target" {
   service_namespace  = "ecs"
   resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.service.name}"
   scalable_dimension = "ecs:service:DesiredCount"
-  min_capacity       = 1 # it should never scale to 0 based on CPU
+  min_capacity       = var.min_tasks
   max_capacity       = var.max_tasks
 }
 

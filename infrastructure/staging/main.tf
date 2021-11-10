@@ -22,8 +22,8 @@ module "somleng_switch_staging" {
   db_security_group = data.terraform_remote_state.core_infrastructure.outputs.db_security_group.id
   json_cdr_password_parameter_arn = data.aws_ssm_parameter.somleng_services_password.arn
   json_cdr_url = "https://api-staging.somleng.org/services/call_data_records"
-  external_sip_ip = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
-  external_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
+  external_sip_ip = "18.141.245.230"
+  external_rtp_ip = "18.141.245.230"
 
   load_balancer = data.terraform_remote_state.core_infrastructure.outputs.application_load_balancer
   network_load_balancer = data.terraform_remote_state.core_infrastructure.outputs.network_load_balancer
@@ -36,5 +36,5 @@ module "somleng_switch_staging" {
   tts_cache_bucket_name = "tts-cache-staging.somleng.org"
   load_balancer_sip_port = 6060
   listener_rule_priority = 120
-  min_tasks = 0
+  min_tasks = 1
 }
