@@ -113,7 +113,7 @@ resource "aws_ecs_capacity_provider" "container_instance" {
 
   auto_scaling_group_provider {
     auto_scaling_group_arn         = aws_autoscaling_group.container_instance.arn
-    managed_termination_protection = "ENABLED"
+    managed_termination_protection = var.scale_in_protection ? "ENABLED" : "DISABLED"
 
     managed_scaling {
       maximum_scaling_step_size = 1000
