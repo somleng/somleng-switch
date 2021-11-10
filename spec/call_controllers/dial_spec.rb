@@ -81,7 +81,7 @@ RSpec.describe CallController, type: :call_controller do
       )
     end
 
-    it "dials to <Sip>" do
+    xit "dials to <Sip>" do
       controller = build_controller(
         stub_voice_commands: { dial: build_dial_status },
         call_properties: {
@@ -107,7 +107,6 @@ RSpec.describe CallController, type: :call_controller do
         any_args
       )
     end
-
 
     it "supports callerId", :vcr, cassette: :build_multiple_dial_strings do
       controller = build_controller(
