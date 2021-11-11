@@ -14,6 +14,9 @@
 <X-PRE-PROCESS cmd="set" data="external_sip_ip=0.0.0.0"/>
 <X-PRE-PROCESS cmd="set" data="external_rtp_ip=0.0.0.0"/>
 
+<X-PRE-PROCESS cmd="set" data="nat_instance_external_sip_ip=1.2.3.4"/>
+<X-PRE-PROCESS cmd="set" data="nat_instance_external_rtp_ip=1.2.3.4"/>
+
 <!-- mod_json_cdr -->
 <X-PRE-PROCESS cmd="set" data="mod_json_cdr_url=https://www.example.com/path"/>
 <X-PRE-PROCESS cmd="set" data="mod_json_cdr_password=password"/>

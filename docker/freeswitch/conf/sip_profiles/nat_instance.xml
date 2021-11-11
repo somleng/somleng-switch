@@ -1,4 +1,4 @@
-<profile name="external">
+<profile name="nat-instance">
   <!-- http://wiki.freeswitch.org/wiki/Sofia_Configuration_Files -->
   <!-- This profile is only for outbound registrations to providers -->
   <gateways>
@@ -8,8 +8,8 @@
   <settings>
     <X-PRE-PROCESS cmd="include" data="shared/settings.xml"/>
 
-    <param name="ext-sip-ip" value="$${external_sip_ip}"/>
-    <param name="ext-rtp-ip" value="$${external_rtp_ip}"/>
+    <param name="ext-sip-ip" value="$${nat_instance_external_sip_ip}"/>
+    <param name="ext-rtp-ip" value="$${nat_instance_external_rtp_ip}"/>
   </settings>
 </profile>
 
