@@ -34,6 +34,34 @@ jobs:
           chmod +x codacy-coverage-reporter
           ./codacy-coverage-reporter report -l Ruby -r coverage/lcov/*
 
+      - name: Prepare Deployment Matrix
+        id: prepare_deployment_matrix
+        run: |
+          branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
+          matrixSource=$(cat << EOF
+          [
+            {
+              "identifier": "somleng-switch-staging",
+              "branch": "deploy_staging",
+              "task_definition": "deploy/staging/ecs_task_definition.json",
+              "image_tag": "staging",
+              "ecs_service": "somleng-switch-staging",
+              "ecs_cluster": "somleng-switch-staging"
+            },
+            {
+              "identifier": "somleng-switch",
+              "branch": "master",
+              "task_definition": "deploy/production/ecs_task_definition.json",
+              "image_tag": "latest",
+              "ecs_service": "somleng-switch",
+              "ecs_cluster": "somleng-switch"
+            }
+          ]
+          EOF
+          )
+          matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
+          echo ::set-output name=matrix::{\"include\":$(echo $matrix)}\"
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
@@ -46,18 +74,7 @@ jobs:
       FREESWITCH_ECR_REPOSITORY_URI: public.ecr.aws/somleng/somleng-switch-freeswitch
 
     strategy:
-      matrix:
-        include:
-          [
-            {
-              identifier: 'somleng-switch-staging',
-              branch: 'deploy_staging',
-              task_definition: 'deploy/staging/ecs_task_definition.json',
-              image_tag: 'staging',
-              ecs_service: 'somleng-switch-staging',
-              ecs_cluster: 'somleng-switch-staging'
-            }
-          ]
+      matrix: ${{fromJson(needs.build.outputs.matrix)}}
 
     steps:
       - name: Checkout
