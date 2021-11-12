@@ -10,21 +10,7 @@ class OutboundCall
       call_sid: call_params.fetch("sid"),
       account_sid: call_params.fetch("account_sid")
     )
-
-    puts "--------Initiating Call---------"
-    puts "Call Params: #{call_params}"
-    puts "Routing Instructions: #{routing_instructions}"
-
     nat_supported = routing_instructions.fetch("nat_supported", true)
-
-    puts "NAT supported: #{nat_supported}"
-
-    ds = DialString.new(
-      routing_instructions.fetch("dial_string"),
-      nat_supported: nat_supported
-    ).to_s
-
-    puts "Dial String: #{ds}"
 
     Adhearsion::OutboundCall.originate(
       DialString.new(
