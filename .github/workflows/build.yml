@@ -5,6 +5,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
 
     env:
       AHN_ENV: test
@@ -34,8 +36,8 @@ jobs:
           chmod +x codacy-coverage-reporter
           ./codacy-coverage-reporter report -l Ruby -r coverage/lcov/*
 
-      - name: Prepare Deployment Matrix
-        id: prepare_deployment_matrix
+      - name: Set Deployment Matrix
+        id: set-deployment-matrix
         run: |
           branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
           matrixSource=$(cat << EOF
@@ -61,7 +63,6 @@ jobs:
           )
           matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
           echo ::set-output name=matrix::{\"include\":$(echo $matrix)}\"
-          echo $matrix
 
   deploy:
     name: Deploy
