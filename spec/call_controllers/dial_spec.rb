@@ -50,6 +50,28 @@ RSpec.describe CallController, type: :call_controller do
       expect(controller).to have_received(:play_audio).with("foo.mp3")
     end
 
+    it "handles numbers without NAT support", :vcr, cassette: :build_dial_string_without_nat_support do
+      controller = build_controller(
+        stub_voice_commands: [{ dial: build_dial_status }],
+        call_properties: {
+          account_sid: "77281eec-094c-49e1-8761-3082156e000e"
+        }
+      )
+
+      stub_twiml_request(controller, response: <<~TWIML)
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <Response>
+          <Dial>85516701721</Dial>
+        </Response>
+      TWIML
+
+      controller.run
+
+      expect(controller).to have_received(:dial).with(
+        dial_string("016701721", profile: "external-nat-instance")
+      )
+    end
+
     it "dials to <Number>", :vcr, cassette: :build_multiple_dial_strings do
       controller = build_controller(
         stub_voice_commands: { dial: build_dial_status },
@@ -415,7 +437,7 @@ RSpec.describe CallController, type: :call_controller do
     instance_double(Adhearsion::OutboundCall, options)
   end
 
-  def dial_string(number)
-    match(%r{sofia/external/#{number}@.+})
+  def dial_string(number, profile: :external)
+    match(%r{sofia/#{profile}/#{number}@.+})
   end
 end

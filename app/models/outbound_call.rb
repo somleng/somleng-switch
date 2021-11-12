@@ -10,8 +10,12 @@ class OutboundCall
       call_sid: call_params.fetch("sid"),
       account_sid: call_params.fetch("account_sid")
     )
+    nat_supported = routing_instructions.fetch("nat_supported", true)
     Adhearsion::OutboundCall.originate(
-      dial_string,
+      DialString.new(
+        routing_instructions.fetch("dial_string"),
+        nat_supported: nat_supported
+      ).to_s,
       from: call_params.fetch("from"),
       controller: CallController,
       controller_metadata: {
@@ -37,9 +41,5 @@ class OutboundCall
 
   def routing_instructions
     call_params.fetch("routing_instructions", {})
-  end
-
-  def dial_string
-    Utils.build_dial_string(routing_instructions.fetch("dial_string"))
   end
 end

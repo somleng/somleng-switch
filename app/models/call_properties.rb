@@ -10,5 +10,6 @@ CallProperties = Struct.new(
   :to,
   :from,
   :sip_headers,
+  :nat_supported,
   keyword_init: true
 )
