@@ -61,6 +61,7 @@ jobs:
           )
           matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
           echo ::set-output name=matrix::{\"include\":$(echo $matrix)}\"
+          echo $matrix
 
   deploy:
     name: Deploy
@@ -73,11 +74,10 @@ jobs:
       NGINX_ECR_REPOSITORY_URI: public.ecr.aws/somleng/somleng-switch-nginx
       FREESWITCH_ECR_REPOSITORY_URI: public.ecr.aws/somleng/somleng-switch-freeswitch
 
-    steps:
-      - name: "Echo Matrix"
-        run: |
-          echo "${{needs.build.outputs.matrix}}"
+    strategy:
+      matrix: ${{fromJson(needs.build.outputs.matrix)}}
 
+    steps:
       - name: Checkout
         uses: actions/checkout@v2
 
