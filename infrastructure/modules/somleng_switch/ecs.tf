@@ -37,6 +37,8 @@ data "template_file" "container_definitions" {
     database_port = var.db_port
     external_sip_ip = var.external_sip_ip
     external_rtp_ip = var.external_rtp_ip
+    external_nat_instance_sip_ip = var.external_nat_instance_sip_ip
+    external_nat_instance_rtp_ip = var.external_nat_instance_rtp_ip
     sip_port = var.sip_port
 
     tts_cache_bucket = aws_s3_bucket.tts_cache.id

@@ -170,6 +170,14 @@
         "value": "${external_rtp_ip}"
       },
       {
+        "name": "FS_NAT_INSTANCE_EXTERNAL_SIP_IP",
+        "value": "${external_nat_instance_sip_ip}"
+      },
+      {
+        "name": "FS_NAT_INSTANCE_EXTERNAL_RTP_IP",
+        "value": "${external_nat_instance_rtp_ip}"
+      },
+      {
         "name": "FS_MOD_RAYO_PORT",
         "value": "${rayo_port}"
       },

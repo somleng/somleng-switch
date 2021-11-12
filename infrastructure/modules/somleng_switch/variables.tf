@@ -74,6 +74,8 @@ variable "db_password_parameter_arn" {}
 variable "json_cdr_password_parameter_arn" {}
 variable "external_sip_ip" {}
 variable "external_rtp_ip" {}
+variable "external_nat_instance_sip_ip" {}
+variable "external_nat_instance_rtp_ip" {}
 variable "json_cdr_url" {}
 variable "inbound_sip_trunks_security_group_name" {}
 variable "inbound_sip_trunks_security_group_description" {
