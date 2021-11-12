@@ -76,7 +76,7 @@ jobs:
     steps:
       - name: "Echo Matrix"
         run: |
-          echo "${{fromJson(needs.build.outputs.matrix)}}"
+          echo "${{needs.build.outputs.matrix}}"
 
       - name: Checkout
         uses: actions/checkout@v2
