@@ -36,6 +36,8 @@ jobs:
           chmod +x codacy-coverage-reporter
           ./codacy-coverage-reporter report -l Ruby -r coverage/lcov/*
 
+      # Adapted from
+      # https://stackoverflow.com/a/65434401
       - name: Set Deployment Matrix
         id: set-deployment-matrix
         run: |
