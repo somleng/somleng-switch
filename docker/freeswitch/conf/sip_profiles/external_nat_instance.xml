@@ -8,6 +8,7 @@
   <settings>
     <X-PRE-PROCESS cmd="include" data="shared/settings.xml"/>
 
+    <param name="sip-port" value="5080"/>
     <param name="ext-sip-ip" value="$${external_nat_instance_sip_ip}"/>
     <param name="ext-rtp-ip" value="$${external_nat_instance_rtp_ip}"/>
   </settings>
