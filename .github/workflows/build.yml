@@ -73,10 +73,11 @@ jobs:
       NGINX_ECR_REPOSITORY_URI: public.ecr.aws/somleng/somleng-switch-nginx
       FREESWITCH_ECR_REPOSITORY_URI: public.ecr.aws/somleng/somleng-switch-freeswitch
 
-    strategy:
-      matrix: ${{fromJson(needs.build.outputs.matrix)}}
-
     steps:
+      - name: "Echo Matrix"
+        run: |
+          echo "${{fromJson(needs.build.outputs.matrix)}}"
+
       - name: Checkout
         uses: actions/checkout@v2
 
