@@ -170,11 +170,11 @@
         "value": "${external_rtp_ip}"
       },
       {
-        "name": "FS_NAT_INSTANCE_EXTERNAL_SIP_IP",
+        "name": "FS_EXTERNAL_NAT_INSTANCE_SIP_IP",
         "value": "${external_nat_instance_sip_ip}"
       },
       {
-        "name": "FS_NAT_INSTANCE_EXTERNAL_RTP_IP",
+        "name": "FS_EXTERNAL_NAT_INSTANCE_RTP_IP",
         "value": "${external_nat_instance_rtp_ip}"
       },
       {
