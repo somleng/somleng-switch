@@ -54,7 +54,7 @@ RSpec.describe CallController, type: :call_controller do
       controller = build_controller(
         stub_voice_commands: [{ dial: build_dial_status }],
         call_properties: {
-          account_sid: "77281eec-094c-49e1-8761-3082156e000e"
+          account_sid: "325ca5f4-5e02-4289-9628-139d62ea0436"
         }
       )
 
@@ -68,7 +68,8 @@ RSpec.describe CallController, type: :call_controller do
       controller.run
 
       expect(controller).to have_received(:dial).with(
-        dial_string("016701721", profile: "external-nat-instance")
+        dial_string("85516701721", profile: "external-nat-instance"),
+        any_args
       )
     end
 

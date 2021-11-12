@@ -5,7 +5,7 @@ default: &default
   ahn_core_password: "secret"
   ahn_http_username: "adhearsion"
   ahn_http_password: "password"
-  call_platform_host: <%= ENV.fetch('CALL_PLATFORM_HOST') { "http://localhost:3000" } %>
+  call_platform_host: <%= ENV.fetch('CALL_PLATFORM_HOST') { "http://api.lvh.me:3000" } %>
   call_platform_username: "services"
   call_platform_password: "password"
 
