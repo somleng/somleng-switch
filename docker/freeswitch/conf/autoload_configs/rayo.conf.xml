@@ -13,7 +13,6 @@
     </users>
   </domain>
 
-  <!-- this should match the value in Dockerrun.aws.json -->
   <record>
     <param name="record-file-prefix" value="$${mod_rayo_record_file_prefix}/"/>
   </record>

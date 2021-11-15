@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: http://localhost:3000/services/dial_string
+    uri: http://api.lvh.me:3000/services/dial_string
     body:
       encoding: UTF-8
       string: '{"phone_number":"85516701721","account_sid":"77281eec-094c-49e1-8761-3082156e000e"}'

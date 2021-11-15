@@ -13,6 +13,15 @@ variable "listener_arn" {}
 variable "sip_subdomain" {}
 variable "switch_subdomain" {}
 variable "route53_zone" {}
+<<<<<<< HEAD
+=======
+variable "listener_rule_priority" {}
+variable "tts_cache_bucket_name" {}
+
+variable "scale_in_protection" {
+  default = true
+}
+>>>>>>> a70eca5b3292ae10a1dbc736771ddebdf3f8dd6f
 
 variable "webserver_container_name" {
   default = "nginx"
@@ -56,21 +65,22 @@ variable "rayo_port" {
 variable "sip_port" {
   default = 5060
 }
-
-variable "db_host" {
+variable "load_balancer_sip_port" {
+  default = 5060
 }
-
-variable "db_port" {
-}
-
-variable "db_security_group" {
-}
-
+variable "db_name" {}
+variable "db_host" {}
+variable "db_port" {}
+variable "db_security_group" {}
 variable "db_username" {}
 variable "db_password_parameter_arn" {}
 variable "json_cdr_password_parameter_arn" {}
 variable "external_sip_ip" {}
 variable "external_rtp_ip" {}
+variable "external_nat_instance_sip_ip" {}
+variable "external_nat_instance_rtp_ip" {}
 variable "json_cdr_url" {}
-
 variable "inbound_sip_trunks_security_group_name" {}
+variable "inbound_sip_trunks_security_group_description" {
+  default = "Somleng Inbound SIP Trunks"
+}
