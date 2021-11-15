@@ -15,7 +15,7 @@ resource "aws_lb_target_group" "this" {
 }
 
 resource "aws_lb_listener_rule" "this" {
-  priority = 20
+  priority = var.listener_rule_priority
 
   listener_arn = var.listener_arn
 
@@ -26,7 +26,7 @@ resource "aws_lb_listener_rule" "this" {
 
   condition {
     host_header {
-      values = ["ahn.somleng.org"]
+      values = [aws_route53_record.switch.fqdn]
     }
   }
 
@@ -55,8 +55,8 @@ resource "aws_lb_target_group" "sip" {
 }
 
 resource "aws_lb_listener" "sip" {
-  load_balancer_arn = var.network_load_balancer_arn
-  port              = var.sip_port
+  load_balancer_arn = var.network_load_balancer.arn
+  port              = var.load_balancer_sip_port
   protocol          = "UDP"
 
   default_action {

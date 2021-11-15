@@ -48,6 +48,10 @@
       {
         "name": "APP_MASTER_KEY",
         "valueFrom": "${application_master_key_parameter_arn}"
+      },
+      {
+        "name": "AHN_CORE_PASSWORD",
+        "valueFrom": "${rayo_password_parameter_arn}"
       }
     ],
     "portMappings": [
@@ -164,6 +168,14 @@
       {
         "name": "FS_EXTERNAL_RTP_IP",
         "value": "${external_rtp_ip}"
+      },
+      {
+        "name": "FS_EXTERNAL_NAT_INSTANCE_SIP_IP",
+        "value": "${external_nat_instance_sip_ip}"
+      },
+      {
+        "name": "FS_EXTERNAL_NAT_INSTANCE_RTP_IP",
+        "value": "${external_nat_instance_rtp_ip}"
       },
       {
         "name": "FS_MOD_RAYO_PORT",

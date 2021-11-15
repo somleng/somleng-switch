@@ -3,6 +3,12 @@ module CallPlatform
     class InvalidPhoneCallError < StandardError; end
     class UnsupportedGatewayError < StandardError; end
 
+    DialStringResponse = Struct.new(
+      :dial_string,
+      :nat_supported,
+      keyword_init: true
+    )
+
     InboundPhoneCallResponse = Struct.new(
       :voice_url,
       :voice_method,
@@ -30,7 +36,12 @@ module CallPlatform
 
       raise UnsupportedGatewayError, response.body unless response.success?
 
-      JSON.parse(response.body).fetch("dial_string")
+      json_response = JSON.parse(response.body)
+
+      DialStringResponse.new(
+        dial_string: json_response.fetch("dial_string"),
+        nat_supported: json_response.fetch("nat_supported", true)
+      )
     end
 
     def create_call(params)

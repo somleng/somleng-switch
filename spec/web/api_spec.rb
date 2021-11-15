@@ -34,7 +34,8 @@ module SomlengAdhearsion
               "direction" => "outbound-api",
               "api_version" => "2010-04-01",
               "routing_instructions" => {
-                "dial_string" => "85512334667@127.0.0.1"
+                "dial_string" => "85512334667@127.0.0.1",
+                "nat_supported" => true
               }
             }.to_json,
             {
