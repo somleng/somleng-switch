@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
+      matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
 
     env:
       AHN_ENV: test
@@ -65,12 +66,13 @@ jobs:
           )
           matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
           echo ::set-output name=matrix::{\"include\":$(echo $matrix)}\"
+          echo ::set-output name=matrixLength::$(echo $matrix | jq length)
 
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'
+    if: needs.build.outputs.matrixLength > 0
     env:
       IMAGE_TAG: ${{ github.sha }}
       ECR_PUBLIC_REGISTRY: public.ecr.aws
