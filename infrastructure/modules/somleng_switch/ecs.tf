@@ -31,12 +31,14 @@ data "template_file" "container_definitions" {
     rayo_port = var.rayo_port
     json_cdr_url = var.json_cdr_url
     json_cdr_password_parameter_arn = var.json_cdr_password_parameter_arn
-    database_name = "freeswitch"
+    database_name = var.db_name
     database_username = var.db_username
     database_host = var.db_host
     database_port = var.db_port
     external_sip_ip = var.external_sip_ip
     external_rtp_ip = var.external_rtp_ip
+    external_nat_instance_sip_ip = var.external_nat_instance_sip_ip
+    external_nat_instance_rtp_ip = var.external_nat_instance_rtp_ip
     sip_port = var.sip_port
 
     tts_cache_bucket = aws_s3_bucket.tts_cache.id
@@ -75,7 +77,11 @@ resource "aws_ecs_service" "service" {
 
   network_configuration {
     subnets = var.container_instance_subnets
-    security_groups = [aws_security_group.appserver.id, var.db_security_group, data.aws_security_group.inbound_sip_trunks.id]
+    security_groups = [
+      aws_security_group.appserver.id,
+      var.db_security_group,
+      aws_security_group.inbound_sip_trunks.id
+    ]
   }
 
   capacity_provider_strategy {
@@ -109,7 +115,7 @@ resource "aws_ecs_capacity_provider" "container_instance" {
 
   auto_scaling_group_provider {
     auto_scaling_group_arn         = aws_autoscaling_group.container_instance.arn
-    managed_termination_protection = "ENABLED"
+    managed_termination_protection = var.scale_in_protection ? "ENABLED" : "DISABLED"
 
     managed_scaling {
       maximum_scaling_step_size = 1000

@@ -15,7 +15,7 @@ module EncryptedCredentials
 
     def credentials
       content = read_credentials
-      YAML.safe_load(content)
+      YAML.load(content)
     end
 
     def edit

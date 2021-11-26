@@ -2,10 +2,10 @@
 http_interactions:
 - request:
     method: post
-    uri: http://api.lvh.me:3000/services/phone_call_events
+    uri: http://api.lvh.me:3000/services/dial_string
     body:
       encoding: UTF-8
-      string: '{"type":"completed","phone_call":"5c8102f2-262a-418a-96b9-aa79789af621","variables":{"sip_term_status":"200","answer_epoch":"1607752961"}}'
+      string: '{"phone_number":"85516701721","account_sid":"325ca5f4-5e02-4289-9628-139d62ea0436"}'
     headers:
       Accept:
       - application/json
@@ -14,7 +14,7 @@ http_interactions:
       Authorization:
       - Basic c2VydmljZXM6cGFzc3dvcmQ=
       User-Agent:
-      - Faraday v1.0.1
+      - Faraday v1.4.1
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
   response:
@@ -35,19 +35,19 @@ http_interactions:
       Referrer-Policy:
       - strict-origin-when-cross-origin
       Content-Type:
-      - application/json; charset=utf-8
+      - application/vnd.api+json; charset=utf-8
       Etag:
-      - W/"a66e39e1ab0a073787ed252e615ab8cb"
+      - W/"05dd6bfd92be63e2aadaea5f28bcb507"
       Cache-Control:
       - max-age=0, private, must-revalidate
       X-Request-Id:
-      - e4453483-af55-4459-8c5a-f0209c80faf9
+      - ba895983-6fae-4c85-aad0-65b958df16f2
       X-Runtime:
-      - '0.080083'
+      - '0.365352'
       Transfer-Encoding:
       - chunked
     body:
       encoding: UTF-8
-      string: '{"api_version":"2010-04-01","created_at":"2020-12-12T06:09:19Z","updated_at":"2020-12-12T06:09:19Z","type":"completed"}'
-  recorded_at: Sat, 12 Dec 2020 06:09:20 GMT
+      string: '{"dial_string":"85516701721@host.docker.internal:5061","nat_supported":false}'
+  recorded_at: Fri, 12 Nov 2021 06:02:48 GMT
 recorded_with: VCR 6.0.0

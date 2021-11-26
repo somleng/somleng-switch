@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: http://localhost:3000/services/inbound_phone_calls
+    uri: http://api.lvh.me:3000/services/inbound_phone_calls
     body:
       encoding: UTF-8
       string: '{"to":"1234","from":"1000","external_id":"30393425-1c1d-4c3b-8910-57b54e68133b","source_ip":"192.168.3.1","variables":{"sip_from_host":"192.168.1.1","sip_to_host":"192.168.2.1","sip_network_ip":"192.168.3.1"}}'

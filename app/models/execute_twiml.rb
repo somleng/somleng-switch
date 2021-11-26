@@ -168,9 +168,13 @@ class ExecuteTwiML
 
     to = verb.children.each_with_object({}) do |nested_noun, result|
       dial_content = nested_noun.content.strip
-      target = build_dial_number_target(dial_content) if nested_noun.text? || nested_noun.name == "Number"
-      target = dial_content.delete_prefix("sip:")     if nested_noun.name == "Sip"
-      dial_string = Utils.build_dial_string(target)
+
+      if nested_noun.text? || nested_noun.name == "Number"
+        target = build_dial_number_target(dial_content)
+        dial_string = DialString.new(target.dial_string, nat_supported: target.nat_supported).to_s
+      elsif nested_noun.name == "Sip"
+        dial_string = DialString.new(dial_content.delete_prefix("sip:")).to_s
+      end
 
       break dial_string if nested_noun.text?
 
