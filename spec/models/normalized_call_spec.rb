@@ -52,6 +52,14 @@ RSpec.describe NormalizedCall do
       expect(call.from).to eq("85516701721")
     end
 
+    it "normalizes a simple number with plus" do
+      phone_call = build_phone_call(from: "+85516701721")
+
+      call = NormalizedCall.new(phone_call)
+
+      expect(call.from).to eq("85516701721")
+    end
+
     it "normalizes an address" do
       phone_call = build_phone_call(from: "<85516701721@127.0.0.1>")
 
