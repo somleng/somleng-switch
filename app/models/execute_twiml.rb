@@ -2,7 +2,8 @@ class ExecuteTwiML
   attr_reader :context, :twiml
 
   delegate :logger, to: :context
-  delegate :ask, :dial, :say, :play_audio, :redirect, :call_platform_client, :call_properties, to: :context
+  delegate :ask, :dial, :say, :play_audio, :redirect, :record,
+           :call_platform_client, :call_properties, to: :context
 
   NESTED_GATHER_VERBS = %w[Say Play].freeze
   MAX_LOOP = 100
@@ -50,6 +51,8 @@ class ExecuteTwiML
           execute_dial(verb)
         when "Hangup"
           break
+        when "Record"
+          execute_record(verb)
         else
           raise Errors::TwiMLError, "Invalid element '#{verb.name}'"
         end
@@ -221,6 +224,17 @@ class ExecuteTwiML
         dial_call_status_params
       ]
     )
+  end
+
+  def execute_record(verb)
+    attributes = twiml_attributes(verb)
+
+    record(
+      async: true,
+      start_beep: attributes.fetch("playBeep", "true") != "false"
+    ) do |event|
+      logger.info "Async recording saved to #{event.recording.uri}"
+    end
   end
 
   def say_options(content, attributes)
