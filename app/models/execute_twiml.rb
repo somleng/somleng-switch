@@ -229,12 +229,8 @@ class ExecuteTwiML
   def execute_record(verb)
     attributes = twiml_attributes(verb)
 
-    record(
-      async: true,
-      start_beep: attributes.fetch("playBeep", "true") != "false"
-    ) do |event|
-      logger.info "Async recording saved to #{event.recording.uri}"
-    end
+    record_result = record(start_beep: true)
+    logger.info "Async recording saved to #{record_result.complete_event.recording.uri}"
   end
 
   def say_options(content, attributes)
