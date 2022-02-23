@@ -27,7 +27,7 @@ RSpec.describe CallController, type: :call_controller do
 
       controller.run
 
-      expect(controller).to have_received(:record).with(async: true, start_beep: true)
+      expect(controller).to have_received(:record).with(start_beep: true)
     end
 
     describe "Verb Attributes" do
