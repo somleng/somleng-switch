@@ -230,7 +230,15 @@ class ExecuteTwiML
     attributes = twiml_attributes(verb)
 
     record_result = record(start_beep: true)
-    logger.info "Async recording saved to #{record_result.complete_event.recording.uri}"
+
+    throw(
+      :redirect,
+      [
+        attributes["action"],
+        attributes["method"],
+        {}
+      ]
+    )
   end
 
   def say_options(content, attributes)
