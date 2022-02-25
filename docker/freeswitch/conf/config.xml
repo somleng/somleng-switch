@@ -23,4 +23,9 @@
 <!-- mod_rayo -->
 <X-PRE-PROCESS cmd="set" data="mod_rayo_port=5222"/>
 <X-PRE-PROCESS cmd="set" data="mod_rayo_password=secret"/>
-<X-PRE-PROCESS cmd="set" data="mod_rayo_record_file_prefix=/freeswitch-recordings"/>
+
+<!-- mod_http_cache -->
+<X-PRE-PROCESS cmd="set" data="recording_bucket_access_key_id=xyz"/>
+<X-PRE-PROCESS cmd="set" data="recording_bucket_secret_access_key=secret"/>
+<X-PRE-PROCESS cmd="set" data="recording_bucket_name=recording"/>
+<X-PRE-PROCESS cmd="set" data="recording_bucket_region=ap-southeast-1"/>
