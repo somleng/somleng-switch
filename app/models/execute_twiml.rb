@@ -229,14 +229,27 @@ class ExecuteTwiML
   def execute_record(verb)
     attributes = twiml_attributes(verb)
 
+    recording_response = call_platform_client.create_recording(phone_call_id: phone_call.id)
+
     record_result = record(start_beep: true)
+
+    recording_response = call_platform_client.update_recording(
+      recording_response.id,
+      raw_recording_url: record_result.recording.uri,
+      duration: record_result.recording.duration,
+      external_id: record_result.component_id
+    )
 
     throw(
       :redirect,
       [
         attributes["action"],
         attributes["method"],
-        {}
+        {
+          "RecordingUrl" => recording_response.url,
+          "RecordingDuration" => recording_response.duration,
+          "Digits" => "hangup" #TODO: Double check the real keys
+        }
       ]
     )
   end
