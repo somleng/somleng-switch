@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "adhearsion", path: "/Users/dwilkie/work/somleng/adhearsion"#, github: "adhearsion/adhearsion", branch: "develop"
+gem "adhearsion", github: "adhearsion/adhearsion", branch: "develop"
 gem "http"
 gem "okcomputer"
 gem "sentry-raven"
