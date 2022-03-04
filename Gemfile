@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "adhearsion", github: "adhearsion/adhearsion", branch: "develop"
+gem "adhearsion", path: "/Users/dwilkie/work/somleng/adhearsion"#, github: "adhearsion/adhearsion", branch: "develop"
 gem "http"
 gem "okcomputer"
 gem "sentry-raven"
@@ -9,8 +9,7 @@ gem "sinatra-contrib", require: false
 gem "skylight"
 
 gem "mail"
-
-gem "bigdecimal", "~> 1.4.0" # To support Ruby 2.7 with ActiveSupport 4.2
+gem "net-smtp" # https://github.com/mikel/mail/pull/1439
 
 group :development, :test do
   gem "rubocop"
@@ -24,6 +23,6 @@ group :test do
   gem "simplecov", require: false
   gem "simplecov-lcov", require: false
   gem "twilio-ruby"
-  gem "vcr"
+  gem "vcr", github: "vcr/vcr" # https://github.com/vcr/vcr/pull/907#issuecomment-1001650068
   gem "webmock"
 end

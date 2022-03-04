@@ -25,8 +25,8 @@ class ExecuteTwiML
     @twiml = twiml
   end
 
-  def self.call(*args)
-    new(*args).call
+  def self.call(context:, twiml:)
+    new(context: context, twiml: twiml).call
   end
 
   def call
