@@ -184,7 +184,24 @@
       {
         "name": "FS_MOD_JSON_CDR_URL",
         "value": "${json_cdr_url}"
+      },
+      {
+        "name": "FS_RECORDINGS_BUCKET_NAME",
+        "value": "${recordings_bucket_name}"
+      },
+      {
+        "name": "FS_RECORDING_BUCKET_ACCESS_KEY_ID",
+        "value": "${recording_bucket_access_key_id}"
+      },
+      {
+        "name": "FS_RECORDING_BUCKET_SECRET_ACCESS_KEY",
+        "value": "${recording_bucket_secret_access_key}"
+      },
+      {
+        "name": "FS_RECORDING_BUCKET_REGION",
+        "value": "${recording_bucket_region}"
       }
+
     ]
   }
 ]

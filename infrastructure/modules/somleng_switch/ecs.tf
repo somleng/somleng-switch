@@ -42,6 +42,11 @@ data "template_file" "container_definitions" {
     sip_port = var.sip_port
 
     tts_cache_bucket = aws_s3_bucket.tts_cache.id
+
+    recordings_bucket_name = aws_s3_bucket.recording.id
+    recording_bucket_access_key_id = aws_iam_access_key.recording.id
+    recording_bucket_secret_access_key = aws_iam_access_key.recording.secret
+    recording_bucket_region = aws_s3_bucket.recording.region
   }
 }
 

@@ -102,3 +102,32 @@ resource "aws_iam_role_policy_attachment" "task_execution_custom_policy" {
   role = aws_iam_role.task_execution_role.id
   policy_arn = aws_iam_policy.task_execution_custom_policy.arn
 }
+
+resource "aws_iam_user" "recording" {
+  name = "${var.app_identifier}_recording"
+}
+
+resource "aws_iam_access_key" "recording" {
+  user = aws_iam_user.recording.name
+}
+
+resource "aws_iam_user_policy" "recording" {
+  name = aws_iam_user.recording.name
+  user = aws_iam_user.recording.name
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject"
+      ],
+      "Resource": "${aws_s3_bucket.recording.arn}/*"
+    }
+  ]
+}
+EOF
+}
