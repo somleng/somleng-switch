@@ -1,6 +1,6 @@
 # SomlengSWITCH
 
-![Build](https://github.com/somleng/somleng-switch/workflows/Build%20Somleng%20Adhearsion/badge.svg)
+[![Build](https://github.com/somleng/somleng-switch/actions/workflows/build.yml/badge.svg)](https://github.com/somleng/somleng-switch/actions/workflows/build.yml)
 [![View performance data on Skylight](https://badges.skylight.io/status/Z5dVwBwcpWaW.svg)](https://oss.skylight.io/app/applications/Z5dVwBwcpWaW)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/db2c6093e37746599a9d5c1b5b703715)](https://www.codacy.com/gh/somleng/somleng-switch/dashboard?utm_source=github.com&utm_medium=referral&utm_content=somleng/somleng-switch&utm_campaign=Badge_Coverage)
 
