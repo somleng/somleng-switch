@@ -4,7 +4,13 @@
 [![View performance data on Skylight](https://badges.skylight.io/status/Z5dVwBwcpWaW.svg)](https://oss.skylight.io/app/applications/Z5dVwBwcpWaW)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/db2c6093e37746599a9d5c1b5b703715)](https://www.codacy.com/gh/somleng/somleng-switch/dashboard?utm_source=github.com&utm_medium=referral&utm_content=somleng/somleng-switch&utm_campaign=Badge_Coverage)
 
-SomlengSWITCH contains an open source [TwiML](https://www.twilio.com/docs/api/twiml) parser, [FreeSWITCH](https://freeswitch.com/) configuration and related infrastructure. It's a dependency of [Somleng](https://github.com/somleng/somleng) and is used to programmatically control phone calls through FreeSWITCH.
+SomlengSWITCH (part of [The Somleng Project](https://github.com/somleng/somleng-project)) is used to programmatically control phone calls through FreeSWITCH.
+
+This repository includes the following core features:
+
+* [Open Source TwiML parser](https://github.com/somleng/somleng-switch/blob/develop/app/models/execute_twiml.rb)
+* [FreeSWITCH configuration files](https://github.com/somleng/somleng-switch/tree/develop/docker/freeswitch)
+* [Terraform infrastructure as code](https://github.com/somleng/somleng-switch/tree/develop/infrastructure) for deployment to AWS
 
 ## Usage
 
