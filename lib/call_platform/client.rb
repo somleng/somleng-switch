@@ -26,7 +26,8 @@ module CallPlatform
       :id,
       :url,
       :duration,
-      :external_id
+      :external_id,
+      keyword_init: true
     )
 
     def notify_call_event(params)
@@ -64,16 +65,16 @@ module CallPlatform
     def create_recording(params)
       json_response = make_request("/services/recordings", params: params)
       RecordingResponse.new(
-        id: json_response..fetch("sid")
+        id: json_response.fetch("sid")
       )
     end
 
     def update_recording(recording_id, params)
-      json_response = make_request("/services/recordings/#{recording_id}", params: params)
+      json_response = make_request("/services/recordings/#{recording_id}", http_method: :patch, params: params)
       RecordingResponse.new(
-        id: json_response..fetch("sid"),
+        id: json_response.fetch("sid"),
         duration: json_response.fetch("duration"),
-        url: json_response.fetch("recording_url"),
+        url: json_response.fetch("url"),
         external_id: json_response.fetch("external_id")
       )
     end

@@ -1,0 +1,110 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://api.lvh.me:3000/services/recordings
+    body:
+      encoding: UTF-8
+      string: '{"phone_call_id":"0e5dca40-1545-4aa1-9120-fac43c09bc90","recording_status_callback_url":null,"recording_status_callback_method":null}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      Authorization:
+      - Basic c2VydmljZXM6cGFzc3dvcmQ=
+      User-Agent:
+      - Faraday v1.4.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/vnd.api+json; charset=utf-8
+      Etag:
+      - W/"c42d6b67599aeb3143b191bb99ca2965"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      X-Request-Id:
+      - '0779295b-ea6c-43d8-b666-e682bbdbbb52'
+      X-Runtime:
+      - '0.277070'
+      Server-Timing:
+      - sql.active_record;dur=89.513916015625, start_processing.action_controller;dur=0.15283203125,
+        instantiation.active_record;dur=47.40087890625, process_action.action_controller;dur=205.729736328125
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: '{"created_at":"2022-03-18T04:27:49Z","updated_at":"2022-03-18T04:27:49Z","api_version":"2010-04-01","sid":"996e260f-a41c-496b-8f30-36766a29bc94","account_sid":"38be17be-1d71-4121-9ad6-d75149413229","status":"in_progress","external_id":null,"duration":null,"url":"http://dashboard.lvh.me:3000/2010-04-01/Accounts/38be17be-1d71-4121-9ad6-d75149413229/Calls/0e5dca40-1545-4aa1-9120-fac43c09bc90/recordings/996e260f-a41c-496b-8f30-36766a29bc94"}'
+  recorded_at: Fri, 18 Mar 2022 04:27:49 GMT
+- request:
+    method: patch
+    uri: http://api.lvh.me:3000/services/recordings/996e260f-a41c-496b-8f30-36766a29bc94
+    body:
+      encoding: UTF-8
+      string: '{"raw_recording_url":"http://example.com/recording.wav","duration":5,"external_id":"component-id"}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      Authorization:
+      - Basic c2VydmljZXM6cGFzc3dvcmQ=
+      User-Agent:
+      - Faraday v1.4.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/vnd.api+json; charset=utf-8
+      Etag:
+      - W/"9497c3b4c4d30ce5f8a1b398e1eb7b7b"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      X-Request-Id:
+      - 8cfd4d89-71d4-45b5-99ee-aca6f40a80ba
+      X-Runtime:
+      - '0.235041'
+      Server-Timing:
+      - sql.active_record;dur=82.295166015625, start_processing.action_controller;dur=0.168212890625,
+        instantiation.active_record;dur=32.9951171875, enqueue.active_job;dur=5.2373046875,
+        process_action.action_controller;dur=160.264404296875
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: '{"created_at":"2022-03-18T04:27:49Z","updated_at":"2022-03-18T04:27:49Z","api_version":"2010-04-01","sid":"996e260f-a41c-496b-8f30-36766a29bc94","account_sid":"38be17be-1d71-4121-9ad6-d75149413229","status":"in_progress","external_id":"component-id","duration":5,"url":"http://dashboard.lvh.me:3000/2010-04-01/Accounts/38be17be-1d71-4121-9ad6-d75149413229/Calls/0e5dca40-1545-4aa1-9120-fac43c09bc90/recordings/996e260f-a41c-496b-8f30-36766a29bc94"}'
+  recorded_at: Fri, 18 Mar 2022 04:27:49 GMT
+recorded_with: VCR 6.0.0

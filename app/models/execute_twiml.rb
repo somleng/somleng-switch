@@ -228,10 +228,17 @@ class ExecuteTwiML
 
   def execute_record(verb)
     attributes = twiml_attributes(verb)
+    recording_api_params = { phone_call_id: phone_call.id }
+    recording_api_params["recording_status_callback_url"] = attributes["recordingStatusCallback"]
+    recording_api_params["recording_status_callback_method"] = attributes["recordingStatusCallbackMethod"]
+    recording_response = call_platform_client.create_recording(recording_api_params)
 
-    recording_response = call_platform_client.create_recording(phone_call_id: phone_call.id)
-
-    record_result = record(start_beep: true)
+    record_options = {}
+    record_options[:max_duration] = attributes.fetch("maxLength", 3600).to_i
+    record_options[:final_timeout] = attributes.fetch("timeout", 5).to_i
+    record_options[:start_beep] = attributes["playBeep"] != "false"
+    record_options[:interruptible] = attributes.fetch("finishOnKey", "1234567890*#")
+    record_result = record(record_options)
 
     recording_response = call_platform_client.update_recording(
       recording_response.id,
@@ -247,8 +254,7 @@ class ExecuteTwiML
         attributes["method"],
         {
           "RecordingUrl" => recording_response.url,
-          "RecordingDuration" => recording_response.duration,
-          "Digits" => "hangup" #TODO: Double check the real keys
+          "RecordingDuration" => recording_response.duration
         }
       ]
     )
