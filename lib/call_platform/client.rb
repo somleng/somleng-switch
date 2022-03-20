@@ -26,7 +26,6 @@ module CallPlatform
       :id,
       :url,
       :duration,
-      :external_id,
       keyword_init: true
     )
 
@@ -74,8 +73,7 @@ module CallPlatform
       RecordingResponse.new(
         id: json_response.fetch("sid"),
         duration: json_response.fetch("duration"),
-        url: json_response.fetch("url"),
-        external_id: json_response.fetch("external_id")
+        url: json_response.fetch("url")
       )
     end
 
