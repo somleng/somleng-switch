@@ -101,7 +101,7 @@ resource "aws_autoscaling_group" "package_builder" {
 
   max_size             = 1
   min_size             = 0
-  desired_capacity     = 0
+  desired_capacity     = 1
   wait_for_capacity_timeout = 0
 
   tag {
