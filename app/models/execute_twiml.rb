@@ -1,4 +1,6 @@
 class ExecuteTwiML
+  URL_PATTERN = URI::DEFAULT_PARSER.make_regexp(%w[http https]).freeze
+
   attr_reader :context, :twiml
 
   delegate :logger, to: :context
@@ -228,7 +230,7 @@ class ExecuteTwiML
 
   def execute_record(verb)
     attributes = twiml_attributes(verb)
-    recording_api_params = { phone_call_id: phone_call.id }
+    recording_api_params = { phone_call_id: call_properties.call_sid }
     recording_api_params["recording_status_callback_url"] = attributes["recordingStatusCallback"]
     recording_api_params["recording_status_callback_method"] = attributes["recordingStatusCallbackMethod"]
     recording_response = call_platform_client.create_recording(recording_api_params)
@@ -242,7 +244,7 @@ class ExecuteTwiML
 
     recording_response = call_platform_client.update_recording(
       recording_response.id,
-      raw_recording_url: record_result.recording.uri,
+      raw_recording_url: normalize_recording_url(record_result.recording.uri),
       duration: record_result.recording.duration,
       external_id: record_result.component_id
     )
@@ -310,5 +312,9 @@ class ExecuteTwiML
 
   def sip_headers
     call_properties.sip_headers.to_h
+  end
+
+  def normalize_recording_url(raw_recording_url)
+    URL_PATTERN.match(raw_recording_url)[0]
   end
 end

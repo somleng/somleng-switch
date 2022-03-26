@@ -27,7 +27,6 @@ RSpec.describe CallController, type: :call_controller do
         TWIML
       )
 
-
       controller.run
 
       expect(controller).to have_received(:record).with(
@@ -37,7 +36,7 @@ RSpec.describe CallController, type: :call_controller do
         interruptible: "1234567890*#"
       )
       expect(WebMock).to(have_requested(:post, "https://www.example.com/record.xml").with { |request|
-        request.body.include?("RecordingUrl=#{CGI.escape('http://dashboard.lvh.me:3000/2010-04-01/Accounts/38be17be-1d71-4121-9ad6-d75149413229/Calls/0e5dca40-1545-4aa1-9120-fac43c09bc90/recordings/996e260f-a41c-496b-8f30-36766a29bc94')}") &&
+        request.body.include?("RecordingUrl=#{CGI.escape('http://api.lvh.me:3000/2010-04-01/Accounts/38be17be-1d71-4121-9ad6-d75149413229/Calls/0e5dca40-1545-4aa1-9120-fac43c09bc90/Recordings/39cbca96-2634-4c0a-a6c5-2e7c611d200e')}") &&
         request.body.include?("RecordingDuration=5")
       })
     end
@@ -208,19 +207,19 @@ RSpec.describe CallController, type: :call_controller do
 
   def build_call_controller(options)
     controller = build_controller(
-      call: build_fake_call(id: "0e5dca40-1545-4aa1-9120-fac43c09bc90"),
       stub_voice_commands: {
         record: instance_double(
           Adhearsion::Rayo::Component::Record,
           recording: instance_double(
             Adhearsion::Rayo::Component::Record::Recording,
-            uri: "http://s3.com/recording.wav",
+            uri: "{profile=s3}http_cache://https://recording.s3.ap-southeast-1.amazonaws.com/9c76f7f6-3aff-4f7b-a76a-0d017b5df900-2.wav",
             duration: options.fetch(:duration, 5)
           ),
           component_id: "component-id"
         )
       },
       call_properties: {
+        call_sid: "0e5dca40-1545-4aa1-9120-fac43c09bc90",
         voice_url: "https://www.example.com/record.xml",
         from: "+85512456869",
         to: "1000"
