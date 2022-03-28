@@ -44,7 +44,7 @@ jobs:
           [
             {
               "identifier": "somleng-switch-staging",
-              "branch": "develop",
+              "branch": "implement_record",
               "task_definition": "deploy/staging/ecs_task_definition.json",
               "image_tag": "staging",
               "ecs_service": "somleng-switch-staging",
@@ -136,6 +136,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: "docker/freeswitch"
+          build-args:
+            signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
           push: true
           platforms: linux/amd64
           cache-from: type=local,src=/tmp/.buildx-cache/.buildx-cache-${{ matrix.identifier }}-freeswitch
