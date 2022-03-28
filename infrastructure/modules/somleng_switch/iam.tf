@@ -53,7 +53,9 @@ resource "aws_iam_policy" "task_execution_custom_policy" {
         "${aws_ssm_parameter.application_master_key.arn}",
         "${aws_ssm_parameter.rayo_password.arn}",
         "${var.json_cdr_password_parameter_arn}",
-        "${var.db_password_parameter_arn}"
+        "${var.db_password_parameter_arn}",
+        "${aws_ssm_parameter.recordings_bucket_access_key_id.arn}",
+        "${aws_ssm_parameter.recordings_bucket_secret_access_key.arn}"
       ]
     }
   ]
@@ -103,17 +105,17 @@ resource "aws_iam_role_policy_attachment" "task_execution_custom_policy" {
   policy_arn = aws_iam_policy.task_execution_custom_policy.arn
 }
 
-resource "aws_iam_user" "recording" {
-  name = "${var.app_identifier}_recording"
+resource "aws_iam_user" "recordings" {
+  name = "${var.app_identifier}_recordings"
 }
 
-resource "aws_iam_access_key" "recording" {
-  user = aws_iam_user.recording.name
+resource "aws_iam_access_key" "recordings" {
+  user = aws_iam_user.recordings.name
 }
 
-resource "aws_iam_user_policy" "recording" {
-  name = aws_iam_user.recording.name
-  user = aws_iam_user.recording.name
+resource "aws_iam_user_policy" "recordings" {
+  name = aws_iam_user.recordings.name
+  user = aws_iam_user.recordings.name
 
   policy = <<EOF
 {
@@ -122,10 +124,9 @@ resource "aws_iam_user_policy" "recording" {
     {
       "Effect": "Allow",
       "Action": [
-        "s3:PutObject",
-        "s3:GetObject"
+        "s3:PutObject"
       ],
-      "Resource": "${aws_s3_bucket.recording.arn}/*"
+      "Resource": "${aws_s3_bucket.recordings.arn}/*"
     }
   ]
 }

@@ -124,6 +124,14 @@
       {
         "name": "FS_MOD_JSON_CDR_PASSWORD",
         "valueFrom": "${json_cdr_password_parameter_arn}"
+      },
+      {
+        "name": "FS_RECORDINGS_BUCKET_ACCESS_KEY_ID",
+        "valueFrom": "${recordings_bucket_access_key_id_parameter_arn}"
+      },
+      {
+        "name": "FS_RECORDINGS_BUCKET_SECRET_ACCESS_KEY",
+        "valueFrom": "${recordings_bucket_secret_access_key_parameter_arn}"
       }
     ],
     "portMappings": [
@@ -190,16 +198,8 @@
         "value": "${recordings_bucket_name}"
       },
       {
-        "name": "FS_RECORDING_BUCKET_ACCESS_KEY_ID",
-        "value": "${recording_bucket_access_key_id}"
-      },
-      {
-        "name": "FS_RECORDING_BUCKET_SECRET_ACCESS_KEY",
-        "value": "${recording_bucket_secret_access_key}"
-      },
-      {
-        "name": "FS_RECORDING_BUCKET_REGION",
-        "value": "${recording_bucket_region}"
+        "name": "FS_RECORDINGS_BUCKET_REGION",
+        "value": "${recordings_bucket_region}"
       }
 
     ]

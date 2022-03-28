@@ -43,10 +43,10 @@ data "template_file" "container_definitions" {
 
     tts_cache_bucket = aws_s3_bucket.tts_cache.id
 
-    recordings_bucket_name = aws_s3_bucket.recording.id
-    recording_bucket_access_key_id = aws_iam_access_key.recording.id
-    recording_bucket_secret_access_key = aws_iam_access_key.recording.secret
-    recording_bucket_region = aws_s3_bucket.recording.region
+    recordings_bucket_name = aws_s3_bucket.recordings.id
+    recordings_bucket_access_key_id_parameter_arn = aws_ssm_parameter.recordings_bucket_access_key_id.arn
+    recordings_bucket_secret_access_key_parameter_arn = aws_ssm_parameter.recordings_bucket_secret_access_key.arn
+    recordings_bucket_region = aws_s3_bucket.recordings.region
   }
 }
 

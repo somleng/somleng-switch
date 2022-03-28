@@ -19,14 +19,14 @@
             <!-- Credentials for AWS account. -->
             <aws-s3>
                 <!-- Required: Key identifier -->
-                <access-key-id><![CDATA[$${recording_bucket_access_key_id}]]></access-key-id>
+                <access-key-id><![CDATA[$${recordings_bucket_access_key_id}]]></access-key-id>
                 <!-- Required: Key secret -->
-                <secret-access-key><![CDATA[$${recording_bucket_secret_access_key}]]></secret-access-key>
+                <secret-access-key><![CDATA[$${recordings_bucket_secret_access_key}]]></secret-access-key>
                 <!-- Optional: Backup folder to save uploaded file in case of failure (for example recording a .wav file to a webserver). Must ended without a slash !-->
                 <!--  If you want to use your own s3-compatible service, base domain MUST be set -->
                 <!--<base-domain><![CDATA[stg.vinadata.vn]]></base-domain>-->
                 <!-- Required: AWS region -->
-                <region><![CDATA[$${recording_bucket_region}]]></region>         <!-- base domain is s3-ap-southeast-1.amazonaws.com -->
+                <region><![CDATA[$${recordings_bucket_region}]]></region>         <!-- base domain is s3-ap-southeast-1.amazonaws.com -->
                 <!-- Optional: Expiration time in seconds for URL signature. Default is 604800s -->
                 <expires>604800</expires>
             </aws-s3>

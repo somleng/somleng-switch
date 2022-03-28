@@ -36,7 +36,7 @@ module "somleng_switch_staging" {
   sip_subdomain = "sip-staging"
   switch_subdomain = "switch-staging"
   tts_cache_bucket_name = "tts-cache-staging.somleng.org"
-  recording_bucket_name = "raw-recordings-staging.somleng.org"
+  recordings_bucket_name = "raw-recordings-staging.somleng.org"
   load_balancer_sip_port = 6060
   listener_rule_priority = 120
   scale_in_protection = false
