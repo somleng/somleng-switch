@@ -36,4 +36,5 @@ module "somleng_switch" {
   switch_subdomain = "ahn"
   listener_rule_priority = 20
   tts_cache_bucket_name = "tts-cache.somleng.org"
+  recordings_bucket_name = "raw-recordings.somleng.org"
 }
