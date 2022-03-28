@@ -1,8 +1,11 @@
 class ExecuteTwiML
+  URL_PATTERN = URI::DEFAULT_PARSER.make_regexp(%w[http https]).freeze
+
   attr_reader :context, :twiml
 
   delegate :logger, to: :context
-  delegate :ask, :dial, :say, :play_audio, :redirect, :call_platform_client, :call_properties, to: :context
+  delegate :ask, :dial, :say, :play_audio, :redirect, :record,
+           :call_platform_client, :call_properties, to: :context
 
   NESTED_GATHER_VERBS = %w[Say Play].freeze
   MAX_LOOP = 100
@@ -50,6 +53,8 @@ class ExecuteTwiML
           execute_dial(verb)
         when "Hangup"
           break
+        when "Record"
+          execute_record(verb)
         else
           raise Errors::TwiMLError, "Invalid element '#{verb.name}'"
         end
@@ -223,6 +228,40 @@ class ExecuteTwiML
     )
   end
 
+  def execute_record(verb)
+    attributes = twiml_attributes(verb)
+    recording_api_params = { phone_call_id: call_properties.call_sid }
+    recording_api_params["recording_status_callback_url"] = attributes["recordingStatusCallback"]
+    recording_api_params["recording_status_callback_method"] = attributes["recordingStatusCallbackMethod"]
+    recording_response = call_platform_client.create_recording(recording_api_params)
+
+    record_options = {}
+    record_options[:max_duration] = attributes.fetch("maxLength", 3600).to_i
+    record_options[:final_timeout] = attributes.fetch("timeout", 5).to_i
+    record_options[:start_beep] = attributes["playBeep"] != "false"
+    record_options[:interruptible] = attributes.fetch("finishOnKey", "1234567890*#")
+    record_result = record(record_options)
+
+    recording_response = call_platform_client.update_recording(
+      recording_response.id,
+      raw_recording_url: normalize_recording_url(record_result.recording.uri),
+      duration: record_result.recording.duration,
+      external_id: record_result.component_id
+    )
+
+    throw(
+      :redirect,
+      [
+        attributes["action"],
+        attributes["method"],
+        {
+          "RecordingUrl" => recording_response.url,
+          "RecordingDuration" => recording_response.duration
+        }
+      ]
+    )
+  end
+
   def say_options(content, attributes)
     voice_params = {
       name: attributes.fetch("voice", DEFAULT_TWILIO_VOICE),
@@ -273,5 +312,9 @@ class ExecuteTwiML
 
   def sip_headers
     call_properties.sip_headers.to_h
+  end
+
+  def normalize_recording_url(raw_recording_url)
+    URL_PATTERN.match(raw_recording_url)[0]
   end
 end

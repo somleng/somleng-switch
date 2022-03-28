@@ -136,6 +136,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: "docker/freeswitch"
+          build-args:
+            signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
           push: true
           platforms: linux/amd64
           cache-from: type=local,src=/tmp/.buildx-cache/.buildx-cache-${{ matrix.identifier }}-freeswitch

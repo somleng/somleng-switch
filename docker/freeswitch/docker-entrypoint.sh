@@ -1,23 +1,16 @@
 #!/bin/bash
 
 # Local constants
-DEFAULT_CONTAINER_RECORDINGS_DIRECTORY="/freeswitch-recordings"
 FREESWITCH_CONTAINER_CONFIG_DIRECTORY="/etc/freeswitch/"
 FREESWITCH_CONTAINER_STORAGE_DIRECTORY="/var/lib/freeswitch/storage"
 FREESWITCH_CONTAINER_BINARY="/usr/bin/freeswitch"
 FREESWITCH_USER="freeswitch"
 FREESWITCH_GROUP="daemon"
 
-export FS_MOD_RAYO_RECORD_FILE_PREFIX="${FS_MOD_RAYO_RECORD_FILE_PREFIX:-$DEFAULT_CONTAINER_RECORDINGS_DIRECTORY}"
-
 set -e
 
 if [ "$1" = 'freeswitch' ]; then
   export_fs_env_vars "$FREESWITCH_CONTAINER_CONFIG_DIRECTORY/env.xml"
-
-  # Setup recordings directory
-  mkdir -p ${FS_MOD_RAYO_RECORD_FILE_PREFIX}
-  chown -R "${FREESWITCH_USER}:${FREESWITCH_GROUP}" ${FS_MOD_RAYO_RECORD_FILE_PREFIX}
 
   # Setup config directory
   chown -R "${FREESWITCH_USER}:${FREESWITCH_GROUP}" ${FREESWITCH_CONTAINER_CONFIG_DIRECTORY}

@@ -53,7 +53,9 @@ resource "aws_iam_policy" "task_execution_custom_policy" {
         "${aws_ssm_parameter.application_master_key.arn}",
         "${aws_ssm_parameter.rayo_password.arn}",
         "${var.json_cdr_password_parameter_arn}",
-        "${var.db_password_parameter_arn}"
+        "${var.db_password_parameter_arn}",
+        "${aws_ssm_parameter.recordings_bucket_access_key_id.arn}",
+        "${aws_ssm_parameter.recordings_bucket_secret_access_key.arn}"
       ]
     }
   ]
@@ -101,4 +103,32 @@ resource "aws_iam_role_policy_attachment" "task_execution_role_policy" {
 resource "aws_iam_role_policy_attachment" "task_execution_custom_policy" {
   role = aws_iam_role.task_execution_role.id
   policy_arn = aws_iam_policy.task_execution_custom_policy.arn
+}
+
+resource "aws_iam_user" "recordings" {
+  name = "${var.app_identifier}_recordings"
+}
+
+resource "aws_iam_access_key" "recordings" {
+  user = aws_iam_user.recordings.name
+}
+
+resource "aws_iam_user_policy" "recordings" {
+  name = aws_iam_user.recordings.name
+  user = aws_iam_user.recordings.name
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Resource": "${aws_s3_bucket.recordings.arn}/*"
+    }
+  ]
+}
+EOF
 }

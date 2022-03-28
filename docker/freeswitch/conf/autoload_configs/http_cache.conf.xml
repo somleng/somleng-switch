@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<configuration name="http_cache.conf" description="HTTP GET cache">
+    <settings>
+        <!-- set to true if you want to enable http:// and https:// formats.  Do not use if mod_httapi is also loaded -->
+        <param name="enable-file-formats" value="false"/>
+        <param name="max-urls" value="10000"/>
+        <param name="location" value="/tmp"/>
+        <param name="default-max-age" value="86400"/>
+        <!-- <param name="ssl-cacert" value="/etc/freeswitch/cacert.pem"/> -->
+        <param name="ssl-verifyhost" value="false"/>
+        <param name="ssl-verifypeer" value="false"/>
+        <!-- default is 300 seconds, override here -->
+        <!--param name="connect-timeout" value="300"/-->
+        <!-- default is 300 seconds, override here -->
+        <!--param name="download-timeout" value="300"/-->
+    </settings>
+    <profiles>
+        <profile name="s3">
+            <!-- Credentials for AWS account. -->
+            <aws-s3>
+                <!-- Required: Key identifier -->
+                <access-key-id><![CDATA[$${recordings_bucket_access_key_id}]]></access-key-id>
+                <!-- Required: Key secret -->
+                <secret-access-key><![CDATA[$${recordings_bucket_secret_access_key}]]></secret-access-key>
+                <!-- Optional: Backup folder to save uploaded file in case of failure (for example recording a .wav file to a webserver). Must ended without a slash !-->
+                <!--  If you want to use your own s3-compatible service, base domain MUST be set -->
+                <!--<base-domain><![CDATA[stg.vinadata.vn]]></base-domain>-->
+                <!-- Required: AWS region -->
+                <region><![CDATA[$${recordings_bucket_region}]]></region>         <!-- base domain is s3-ap-southeast-1.amazonaws.com -->
+                <!-- Optional: Expiration time in seconds for URL signature. Default is 604800s -->
+                <expires>604800</expires>
+            </aws-s3>
+
+            <!-- Required: Domains that this profile will automatically be applied. Domains must have the same base domain (s3-ap-southeast-1.amazonaws.com) -->
+            <!-- <domains>
+                <domain name="$${recording_bucket_name}.s3.$${recording_bucket_region}.amazonaws.com"/>
+            </domains> -->
+        </profile>
+    </profiles>
+</configuration>
