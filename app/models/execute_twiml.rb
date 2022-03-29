@@ -233,7 +233,7 @@ class ExecuteTwiML
     recording_api_params = { phone_call_id: call_properties.call_sid }
     recording_api_params["status_callback_url"] = attributes["recordingStatusCallback"]
     recording_api_params["status_callback_method"] = attributes["recordingStatusCallbackMethod"]
-    recording_response = call_platform_client.create_recording(recording_api_params)
+    recording_response = call_platform_client.create_recording(recording_api_params.compact)
 
     record_options = {}
     record_options[:max_duration] = attributes.fetch("maxLength", 3600).to_i
