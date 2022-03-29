@@ -20,7 +20,7 @@ RSpec.describe CallController, type: :call_controller do
 
     it "records audio" do
       controller = build_call_controller(
-        duration: 5,
+        duration: 5000,
         twiml: <<~TWIML
           <?xml version="1.0" encoding="UTF-8" ?>
           <Response><Record/></Response>
@@ -106,8 +106,8 @@ RSpec.describe CallController, type: :call_controller do
             params = JSON.parse(request.body)
 
             expect(params).to include(
-              "recording_status_callback_url" => "https://www.example.com/callback",
-              "recording_status_callback_method" => "GET"
+              "status_callback_url" => "https://www.example.com/callback",
+              "status_callback_method" => "GET"
             )
           })
         end
@@ -213,7 +213,7 @@ RSpec.describe CallController, type: :call_controller do
           recording: instance_double(
             Adhearsion::Rayo::Component::Record::Recording,
             uri: "{profile=s3}http_cache://https://recording.s3.ap-southeast-1.amazonaws.com/9c76f7f6-3aff-4f7b-a76a-0d017b5df900-2.wav",
-            duration: options.fetch(:duration, 5)
+            duration: options.fetch(:duration, 5000)
           ),
           component_id: "component-id"
         )

@@ -231,8 +231,8 @@ class ExecuteTwiML
   def execute_record(verb)
     attributes = twiml_attributes(verb)
     recording_api_params = { phone_call_id: call_properties.call_sid }
-    recording_api_params["recording_status_callback_url"] = attributes["recordingStatusCallback"]
-    recording_api_params["recording_status_callback_method"] = attributes["recordingStatusCallbackMethod"]
+    recording_api_params["status_callback_url"] = attributes["recordingStatusCallback"]
+    recording_api_params["status_callback_method"] = attributes["recordingStatusCallbackMethod"]
     recording_response = call_platform_client.create_recording(recording_api_params)
 
     record_options = {}
@@ -245,7 +245,6 @@ class ExecuteTwiML
     recording_response = call_platform_client.update_recording(
       recording_response.id,
       raw_recording_url: normalize_recording_url(record_result.recording.uri),
-      duration: record_result.recording.duration,
       external_id: record_result.component_id
     )
 
@@ -256,7 +255,7 @@ class ExecuteTwiML
         attributes["method"],
         {
           "RecordingUrl" => recording_response.url,
-          "RecordingDuration" => recording_response.duration
+          "RecordingDuration" => record_result.recording.duration.to_i / 1000
         }
       ]
     )

@@ -25,7 +25,6 @@ module CallPlatform
     RecordingResponse = Struct.new(
       :id,
       :url,
-      :duration,
       keyword_init: true
     )
 
@@ -72,7 +71,6 @@ module CallPlatform
       json_response = make_request("/services/recordings/#{recording_id}", http_method: :patch, params: params)
       RecordingResponse.new(
         id: json_response.fetch("sid"),
-        duration: json_response.fetch("duration"),
         url: json_response.fetch("url")
       )
     end
