@@ -15,6 +15,7 @@ variable "switch_subdomain" {}
 variable "route53_zone" {}
 variable "listener_rule_priority" {}
 variable "tts_cache_bucket_name" {}
+variable "recordings_bucket_name" {}
 
 variable "scale_in_protection" {
   default = true

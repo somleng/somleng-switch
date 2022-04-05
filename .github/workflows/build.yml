@@ -27,15 +27,12 @@ jobs:
         run: |
           bundle exec rspec
 
-      - name: Upload Test Coverage
-        working-directory: ${{ env.working-directory }}
-        continue-on-error: true
-        env:
-          CODACY_PROJECT_TOKEN: "${{ secrets.CODACY_PROJECT_TOKEN }}"
-        run: |
-          curl -Ls -o codacy-coverage-reporter "$(curl -Ls https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({name, browser_download_url} | select(.name | contains("codacy-coverage-reporter-linux"))) | .[0].browser_download_url')"
-          chmod +x codacy-coverage-reporter
-          ./codacy-coverage-reporter report -l Ruby -r coverage/lcov/*
+      - name: Run codacy-coverage-reporter
+        uses: codacy/codacy-coverage-reporter-action@v1
+        with:
+          api-token: ${{ secrets.CODACY_API_TOKEN }}
+          coverage-reports: coverage/lcov/*
+          language: Ruby
 
       # Adapted from
       # https://stackoverflow.com/a/65434401
@@ -102,8 +99,6 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: ${{ env.ECR_PUBLIC_REGISTRY }}
-          username: ${{ env.AWS_ACCESS_KEY_ID }}
-          password: ${{ env.AWS_SECRET_ACCESS_KEY }}
         env:
           AWS_REGION: us-east-1
 
@@ -141,6 +136,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: "docker/freeswitch"
+          build-args:
+            signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
           push: true
           platforms: linux/amd64
           cache-from: type=local,src=/tmp/.buildx-cache/.buildx-cache-${{ matrix.identifier }}-freeswitch

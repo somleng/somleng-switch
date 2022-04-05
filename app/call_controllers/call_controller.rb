@@ -83,10 +83,10 @@ class CallController < Adhearsion::CallController
 
   def request_twiml(url, http_method, params)
     request_params = {
-      "Caller" => format_number(call_properties.from),
-      "Called" => format_number(call_properties.to),
-      "From" => format_number(call_properties.from),
-      "To" => format_number(call_properties.to),
+      "Caller" => call_properties.from,
+      "Called" => call_properties.to,
+      "From" => call_properties.from,
+      "To" => call_properties.to,
       "CallSid" => call_properties.call_sid,
       "Direction" => call_properties.direction,
       "AccountSid" => call_properties.account_sid,
@@ -102,10 +102,6 @@ class CallController < Adhearsion::CallController
 
   def execute_twiml(twiml)
     ExecuteTwiML.call(context: self, twiml: twiml)
-  end
-
-  def format_number(number)
-    Phony.plausible?(number) ? "+#{number}" : number
   end
 
   def output_formatter

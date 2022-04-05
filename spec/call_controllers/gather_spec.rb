@@ -65,7 +65,7 @@ RSpec.describe CallController, type: :call_controller do
             stub_voice_commands: { ask: build_input_result("1") },
             call_properties: {
               voice_url: "https://www.example.com/gather.xml",
-              from: "85512456869",
+              from: "+85512456869",
               to: "1000"
             }
           )

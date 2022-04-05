@@ -9,7 +9,6 @@ gem "sinatra-contrib", require: false
 gem "skylight"
 
 gem "mail"
-gem "phony"
 
 gem "bigdecimal", "~> 1.4.0" # To support Ruby 2.7 with ActiveSupport 4.2
 
