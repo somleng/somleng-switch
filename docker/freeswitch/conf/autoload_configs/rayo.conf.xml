@@ -14,6 +14,6 @@
   </domain>
 
   <record>
-    <param name="record-file-prefix" value="$${mod_rayo_record_file_prefix}/"/>
+    <param name="record-file-prefix" value="{profile=s3}http_cache://https://$${recordings_bucket_name}.s3.$${recordings_bucket_region}.amazonaws.com/"/>
   </record>
 </configuration>

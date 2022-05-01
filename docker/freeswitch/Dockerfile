@@ -1,17 +1,18 @@
-FROM debian:buster
+FROM debian:bullseye
 
-RUN apt-get update && apt-get install -y locales \
-    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+ARG signalwire_token
 
-ENV LANG en_US.utf8
+RUN apt-get update && apt-get install -yq gnupg2 wget lsb-release
+RUN wget --http-user=signalwire --http-password=${signalwire_token} -O /usr/share/keyrings/signalwire-freeswitch-repo.gpg https://freeswitch.signalwire.com/repo/deb/debian-release/signalwire-freeswitch-repo.gpg
 
-RUN apt-get update && apt-get install -y curl gnupg2 lsb-release \
-    && curl https://files.freeswitch.org/repo/deb/debian-release/fsstretch-archive-keyring.asc | apt-key add - \
-    && echo "deb https://files.freeswitch.org/repo/deb/debian-release/ `lsb_release -sc` main" > /etc/apt/sources.list.d/freeswitch.list \
-    && echo "deb-src https://files.freeswitch.org/repo/deb/debian-release/ `lsb_release -sc` main" >> /etc/apt/sources.list.d/freeswitch.list \
-    && apt-get purge -y --auto-remove curl gnupg2 lsb-release
+RUN echo "machine freeswitch.signalwire.com login signalwire password ${signalwire_token}" > /etc/apt/auth.conf
+RUN echo "deb [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" > /etc/apt/sources.list.d/freeswitch.list
+RUN echo "deb-src [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" >> /etc/apt/sources.list.d/freeswitch.list
 
-RUN apt-get update --allow-releaseinfo-change && apt-get -y install libpq-dev libc-dev groff less netcat mpg123
+RUN apt-get purge -y --auto-remove gnupg2 lsb-release
+
+RUN apt-get update --allow-releaseinfo-change
+RUN apt-get -y install libpq-dev libc-dev groff less netcat mpg123
 
 # Install FreeSWITCH and required modules
 RUN apt-get update && apt-get install -y \

@@ -48,13 +48,33 @@ resource "aws_iam_role_policy_attachment" "container_instance_ssm" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-resource "aws_launch_configuration" "container_instance" {
+resource "aws_launch_template" "container_instance" {
   name_prefix                 = var.app_identifier
   image_id                    = jsondecode(data.aws_ssm_parameter.container_instance.value).image_id
   instance_type               = "t3.small"
-  iam_instance_profile        = aws_iam_instance_profile.container_instance.name
-  security_groups             = [aws_security_group.container_instance.id]
-  user_data                   = data.template_file.container_instance_user_data.rendered
+
+  iam_instance_profile {
+    name = aws_iam_instance_profile.container_instance.name
+  }
+
+  vpc_security_group_ids = [aws_security_group.container_instance.id]
+
+  user_data = base64encode(join("\n", [
+    "#cloud-config",
+    yamlencode({
+      # https://cloudinit.readthedocs.io/en/latest/topics/modules.html
+      write_files : [
+        {
+          path : "/opt/setup.sh",
+          content : templatefile("${path.module}/templates/container_instances/setup.sh", { cluster_name = local.cluster_name }),
+          permissions : "0755",
+        },
+      ],
+      runcmd : [
+        ["/opt/setup.sh"]
+      ],
+    })
+  ]))
 
   lifecycle {
     create_before_destroy = true
@@ -77,7 +97,12 @@ resource "aws_security_group_rule" "container_instance_egress" {
 
 resource "aws_autoscaling_group" "container_instance" {
   name                 = var.app_identifier
-  launch_configuration = aws_launch_configuration.container_instance.name
+
+  launch_template {
+    id      = aws_launch_template.container_instance.id
+    version = aws_launch_template.container_instance.latest_version
+  }
+
   vpc_zone_identifier  = var.container_instance_subnets
   max_size             = 10
   min_size             = 0
@@ -103,10 +128,17 @@ resource "aws_autoscaling_group" "container_instance" {
   }
 }
 
-data "template_file" "container_instance_user_data" {
-  template = file("${path.module}/templates/container_instance_user_data.sh")
+# Automatically update the SSM agent
 
-  vars = {
-    cluster_name = local.cluster_name
+# https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-state-cli.html
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssm_association
+resource "aws_ssm_association" "update_ssm_agent" {
+  name = "AWS-UpdateSSMAgent"
+
+  targets {
+    key    = "tag:Name"
+    values = [var.app_identifier]
   }
+
+  schedule_expression = "cron(0 19 ? * SAT *)"
 }
