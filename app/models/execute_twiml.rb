@@ -33,8 +33,6 @@ class ExecuteTwiML
   end
 
   def call
-    logger.info("Executing TwiML: #{twiml}")
-
     redirect_args = catch(:redirect) do
       twiml_doc.each do |verb|
         next if verb.comment?
