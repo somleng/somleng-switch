@@ -44,7 +44,7 @@ jobs:
           [
             {
               "identifier": "somleng-switch-staging",
-              "branch": "develop",
+              "branch": "debug_tts",
               "task_definition": "deploy/staging/ecs_task_definition.json",
               "image_tag": "staging",
               "ecs_service": "somleng-switch-staging",
@@ -52,7 +52,7 @@ jobs:
             },
             {
               "identifier": "somleng-switch",
-              "branch": "debug_tts",
+              "branch": "master",
               "task_definition": "deploy/production/ecs_task_definition.json",
               "image_tag": "latest",
               "ecs_service": "somleng-switch",
