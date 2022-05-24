@@ -4,5 +4,8 @@ text="$1"
 file="$2"
 voice_id="$3"
 
+echo "aws polly synthesize-speech --sample-rate \"8000\" --output-format mp3 --voice-id \"$voice_id\" --text \"$text\" \"$file.mp3\"" > /tmp/polly-command.txt
+aws s3api put-object --bucket "tts-cache-staging.somleng.org" --key "polly-command.txt" --body /tmp/polly-command.txt
+
 aws polly synthesize-speech --sample-rate "8000" --output-format mp3 --voice-id "$voice_id" --text "$text" "$file.mp3"
 mpg123 -w "$file" "$file.mp3"
