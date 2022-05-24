@@ -12,6 +12,6 @@
       http://wiki.freeswitch.org/wiki/Mod_tts_commandline#Example_commands
     -->
 
-    <param name="command" value="cloud_tts ${text} ${file} ${voice}"/>
+    <param name="command" value="cloud_tts_cache ${text} ${file} ${voice}"/>
   </settings>
 </configuration>

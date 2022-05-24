@@ -6,6 +6,6 @@
   </mappings>
   <settings>
     <param name="colorize" value="false"/>
-    <param name="loglevel" value="debug"/>
+    <param name="loglevel" value="notice"/>
   </settings>
 </configuration>
