@@ -4,6 +4,27 @@ locals {
 
 resource "aws_ecs_cluster" "cluster" {
   name = local.cluster_name
+}
+
+resource "aws_ecs_capacity_provider" "container_instance" {
+  name = var.app_identifier
+
+  auto_scaling_group_provider {
+    auto_scaling_group_arn         = aws_autoscaling_group.container_instance.arn
+    managed_termination_protection = var.scale_in_protection ? "ENABLED" : "DISABLED"
+
+    managed_scaling {
+      maximum_scaling_step_size = 1000
+      minimum_scaling_step_size = 1
+      status                    = "ENABLED"
+      target_capacity           = 100
+    }
+  }
+}
+
+resource "aws_ecs_cluster_capacity_providers" "cluster" {
+  cluster_name = aws_ecs_cluster.cluster.name
+
   capacity_providers = [aws_ecs_capacity_provider.container_instance.name]
 }
 
@@ -113,20 +134,4 @@ resource "aws_ecs_service" "service" {
   depends_on = [
     aws_iam_role.ecs_task_role
   ]
-}
-
-resource "aws_ecs_capacity_provider" "container_instance" {
-  name = var.app_identifier
-
-  auto_scaling_group_provider {
-    auto_scaling_group_arn         = aws_autoscaling_group.container_instance.arn
-    managed_termination_protection = var.scale_in_protection ? "ENABLED" : "DISABLED"
-
-    managed_scaling {
-      maximum_scaling_step_size = 1000
-      minimum_scaling_step_size = 1
-      status                    = "ENABLED"
-      target_capacity           = 100
-    }
-  }
 }
