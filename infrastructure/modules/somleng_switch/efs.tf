@@ -2,8 +2,6 @@ resource "aws_efs_file_system" "cache" {
   creation_token = "${var.app_identifier}-cache"
   encrypted = true
 
-  availability_zone_name = var.efs_availability_zone
-
   tags = {
     Name = "${var.app_identifier}-cache"
   }
@@ -26,8 +24,10 @@ resource "aws_efs_backup_policy" "cache" {
 }
 
 resource "aws_efs_mount_target" "cache" {
+  for_each = toset(var.container_instance_subnets)
+
   file_system_id = aws_efs_file_system.cache.id
-  subnet_id      = var.efs_subnet_id
+  subnet_id      = each.value
   security_groups = [aws_security_group.efs_cache.id]
 }
 

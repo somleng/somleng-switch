@@ -15,8 +15,6 @@ variable "switch_subdomain" {}
 variable "route53_zone" {}
 variable "listener_rule_priority" {}
 variable "recordings_bucket_name" {}
-variable efs_availability_zone {}
-variable efs_subnet_id {}
 
 variable "scale_in_protection" {
   default = true

@@ -26,8 +26,6 @@ module "somleng_switch_staging" {
   external_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
   external_nat_instance_sip_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
   external_nat_instance_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
-  efs_availability_zone = data.terraform_remote_state.core_infrastructure.outputs.vpc.azs[0]
-  efs_subnet_id = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets[0]
 
   load_balancer = data.terraform_remote_state.core_infrastructure.outputs.application_load_balancer
   network_load_balancer = data.terraform_remote_state.core_infrastructure.outputs.network_load_balancer

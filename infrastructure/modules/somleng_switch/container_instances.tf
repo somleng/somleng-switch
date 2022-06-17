@@ -57,7 +57,7 @@ resource "aws_launch_template" "container_instance" {
     name = aws_iam_instance_profile.container_instance.name
   }
 
-  vpc_security_group_ids = [aws_security_group.container_instance.id]
+  vpc_security_group_ids = [aws_security_group.container_instance.id, aws_security_group.appserver.id]
 
   user_data = base64encode(join("\n", [
     "#cloud-config",

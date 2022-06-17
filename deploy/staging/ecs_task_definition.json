@@ -9,7 +9,7 @@
     {
       "name": "cache",
       "efsVolumeConfiguration": {
-        "fileSystemId": "fs-01c926748066c6666",
+        "fileSystemId": "fs-0478c3a47ef5f3c80",
         "transitEncryption": "ENABLED"
       }
     }
