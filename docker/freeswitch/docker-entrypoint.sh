@@ -1,25 +1,27 @@
 #!/bin/bash
 
-# Local constants
-FREESWITCH_CONTAINER_CONFIG_DIRECTORY="/etc/freeswitch/"
-FREESWITCH_CONTAINER_STORAGE_DIRECTORY="/var/lib/freeswitch/storage"
-FREESWITCH_CONTAINER_BINARY="/usr/bin/freeswitch"
-FREESWITCH_USER="freeswitch"
-FREESWITCH_GROUP="daemon"
-
 set -e
 
 if [ "$1" = 'freeswitch' ]; then
-  export_fs_env_vars "$FREESWITCH_CONTAINER_CONFIG_DIRECTORY/env.xml"
+  # Local constants
+  FS_CONTAINER_CONFIG_DIRECTORY="/etc/freeswitch/"
 
-  # Setup config directory
-  chown -R "${FREESWITCH_USER}:${FREESWITCH_GROUP}" ${FREESWITCH_CONTAINER_CONFIG_DIRECTORY}
+  FS_CONTAINER_BINARY="/usr/bin/freeswitch"
+  FS_USER="freeswitch"
+  FS_GROUP="daemon"
 
-  # Setup storage directory
-  chown -R "${FREESWITCH_USER}:${FREESWITCH_USER}" ${FREESWITCH_CONTAINER_STORAGE_DIRECTORY}
+  export_fs_env_vars "$FS_CONTAINER_CONFIG_DIRECTORY/env.xml"
+
+  # Setup directories
+
+  for directory in "$FS_CONTAINER_CONFIG_DIRECTORY" "$FS_STORAGE_DIRECTORY" "$FS_TTS_CACHE_DIRECTORY"
+  do
+    mkdir -p "$directory"
+    chown -R "$FS_USER:$FS_GROUP" "$directory"
+  done
 
   # execute FreeSWITCH
-  exec ${FREESWITCH_CONTAINER_BINARY} -u ${FREESWITCH_USER} -g ${FREESWITCH_GROUP} -nonat
+  exec "$FS_CONTAINER_BINARY" -u "$FS_USER" -g "$FS_GROUP" -nonat -storage "$FS_STORAGE_DIRECTORY"
 fi
 
 exec "$@"

@@ -11,8 +11,10 @@ module "somleng_switch" {
   nginx_image = data.terraform_remote_state.core.outputs.nginx_ecr_repository
   freeswitch_image = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository
   aws_region = var.aws_region
-  container_instance_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets
+
   vpc_id = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_id
+  container_instance_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets
+  intra_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.intra_subnets
 
   db_name = "freeswitch"
   db_username = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.master_username
@@ -35,6 +37,5 @@ module "somleng_switch" {
   sip_subdomain = "sip"
   switch_subdomain = "ahn"
   listener_rule_priority = 20
-  tts_cache_bucket_name = "tts-cache.somleng.org"
   recordings_bucket_name = "raw-recordings.somleng.org"
 }

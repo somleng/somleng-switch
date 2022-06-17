@@ -6,6 +6,7 @@ variable "nginx_image" {}
 variable "freeswitch_image" {}
 variable "aws_region" {}
 variable "container_instance_subnets" {}
+variable "intra_subnets" {}
 variable "vpc_id" {}
 variable "load_balancer" {}
 variable "network_load_balancer" {}
@@ -14,7 +15,6 @@ variable "sip_subdomain" {}
 variable "switch_subdomain" {}
 variable "route53_zone" {}
 variable "listener_rule_priority" {}
-variable "tts_cache_bucket_name" {}
 variable "recordings_bucket_name" {}
 
 variable "scale_in_protection" {
