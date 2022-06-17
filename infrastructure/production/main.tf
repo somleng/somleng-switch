@@ -11,8 +11,10 @@ module "somleng_switch" {
   nginx_image = data.terraform_remote_state.core.outputs.nginx_ecr_repository
   freeswitch_image = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository
   aws_region = var.aws_region
-  container_instance_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets
+
   vpc_id = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_id
+  container_instance_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets
+  intra_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.intra_subnets
 
   db_name = "freeswitch"
   db_username = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.master_username
@@ -26,7 +28,6 @@ module "somleng_switch" {
   external_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
   external_nat_instance_sip_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
   external_nat_instance_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
-  efs_availability_zone = data.terraform_remote_state.core_infrastructure.outputs.vpc.azs[0]
 
   load_balancer = data.terraform_remote_state.core_infrastructure.outputs.application_load_balancer
   network_load_balancer = data.terraform_remote_state.core_infrastructure.outputs.network_load_balancer
@@ -36,6 +37,5 @@ module "somleng_switch" {
   sip_subdomain = "sip"
   switch_subdomain = "ahn"
   listener_rule_priority = 20
-  tts_cache_bucket_name = "tts-cache.somleng.org"
   recordings_bucket_name = "raw-recordings.somleng.org"
 }
