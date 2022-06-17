@@ -68,5 +68,9 @@ EXPOSE 5222/tcp
 
 HEALTHCHECK --interval=10s --timeout=5s --retries=10 CMD nc -z -w 5 localhost 5222
 
+ENV FS_CACHE_DIRECTORY "/var/cache"
+ENV FS_STORAGE_DIRECTORY = "$FS_CACHE_DIRECTORY/freeswitch/storage"
+ENV FS_TTS_CACHE_DIRECTORY = "$FS_CACHE_DIRECTORY/freeswitch/tts_cache"
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["freeswitch"]

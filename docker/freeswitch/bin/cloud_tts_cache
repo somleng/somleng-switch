@@ -5,7 +5,7 @@ file="$2"
 voice="$3"
 
 tts_checksum=$(echo -n "$voice$text" | sha256sum | head -c 64)
-cache_file="$FS_CACHE_DIRECTORY/$tts_checksum.wav"
+cache_file="$FS_TTS_CACHE_DIRECTORY/$tts_checksum.wav"
 
 if [ -e "$cache_file" ]; then
   ln -s "$cache_file" "$file"
