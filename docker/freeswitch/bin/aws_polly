@@ -3,9 +3,16 @@
 text="$1"
 file="$2"
 voice_id="$3"
+cache_file="$4"
 
 # Output the text to a file before executing polly
 # https://github.com/somleng/somleng-switch/pull/238
 echo "$text" > "$file.txt"
 aws polly synthesize-speech --sample-rate "8000" --output-format mp3 --voice-id "$voice_id" --text "file://$file.txt" "$file.mp3"
-mpg123 -w "$file" "$file.mp3"
+
+mpg123 -w "$cache_file" "$file.mp3"
+ln -s "$cache_file" "$file"
+
+# cleanup
+rm -f "$file.txt"
+rm -f "$file.mp3"
