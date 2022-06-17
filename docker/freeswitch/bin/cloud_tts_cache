@@ -8,7 +8,7 @@ tts_checksum=$(echo -n "$voice$text" | sha256sum | head -c 64)
 cache_file="/tmp/$tts_checksum.wav"
 
 if [[ -z "${TTS_CACHE_BUCKET}" ]]; then
-  cloud_tts "$@ $cache_file"
+  cloud_tts "$@" "$cache_file"
 else
   if [ -e "$cache_file" ]; then
     ln -s "$cache_file" "$file"
@@ -16,7 +16,7 @@ else
     aws s3api get-object --bucket "$TTS_CACHE_BUCKET" --key "$tts_checksum" "$cache_file" || cache_missed=true
 
     if [ $cache_missed ]; then
-      cloud_tts "$@ $cache_file"
+      cloud_tts "$@" "$cache_file"
       aws s3api put-object --bucket "$TTS_CACHE_BUCKET" --key "$tts_checksum" --body "$file"
     fi
   fi
