@@ -160,6 +160,14 @@
         "value": "${cache_directory}"
       },
       {
+        "name": "FS_STORAGE_DIRECTORY",
+        "value": "${cache_directory}/freeswitch/storage"
+      },
+      {
+        "name": "FS_TTS_CACHE_DIRECTORY",
+        "value": "${cache_directory}/freeswitch/tts_cache"
+      },
+      {
         "name": "FS_DATABASE_NAME",
         "value": "${database_name}"
       },
