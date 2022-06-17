@@ -14,8 +14,9 @@ variable "sip_subdomain" {}
 variable "switch_subdomain" {}
 variable "route53_zone" {}
 variable "listener_rule_priority" {}
-variable "tts_cache_bucket_name" {}
 variable "recordings_bucket_name" {}
+variable efs_availability_zone {}
+variable efs_subnet_id {}
 
 variable "scale_in_protection" {
   default = true

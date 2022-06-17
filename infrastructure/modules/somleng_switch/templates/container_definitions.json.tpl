@@ -1,4 +1,4 @@
-[
+[  
   {
     "name": "${webserver_container_name}",
     "image": "${nginx_image}:latest",
@@ -110,6 +110,12 @@
       "retries": 10,
       "timeout": 5
     },
+    "mountPoints": [
+      {
+        "containerPath": "${cache_directory}",
+        "sourceVolume": "${source_volume}"
+      }
+    ],
     "essential": true,
     "memoryReservation": 128,
     "secrets": [
@@ -150,8 +156,8 @@
         "value": "${region}"
       },
       {
-        "name": "TTS_CACHE_BUCKET",
-        "value": "${tts_cache_bucket}"
+        "name": "FS_CACHE_DIRECTORY",
+        "value": "${cache_directory}"
       },
       {
         "name": "FS_DATABASE_NAME",
@@ -201,7 +207,6 @@
         "name": "FS_RECORDINGS_BUCKET_REGION",
         "value": "${recordings_bucket_region}"
       }
-
     ]
   }
 ]

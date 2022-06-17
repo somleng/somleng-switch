@@ -26,6 +26,8 @@ module "somleng_switch_staging" {
   external_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
   external_nat_instance_sip_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
   external_nat_instance_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
+  efs_availability_zone = data.terraform_remote_state.core_infrastructure.outputs.vpc.azs[0]
+  efs_subnet_id = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets[0]
 
   load_balancer = data.terraform_remote_state.core_infrastructure.outputs.application_load_balancer
   network_load_balancer = data.terraform_remote_state.core_infrastructure.outputs.network_load_balancer
@@ -35,7 +37,6 @@ module "somleng_switch_staging" {
   inbound_sip_trunks_security_group_description = "Somleng Staging Inbound SIP Trunks"
   sip_subdomain = "sip-staging"
   switch_subdomain = "switch-staging"
-  tts_cache_bucket_name = "tts-cache-staging.somleng.org"
   recordings_bucket_name = "raw-recordings-staging.somleng.org"
   load_balancer_sip_port = 6060
   listener_rule_priority = 120

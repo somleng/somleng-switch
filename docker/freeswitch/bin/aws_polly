@@ -10,7 +10,7 @@ cache_file="$4"
 echo "$text" > "$file.txt"
 aws polly synthesize-speech --sample-rate "8000" --output-format mp3 --voice-id "$voice_id" --text "file://$file.txt" "$file.mp3"
 
-mpg123 -w "$cache_file" "$file.mp3"
+ffmpeg -i "$file.mp3" "$cache_file"
 ln -s "$cache_file" "$file"
 
 # cleanup
