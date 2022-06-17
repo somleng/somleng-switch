@@ -24,7 +24,7 @@ resource "aws_efs_backup_policy" "cache" {
 }
 
 resource "aws_efs_mount_target" "cache" {
-  for_each = toset(var.container_instance_subnets)
+  for_each = toset(var.intra_subnets)
 
   file_system_id = aws_efs_file_system.cache.id
   subnet_id      = each.value
