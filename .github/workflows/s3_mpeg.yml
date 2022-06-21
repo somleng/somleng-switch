@@ -116,8 +116,8 @@ jobs:
         with:
           push: true
           platforms: linux/arm64
-          cache-from: type=gha, scope=${{ github.workflow }}
-          cache-to: type=gha, scope=${{ github.workflow }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           context: "docker/s3_mpeg"
           tags: |
             ${{ env.ECR_REPOSITORY }}:${{ matrix.image_tag }}
