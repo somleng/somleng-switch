@@ -65,7 +65,7 @@ resource "aws_iam_policy" "s3_mpeg" {
         "s3:PutObject"
       ],
       "Resource": [
-        "${aws_s3_bucket.recordings.arn}"
+        "${aws_s3_bucket.recordings.arn}/*"
       ]
     }
   ]
