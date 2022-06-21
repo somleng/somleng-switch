@@ -114,8 +114,8 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache/.buildx-cache-${{ matrix.identifier }}
           cache-to: type=local,dest=/tmp/.buildx-cache-${{ matrix.identifier }}
           tags: |
-            ${{ env.ECR_REGISTRY }}/${{ matrix.identifier }}:${{ matrix.image_tag }}
-            ${{ env.ECR_REGISTRY }}/${{ matrix.identifier }}:${{ env.IMAGE_TAG }}
+            ${{ env.AWS_ECR_REGISTRY }}/${{ matrix.identifier }}:${{ matrix.image_tag }}
+            ${{ env.AWS_ECR_REGISTRY }}/${{ matrix.identifier }}:${{ env.IMAGE_TAG }}
 
 
       - name: Move docker layer caches
@@ -130,7 +130,7 @@ jobs:
       - name: Deploy Lambda
         run: |
           aws lambda update-function-code --function-name ${{ matrix.identifier }} \
-                                          --image-uri ${{ env.ECR_REGISTRY }}/${{ matrix.identifier }}:${{ env.IMAGE_TAG }} \
+                                          --image-uri ${{ env.AWS_ECR_REGISTRY }}/${{ matrix.identifier }}:${{ env.IMAGE_TAG }} \
                                           --architectures "arm64" \
                                           --publish
 
