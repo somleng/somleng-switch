@@ -54,7 +54,7 @@ jobs:
           echo ::set-output name=matrix::{\"include\":$(echo $matrix)}\"
           echo ::set-output name=matrixLength::$(echo $matrix | jq length)
 
-          echo $matrix
+          echo $(echo $matrix | jq length)
 
   deploy:
     name: Deploy
