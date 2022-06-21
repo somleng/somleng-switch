@@ -70,7 +70,8 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ap-southeast-1
-      AWS_ECR_REGISTRY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com
+      ECR_REGISTRY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com
+      ECR_REPOSITORY: ${{ env.AWS_ECR_REGISTRY }}/s3-mpeg
       IMAGE_TAG: ${{ github.sha }}
 
     strategy:
@@ -119,8 +120,8 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache-${{ matrix.identifier }}
           context: "docker/s3_mpeg"
           tags: |
-            ${{ env.AWS_ECR_REGISTRY }}/${{ matrix.identifier }}:${{ matrix.image_tag }}
-            ${{ env.AWS_ECR_REGISTRY }}/${{ matrix.identifier }}:${{ env.IMAGE_TAG }}
+            ${{ env.ECR_REPOSITORY }}/:${{ matrix.image_tag }}
+            ${{ env.ECR_REPOSITORY }}/:${{ env.IMAGE_TAG }}
 
       - name: Move docker layer caches
         # Temp fix
@@ -134,7 +135,7 @@ jobs:
       - name: Deploy Lambda
         run: |
           aws lambda update-function-code --function-name ${{ matrix.identifier }} \
-                                          --image-uri ${{ env.AWS_ECR_REGISTRY }}/${{ matrix.identifier }}:${{ env.IMAGE_TAG }} \
+                                          --image-uri ${{ env.ECR_REPOSITORY }}/:${{ matrix.image_tag }} \
                                           --architectures "arm64" \
                                           --publish
 

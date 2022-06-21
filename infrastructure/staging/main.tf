@@ -11,6 +11,7 @@ module "somleng_switch_staging" {
   app_image = data.terraform_remote_state.core.outputs.app_ecr_repository.repository_uri
   nginx_image = data.terraform_remote_state.core.outputs.nginx_ecr_repository.repository_uri
   freeswitch_image = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository.repository_uri
+  s3_mpeg_ecr_repository_url = data.terraform_remote_state.core.outputs.s3_mpeg_ecr_repository.repository_url
 
   vpc_id = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_id
   container_instance_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets

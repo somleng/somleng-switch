@@ -5,15 +5,9 @@ locals {
 
 data "aws_ecr_authorization_token" "token" {}
 
-resource "aws_ecr_repository" "s3_mpeg" {
-  name = local.s3_mpeg_function_name
-}
-
-
-
 provider "docker" {
   registry_auth {
-    address  = split("/", aws_ecr_repository.s3_mpeg.repository_url)[0]
+    address  = split("/", var.s3_mpeg_ecr_repository_url)[0]
     username = data.aws_ecr_authorization_token.token.user_name
     password = data.aws_ecr_authorization_token.token.password
   }
@@ -109,7 +103,7 @@ resource "aws_s3_bucket_notification" "s3_mpeg" {
 }
 
 resource "docker_registry_image" "s3_mpeg" {
-  name = "${aws_ecr_repository.s3_mpeg.repository_url}:latest"
+  name = "${var.s3_mpeg_ecr_repository_url}:latest"
 
   build {
     context = abspath("${path.module}/../../../docker/s3_mpeg")
