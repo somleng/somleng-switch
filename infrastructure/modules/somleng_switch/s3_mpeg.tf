@@ -43,6 +43,7 @@ resource "aws_lambda_function" "s3_mpeg" {
   function_name = local.s3_mpeg_function_name
   role = aws_iam_role.s3_mpeg.arn
   package_type = "Image"
+  architectures = ["arm64"]
   image_uri = docker_registry_image.s3_mpeg.name
 
   depends_on = [
