@@ -95,7 +95,7 @@ jobs:
       - name: Login to AWS ECR
         uses: docker/login-action@v1
         with:
-          registry: ${{ env.AWS_ECR_REGISTRY }}
+          registry: ${{ env.ECR_REGISTRY }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
