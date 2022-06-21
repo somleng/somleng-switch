@@ -135,7 +135,7 @@ jobs:
       - name: Deploy Lambda
         run: |
           aws lambda update-function-code --function-name ${{ matrix.identifier }} \
-                                          --image-uri ${{ env.ECR_REPOSITORY }}/:${{ matrix.image_tag }} \
+                                          --image-uri ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
                                           --architectures "arm64" \
                                           --publish
 
