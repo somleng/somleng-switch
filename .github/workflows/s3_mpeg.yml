@@ -54,6 +54,8 @@ jobs:
           echo ::set-output name=matrix::{\"include\":$(echo $matrix)}\"
           echo ::set-output name=matrixLength::$(echo $matrix | jq length)
 
+          echo $matrix
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
