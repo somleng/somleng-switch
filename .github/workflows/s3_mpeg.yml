@@ -19,6 +19,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
+          working-directory: docker/s3_mpeg
           ruby-version: '3.1'
           bundler-cache: true
 
