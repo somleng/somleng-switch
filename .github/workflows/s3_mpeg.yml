@@ -13,6 +13,8 @@ jobs:
         working-directory: docker/s3_mpeg
 
     steps:
+      - uses: FedericoCarboni/setup-ffmpeg@v1
+
       - name: Checkout
         uses: actions/checkout@v2
 
