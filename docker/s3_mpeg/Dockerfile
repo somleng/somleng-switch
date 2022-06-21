@@ -31,7 +31,7 @@ RUN gem install bundler
 
 ARG FUNCTION_DIR
 RUN mkdir -p ${FUNCTION_DIR}
-COPY Gemfile Gemfile.lock ${FUNCTION_DIR}
+COPY Gemfile Gemfile.lock ${FUNCTION_DIR}/
 WORKDIR ${FUNCTION_DIR}
 
 ENV BUNDLE_APP_CONFIG="${FUNCTION_DIR}/.bundle"
@@ -46,6 +46,7 @@ RUN rm -rf vendor/bundle/ruby/*/cache/ && find vendor/ -name "*.o" -delete && fi
 
 COPY app.rb ${FUNCTION_DIR}
 
+#############################
 
 FROM ruby:3.1-alpine
 
