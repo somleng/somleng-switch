@@ -13,6 +13,9 @@ jobs:
         working-directory: docker/s3_mpeg
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -47,6 +50,7 @@ jobs:
           matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
           echo ::set-output name=matrix::{\"include\":$(echo $matrix)}\"
           echo ::set-output name=matrixLength::$(echo $matrix | jq length)
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
