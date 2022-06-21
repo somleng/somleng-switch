@@ -13,11 +13,6 @@ jobs:
         working-directory: docker/s3_mpeg
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9
-        with:
-          access_token: ${{ github.token }}
-
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
