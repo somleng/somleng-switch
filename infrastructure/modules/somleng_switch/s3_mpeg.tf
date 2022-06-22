@@ -39,11 +39,18 @@ resource "aws_lambda_function" "s3_mpeg" {
   package_type = "Image"
   architectures = ["arm64"]
   image_uri = docker_registry_image.s3_mpeg.name
+  timeout = 10
 
   depends_on = [
     aws_iam_role_policy_attachment.s3_mpeg,
     aws_cloudwatch_log_group.s3_mpeg
   ]
+
+  lifecycle {
+    ignore_changes = [
+      image_uri
+    ]
+  }
 }
 
 resource "aws_cloudwatch_log_group" "s3_mpeg" {
