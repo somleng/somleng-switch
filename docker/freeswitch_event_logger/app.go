@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/syslog"
 	"os"
+	"time"
 
 	"github.com/cgrates/fsock"
 )
@@ -35,11 +36,22 @@ func main() {
 	event_socket_host := os.Getenv("EVENT_SOCKET_HOST")
 	event_socket_password := os.Getenv("EVENT_SOCKET_PASSWORD")
 
-	// fs, err := NewFSock(fsaddr, fpaswd, noreconnects, 0, fibDuration, evHandlers, evFilters, l, conID, true)
 	fs, err := fsock.NewFSock(event_socket_host, event_socket_password, 10, 0, fibDuration, evHandlers, evFilters, logger, 0, false)
 	if err != nil {
 		logger.Crit(fmt.Sprintf("FreeSWITCH error:", err))
 		return
 	}
 	fs.ReadEvents()
+}
+
+func fibDuration(durationUnit, maxDuration time.Duration) func() time.Duration {
+	a, b := 0, 1
+	return func() time.Duration {
+		a, b = b, a+b
+		fibNrAsDuration := time.Duration(a) * durationUnit
+		if maxDuration > 0 && maxDuration < fibNrAsDuration {
+			return maxDuration
+		}
+		return fibNrAsDuration
+	}
 }
