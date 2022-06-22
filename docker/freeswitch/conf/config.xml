@@ -24,6 +24,10 @@
 <X-PRE-PROCESS cmd="set" data="mod_rayo_port=5222"/>
 <X-PRE-PROCESS cmd="set" data="mod_rayo_password=secret"/>
 
+<!-- mod_event_socket -->
+<X-PRE-PROCESS cmd="set" data="event_socket_port=8021"/>
+<X-PRE-PROCESS cmd="set" data="event_socket_password=secret"/>
+
 <!-- mod_http_cache -->
 <X-PRE-PROCESS cmd="set" data="recordings_bucket_access_key_id=xyz"/>
 <X-PRE-PROCESS cmd="set" data="recordings_bucket_secret_access_key=secret"/>

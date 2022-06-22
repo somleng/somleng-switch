@@ -5,6 +5,7 @@ variable "app_environment" {}
 variable "app_image" {}
 variable "nginx_image" {}
 variable "freeswitch_image" {}
+variable "freeswitch_event_logger_image" {}
 variable s3_mpeg_ecr_repository_url {}
 variable "container_instance_subnets" {}
 variable "intra_subnets" {}
@@ -59,6 +60,10 @@ variable "ecs_as_cpu_high_threshold_per" {
 
 variable "rayo_port" {
   default = 5222
+}
+
+variable "freeswitch_event_socket_port" {
+  default = 8021
 }
 
 variable "sip_port" {

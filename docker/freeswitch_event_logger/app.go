@@ -3,12 +3,23 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log/syslog"
 	"os"
 	"time"
 
 	"github.com/cgrates/fsock"
 )
+
+type nopLogger struct{}
+
+func (nopLogger) Alert(string) error   { return nil }
+func (nopLogger) Close() error         { return nil }
+func (nopLogger) Crit(string) error    { return nil }
+func (nopLogger) Debug(string) error   { return nil }
+func (nopLogger) Emerg(string) error   { return nil }
+func (nopLogger) Err(string) error     { return nil }
+func (nopLogger) Info(string) error    { return nil }
+func (nopLogger) Notice(string) error  { return nil }
+func (nopLogger) Warning(string) error { return nil }
 
 // Formats the event as map and prints it out
 func logHeartbeat(eventStr string, connIdx int) {
@@ -16,32 +27,6 @@ func logHeartbeat(eventStr string, connIdx int) {
 	eventMap := fsock.FSEventStrToMap(eventStr, []string{})
 	jsonString, _ := json.Marshal(eventMap)
 	fmt.Println(string(jsonString))
-}
-
-func main() {
-	logger, errLog := syslog.New(syslog.LOG_INFO, "TestFSock")
-	if errLog != nil {
-		logger.Crit(fmt.Sprintf("Cannot connect to syslog:", errLog))
-		return
-	}
-
-	// Filters
-	evFilters := make(map[string][]string)
-	evFilters["Event-Name"] = append(evFilters["Event-Name"], "HEARTBEAT")
-
-	evHandlers := map[string][]func(string, int){
-		"HEARTBEAT": {logHeartbeat},
-	}
-
-	event_socket_host := os.Getenv("EVENT_SOCKET_HOST")
-	event_socket_password := os.Getenv("EVENT_SOCKET_PASSWORD")
-
-	fs, err := fsock.NewFSock(event_socket_host, event_socket_password, 10, 0, fibDuration, evHandlers, evFilters, logger, 0, false)
-	if err != nil {
-		logger.Crit(fmt.Sprintf("FreeSWITCH error:", err))
-		return
-	}
-	fs.ReadEvents()
 }
 
 func fibDuration(durationUnit, maxDuration time.Duration) func() time.Duration {
@@ -54,4 +39,24 @@ func fibDuration(durationUnit, maxDuration time.Duration) func() time.Duration {
 		}
 		return fibNrAsDuration
 	}
+}
+
+func main() {
+	// Filters
+	evFilters := make(map[string][]string)
+	evFilters["Event-Name"] = append(evFilters["Event-Name"], "HEARTBEAT")
+
+	evHandlers := map[string][]func(string, int){
+		"HEARTBEAT": {logHeartbeat},
+	}
+
+	event_socket_host := os.Getenv("EVENT_SOCKET_HOST")
+	event_socket_password := os.Getenv("EVENT_SOCKET_PASSWORD")
+
+	fs, err := fsock.NewFSock(event_socket_host, event_socket_password, 10, 0, fibDuration, evHandlers, evFilters, nopLogger{}, 0, false)
+	if err != nil {
+		fmt.Println(fmt.Sprintf("FreeSWITCH error: %s", err))
+		return
+	}
+	fs.ReadEvents()
 }

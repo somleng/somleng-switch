@@ -18,6 +18,16 @@ resource "aws_ssm_parameter" "rayo_password" {
   }
 }
 
+resource "aws_ssm_parameter" "freeswitch_event_socket_password" {
+  name  = "somleng-switch.${var.app_environment}.freeswitch_event_socket_password"
+  type  = "SecureString"
+  value = "change-me"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
 resource "aws_ssm_parameter" "recordings_bucket_access_key_id" {
   name  = "somleng-switch.${var.app_environment}.recordings_bucket_access_key_id"
   type  = "SecureString"

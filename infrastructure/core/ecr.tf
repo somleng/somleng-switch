@@ -30,6 +30,16 @@ resource "aws_ecrpublic_repository" "freeswitch" {
   }
 }
 
+resource "aws_ecrpublic_repository" "freeswitch_event_logger" {
+  repository_name = "somleng-switch-freeswitch-event-logger"
+  provider = aws.us-east-1
+
+  catalog_data {
+    about_text        = "Somleng Switch FreeSWITCH Event Logger"
+    architectures     = ["Linux"]
+  }
+}
+
 resource "aws_ecr_repository" "s3_mpeg" {
   name = "s3-mpeg"
 
