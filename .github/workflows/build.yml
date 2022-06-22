@@ -184,7 +184,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ steps.render-freeswitch-task-def.outputs.task-definition }}
-          container-name: freeswitch
+          container-name: freeswitch-event-logger
           image: ${{ env.FREESWITCH_EVENT_LOGGER_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
 
       - name: Prepare AppServer task definition
