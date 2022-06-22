@@ -44,7 +44,7 @@ jobs:
           [
             {
               "identifier": "somleng-switch-staging",
-              "branch": "mod_event_socket",
+              "branch": "develop",
               "task_definition": "deploy/staging/ecs_task_definition.json",
               "image_tag": "staging",
               "ecs_service": "somleng-switch-staging",
