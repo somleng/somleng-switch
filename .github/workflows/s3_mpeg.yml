@@ -42,7 +42,7 @@ jobs:
           [
             {
               "identifier": "somleng-switch-staging_s3_mpeg",
-              "branch": "convert_to_mp3",
+              "branch": "develop",
               "image_tag": "staging"
             },
             {
