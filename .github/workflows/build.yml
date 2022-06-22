@@ -118,8 +118,8 @@ jobs:
           context: "docker/nginx"
           push: true
           platforms: linux/amd64,linux/arm64
-          cache-from: type=local,src=/tmp/.buildx-cache/.buildx-cache-${{ matrix.identifier }}-nginx
-          cache-to: type=local,dest=/tmp/.buildx-cache-${{ matrix.identifier }}-nginx
+          cache-from: type=gha,scope=${{ matrix.identifier }}-nginx
+          cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-nginx
           tags: |
             ${{ env.NGINX_ECR_REPOSITORY_URI }}:${{ matrix.image_tag }}
             ${{ env.NGINX_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
@@ -132,8 +132,8 @@ jobs:
             signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
           push: true
           platforms: linux/amd64
-          cache-from: type=local,src=/tmp/.buildx-cache/.buildx-cache-${{ matrix.identifier }}-freeswitch
-          cache-to: type=local,dest=/tmp/.buildx-cache-${{ matrix.identifier }}-freeswitch
+          cache-from: type=gha,scope=${{ matrix.identifier }}-freeswitch
+          cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-freeswitch
           tags: |
             ${{ env.FREESWITCH_ECR_REPOSITORY_URI }}:${{ matrix.image_tag }}
             ${{ env.FREESWITCH_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
@@ -144,8 +144,8 @@ jobs:
           context: .
           push: true
           platforms: linux/amd64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.identifier }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
           tags: |
             ${{ env.APP_ECR_REPOSITORY_URI }}:${{ matrix.image_tag }}
             ${{ env.APP_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
