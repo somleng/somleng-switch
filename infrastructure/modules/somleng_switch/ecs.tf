@@ -1,9 +1,31 @@
 locals {
   cluster_name = var.app_identifier
+  efs_volume_name = "cache"
 }
 
 resource "aws_ecs_cluster" "cluster" {
   name = local.cluster_name
+}
+
+resource "aws_ecs_capacity_provider" "container_instance" {
+  name = var.app_identifier
+
+  auto_scaling_group_provider {
+    auto_scaling_group_arn         = aws_autoscaling_group.container_instance.arn
+    managed_termination_protection = var.scale_in_protection ? "ENABLED" : "DISABLED"
+
+    managed_scaling {
+      maximum_scaling_step_size = 1000
+      minimum_scaling_step_size = 1
+      status                    = "ENABLED"
+      target_capacity           = 100
+    }
+  }
+}
+
+resource "aws_ecs_cluster_capacity_providers" "cluster" {
+  cluster_name = aws_ecs_cluster.cluster.name
+
   capacity_providers = [aws_ecs_capacity_provider.container_instance.name]
 }
 
@@ -41,7 +63,8 @@ data "template_file" "container_definitions" {
     external_nat_instance_rtp_ip = var.external_nat_instance_rtp_ip
     sip_port = var.sip_port
 
-    tts_cache_bucket = aws_s3_bucket.tts_cache.id
+    source_volume = local.efs_volume_name
+    cache_directory = "/cache"
 
     recordings_bucket_name = aws_s3_bucket.recordings.id
     recordings_bucket_access_key_id_parameter_arn = aws_ssm_parameter.recordings_bucket_access_key_id.arn
@@ -57,6 +80,15 @@ resource "aws_ecs_task_definition" "task_definition" {
   container_definitions = data.template_file.container_definitions.rendered
   task_role_arn = aws_iam_role.ecs_task_role.arn
   execution_role_arn = aws_iam_role.task_execution_role.arn
+
+  volume {
+    name = local.efs_volume_name
+
+    efs_volume_configuration {
+      file_system_id          = aws_efs_file_system.cache.id
+      transit_encryption      = "ENABLED"
+    }
+  }
 }
 
 resource "local_file" "task_definition" {
@@ -69,7 +101,16 @@ resource "local_file" "task_definition" {
   "executionRoleArn": "${aws_ecs_task_definition.task_definition.execution_role_arn}",
   "taskRoleArn": "${aws_ecs_task_definition.task_definition.task_role_arn}",
   "requiresCompatibilities": ["EC2"],
-  "containerDefinitions": ${aws_ecs_task_definition.task_definition.container_definitions}
+  "containerDefinitions": ${aws_ecs_task_definition.task_definition.container_definitions},
+  "volumes": [
+    {
+      "name": "${aws_ecs_task_definition.task_definition.volume.*.name[0]}",
+      "efsVolumeConfiguration": {
+        "fileSystemId": "${aws_efs_file_system.cache.id}",
+        "transitEncryption": "${aws_ecs_task_definition.task_definition.volume.*.efs_volume_configuration[0].*.transit_encryption[0]}"
+      }
+    }
+  ]
 }
 EOF
 }
@@ -113,20 +154,4 @@ resource "aws_ecs_service" "service" {
   depends_on = [
     aws_iam_role.ecs_task_role
   ]
-}
-
-resource "aws_ecs_capacity_provider" "container_instance" {
-  name = var.app_identifier
-
-  auto_scaling_group_provider {
-    auto_scaling_group_arn         = aws_autoscaling_group.container_instance.arn
-    managed_termination_protection = var.scale_in_protection ? "ENABLED" : "DISABLED"
-
-    managed_scaling {
-      maximum_scaling_step_size = 1000
-      minimum_scaling_step_size = 1
-      status                    = "ENABLED"
-      target_capacity           = 100
-    }
-  }
 }

@@ -42,8 +42,7 @@ resource "aws_lb_target_group" "sip" {
   target_type = "ip"
   vpc_id      = var.vpc_id
 
-  # https://github.com/hashicorp/terraform-provider-aws/issues/17227
-  # connection_termination = true
+  connection_termination = true
 
   health_check {
     protocol = "HTTP"
