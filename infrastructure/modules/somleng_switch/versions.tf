@@ -12,6 +12,9 @@ terraform {
     tls = {
       source = "hashicorp/tls"
     }
+    docker = {
+      source  = "kreuzwerker/docker"
+    }
   }
   required_version = ">= 0.13"
 }

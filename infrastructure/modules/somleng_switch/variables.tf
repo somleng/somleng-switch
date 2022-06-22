@@ -1,10 +1,11 @@
+
+variable "aws_region" {}
 variable "app_identifier" {}
 variable "app_environment" {}
 variable "app_image" {}
 variable "nginx_image" {}
-
 variable "freeswitch_image" {}
-variable "aws_region" {}
+variable s3_mpeg_ecr_repository_url {}
 variable "container_instance_subnets" {}
 variable "intra_subnets" {}
 variable "vpc_id" {}

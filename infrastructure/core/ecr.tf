@@ -29,3 +29,12 @@ resource "aws_ecrpublic_repository" "freeswitch" {
     description       = "FreeSWITCH configuration optimized for Somleng"
   }
 }
+
+resource "aws_ecr_repository" "s3_mpeg" {
+  name = "s3-mpeg"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
