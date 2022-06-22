@@ -138,6 +138,10 @@
       {
         "name": "FS_RECORDINGS_BUCKET_SECRET_ACCESS_KEY",
         "valueFrom": "${recordings_bucket_secret_access_key_parameter_arn}"
+      },
+      {
+        "name": "FS_EVENT_SOCKET_PASSWORD",
+        "valueFrom": "${freeswitch_event_socket_password_parameter_arn}"
       }
     ],
     "portMappings": [
@@ -214,6 +218,43 @@
       {
         "name": "FS_RECORDINGS_BUCKET_REGION",
         "value": "${recordings_bucket_region}"
+      },
+      {
+        "name": "FS_EVENT_SOCKET_PORT",
+        "value": "${freeswitch_event_socket_port}"
+      }
+    ]
+  },
+  {
+    "name": "freeswitch-event-logger",
+    "image": "${freeswitch_event_logger_image}:latest",
+    "logConfiguration": {
+      "logDriver": "awslogs",
+       "options": {
+         "awslogs-group": "${freeswitch_event_logger_logs_group}",
+         "awslogs-region": "${logs_group_region}",
+         "awslogs-stream-prefix": "${app_environment}"
+       }
+    },
+    "startTimeout": 120,
+    "essential": false,
+    "memoryReservation": 8,
+    "secrets": [
+      {
+        "name": "EVENT_SOCKET_PASSWORD",
+        "valueFrom": "${freeswitch_event_socket_password_parameter_arn}"
+      }
+    ],
+    "dependsOn": [
+      {
+        "containerName": "freeswitch",
+        "condition": "HEALTHY"
+      }
+    ],
+    "environment": [
+      {
+        "name": "EVENT_SOCKET_HOST",
+        "value": "localhost:${freeswitch_event_socket_port}"
       }
     ]
   }

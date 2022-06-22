@@ -38,12 +38,18 @@ data "template_file" "container_definitions" {
     app_image      = var.app_image
     nginx_image      = var.nginx_image
     freeswitch_image = var.freeswitch_image
+    freeswitch_event_logger_image = var.freeswitch_event_logger_image
+
     webserver_container_name = var.webserver_container_name
     webserver_container_port = var.webserver_container_port
     region = var.aws_region
     application_master_key_parameter_arn = aws_ssm_parameter.application_master_key.arn
+    freeswitch_event_socket_password_parameter_arn = aws_ssm_parameter.freeswitch_event_socket_password.arn
+    freeswitch_event_socket_port = var.freeswitch_event_socket_port
+
     nginx_logs_group = aws_cloudwatch_log_group.nginx.name
     freeswitch_logs_group = aws_cloudwatch_log_group.freeswitch.name
+    freeswitch_event_logger_logs_group = aws_cloudwatch_log_group.freeswitch_event_logger.name
     app_logs_group = aws_cloudwatch_log_group.app.name
     logs_group_region = var.aws_region
     app_environment = var.app_environment

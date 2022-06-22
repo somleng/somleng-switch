@@ -18,6 +18,7 @@ RUN apt-get -y install libpq-dev libc-dev groff less netcat ffmpeg
 RUN apt-get update && apt-get install -y \
     freeswitch \
     freeswitch-mod-console \
+    freeswitch-mod-event-socket \
     freeswitch-mod-logfile \
     freeswitch-mod-rayo \
     freeswitch-mod-sofia \

@@ -6,6 +6,7 @@
     <!-- Event Handlers -->
     <load module="mod_rayo"/>
     <load module="mod_ssml"/>
+    <load module="mod_event_socket"/>
 
     <!-- Endpoints -->
     <load module="mod_sofia"/>
