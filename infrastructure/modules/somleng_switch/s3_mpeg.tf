@@ -39,7 +39,8 @@ resource "aws_lambda_function" "s3_mpeg" {
   package_type = "Image"
   architectures = ["arm64"]
   image_uri = docker_registry_image.s3_mpeg.name
-  timeout = 10
+  timeout = 300
+  memory_size = 1024
 
   depends_on = [
     aws_iam_role_policy_attachment.s3_mpeg,
@@ -55,7 +56,7 @@ resource "aws_lambda_function" "s3_mpeg" {
 
 resource "aws_cloudwatch_log_group" "s3_mpeg" {
   name              = "/aws/lambda/${local.s3_mpeg_function_name}"
-  retention_in_days = 14
+  retention_in_days = 7
 }
 
 resource "aws_iam_policy" "s3_mpeg" {
