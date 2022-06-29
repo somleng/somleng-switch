@@ -17,7 +17,7 @@ if [ "$1" = 'freeswitch' ]; then
   for directory in "$FS_CONTAINER_CONFIG_DIRECTORY" "$FS_STORAGE_DIRECTORY" "$FS_TTS_CACHE_DIRECTORY"
   do
     mkdir -p "$directory"
-    chown -R "$FS_USER:$FS_GROUP" "$directory"
+    chown "$FS_USER:$FS_GROUP" "$directory"
   done
 
   # execute FreeSWITCH
