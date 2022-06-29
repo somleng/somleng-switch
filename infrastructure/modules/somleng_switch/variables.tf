@@ -19,10 +19,6 @@ variable "route53_zone" {}
 variable "listener_rule_priority" {}
 variable "recordings_bucket_name" {}
 
-variable "scale_in_protection" {
-  default = true
-}
-
 variable "webserver_container_name" {
   default = "nginx"
 }

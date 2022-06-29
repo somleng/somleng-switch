@@ -108,7 +108,7 @@ resource "aws_autoscaling_group" "container_instance" {
   min_size             = 0
   desired_capacity     = 0
   wait_for_capacity_timeout = 0
-  protect_from_scale_in = var.scale_in_protection
+  protect_from_scale_in = true
 
   tag {
     key                 = "Name"
