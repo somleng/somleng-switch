@@ -43,6 +43,5 @@ module "somleng_switch_staging" {
   recordings_bucket_name = "raw-recordings-staging.somleng.org"
   load_balancer_sip_port = 6060
   listener_rule_priority = 120
-  scale_in_protection = false
   min_tasks = 0
 }
