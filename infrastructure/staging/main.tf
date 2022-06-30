@@ -1,5 +1,5 @@
 data "aws_ssm_parameter" "somleng_services_password" {
-  name = "somleng.production.services_password"
+  name = "somleng.staging.services_password"
 }
 
 module "somleng_switch_staging" {
