@@ -83,19 +83,19 @@ resource "aws_iam_policy" "ecs_task_policy" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_task_policy" {
+resource "aws_iam_role_policy_attachment" "ecs_task_custom_policy" {
   role = aws_iam_role.ecs_task_role.id
   policy_arn = aws_iam_policy.ecs_task_policy.arn
-}
-
-resource "aws_iam_role_policy_attachment" "task_execution_role_policy" {
-  role = aws_iam_role.task_execution_role.id
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 resource "aws_iam_role_policy_attachment" "task_execution_custom_policy" {
   role = aws_iam_role.task_execution_role.id
   policy_arn = aws_iam_policy.task_execution_custom_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "task_execution_role_policy" {
+  role = aws_iam_role.task_execution_role.id
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 resource "aws_iam_user" "recordings" {

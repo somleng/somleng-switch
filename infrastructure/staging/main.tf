@@ -44,4 +44,5 @@ module "somleng_switch_staging" {
   load_balancer_sip_port = 6060
   listener_rule_priority = 120
   min_tasks = 0
+  container_insights_enabled = true
 }

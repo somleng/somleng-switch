@@ -41,4 +41,5 @@ module "somleng_switch" {
   switch_subdomain = "ahn"
   listener_rule_priority = 20
   recordings_bucket_name = "raw-recordings.somleng.org"
+  container_insights_enabled = true
 }
