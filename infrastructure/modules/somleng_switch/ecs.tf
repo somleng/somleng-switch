@@ -114,7 +114,7 @@ resource "local_file" "task_definition" {
   "taskRoleArn": "${aws_ecs_task_definition.task_definition.task_role_arn}",
   "requiresCompatibilities": ["EC2"],
   "containerDefinitions": ${aws_ecs_task_definition.task_definition.container_definitions},
-  "memory": ${aws_ecs_task_definition.task_definition.memory},
+  "memory": "${aws_ecs_task_definition.task_definition.memory}",
   "volumes": [
     {
       "name": "${aws_ecs_task_definition.task_definition.volume.*.name[0]}",
