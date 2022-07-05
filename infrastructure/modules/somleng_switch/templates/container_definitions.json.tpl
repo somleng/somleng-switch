@@ -11,7 +11,6 @@
        }
     },
     "essential": true,
-    "memoryReservation": 16,
     "portMappings": [
       {
         "containerPort": ${webserver_container_port}
@@ -43,7 +42,6 @@
       "timeout": 5
     },
     "essential": true,
-    "memoryReservation": 1024,
     "secrets": [
       {
         "name": "APP_MASTER_KEY",
@@ -117,7 +115,6 @@
       }
     ],
     "essential": true,
-    "memoryReservation": 256,
     "secrets": [
       {
         "name": "FS_DATABASE_PASSWORD",
@@ -238,7 +235,6 @@
     },
     "startTimeout": 120,
     "essential": false,
-    "memoryReservation": 16,
     "secrets": [
       {
         "name": "EVENT_SOCKET_PASSWORD",
