@@ -91,6 +91,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   container_definitions = data.template_file.container_definitions.rendered
   task_role_arn = aws_iam_role.ecs_task_role.arn
   execution_role_arn = aws_iam_role.task_execution_role.arn
+  memory = data.aws_ec2_instance_type.container_instance.memory_size - 256
 
   volume {
     name = local.efs_volume_name
@@ -113,6 +114,7 @@ resource "local_file" "task_definition" {
   "taskRoleArn": "${aws_ecs_task_definition.task_definition.task_role_arn}",
   "requiresCompatibilities": ["EC2"],
   "containerDefinitions": ${aws_ecs_task_definition.task_definition.container_definitions},
+  "memory": "${aws_ecs_task_definition.task_definition.memory}",
   "volumes": [
     {
       "name": "${aws_ecs_task_definition.task_definition.volume.*.name[0]}",

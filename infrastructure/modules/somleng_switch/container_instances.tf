@@ -9,6 +9,10 @@ data "aws_ssm_parameter" "container_instance" {
   name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended"
 }
 
+data "aws_ec2_instance_type" "container_instance" {
+  instance_type = "t3.small"
+}
+
 resource "aws_iam_role" "container_instance" {
   name = "${var.app_identifier}_ecs_container_instance_role"
 
@@ -51,7 +55,7 @@ resource "aws_iam_role_policy_attachment" "container_instance_ssm" {
 resource "aws_launch_template" "container_instance" {
   name_prefix                 = var.app_identifier
   image_id                    = jsondecode(data.aws_ssm_parameter.container_instance.value).image_id
-  instance_type               = "t3.small"
+  instance_type               = data.aws_ec2_instance_type.container_instance.instance_type
 
   iam_instance_profile {
     name = aws_iam_instance_profile.container_instance.name

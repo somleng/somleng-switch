@@ -4,9 +4,10 @@ systemctl enable amazon-ssm-agent
 systemctl start amazon-ssm-agent
 
 # ECS config
-{
-  echo "ECS_CLUSTER=${cluster_name}"
-} >> /etc/ecs/ecs.config
+cat <<'EOF' >> /etc/ecs/ecs.config
+ECS_CLUSTER=${cluster_name}
+ECS_RESERVED_MEMORY=128
+EOF
 
 start ecs
 
