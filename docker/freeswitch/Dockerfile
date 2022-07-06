@@ -66,6 +66,7 @@ COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 EXPOSE 5060/udp
 EXPOSE 5222/tcp
+EXPOSE 8021/tcp
 
 HEALTHCHECK --interval=10s --timeout=5s --retries=10 CMD nc -z -w 5 localhost 5222
 
