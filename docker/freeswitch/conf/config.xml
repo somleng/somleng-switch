@@ -3,6 +3,9 @@
   Do NOT comment out variables in this file as it will have no affect.
 -->
 
+<!-- Generic -->
+<X-PRE-PROCESS cmd="set" data="log_directory=/var/log/freeswitch"/>
+
 <!-- Database -->
 <X-PRE-PROCESS cmd="set" data="database_username=postgres"/>
 <X-PRE-PROCESS cmd="set" data="database_password=password"/>
@@ -33,3 +36,4 @@
 <X-PRE-PROCESS cmd="set" data="recordings_bucket_secret_access_key=secret"/>
 <X-PRE-PROCESS cmd="set" data="recordings_bucket_name=recording"/>
 <X-PRE-PROCESS cmd="set" data="recordings_bucket_region=ap-southeast-1"/>
+

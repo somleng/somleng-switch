@@ -7,8 +7,11 @@
     <param name="cred" value="services:$${mod_json_cdr_password}"/>
     <param name="auth-scheme" value="basic"/>
     <param name="retries" value="30"/>
-    <param name="delay" value="60000"/>
+    <param name="delay" value="5"/>
     <param name="log-dir" value=""/>
+    <!-- If web posting failed, the CDR is written to a file. -->
+    <!-- Error log dir ("json_cdr" is appended). Up to 20 may be specified. Default to log-dir if none is specified. -->
+    <param name="err-log-dir" value="$${log_directory}"/>
     <param name="rotate" value="false"/>
   </settings>
 </configuration>

@@ -14,7 +14,7 @@ if [ "$1" = 'freeswitch' ]; then
 
   # Setup directories
 
-  for directory in "$FS_CONTAINER_CONFIG_DIRECTORY" "$FS_STORAGE_DIRECTORY" "$FS_TTS_CACHE_DIRECTORY"
+  for directory in "$FS_LOG_DIRECTORY" "$FS_CONTAINER_CONFIG_DIRECTORY" "$FS_STORAGE_DIRECTORY" "$FS_TTS_CACHE_DIRECTORY"
   do
     mkdir -p "$directory"
     chown "$FS_USER:$FS_GROUP" "$directory"
