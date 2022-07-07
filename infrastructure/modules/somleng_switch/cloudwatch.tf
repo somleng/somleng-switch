@@ -17,4 +17,3 @@ resource "aws_cloudwatch_log_group" "freeswitch_event_logger" {
   name = "${var.app_identifier}-freeswitch-event-logger"
   retention_in_days = 7
 }
-

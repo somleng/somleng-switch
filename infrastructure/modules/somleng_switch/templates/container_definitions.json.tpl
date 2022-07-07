@@ -169,6 +169,10 @@
         "value": "${cache_directory}/freeswitch/tts_cache"
       },
       {
+        "name": "FS_LOG_DIRECTORY",
+        "value": "${cache_directory}/freeswitch/logs"
+      },
+      {
         "name": "FS_DATABASE_NAME",
         "value": "${database_name}"
       },
