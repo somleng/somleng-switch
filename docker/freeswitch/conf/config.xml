@@ -6,13 +6,6 @@
 <!-- Generic -->
 <X-PRE-PROCESS cmd="set" data="log_directory=/var/log/freeswitch"/>
 
-<!-- Database -->
-<X-PRE-PROCESS cmd="set" data="database_username=postgres"/>
-<X-PRE-PROCESS cmd="set" data="database_password=password"/>
-<X-PRE-PROCESS cmd="set" data="database_host=host.docker.internal"/>
-<X-PRE-PROCESS cmd="set" data="database_port=5432"/>
-<X-PRE-PROCESS cmd="set" data="database_name=freeswitch"/>
-
 <!-- IP Addresses -->
 <X-PRE-PROCESS cmd="set" data="external_sip_ip=0.0.0.0"/>
 <X-PRE-PROCESS cmd="set" data="external_rtp_ip=0.0.0.0"/>

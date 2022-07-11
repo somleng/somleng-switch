@@ -101,6 +101,9 @@
          "awslogs-stream-prefix": "${app_environment}"
        }
     },
+    "linuxParameters": {
+      "sharedMemorySize": 128
+    },
     "startTimeout": 120,
     "healthCheck": {
       "command": [ "CMD-SHELL", "nc -z -w 5 localhost ${rayo_port}" ],
@@ -116,10 +119,6 @@
     ],
     "essential": true,
     "secrets": [
-      {
-        "name": "FS_DATABASE_PASSWORD",
-        "valueFrom": "${database_password_parameter_arn}"
-      },
       {
         "name": "FS_MOD_RAYO_PASSWORD",
         "valueFrom": "${rayo_password_parameter_arn}"
@@ -171,22 +170,6 @@
       {
         "name": "FS_LOG_DIRECTORY",
         "value": "${cache_directory}/freeswitch/logs"
-      },
-      {
-        "name": "FS_DATABASE_NAME",
-        "value": "${database_name}"
-      },
-      {
-        "name": "FS_DATABASE_USERNAME",
-        "value": "${database_username}"
-      },
-      {
-        "name": "FS_DATABASE_HOST",
-        "value": "${database_host}"
-      },
-      {
-        "name": "FS_DATABASE_PORT",
-        "value": "${database_port}"
       },
       {
         "name": "FS_EXTERNAL_SIP_IP",
