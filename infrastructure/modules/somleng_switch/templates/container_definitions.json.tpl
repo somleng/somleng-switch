@@ -149,6 +149,10 @@
       {
         "containerPort": ${sip_port},
         "protocol": "udp"
+      },
+      {
+        "containerPort": ${sip_alternative_port},
+        "protocol": "udp"
       }
     ],
     "environment": [

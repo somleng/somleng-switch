@@ -43,3 +43,14 @@ module "somleng_switch" {
   recordings_bucket_name = "raw-recordings.somleng.org"
   max_tasks = 10
 }
+
+// TODO: Need a discussion, better to handle from dashboard. Should let user configure their port.
+resource "aws_security_group_rule" "sip_alternative_ingress" {
+  type              = "ingress"
+  to_port           = 5080
+  protocol          = "UDP"
+  from_port         = 5080
+  security_group_id = module.somleng_switch.inbound_sip_trunks_security_group_id
+  cidr_blocks = ["165.57.32.1/32"]
+  description = "Zamtel - Temporary"
+}
