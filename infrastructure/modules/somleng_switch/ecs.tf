@@ -161,11 +161,11 @@ resource "aws_ecs_service" "service" {
     container_port   = var.sip_port
   }
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.sip_alternative.arn
-    container_name   = "freeswitch"
-    container_port   = var.sip_alternative_port
-  }
+  # load_balancer {
+  #   target_group_arn = aws_lb_target_group.sip_alternative.arn
+  #   container_name   = "freeswitch"
+  #   container_port   = var.sip_alternative_port
+  # }
 
   lifecycle {
     ignore_changes = [task_definition, desired_count]
