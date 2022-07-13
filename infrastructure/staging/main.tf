@@ -18,13 +18,6 @@ module "somleng_switch_staging" {
   container_instance_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets
   intra_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.intra_subnets
 
-  db_name = "freeswitch_staging"
-  db_username = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.master_username
-  db_password_parameter_arn = data.terraform_remote_state.core_infrastructure.outputs.db_master_password_parameter.arn
-  db_host = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.endpoint
-  db_port = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.port
-  db_security_group = data.terraform_remote_state.core_infrastructure.outputs.db_security_group.id
-
   json_cdr_password_parameter_arn = data.aws_ssm_parameter.somleng_services_password.arn
   json_cdr_url = "https://api-staging.somleng.org/services/call_data_records"
   external_sip_ip = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
