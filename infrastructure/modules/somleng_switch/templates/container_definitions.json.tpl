@@ -101,9 +101,6 @@
          "awslogs-stream-prefix": "${app_environment}"
        }
     },
-    "linuxParameters": {
-      "sharedMemorySize": 128
-    },
     "startTimeout": 120,
     "healthCheck": {
       "command": [ "CMD-SHELL", "nc -z -w 5 localhost ${rayo_port}" ],
@@ -147,6 +144,10 @@
       },
       {
         "containerPort": ${sip_port},
+        "protocol": "udp"
+      },
+      {
+        "containerPort": ${sip_alternative_port},
         "protocol": "udp"
       }
     ],
@@ -206,6 +207,10 @@
       {
         "name": "FS_EVENT_SOCKET_PORT",
         "value": "${freeswitch_event_socket_port}"
+      },
+      {
+        "name": "FS_SIP_ALTERNATIVE_PORT",
+        "value": "${sip_alternative_port}"
       }
     ]
   },

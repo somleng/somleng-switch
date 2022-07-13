@@ -63,3 +63,32 @@ resource "aws_lb_listener" "sip" {
     target_group_arn = aws_lb_target_group.sip.arn
   }
 }
+
+resource "aws_lb_target_group" "sip_alternative" {
+  name        = "${var.app_identifier}-sip-alt"
+  port        = var.sip_alternative_port
+  protocol    = "UDP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+
+  connection_termination = true
+
+  health_check {
+    protocol = "HTTP"
+    port = var.webserver_container_port
+    path = "/health_checks/freeswitch"
+    healthy_threshold = 3
+    interval = 10
+  }
+}
+
+resource "aws_lb_listener" "sip_alternative" {
+  load_balancer_arn = var.network_load_balancer.arn
+  port              = var.load_balancer_sip_alternative_port
+  protocol          = "UDP"
+
+  default_action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.sip_alternative.arn
+  }
+}
