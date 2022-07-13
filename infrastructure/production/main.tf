@@ -23,7 +23,7 @@ module "somleng_switch" {
   json_cdr_url = "https://api.somleng.org/services/call_data_records"
   external_sip_ip = data.terraform_remote_state.core_infrastructure.outputs.nlb_eips[0].public_ip
   external_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
-  external_nat_instance_sip_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
+  external_nat_instance_sip_ip = data.terraform_remote_state.core_infrastructure.outputs.nlb_eips[0].public_ip
   external_nat_instance_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
 
   load_balancer = data.terraform_remote_state.core_infrastructure.outputs.application_load_balancer
