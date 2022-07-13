@@ -149,6 +149,10 @@
       {
         "containerPort": ${sip_port},
         "protocol": "udp"
+      },
+      {
+        "containerPort": ${sip_alternative_port},
+        "protocol": "udp"
       }
     ],
     "environment": [
@@ -223,6 +227,10 @@
       {
         "name": "FS_EVENT_SOCKET_PORT",
         "value": "${freeswitch_event_socket_port}"
+      },
+      {
+        "name": "FS_SIP_ALTERNATIVE_PORT",
+        "value": "${sip_alternative_port}"
       }
     ]
   },

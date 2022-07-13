@@ -73,6 +73,7 @@ data "template_file" "container_definitions" {
     external_nat_instance_sip_ip = var.external_nat_instance_sip_ip
     external_nat_instance_rtp_ip = var.external_nat_instance_rtp_ip
     sip_port = var.sip_port
+    sip_alternative_port = var.sip_alternative_port
 
     source_volume = local.efs_volume_name
     cache_directory = "/cache"
@@ -158,6 +159,12 @@ resource "aws_ecs_service" "service" {
     target_group_arn = aws_lb_target_group.sip.arn
     container_name   = "freeswitch"
     container_port   = var.sip_port
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.sip_alternative.arn
+    container_name   = "freeswitch"
+    container_port   = var.sip_alternative_port
   }
 
   lifecycle {
