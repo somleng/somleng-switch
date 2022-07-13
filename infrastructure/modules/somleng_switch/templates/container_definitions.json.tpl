@@ -147,7 +147,7 @@
         "protocol": "udp"
       },
       {
-        "containerPort": ${sip_alternative_port},
+        "containerPort": 5080,
         "protocol": "udp"
       }
     ],
@@ -181,12 +181,16 @@
         "value": "${external_rtp_ip}"
       },
       {
-        "name": "FS_EXTERNAL_NAT_INSTANCE_SIP_IP",
-        "value": "${external_nat_instance_sip_ip}"
+        "name": "FS_ALTERNATIVE_SIP_INBOUND_IP",
+        "value": "${alternative_sip_inbound_ip}"
       },
       {
-        "name": "FS_EXTERNAL_NAT_INSTANCE_RTP_IP",
-        "value": "${external_nat_instance_rtp_ip}"
+        "name": "FS_ALTERNATIVE_SIP_OUTBOUND_IP",
+        "value": "${alternative_sip_outbound_ip}"
+      },
+      {
+        "name": "FS_ALTERNATIVE_RTP_IP",
+        "value": "${alternative_rtp_ip}"
       },
       {
         "name": "FS_MOD_RAYO_PORT",
@@ -207,10 +211,6 @@
       {
         "name": "FS_EVENT_SOCKET_PORT",
         "value": "${freeswitch_event_socket_port}"
-      },
-      {
-        "name": "FS_SIP_ALTERNATIVE_PORT",
-        "value": "${sip_alternative_port}"
       }
     ]
   },
