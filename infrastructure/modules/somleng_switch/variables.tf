@@ -71,12 +71,14 @@ variable "sip_port" {
 variable "load_balancer_sip_port" {
   default = 5060
 }
-variable "db_name" {}
-variable "db_host" {}
-variable "db_port" {}
-variable "db_security_group" {}
-variable "db_username" {}
-variable "db_password_parameter_arn" {}
+
+variable "sip_alternative_port" {
+  default = 5080
+}
+variable "load_balancer_sip_alternative_port" {
+  default = 5080
+}
+
 variable "json_cdr_password_parameter_arn" {}
 variable "external_sip_ip" {}
 variable "external_rtp_ip" {}

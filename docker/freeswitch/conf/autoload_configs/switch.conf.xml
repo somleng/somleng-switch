@@ -3,13 +3,13 @@
 <configuration name="switch.conf" description="Core Configuration">
   <settings>
     <param name="colorize-console" value="false"/>
-    <param name="loglevel" value="info"/>
+    <param name="loglevel" value="debug"/>
 
     <param name="max-sessions" value="150"/>
     <param name="sessions-per-second" value="1000"/>
     <param name="rtp-start-port" value="16384"/>
     <param name="rtp-end-port" value="32768"/>
 
-    <param name="core-db-dsn" value="postgresql://$${database_username}:$${database_password}@$${database_host}:$${database_port}/$${database_name}?options=-c%20client_min_messages%3DNOTICE" />
+    <param name="core-db-name" value="/dev/shm/core.db" />
   </settings>
 </configuration>
