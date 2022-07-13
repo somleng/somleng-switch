@@ -65,9 +65,6 @@ variable "freeswitch_event_socket_port" {
   default = 8021
 }
 
-variable "sip_port" {
-  default = 5060
-}
 variable "load_balancer_sip_port" {
   default = 5060
 }

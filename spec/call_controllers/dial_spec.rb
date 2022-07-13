@@ -68,7 +68,7 @@ RSpec.describe CallController, type: :call_controller do
       controller.run
 
       expect(controller).to have_received(:dial).with(
-        dial_string("85516701721", profile: "external-nat-instance"),
+        dial_string("85516701721", profile: "alternative-outbound"),
         any_args
       )
     end

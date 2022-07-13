@@ -143,7 +143,7 @@
         "protocol": "tcp"
       },
       {
-        "containerPort": ${sip_port},
+        "containerPort": 5060,
         "protocol": "udp"
       },
       {
