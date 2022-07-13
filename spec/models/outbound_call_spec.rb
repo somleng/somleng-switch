@@ -67,7 +67,7 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      "sofia/external-nat-instance/85512334667@127.0.0.1", any_args
+      "sofia/alternative-outbound/85512334667@127.0.0.1", any_args
     )
   end
 
