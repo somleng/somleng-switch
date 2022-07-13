@@ -52,90 +52,34 @@ resource "aws_cloudwatch_log_group" "opensips" {
   retention_in_days = 7
 }
 
+data "template_file" "opensips" {
+  template = file("${path.module}/templates/opensips.json.tpl")
+
+  vars = {
+    app_image = var.opensips_image
+
+    opensips_logs_group = aws_cloudwatch_log_group.opensips.name
+    logs_group_region = var.aws_region
+    app_environment = var.app_environment
+
+    sip_port = var.sip_port
+    freeswitch_event_socket_password_parameter_arn = aws_ssm_parameter.freeswitch_event_socket_password_parameter.arn
+    database_password_parameter_arn = var.db_password_parameter_arn
+    database_name = var.db_name
+    database_username = var.db_username
+    database_host = var.db_host
+    database_port = var.db_port
+  }
+}
+
 resource "aws_ecs_task_definition" "opensips" {
   family                   = "${var.app_identifier}-opensips"
   network_mode             = var.network_mode
   requires_compatibilities = ["EC2"]
   task_role_arn = aws_iam_role.opensips_task_role.arn
   execution_role_arn = aws_iam_role.opensips_task_execution_role.arn
-
+  container_definitions = data.template_file.container_definitions.rendered
   memory = data.aws_ec2_instance_type.opensips.memory_size - 256
-
-  container_definitions    = <<CONTAINER_DEFINITIONS
-[
-  {
-    "name": "opensips",
-    "image": "amazon/cloudwatch-agent:latest",
-    "mountPoints": [
-      {
-        "readOnly": true,
-        "containerPath": "/rootfs/proc",
-        "sourceVolume": "proc"
-      },
-      {
-        "readOnly": true,
-        "containerPath": "/rootfs/dev",
-        "sourceVolume": "dev"
-      },
-      {
-        "readOnly": true,
-        "containerPath": "/sys/fs/cgroup",
-        "sourceVolume": "al2_cgroup"
-      },
-      {
-        "readOnly": true,
-        "containerPath": "/cgroup",
-        "sourceVolume": "al1_cgroup"
-      },
-      {
-        "readOnly": true,
-        "containerPath": "/rootfs/sys/fs/cgroup",
-        "sourceVolume": "al2_cgroup"
-      },
-      {
-        "readOnly": true,
-        "containerPath": "/rootfs/cgroup",
-        "sourceVolume": "al1_cgroup"
-      }
-    ],
-    "environment": [
-      {
-        "name": "CW_CONFIG_CONTENT",
-        "value": "{\"logs\":{\"metrics_collected\":{\"ecs\":{\"metrics_collection_interval\":1}}}}"
-      }
-    ],
-    "logConfiguration": {
-      "logDriver": "awslogs",
-      "options": {
-        "awslogs-create-group": "True",
-        "awslogs-group": "${aws_cloudwatch_log_group.ecs_cwagent_daemon_service.name}",
-        "awslogs-region": "${var.aws_region}",
-        "awslogs-stream-prefix": "ecs"
-      }
-    }
-  }
-]
-CONTAINER_DEFINITIONS
-
-  volume {
-    name = "proc"
-    host_path = "/proc"
-  }
-
-  volume {
-    name = "dev"
-    host_path = "/dev"
-  }
-
-  volume {
-    name = "al1_cgroup"
-    host_path = "/cgroup"
-  }
-
-  volume {
-    name = "al2_cgroup"
-    host_path = "/sys/fs/cgroup"
-  }
 }
 
 resource "aws_ecs_service" "opensips" {

@@ -1,7 +1,7 @@
 [
   {
     "name": "opensips",
-    "image": "${opensips_image}:latest",
+    "image": "${app_image}:latest",
     "logConfiguration": {
       "logDriver": "awslogs",
        "options": {
@@ -29,9 +29,21 @@
     ],
     "environment": [
       {
-        "name": "EVENT_SOCKET_HOST",
-        "value": "localhost:${freeswitch_event_socket_port}"
-      }
+        "name": "DATABASE_NAME",
+        "value": "${database_name}"
+      },
+      {
+        "name": "DATABASE_USERNAME",
+        "value": "${database_username}"
+      },
+      {
+        "name": "DATABASE_HOST",
+        "value": "${database_host}"
+      },
+      {
+        "name": "DATABASE_PORT",
+        "value": "${database_port}"
+      },
     ]
   }
 ]

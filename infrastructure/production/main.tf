@@ -26,6 +26,13 @@ module "somleng_switch" {
   external_nat_instance_sip_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
   external_nat_instance_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
 
+  db_name = "opensips"
+  db_username = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.master_username
+  db_password_parameter_arn = data.terraform_remote_state.core_infrastructure.outputs.db_master_password_parameter.arn
+  db_host = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.endpoint
+  db_port = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.port
+  db_security_group = data.terraform_remote_state.core_infrastructure.outputs.db_security_group.id
+
   load_balancer = data.terraform_remote_state.core_infrastructure.outputs.application_load_balancer
   network_load_balancer = data.terraform_remote_state.core_infrastructure.outputs.network_load_balancer
   route53_zone = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_somleng_org
