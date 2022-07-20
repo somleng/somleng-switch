@@ -16,7 +16,7 @@ resource "aws_ecs_capacity_provider" "container_instance" {
   name = var.app_identifier
 
   auto_scaling_group_provider {
-    auto_scaling_group_arn         = aws_autoscaling_group.container_instance.arn
+    auto_scaling_group_arn         = module.container_instances.autoscaling_group.arn
     managed_termination_protection = "ENABLED"
 
     managed_scaling {
@@ -87,7 +87,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   container_definitions = data.template_file.container_definitions.rendered
   task_role_arn = aws_iam_role.ecs_task_role.arn
   execution_role_arn = aws_iam_role.task_execution_role.arn
-  memory = data.aws_ec2_instance_type.container_instance.memory_size - 256
+  memory = module.container_instances.ec2_instance_type.memory_size - 256
 
   volume {
     name = local.efs_volume_name
