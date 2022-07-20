@@ -21,4 +21,4 @@ EXPOSE 5060/udp
 EXPOSE 5080/udp
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["tail", "-f", "/dev/null"]
+CMD ["opensips"]
