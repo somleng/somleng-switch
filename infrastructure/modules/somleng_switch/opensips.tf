@@ -204,4 +204,8 @@ resource "aws_ecs_service" "opensips" {
   depends_on = [
     aws_iam_role.opensips_task_role
   ]
+
+  lifecycle {
+    ignore_changes = [task_definition, desired_count]
+  }
 }
