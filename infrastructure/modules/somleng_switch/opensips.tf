@@ -44,7 +44,7 @@ resource "aws_ecs_capacity_provider" "opensips" {
 }
 
 resource "aws_iam_role" "opensips_task_role" {
-  name = "${var.app_identifier}-OpenSIPSTaskRole"
+  name = "${var.app_identifier}-ecs-OpenSIPSTaskRole"
 
   assume_role_policy = <<EOF
 {
@@ -68,7 +68,7 @@ resource "aws_iam_role_policy_attachment" "opensips_task_role_cloudwatch_agent_s
 }
 
 resource "aws_iam_role" "opensips_task_execution_role" {
-  name = "${var.app_identifier}-OpenSIPSTaskExecutionRole"
+  name = "${var.app_identifier}-ecs-OpenSIPSTaskExecutionRole"
 
   assume_role_policy = <<EOF
 {
