@@ -18,6 +18,7 @@ COPY opensips.cfg /etc/opensips/opensips.cfg
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 EXPOSE 5060/udp
+EXPOSE 5080/udp
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["opensips"]

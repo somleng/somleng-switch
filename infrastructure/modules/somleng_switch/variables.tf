@@ -5,6 +5,7 @@ variable "app_environment" {}
 variable "app_image" {}
 variable "nginx_image" {}
 variable "freeswitch_image" {}
+variable "opensips_image" {}
 variable "freeswitch_event_logger_image" {}
 variable s3_mpeg_ecr_repository_url {}
 variable "container_instance_subnets" {}

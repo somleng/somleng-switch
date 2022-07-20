@@ -40,6 +40,16 @@ resource "aws_ecrpublic_repository" "freeswitch_event_logger" {
   }
 }
 
+resource "aws_ecrpublic_repository" "opensips" {
+  repository_name = "somleng-switch-opensips"
+  provider = aws.us-east-1
+
+  catalog_data {
+    about_text        = "Somleng Switch OpenSIPS"
+    architectures     = ["Linux"]
+  }
+}
+
 resource "aws_ecr_repository" "s3_mpeg" {
   name = "s3-mpeg"
 

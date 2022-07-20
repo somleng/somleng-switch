@@ -13,7 +13,11 @@
     "essential": true,
     "portMappings": [
       {
-        "containerPort": ${sip_port},
+        "containerPort": 5060,
+        "protocol": "udp"
+      },
+      {
+        "containerPort": 5080,
         "protocol": "udp"
       }
     ],
@@ -43,7 +47,7 @@
       {
         "name": "DATABASE_PORT",
         "value": "${database_port}"
-      },
+      }
     ]
   }
 ]

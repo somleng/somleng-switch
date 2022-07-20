@@ -31,7 +31,10 @@ resource "aws_ecs_capacity_provider" "container_instance" {
 resource "aws_ecs_cluster_capacity_providers" "cluster" {
   cluster_name = aws_ecs_cluster.cluster.name
 
-  capacity_providers = [aws_ecs_capacity_provider.container_instance.name]
+  capacity_providers = [
+    aws_ecs_capacity_provider.container_instance.name,
+    aws_ecs_capacity_provider.opensips.name
+  ]
 }
 
 data "template_file" "container_definitions" {
@@ -133,8 +136,7 @@ resource "aws_ecs_service" "service" {
   network_configuration {
     subnets = var.container_instance_subnets
     security_groups = [
-      aws_security_group.appserver.id,
-      aws_security_group.inbound_sip_trunks.id
+      aws_security_group.switch.id
     ]
   }
 
@@ -147,18 +149,6 @@ resource "aws_ecs_service" "service" {
     target_group_arn = aws_lb_target_group.this.arn
     container_name   = var.webserver_container_name
     container_port   = var.webserver_container_port
-  }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.sip.arn
-    container_name   = "freeswitch"
-    container_port   = 5060
-  }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.sip_alternative.arn
-    container_name   = "freeswitch"
-    container_port   = 5080
   }
 
   lifecycle {

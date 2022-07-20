@@ -1,98 +1,175 @@
-# resource "aws_iam_role" "opensips_task_role" {
-#   name = "${var.app_identifier}-OpenSIPSTaskRole"
+module opensips_container_instances {
+  source = "../container_instances"
 
-#   assume_role_policy = <<EOF
-# {
-#   "Version": "2008-10-17",
-#   "Statement": [
-#     {
-#       "Action": "sts:AssumeRole",
-#       "Principal": {
-#         "Service": ["ecs-tasks.amazonaws.com"]
-#       },
-#       "Effect": "Allow"
-#     }
-#   ]
-# }
-# EOF
-# }
+  app_identifier = "${var.app_identifier}-opensips"
+  vpc_id = var.vpc_id
+  instance_subnets = var.container_instance_subnets
+  cluster_name = local.cluster_name
+}
 
-# resource "aws_iam_role_policy_attachment" "opensips_task_role_cloudwatch_agent_server_policy" {
-#   role = aws_iam_role.ecs_cwagent_daemon_service_task_role.id
-#   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
-# }
+resource "aws_security_group" "inbound_sip_trunks" {
+  name   = var.inbound_sip_trunks_security_group_name
+  description = var.inbound_sip_trunks_security_group_description
+  vpc_id = var.vpc_id
+}
 
-# resource "aws_iam_role" "opensips_task_execution_role" {
-#   name = "${var.app_identifier}-OpenSIPSTaskExecutionRole"
+resource "aws_security_group" "opensips" {
+  name   = "${var.app_identifier}-opensips"
+  vpc_id = var.vpc_id
+}
 
-#   assume_role_policy = <<EOF
-# {
-#   "Version": "2008-10-17",
-#   "Statement": [
-#     {
-#       "Action": "sts:AssumeRole",
-#       "Principal": {
-#         "Service": ["ecs-tasks.amazonaws.com"]
-#       },
-#       "Effect": "Allow"
-#     }
-#   ]
-# }
-# EOF
-# }
+resource "aws_security_group_rule" "opensips_egress" {
+  type              = "egress"
+  to_port           = 0
+  protocol          = "-1"
+  from_port         = 0
+  security_group_id = aws_security_group.opensips.id
+  cidr_blocks = ["0.0.0.0/0"]
+}
 
-# resource "aws_iam_role_policy_attachment" "opensips_task_execution_role_amazon_ecs_task_execution_role_policy" {
-#   role = aws_iam_role.ecs_cwagent_daemon_service_task_execution_role.id
-#   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-# }
+resource "aws_ecs_capacity_provider" "opensips" {
+  name = "${var.app_identifier}-opensips"
 
-# # Log Group
-# resource "aws_cloudwatch_log_group" "opensips" {
-#   name = "${var.app_identifier}-opensips"
-#   retention_in_days = 7
-# }
+  auto_scaling_group_provider {
+    auto_scaling_group_arn         = module.opensips_container_instances.autoscaling_group.arn
+    managed_termination_protection = "ENABLED"
 
-# data "template_file" "opensips" {
-#   template = file("${path.module}/templates/opensips.json.tpl")
+    managed_scaling {
+      maximum_scaling_step_size = 1000
+      minimum_scaling_step_size = 1
+      status                    = "ENABLED"
+      target_capacity           = 100
+    }
+  }
+}
 
-#   vars = {
-#     app_image = var.opensips_image
+resource "aws_iam_role" "opensips_task_role" {
+  name = "${var.app_identifier}-OpenSIPSTaskRole"
 
-#     opensips_logs_group = aws_cloudwatch_log_group.opensips.name
-#     logs_group_region = var.aws_region
-#     app_environment = var.app_environment
+  assume_role_policy = <<EOF
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": ["ecs-tasks.amazonaws.com"]
+      },
+      "Effect": "Allow"
+    }
+  ]
+}
+EOF
+}
 
-#     sip_port = var.sip_port
-#     freeswitch_event_socket_password_parameter_arn = aws_ssm_parameter.freeswitch_event_socket_password_parameter.arn
-#     database_password_parameter_arn = var.db_password_parameter_arn
-#     database_name = var.db_name
-#     database_username = var.db_username
-#     database_host = var.db_host
-#     database_port = var.db_port
-#   }
-# }
+resource "aws_iam_role_policy_attachment" "opensips_task_role_cloudwatch_agent_server_policy" {
+  role = aws_iam_role.ecs_cwagent_daemon_service_task_role.id
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
 
-# resource "aws_ecs_task_definition" "opensips" {
-#   family                   = "${var.app_identifier}-opensips"
-#   network_mode             = var.network_mode
-#   requires_compatibilities = ["EC2"]
-#   task_role_arn = aws_iam_role.opensips_task_role.arn
-#   execution_role_arn = aws_iam_role.opensips_task_execution_role.arn
-#   container_definitions = data.template_file.container_definitions.rendered
-#   memory = data.aws_ec2_instance_type.opensips.memory_size - 256
-# }
+resource "aws_iam_role" "opensips_task_execution_role" {
+  name = "${var.app_identifier}-OpenSIPSTaskExecutionRole"
 
-# resource "aws_ecs_service" "opensips" {
-#   name            = aws_ecs_task_definition.opensips.family
-#   cluster         = aws_ecs_cluster.cluster.id
-#   task_definition = aws_ecs_task_definition.opensips
+  assume_role_policy = <<EOF
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": ["ecs-tasks.amazonaws.com"]
+      },
+      "Effect": "Allow"
+    }
+  ]
+}
+EOF
+}
 
-#   network_configuration {
-#     subnets = var.container_instance_subnets
-#     security_groups = [
-#       aws_security_group.opensips.id,
-#       var.db_security_group,
-#       aws_security_group.inbound_sip_trunks.id
-#     ]
-#   }
-# }
+resource "aws_iam_role_policy_attachment" "opensips_task_execution_role_amazon_ecs_task_execution_role_policy" {
+  role = aws_iam_role.ecs_cwagent_daemon_service_task_execution_role.id
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+# Log Group
+resource "aws_cloudwatch_log_group" "opensips" {
+  name = "${var.app_identifier}-opensips"
+  retention_in_days = 7
+}
+
+data "template_file" "opensips" {
+  template = file("${path.module}/templates/opensips.json.tpl")
+
+  vars = {
+    app_image = var.opensips_image
+
+    opensips_logs_group = aws_cloudwatch_log_group.opensips.name
+    logs_group_region = var.aws_region
+    app_environment = var.app_environment
+
+    freeswitch_event_socket_password_parameter_arn = aws_ssm_parameter.freeswitch_event_socket_password.arn
+    database_password_parameter_arn = var.db_password_parameter_arn
+    database_name = var.db_name
+    database_username = var.db_username
+    database_host = var.db_host
+    database_port = var.db_port
+  }
+}
+
+resource "aws_ecs_task_definition" "opensips" {
+  family                   = "${var.app_identifier}-opensips"
+  network_mode             = var.network_mode
+  requires_compatibilities = ["EC2"]
+  task_role_arn = aws_iam_role.opensips_task_role.arn
+  execution_role_arn = aws_iam_role.opensips_task_execution_role.arn
+  container_definitions = data.template_file.opensips.rendered
+  memory = module.opensips_container_instances.ec2_instance_type.memory_size - 256
+}
+
+resource "local_file" "opensips_task_definition" {
+  filename = "${path.module}/../../../deploy/${var.app_environment}/opensips_ecs_task_definition.json"
+  file_permission = "644"
+  content = <<EOF
+{
+  "family": "${aws_ecs_task_definition.opensips.family}",
+  "networkMode": "${aws_ecs_task_definition.opensips.network_mode}",
+  "executionRoleArn": "${aws_ecs_task_definition.opensips.execution_role_arn}",
+  "taskRoleArn": "${aws_ecs_task_definition.opensips.task_role_arn}",
+  "requiresCompatibilities": ["EC2"],
+  "containerDefinitions": ${aws_ecs_task_definition.opensips.container_definitions},
+  "memory": "${aws_ecs_task_definition.opensips.memory}"
+}
+EOF
+}
+
+resource "aws_ecs_service" "opensips" {
+  name            = aws_ecs_task_definition.opensips.family
+  cluster         = aws_ecs_cluster.cluster.id
+  task_definition = aws_ecs_task_definition.opensips.arn
+
+  network_configuration {
+    subnets = var.container_instance_subnets
+    security_groups = [
+      aws_security_group.opensips.id,
+      var.db_security_group,
+      aws_security_group.inbound_sip_trunks.id
+    ]
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.sip.arn
+    container_name   = "opensips"
+    container_port   = 5060
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.sip_alternative.arn
+    container_name   = "opensips"
+    container_port   = 5080
+  }
+
+  capacity_provider_strategy {
+    capacity_provider = aws_ecs_capacity_provider.opensips.name
+    weight = 1
+  }
+}

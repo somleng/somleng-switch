@@ -44,7 +44,7 @@ resource "aws_security_group_rule" "efs_cache_ingress" {
   type              = "ingress"
   protocol          = "TCP"
   security_group_id = aws_security_group.efs_cache.id
-  source_security_group_id = aws_security_group.appserver.id
+  source_security_group_id = aws_security_group.switch.id
   from_port = 2049
   to_port = 2049
 }
