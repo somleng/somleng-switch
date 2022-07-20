@@ -37,7 +37,7 @@ resource "aws_lb_listener_rule" "this" {
 
 resource "aws_lb_target_group" "sip" {
   name        = "${var.app_identifier}-sip"
-  port        = var.sip_port
+  port        = 5060
   protocol    = "UDP"
   target_type = "ip"
   vpc_id      = var.vpc_id
@@ -66,7 +66,7 @@ resource "aws_lb_listener" "sip" {
 
 resource "aws_lb_target_group" "sip_alternative" {
   name        = "${var.app_identifier}-sip-alt"
-  port        = var.sip_alternative_port
+  port        = 5080
   protocol    = "UDP"
   target_type = "ip"
   vpc_id      = var.vpc_id

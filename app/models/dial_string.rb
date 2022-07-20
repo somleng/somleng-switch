@@ -1,6 +1,6 @@
 class DialString
   EXTERNAL_PROFILE = "external".freeze
-  EXTERNAL_NAT_INSTANCE_PROFILE = "external-nat-instance".freeze
+  EXTERNAL_NAT_INSTANCE_PROFILE = "alternative-outbound".freeze
 
   attr_reader :nat_supported, :address, :profile
 

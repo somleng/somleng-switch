@@ -9,9 +9,9 @@
 <!-- IP Addresses -->
 <X-PRE-PROCESS cmd="set" data="external_sip_ip=0.0.0.0"/>
 <X-PRE-PROCESS cmd="set" data="external_rtp_ip=0.0.0.0"/>
-<X-PRE-PROCESS cmd="set" data="external_nat_instance_sip_ip=0.0.0.0"/>
-<X-PRE-PROCESS cmd="set" data="exterrnal_nat_instance_rtp_ip=0.0.0.0"/>
-<X-PRE-PROCESS cmd="set" data="sip_alternative_port=5080"/>
+<X-PRE-PROCESS cmd="set" data="alternative_rtp_ip=0.0.0.0"/>
+<X-PRE-PROCESS cmd="set" data="alternative_sip_inbound_ip=0.0.0.0"/>
+<X-PRE-PROCESS cmd="set" data="alternative_sip_outbound_ip=0.0.0.0"/>
 
 <!-- mod_json_cdr -->
 <X-PRE-PROCESS cmd="set" data="mod_json_cdr_url=https://www.example.com/path"/>

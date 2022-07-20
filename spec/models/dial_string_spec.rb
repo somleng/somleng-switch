@@ -11,7 +11,7 @@ RSpec.describe DialString do
     it "handles unsupported NAT trunks" do
       expect(
         DialString.new("1234@192.168.1.1", nat_supported: false).to_s
-      ).to eq("sofia/external-nat-instance/1234@192.168.1.1")
+      ).to eq("sofia/alternative-outbound/1234@192.168.1.1")
     end
 
     it "handles boolean strings" do
@@ -20,7 +20,7 @@ RSpec.describe DialString do
       ).to eq("sofia/external/1234@192.168.1.1")
       expect(
         DialString.new("1234@192.168.1.1", nat_supported: "false").to_s
-      ).to eq("sofia/external-nat-instance/1234@192.168.1.1")
+      ).to eq("sofia/alternative-outbound/1234@192.168.1.1")
     end
   end
 end

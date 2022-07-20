@@ -65,16 +65,10 @@ variable "freeswitch_event_socket_port" {
   default = 8021
 }
 
-variable "sip_port" {
-  default = 5060
-}
 variable "load_balancer_sip_port" {
   default = 5060
 }
 
-variable "sip_alternative_port" {
-  default = 5080
-}
 variable "load_balancer_sip_alternative_port" {
   default = 5080
 }
@@ -89,8 +83,9 @@ variable "db_password_parameter_arn" {}
 variable "json_cdr_password_parameter_arn" {}
 variable "external_sip_ip" {}
 variable "external_rtp_ip" {}
-variable "external_nat_instance_sip_ip" {}
-variable "external_nat_instance_rtp_ip" {}
+variable "alternative_sip_inbound_ip" {}
+variable "alternative_sip_outbound_ip" {}
+variable "alternative_rtp_ip" {}
 variable "json_cdr_url" {}
 variable "inbound_sip_trunks_security_group_name" {}
 variable "inbound_sip_trunks_security_group_description" {

@@ -65,10 +65,10 @@ data "template_file" "container_definitions" {
     json_cdr_password_parameter_arn = var.json_cdr_password_parameter_arn
     external_sip_ip = var.external_sip_ip
     external_rtp_ip = var.external_rtp_ip
-    external_nat_instance_sip_ip = var.external_nat_instance_sip_ip
-    external_nat_instance_rtp_ip = var.external_nat_instance_rtp_ip
-    sip_port = var.sip_port
-    sip_alternative_port = var.sip_alternative_port
+
+    alternative_sip_inbound_ip = var.alternative_sip_inbound_ip
+    alternative_sip_outbound_ip = var.alternative_sip_outbound_ip
+    alternative_rtp_ip = var.alternative_rtp_ip
 
     source_volume = local.efs_volume_name
     cache_directory = "/cache"
@@ -152,13 +152,13 @@ resource "aws_ecs_service" "service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.sip.arn
     container_name   = "freeswitch"
-    container_port   = var.sip_port
+    container_port   = 5060
   }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.sip_alternative.arn
     container_name   = "freeswitch"
-    container_port   = var.sip_alternative_port
+    container_port   = 5080
   }
 
   lifecycle {
