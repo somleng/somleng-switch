@@ -114,7 +114,7 @@ resource "aws_iam_role_policy_attachment" "opensips_task_execution_custom_policy
 }
 
 resource "aws_iam_role_policy_attachment" "opensips_task_execution_role_amazon_ecs_task_execution_role_policy" {
-  role = aws_iam_role.ecs_cwagent_daemon_service_task_execution_role.id
+  role = aws_iam_role.opensips_task_execution_role.id
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
