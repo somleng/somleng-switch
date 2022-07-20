@@ -86,6 +86,28 @@ resource "aws_iam_role" "opensips_task_execution_role" {
 EOF
 }
 
+resource "aws_iam_policy" "opensips_task_execution_custom_policy" {
+  name = "${var.app_identifier}-opensips-task-execution-custom-policy"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameters"
+      ],
+      "Resource": [
+        "${var.db_password_parameter_arn}",
+        "${aws_ssm_parameter.freeswitch_event_socket_password.arn}"
+      ]
+    }
+  ]
+}
+EOF
+}
+
 resource "aws_iam_role_policy_attachment" "opensips_task_execution_role_amazon_ecs_task_execution_role_policy" {
   role = aws_iam_role.ecs_cwagent_daemon_service_task_execution_role.id
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
