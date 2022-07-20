@@ -14,6 +14,10 @@
     "portMappings": [
       {
         "containerPort": 5060,
+        "protocol": "tcp"
+      },
+      {
+        "containerPort": 5060,
         "protocol": "udp"
       },
       {

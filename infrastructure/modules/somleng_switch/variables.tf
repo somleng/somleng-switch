@@ -11,6 +11,7 @@ variable s3_mpeg_ecr_repository_url {}
 variable "container_instance_subnets" {}
 variable "intra_subnets" {}
 variable "vpc_id" {}
+variable "vpc_cidr_block" {}
 variable "load_balancer" {}
 variable "network_load_balancer" {}
 variable "listener_arn" {}

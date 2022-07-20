@@ -16,6 +16,7 @@ module "somleng_switch_staging" {
   s3_mpeg_ecr_repository_url = data.terraform_remote_state.core.outputs.s3_mpeg_ecr_repository.repository_url
 
   vpc_id = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_id
+  vpc_cidr_block = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_cidr_block
   container_instance_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets
   intra_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.intra_subnets
 

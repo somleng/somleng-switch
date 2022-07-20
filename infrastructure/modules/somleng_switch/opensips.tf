@@ -18,6 +18,15 @@ resource "aws_security_group" "opensips" {
   vpc_id = var.vpc_id
 }
 
+resource "aws_security_group_rule" "opensips_healthcheck" {
+  type              = "ingress"
+  to_port           = 5060
+  protocol          = "tcp"
+  from_port         = 5060
+  security_group_id = aws_security_group.opensips.id
+  cidr_blocks = [var.vpc_cidr_block]
+}
+
 resource "aws_security_group_rule" "opensips_egress" {
   type              = "egress"
   to_port           = 0
