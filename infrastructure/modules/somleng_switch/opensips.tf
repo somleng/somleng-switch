@@ -146,6 +146,7 @@ resource "aws_ecs_service" "opensips" {
   name            = aws_ecs_task_definition.opensips.family
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.opensips.arn
+  desired_count   = var.min_tasks
 
   network_configuration {
     subnets = var.container_instance_subnets
@@ -172,4 +173,8 @@ resource "aws_ecs_service" "opensips" {
     capacity_provider = aws_ecs_capacity_provider.opensips.name
     weight = 1
   }
+
+  depends_on = [
+    aws_iam_role.opensips_task_role
+  ]
 }
