@@ -16,6 +16,15 @@ resource "aws_security_group_rule" "switch_ingress_http" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
+resource "aws_security_group_rule" "switch_ingress_freeswitch_event_socket" {
+  type              = "ingress"
+  to_port           = 8021
+  protocol          = "TCP"
+  from_port         = 8021
+  security_group_id = aws_security_group.switch.id
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
 resource "aws_security_group_rule" "switch_ingress_sip" {
   type              = "ingress"
   to_port           = 5060
