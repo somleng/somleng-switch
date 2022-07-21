@@ -36,14 +36,11 @@ class CallController < Adhearsion::CallController
   def build_call_properties
     return metadata[:call_properties] if metadata[:call_properties].present?
 
-    logger.info("Call Variables: ")
-    logger.info(call.variables)
-
     response = call_platform_client.create_call(
       to: normalized_call.to,
       from: normalized_call.from,
       external_id: call.id,
-      source_ip: call.variables["variable_sip_h_X-Src-Ip"] || call.variables["variable_sip_via_host"],
+      source_ip: call.variables["variable_sip_h_x_src_ip"] || call.variables["variable_sip_via_host"],
       variables: {
         sip_from_host: call.variables["variable_sip_from_host"],
         sip_to_host: call.variables["variable_sip_to_host"],
