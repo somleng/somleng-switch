@@ -36,6 +36,9 @@ class CallController < Adhearsion::CallController
   def build_call_properties
     return metadata[:call_properties] if metadata[:call_properties].present?
 
+    logger.info("Call Variables: ")
+    logger.info(call.variables)
+
     response = call_platform_client.create_call(
       to: normalized_call.to,
       from: normalized_call.from,
