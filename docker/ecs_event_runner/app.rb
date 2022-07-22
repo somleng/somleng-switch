@@ -14,13 +14,13 @@ module App
     end
 
     def process
-      HandleSwitchEvent.call(event:) if event.task_family == switch_task_family
+      HandleSwitchEvent.call(event:) if event.group == switch_group
     end
 
     private
 
-    def switch_task_family
-      ENV.fetch("SWITCH_TASK_FAMILY")
+    def switch_group
+      ENV.fetch("SWITCH_GROUP")
     end
   end
 end

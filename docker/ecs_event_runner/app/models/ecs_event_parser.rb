@@ -1,5 +1,5 @@
 class ECSEventParser
-  Event = Struct.new(:task_running?, :task_stopped?, :eni_private_ip, :task_family, keyword_init: true)
+  Event = Struct.new(:task_running?, :task_stopped?, :eni_private_ip, :group, keyword_init: true)
 
   attr_reader :event
 
@@ -12,7 +12,7 @@ class ECSEventParser
       task_running?: task_running?,
       task_stopped?: task_stopped?,
       eni_private_ip:,
-      task_family:
+      group:
     )
   end
 
@@ -28,10 +28,6 @@ class ECSEventParser
 
   def task_stopped?
     last_status == "STOPPED"
-  end
-
-  def task_family
-    group.delete_prefix("family:") if group.start_with?("family:")
   end
 
   def group

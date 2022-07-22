@@ -74,7 +74,7 @@ resource "aws_lambda_function" "ecs_event_runner" {
 
   environment {
     variables = {
-      SWITCH_TASK_FAMILY = aws_ecs_task_definition.task_definition.family,
+      SWITCH_GROUP = "service:${aws_ecs_task_definition.task_definition.family}",
       FS_EVENT_SOCKET_PASSWORD = aws_ssm_parameter.freeswitch_event_socket_password.value,
       FS_EVENT_SOCKET_PORT = 8021,
       OPENSIPS_LOAD_BALANCER_RESOURCE_TYPE = "pstn"
@@ -118,7 +118,7 @@ resource "aws_cloudwatch_event_rule" "ecs_event_runner" {
   "detail-type": ["ECS Task State Change"],
   "detail": {
     "clusterArn": ["${aws_ecs_cluster.cluster.arn}"],
-    "group": ["family:${aws_ecs_task_definition.task_definition.family}"]
+    "group": ["service:${aws_ecs_task_definition.task_definition.family}"]
   }
 }
 EOF

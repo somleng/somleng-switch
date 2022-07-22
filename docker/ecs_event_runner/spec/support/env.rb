@@ -1,4 +1,4 @@
-ENV["SWITCH_TASK_FAMILY"] = "somleng-switch"
+ENV["SWITCH_GROUP"] = "service:somleng-switch"
 ENV["FS_EVENT_SOCKET_PASSWORD"] = "password"
 ENV["FS_EVENT_SOCKET_PORT"] = "8021"
 ENV["OPENSIPS_LOAD_BALANCER_RESOURCE_TYPE"] = "pstn"
