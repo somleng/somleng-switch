@@ -58,3 +58,11 @@ resource "aws_ecr_repository" "s3_mpeg" {
   }
 }
 
+resource "aws_ecr_repository" "ecs_event_runner" {
+  name = "ecs-event-runner"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+

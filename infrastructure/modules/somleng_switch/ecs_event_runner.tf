@@ -31,6 +31,24 @@ resource "aws_iam_role" "ecs_event_runner" {
 EOF
 }
 
+resource "aws_security_group" "ecs_event_runner" {
+  name   = local.ecs_event_runner_function_name
+  vpc_id = var.vpc_id
+
+  tags = {
+    "Name" = local.ecs_event_runner_function_name
+  }
+}
+
+resource "aws_security_group_rule" "ecs_event_runner_egress" {
+  type              = "egress"
+  to_port           = 0
+  protocol          = "-1"
+  from_port         = 0
+  security_group_id = aws_security_group.switch.id
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
 resource "aws_lambda_function" "ecs_event_runner" {
   function_name = local.ecs_event_runner_function_name
   role = aws_iam_role.ecs_event_runner.arn
@@ -39,6 +57,11 @@ resource "aws_lambda_function" "ecs_event_runner" {
   image_uri = docker_registry_image.ecs_event_runner.name
   timeout = 300
   memory_size = 1024
+
+  vpc_config {
+    security_group_ids = [aws_security_group.ecs_event_runner.id, var.db_security_group]
+    subnet_ids = var.container_instance_subnets
+  }
 
   depends_on = [
     aws_iam_role_policy_attachment.ecs_event_runner,
@@ -57,28 +80,6 @@ resource "aws_cloudwatch_log_group" "ecs_event_runner" {
   retention_in_days = 7
 }
 
-resource "aws_iam_policy" "ecs_event_runner" {
-  name = local.ecs_event_runner_function_name
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "ecs:DescribeTasks",
-      "Resource": "arn:aws:ecs:*:*:task/${aws_ecs_task_definition.task_definition.family}/*"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_event_runner" {
-  role       = aws_iam_role.ecs_event_runner.name
-  policy_arn = aws_iam_policy.ecs_event_runner.arn
-}
-
 resource "aws_lambda_permission" "ecs_event_runner" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.ecs_event_runner.arn
@@ -95,6 +96,7 @@ resource "aws_cloudwatch_event_rule" "ecs_event_runner" {
   "detail-type": ["ECS Task State Change"],
   "detail": {
     "clusterArn": ["${aws_ecs_cluster.cluster.arn}"],
+    "group": ["family:${aws_ecs_task_definition.task_definition.family}"]
   }
 }
 EOF
