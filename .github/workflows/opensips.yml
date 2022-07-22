@@ -104,8 +104,7 @@ jobs:
 
       - name: Check current dir
         run: |
-          ls -lat
-          ls -lat ${{ matrix.task_definition }}
+          cat ${{ matrix.task_definition }} | jq
 
       - name: Prepare task definition
         id: render-task-def
