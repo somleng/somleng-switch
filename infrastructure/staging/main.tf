@@ -48,5 +48,5 @@ module "somleng_switch_staging" {
   load_balancer_sip_port = 6060
   load_balancer_sip_alternative_port = 6080
   listener_rule_priority = 120
-  min_tasks = 1
+  min_tasks = 0
 }

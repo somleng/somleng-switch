@@ -81,7 +81,7 @@ resource "aws_iam_policy" "s3_mpeg" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "aws_lambda_basic_execution_role" {
+resource "aws_iam_role_policy_attachment" "s3_mpeg_aws_lambda_basic_execution_role" {
   role       = aws_iam_role.s3_mpeg.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
