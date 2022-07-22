@@ -1,7 +1,7 @@
-Dir["#{File.dirname(__FILE__)}/app/**/*.rb"].sort.each { |f| require f }
-
 module App
   class Handler
+    Dir["#{File.dirname(__FILE__)}/app/**/*.rb"].sort.each { |f| require f }
+
     attr_reader :event, :context
 
     def self.process(event:, context:)

@@ -123,3 +123,8 @@ resource "aws_cloudwatch_event_rule" "ecs_event_runner" {
 }
 EOF
 }
+
+resource "aws_cloudwatch_event_target" "ecs_event_runner" {
+  arn  = aws_lambda_function.ecs_event_runner.arn
+  rule = aws_cloudwatch_event_rule.ecs_event_runner.id
+}
