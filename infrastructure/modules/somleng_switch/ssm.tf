@@ -1,3 +1,10 @@
+data "aws_ssm_parameter" "db_password" {
+  name = element(
+    split("/", var.db_password_parameter_arn),
+    length(split("/", var.db_password_parameter_arn)) - 1
+  )
+}
+
 resource "aws_ssm_parameter" "application_master_key" {
   name  = "somleng-switch.${var.app_environment}.application_master_key"
   type  = "SecureString"

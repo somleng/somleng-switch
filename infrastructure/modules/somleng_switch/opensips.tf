@@ -163,7 +163,7 @@ resource "aws_ecs_task_definition" "opensips" {
 }
 
 resource "local_file" "opensips_task_definition" {
-  filename = "${path.module}/../../../deploy/${var.app_environment}/opensips_ecs_task_definition.json"
+  filename = "${path.module}/../../../docker/opensips/deploy/${var.app_environment}/ecs_task_definition.json"
   file_permission = "644"
   content = <<EOF
 {

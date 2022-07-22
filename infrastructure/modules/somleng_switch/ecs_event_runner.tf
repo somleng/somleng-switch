@@ -35,6 +35,11 @@ resource "aws_iam_role" "ecs_event_runner" {
 EOF
 }
 
+resource "aws_iam_role_policy_attachment" "ecs_event_runner_vpc_access_execution_role" {
+  role       = aws_iam_role.ecs_event_runner.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+}
+
 resource "aws_security_group" "ecs_event_runner" {
   name   = local.ecs_event_runner_function_name
   vpc_id = var.vpc_id
@@ -49,7 +54,7 @@ resource "aws_security_group_rule" "ecs_event_runner_egress" {
   to_port           = 0
   protocol          = "-1"
   from_port         = 0
-  security_group_id = aws_security_group.switch.id
+  security_group_id = aws_security_group.ecs_event_runner.id
   cidr_blocks = ["0.0.0.0/0"]
 }
 
@@ -65,6 +70,20 @@ resource "aws_lambda_function" "ecs_event_runner" {
   vpc_config {
     security_group_ids = [aws_security_group.ecs_event_runner.id, var.db_security_group]
     subnet_ids = var.container_instance_subnets
+  }
+
+  environment {
+    variables = {
+      SWITCH_TASK_FAMILY = aws_ecs_task_definition.task_definition.family,
+      FS_EVENT_SOCKET_PASSWORD = aws_ssm_parameter.freeswitch_event_socket_password.value,
+      FS_EVENT_SOCKET_PORT = 8021,
+      OPENSIPS_LOAD_BALANCER_RESOURCE_TYPE = "pstn"
+      OPENSIPS_DB_NAME = var.db_name,
+      DB_PASSWORD = data.aws_ssm_parameter.db_password.value
+      DB_HOST = var.db_host
+      DB_PORT = var.db_port
+      DB_USER = var.db_username
+    }
   }
 
   depends_on = [

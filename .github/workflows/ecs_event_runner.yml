@@ -122,8 +122,8 @@ jobs:
         with:
           push: true
           platforms: linux/arm64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.identifier }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
           context: "docker/ecs_event_runner"
           tags: |
             ${{ env.ECR_REPOSITORY }}:${{ matrix.image_tag }}
