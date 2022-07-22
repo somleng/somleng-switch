@@ -15,6 +15,24 @@ jobs:
       run:
         working-directory: docker/ecs_event_runner
 
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      RAILS_ENV: test
+      CI: true
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ""
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -22,7 +40,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          working-directory: docker/s3_mpeg
+          working-directory: docker/ecs_event_runner
           ruby-version: '3.1'
           bundler-cache: true
 
@@ -106,7 +124,7 @@ jobs:
           platforms: linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          context: "docker/s3_mpeg"
+          context: "docker/ecs_event_runner"
           tags: |
             ${{ env.ECR_REPOSITORY }}:${{ matrix.image_tag }}
             ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
