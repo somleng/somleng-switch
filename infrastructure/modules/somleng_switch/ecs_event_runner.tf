@@ -2,13 +2,17 @@ locals {
   ecs_event_runner_function_name = "${var.app_identifier}_ecs_event_runner"
 }
 
-data "aws_ecr_authorization_token" "token" {}
+resource "docker_registry_image" "ecs_event_runner" {
+  name = "${var.ecs_event_runner_ecr_repository_url}:latest"
 
-provider "docker" {
-  registry_auth {
-    address  = split("/", var.ecs_event_runner_ecr_repository_url)[0]
-    username = data.aws_ecr_authorization_token.token.user_name
-    password = data.aws_ecr_authorization_token.token.password
+  build {
+    context = abspath("${path.module}/../../../docker/ecs_event_runner")
+  }
+
+  lifecycle {
+    ignore_changes = [
+      build[0].context
+    ]
   }
 }
 
@@ -64,7 +68,6 @@ resource "aws_lambda_function" "ecs_event_runner" {
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.ecs_event_runner,
     aws_cloudwatch_log_group.ecs_event_runner
   ]
 
@@ -100,18 +103,4 @@ resource "aws_cloudwatch_event_rule" "ecs_event_runner" {
   }
 }
 EOF
-}
-
-resource "docker_registry_image" "ecs_event_runner" {
-  name = "${var.ecs_event_runner_ecr_repository_url}:latest"
-
-  build {
-    context = abspath("${path.module}/../../../docker/ecs_event_runner")
-  }
-
-  lifecycle {
-    ignore_changes = [
-      build[0].context
-    ]
-  }
 }

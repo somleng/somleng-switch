@@ -3,13 +3,17 @@ locals {
   s3_filter_suffix = ".wav"
 }
 
-data "aws_ecr_authorization_token" "token" {}
+resource "docker_registry_image" "s3_mpeg" {
+  name = "${var.s3_mpeg_ecr_repository_url}:latest"
 
-provider "docker" {
-  registry_auth {
-    address  = split("/", var.s3_mpeg_ecr_repository_url)[0]
-    username = data.aws_ecr_authorization_token.token.user_name
-    password = data.aws_ecr_authorization_token.token.password
+  build {
+    context = abspath("${path.module}/../../../docker/s3_mpeg")
+  }
+
+  lifecycle {
+    ignore_changes = [
+      build[0].context
+    ]
   }
 }
 
@@ -108,18 +112,4 @@ resource "aws_s3_bucket_notification" "s3_mpeg" {
   }
 
   depends_on = [aws_lambda_permission.s3_mpeg]
-}
-
-resource "docker_registry_image" "s3_mpeg" {
-  name = "${var.s3_mpeg_ecr_repository_url}:latest"
-
-  build {
-    context = abspath("${path.module}/../../../docker/s3_mpeg")
-  }
-
-  lifecycle {
-    ignore_changes = [
-      build[0].context
-    ]
-  }
 }
