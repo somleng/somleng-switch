@@ -35,6 +35,8 @@ class ECSEventParser
   end
 
   def eni_private_ip
+    return if eni.nil?
+
     eni.fetch("details").find { |detail| detail.fetch("name") == "privateIPv4Address" }.fetch("value")
   end
 
