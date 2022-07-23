@@ -1,6 +1,6 @@
 [
   {
-    "name": "opensips-test",
+    "name": "opensips",
     "image": "${app_image}:latest",
     "logConfiguration": {
       "logDriver": "awslogs",
