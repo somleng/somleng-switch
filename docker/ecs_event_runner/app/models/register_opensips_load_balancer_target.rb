@@ -7,6 +7,7 @@ class RegisterOpenSIPSLoadBalancerTarget < ApplicationWorkflow
 
   def call
     create_load_balancer_target unless load_balancer_target_exists?
+    ExecuteOpenSIPSCommand.call(:lb_reload)
   end
 
   private

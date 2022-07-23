@@ -149,6 +149,9 @@ data "template_file" "opensips" {
     database_username = var.db_username
     database_host = var.db_host
     database_port = var.db_port
+
+    source_volume = "cache"
+    cache_directory = "/cache"
   }
 }
 
@@ -160,6 +163,15 @@ resource "aws_ecs_task_definition" "opensips" {
   execution_role_arn = aws_iam_role.opensips_task_execution_role.arn
   container_definitions = data.template_file.opensips.rendered
   memory = module.opensips_container_instances.ec2_instance_type.memory_size - 256
+
+  volume {
+    name = "cache"
+
+    efs_volume_configuration {
+      file_system_id          = aws_efs_file_system.cache.id
+      transit_encryption      = "ENABLED"
+    }
+  }
 }
 
 resource "local_file" "opensips_task_definition" {
@@ -173,7 +185,16 @@ resource "local_file" "opensips_task_definition" {
   "taskRoleArn": "${aws_ecs_task_definition.opensips.task_role_arn}",
   "requiresCompatibilities": ["EC2"],
   "containerDefinitions": ${aws_ecs_task_definition.opensips.container_definitions},
-  "memory": "${aws_ecs_task_definition.opensips.memory}"
+  "memory": "${aws_ecs_task_definition.opensips.memory}",
+  "volumes": [
+    {
+      "name": "${aws_ecs_task_definition.opensips.volume.*.name[0]}",
+      "efsVolumeConfiguration": {
+        "fileSystemId": "${aws_efs_file_system.cache.id}",
+        "transitEncryption": "${aws_ecs_task_definition.opensips.volume.*.efs_volume_configuration[0].*.transit_encryption[0]}"
+      }
+    }
+  ]
 }
 EOF
 }

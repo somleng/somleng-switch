@@ -10,6 +10,12 @@
          "awslogs-stream-prefix": "${app_environment}"
        }
     },
+    "mountPoints": [
+      {
+        "containerPath": "${cache_directory}",
+        "sourceVolume": "${source_volume}"
+      }
+    ],
     "essential": true,
     "portMappings": [
       {

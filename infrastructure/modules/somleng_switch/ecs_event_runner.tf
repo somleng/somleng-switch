@@ -103,12 +103,18 @@ resource "aws_lambda_function" "ecs_event_runner" {
       FS_EVENT_SOCKET_PASSWORD_SSM_PARAMETER_NAME = aws_ssm_parameter.freeswitch_event_socket_password.name,
       FS_EVENT_SOCKET_PORT = 8021,
       OPENSIPS_LOAD_BALANCER_RESOURCE_TYPE = "pstn"
+      OPENSIPS_MI_FIFO_NAME = "/mnt/efs/opensips/opensips_fifo"
       OPENSIPS_DB_NAME = var.db_name,
       DB_PASSWORD_SSM_PARAMETER_NAME = data.aws_ssm_parameter.db_password.name
       DB_HOST = var.db_host
       DB_PORT = var.db_port
       DB_USER = var.db_username
     }
+  }
+
+  file_system_config {
+    arn = aws_efs_access_point.ecs_event_runner.arn
+    local_mount_path = "/mnt/efs"
   }
 
   depends_on = [
@@ -120,6 +126,10 @@ resource "aws_lambda_function" "ecs_event_runner" {
       image_uri
     ]
   }
+}
+
+resource "aws_efs_access_point" "ecs_event_runner" {
+  file_system_id = aws_efs_file_system.cache.id
 }
 
 resource "aws_cloudwatch_log_group" "ecs_event_runner" {
