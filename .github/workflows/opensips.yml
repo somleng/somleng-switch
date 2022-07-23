@@ -105,7 +105,6 @@ jobs:
       - name: Debug
         run: |
           cat ${{ matrix.task_definition }} | jq
-          cat ${{ matrix.task_definition }} | jq --arg contName "opensips" 'map(. | select((.name==$contName)) )'
 
       - name: Prepare task definition
         id: render-task-def
