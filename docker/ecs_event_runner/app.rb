@@ -11,10 +11,6 @@ module App
       logger.info("## Processing Event")
       logger.info(event)
 
-      logger.info(`whoami`)
-      logger.info(`ls -lat /mnt/efs`)
-      logger.info(`ls -lat /mnt/efs/opensips`)
-
       new(event:, context:).process
     end
 

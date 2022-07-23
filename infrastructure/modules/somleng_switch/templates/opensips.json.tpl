@@ -12,8 +12,8 @@
     },
     "mountPoints": [
       {
-        "containerPath": "${cache_directory}",
-        "sourceVolume": "${source_volume}"
+        "containerPath": "/cache",
+        "sourceVolume": "cache"
       }
     ],
     "essential": true,
@@ -38,6 +38,10 @@
       }
     ],
     "environment": [
+      {
+        "name": "FIFO_NAME",
+        "value": "/cache/opensips/opensips_fifo"
+      },
       {
         "name": "DATABASE_NAME",
         "value": "${database_name}"

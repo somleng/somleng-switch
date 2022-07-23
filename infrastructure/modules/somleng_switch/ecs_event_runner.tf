@@ -130,6 +130,11 @@ resource "aws_lambda_function" "ecs_event_runner" {
 
 resource "aws_efs_access_point" "ecs_event_runner" {
   file_system_id = aws_efs_file_system.cache.id
+
+  posix_user {
+    uid = 0 # root
+    gid = 0 # root
+  }
 }
 
 resource "aws_cloudwatch_log_group" "ecs_event_runner" {

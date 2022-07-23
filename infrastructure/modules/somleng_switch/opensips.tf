@@ -149,9 +149,6 @@ data "template_file" "opensips" {
     database_username = var.db_username
     database_host = var.db_host
     database_port = var.db_port
-
-    source_volume = "cache"
-    cache_directory = "/cache"
   }
 }
 
