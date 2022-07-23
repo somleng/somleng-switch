@@ -40,6 +40,31 @@ resource "aws_iam_role_policy_attachment" "ecs_event_runner_vpc_access_execution
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
+resource "aws_iam_policy" "ecs_event_runner_custom_policy" {
+  name = local.ecs_event_runner_function_name
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "ssm:GetParameters",
+      "Resource": [
+        "${aws_ssm_parameter.freeswitch_event_socket_password.arn}",
+        "${var.db_password_parameter_arn}"
+      ]
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_event_runner_custom_policy" {
+  role       = aws_iam_role.ecs_event_runner.name
+  policy_arn = aws_iam_policy.ecs_event_runner_custom_policy.arn
+}
+
 resource "aws_security_group" "ecs_event_runner" {
   name   = local.ecs_event_runner_function_name
   vpc_id = var.vpc_id
@@ -75,11 +100,11 @@ resource "aws_lambda_function" "ecs_event_runner" {
   environment {
     variables = {
       SWITCH_GROUP = "service:${aws_ecs_task_definition.task_definition.family}",
-      FS_EVENT_SOCKET_PASSWORD = aws_ssm_parameter.freeswitch_event_socket_password.value,
+      FS_EVENT_SOCKET_PASSWORD_SSM_PARAMETER_NAME = aws_ssm_parameter.freeswitch_event_socket_password.name,
       FS_EVENT_SOCKET_PORT = 8021,
       OPENSIPS_LOAD_BALANCER_RESOURCE_TYPE = "pstn"
       OPENSIPS_DB_NAME = var.db_name,
-      DB_PASSWORD = data.aws_ssm_parameter.db_password.value
+      DB_PASSWORD_SSM_PARAMETER_NAME = data.aws_ssm_parameter.db_password.name
       DB_HOST = var.db_host
       DB_PORT = var.db_port
       DB_USER = var.db_username

@@ -1,4 +1,4 @@
-ARG FUNCTION_DIR="/app"
+ARG FUNCTION_DIR="/function"
 
 FROM ruby:3.1-alpine as build-image
 
@@ -24,7 +24,7 @@ RUN bundle install --jobs 20 --retry 5
 RUN rm -rf vendor/bundle/ruby/*/cache/ && find vendor/ -name "*.o" -delete && find vendor/ -name "*.c"
 
 COPY app.rb ${FUNCTION_DIR}
-COPY app/ ${FUNCTION_DIR}
+COPY app/ ${FUNCTION_DIR}/app/
 
 #############################
 
