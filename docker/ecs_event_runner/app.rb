@@ -1,5 +1,4 @@
 require "logger"
-require "json"
 
 Dir["#{File.dirname(__FILE__)}/app/**/*.rb"].sort.each { |f| require f }
 
@@ -10,7 +9,7 @@ module App
     def self.process(event:, context:)
       logger = Logger.new($stdout)
       logger.info("## Processing Event")
-      logger.info(JSON.pretty_generate(event))
+      logger.info(event)
 
       new(event:, context:).process
     end

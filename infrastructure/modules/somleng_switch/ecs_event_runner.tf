@@ -90,7 +90,7 @@ resource "aws_lambda_function" "ecs_event_runner" {
   architectures = ["arm64"]
   image_uri = docker_registry_image.ecs_event_runner.name
   timeout = 300
-  memory_size = 1024
+  memory_size = 512
 
   vpc_config {
     security_group_ids = [aws_security_group.ecs_event_runner.id, var.db_security_group]
