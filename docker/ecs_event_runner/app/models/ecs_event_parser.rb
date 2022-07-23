@@ -41,15 +41,11 @@ class ECSEventParser
   end
 
   def eni_attached?
-    return false if eni.nil?
-
-    eni.fetch("status") == "ATTACHED"
+    eni["status"] == "ATTACHED"
   end
 
   def eni_deleted?
-    return false if eni.nil?
-
-    eni.fetch("status") == "DELETED"
+    eni["status"] == "DELETED"
   end
 
   def group
@@ -57,13 +53,19 @@ class ECSEventParser
   end
 
   def eni_private_ip
-    return if eni.nil?
+    eni_private_ip_details["value"]
+  end
 
-    eni.fetch("details").find { |detail| detail.fetch("name") == "privateIPv4Address" }.fetch("value")
+  def eni_private_ip_details
+    eni_details.find { |detail| detail.fetch("name") == "privateIPv4Address" } || {}
+  end
+
+  def eni_details
+    eni.fetch("details", {})
   end
 
   def eni
-    attachments.find { |attachment| attachment.fetch("type") == "eni" }
+    attachments.find { |attachment| attachment.fetch("type") == "eni" } || {}
   end
 
   def detail

@@ -9,16 +9,18 @@ module EventHelpers
       group: "service:somleng-switch"
     )
 
+    data[:attachment_details] ||= [
+      {
+        "name" => "privateIPv4Address",
+        "value" => data.fetch(:eni_private_ip)
+      }
+    ]
+
     data[:attachments] ||= [
       {
         "type" => "eni",
         "status" => data.fetch(:eni_status),
-        "details" => [
-          {
-            "name" => "privateIPv4Address",
-            "value" => data.fetch(:eni_private_ip)
-          }
-        ]
+        "details" => data.fetch(:attachment_details)
       }
     ]
 

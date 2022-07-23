@@ -41,7 +41,28 @@ RSpec.describe ECSEventParser do
     result = parser.parse_event
 
     expect(result).to have_attributes(
-      eni_private_ip: nil
+      eni_private_ip: nil,
+      eni_attached?: false
+    )
+  end
+
+  it "handles events with precreated eni attachments" do
+    event = build_ecs_event_payload(
+      eni_status: "PRECREATED",
+      attachment_details: [
+        {
+          "name" => "subnetId",
+          "value" => "subnet-abcd"
+        }
+      ]
+    )
+    parser = ECSEventParser.new(event)
+
+    result = parser.parse_event
+
+    expect(result).to have_attributes(
+      eni_private_ip: nil,
+      eni_attached?: false
     )
   end
 
