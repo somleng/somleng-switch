@@ -1,10 +1,15 @@
 Dir["#{File.dirname(__FILE__)}/app/**/*.rb"].sort.each { |f| require f }
+require "logger"
 
 module App
   class Handler
     attr_reader :event, :context
 
     def self.process(event:, context:)
+      logger = Logger.new($stdout)
+      logger.info("## Processing Event")
+      logger.info(event)
+
       new(event:, context:).process
     end
 
