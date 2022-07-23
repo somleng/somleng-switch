@@ -12,6 +12,7 @@ jobs:
       matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
       matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
 
+    # https://github.com/aws-actions/amazon-ecs-render-task-definition/issues/68#issuecomment-881407765
     steps:
       - name: Set Deployment Matrix
         id: set-deployment-matrix
