@@ -18,9 +18,7 @@ module DatabaseHelpers
     end
 
     def database_exists?(name)
-      connection.exec(
-        "SELECT 1 FROM pg_database WHERE datname='#{name}';"
-      ).ntuples.positive?
+      any_records?("SELECT 1 FROM pg_database WHERE datname='#{name}';")
     end
 
     def create_database(name)
