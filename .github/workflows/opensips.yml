@@ -103,10 +103,6 @@ jobs:
             ${{ env.ECR_REPOSITORY }}:${{ matrix.image_tag }}
             ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
-      - name: Debug
-        run: |
-          cat ${{ matrix.task_definition }} | jq
-
       - name: Prepare task definition
         id: render-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
