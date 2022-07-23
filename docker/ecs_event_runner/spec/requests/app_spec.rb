@@ -10,6 +10,7 @@ RSpec.describe "Handle ECS Events", :opensips do
     payload = build_ecs_event_payload(
       group: "service:somleng-switch",
       eni_private_ip: "10.1.1.100",
+      eni_status: "ATTACHED",
       last_status: "RUNNING"
     )
 
@@ -36,6 +37,7 @@ RSpec.describe "Handle ECS Events", :opensips do
     payload = build_ecs_event_payload(
       group: "service:somleng-switch",
       eni_private_ip: "10.1.1.1",
+      eni_status: "ATTACHED",
       last_status: "RUNNING"
     )
 
@@ -54,6 +56,7 @@ RSpec.describe "Handle ECS Events", :opensips do
     payload = build_ecs_event_payload(
       group: "service:somleng-switch",
       eni_private_ip: "10.1.1.1",
+      eni_status: "DELETED",
       last_status: "STOPPED"
     )
 

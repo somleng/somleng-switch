@@ -44,4 +44,36 @@ RSpec.describe ECSEventParser do
       eni_private_ip: nil
     )
   end
+
+  it "handles events with attached eni attachments" do
+    event = build_ecs_event_payload(
+      eni_private_ip: "10.0.0.1",
+      eni_status: "ATTACHED"
+    )
+    parser = ECSEventParser.new(event)
+
+    result = parser.parse_event
+
+    expect(result).to have_attributes(
+      eni_private_ip: "10.0.0.1",
+      eni_attached?: true,
+      eni_deleted?: false
+    )
+  end
+
+  it "handles events with deleted eni attachments" do
+    event = build_ecs_event_payload(
+      eni_private_ip: "10.0.0.1",
+      eni_status: "DELETED"
+    )
+    parser = ECSEventParser.new(event)
+
+    result = parser.parse_event
+
+    expect(result).to have_attributes(
+      eni_private_ip: "10.0.0.1",
+      eni_attached?: false,
+      eni_deleted?: true
+    )
+  end
 end

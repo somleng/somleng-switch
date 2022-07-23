@@ -1,5 +1,13 @@
 class ECSEventParser
-  Event = Struct.new(:task_running?, :task_stopped?, :eni_private_ip, :group, keyword_init: true)
+  Event = Struct.new(
+    :task_running?,
+    :task_stopped?,
+    :eni_attached?,
+    :eni_deleted?,
+    :eni_private_ip,
+    :group,
+    keyword_init: true
+  )
 
   attr_reader :event
 
@@ -11,6 +19,8 @@ class ECSEventParser
     Event.new(
       task_running?: task_running?,
       task_stopped?: task_stopped?,
+      eni_attached?: eni_attached?,
+      eni_deleted?: eni_deleted?,
       eni_private_ip:,
       group:
     )
@@ -30,6 +40,18 @@ class ECSEventParser
     last_status == "STOPPED"
   end
 
+  def eni_attached?
+    return false if eni.nil?
+
+    eni.fetch("status") == "ATTACHED"
+  end
+
+  def eni_deleted?
+    return false if eni.nil?
+
+    eni.fetch("status") == "DELETED"
+  end
+
   def group
     detail.fetch("group")
   end
@@ -41,7 +63,7 @@ class ECSEventParser
   end
 
   def eni
-    attachments.find { |attachment| attachment.fetch("type") == "eni" && attachment.fetch("status") == "ATTACHED" }
+    attachments.find { |attachment| attachment.fetch("type") == "eni" }
   end
 
   def detail

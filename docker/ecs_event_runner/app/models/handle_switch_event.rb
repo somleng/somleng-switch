@@ -6,9 +6,9 @@ class HandleSwitchEvent < ApplicationWorkflow
   end
 
   def call
-    if event.task_running?
+    if event.task_running? && event.eni_attached?
       handle_switch_running_event
-    elsif event.task_stopped?
+    elsif event.task_stopped? && event.eni_deleted?
       handle_switch_stopped_event
     end
   end
