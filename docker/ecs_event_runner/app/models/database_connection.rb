@@ -16,8 +16,6 @@ class DatabaseConnection
   end
 
   def connection
-    puts "Connecting to database ..."
-    puts pg_connection_options
     @connection ||= PG.connect(pg_connection_options)
   end
 
