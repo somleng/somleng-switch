@@ -21,7 +21,7 @@ class ExecuteOpenSIPSCommand < ApplicationWorkflow
   private
 
   def fifo_write
-    File.write(fifo_name, fifo_command, mode: "a")
+    File.write(fifo_name, fifo_command, mode: "w")
   end
 
   def fifo_command
