@@ -111,7 +111,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ./deploy/staging/ecs_task_definition.json
-          container-name: opensips
+          container-name: "opensips"
           image: ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
       - name: Deploy
