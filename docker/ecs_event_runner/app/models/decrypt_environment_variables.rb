@@ -1,12 +1,13 @@
 require "aws-sdk-ssm"
 
 class DecryptEnvironmentVariables < ApplicationWorkflow
-  attr_reader :ssm_client
+  attr_reader :ssm_client, :environment
 
   SSM_PARAMETER_NAME_PATTERN = "_SSM_PARAMETER_NAME".freeze
 
-  def initialize(ssm_client: Aws::SSM::Client.new)
+  def initialize(ssm_client: Aws::SSM::Client.new, environment: ENV)
     @ssm_client = ssm_client
+    @environment = environment
   end
 
   def call
@@ -19,7 +20,7 @@ class DecryptEnvironmentVariables < ApplicationWorkflow
   private
 
   def ssm_parameter_names
-    @ssm_parameter_names ||= ENV.select { |key, _| key.end_with?(SSM_PARAMETER_NAME_PATTERN) }
+    @ssm_parameter_names ||= environment.select { |key, _| key.end_with?(SSM_PARAMETER_NAME_PATTERN) }
   end
 
   def decrypt_parameters(names)
@@ -27,9 +28,9 @@ class DecryptEnvironmentVariables < ApplicationWorkflow
   end
 
   def set_env_from_parameters(parameters)
-    ssm_parameter_names.each_with_index do |(name, _), i|
+    ssm_parameter_names.each do |name, value|
       env_name = name.delete_suffix(SSM_PARAMETER_NAME_PATTERN)
-      ENV[env_name] = parameters[i].value
+      environment[env_name] = parameters.find { |parameter| parameter.name == value }.value
     end
   end
 end

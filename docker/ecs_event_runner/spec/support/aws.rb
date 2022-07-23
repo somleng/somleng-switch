@@ -3,7 +3,10 @@ Aws.config[:ssm] = {
     get_parameters: lambda { |context|
       {
         parameters: context.params[:names].map do |name|
-          Aws::SSM::Types::Parameter.new(value: name.delete_prefix("ssm-parameter-name-"))
+          Aws::SSM::Types::Parameter.new(
+            name:,
+            value: name.delete_prefix("ssm-parameter-name-")
+          )
         end
       }
     }
