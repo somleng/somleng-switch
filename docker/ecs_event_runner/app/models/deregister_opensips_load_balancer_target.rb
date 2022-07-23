@@ -7,7 +7,6 @@ class DeregisterOpenSIPSLoadBalancerTarget < ApplicationWorkflow
 
   def call
     delete_load_balancer_target
-    ExecuteOpenSIPSCommand.call(:lb_reload)
   end
 
   private
