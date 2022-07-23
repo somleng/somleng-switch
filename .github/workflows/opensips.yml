@@ -110,7 +110,7 @@ jobs:
         id: render-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ matrix.task_definition }}
+          task-definition: ./deploy/staging/ecs_task_definition.json
           container-name: opensips
           image: ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
