@@ -13,6 +13,8 @@ module "somleng_switch_staging" {
   freeswitch_image = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository.repository_uri
   freeswitch_event_logger_image = data.terraform_remote_state.core.outputs.freeswitch_event_logger_ecr_repository.repository_uri
   opensips_image = data.terraform_remote_state.core.outputs.opensips_ecr_repository.repository_uri
+  opensips_scheduler_image = data.terraform_remote_state.core.outputs.opensips_scheduler_ecr_repository.repository_uri
+
   s3_mpeg_ecr_repository_url = data.terraform_remote_state.core.outputs.s3_mpeg_ecr_repository.repository_url
   ecs_event_runner_ecr_repository_url = data.terraform_remote_state.core.outputs.ecs_event_runner_ecr_repository.repository_url
 

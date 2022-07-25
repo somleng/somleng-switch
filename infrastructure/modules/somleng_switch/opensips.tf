@@ -127,9 +127,13 @@ resource "aws_iam_role_policy_attachment" "opensips_task_execution_role_amazon_e
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-# Log Group
 resource "aws_cloudwatch_log_group" "opensips" {
   name = "${var.app_identifier}-opensips"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_log_group" "opensips_scheduler" {
+  name = "${var.app_identifier}-opensips-scheduler"
   retention_in_days = 7
 }
 
@@ -137,9 +141,11 @@ data "template_file" "opensips" {
   template = file("${path.module}/templates/opensips.json.tpl")
 
   vars = {
-    app_image = var.opensips_image
+    opensips_image = var.opensips_image
+    opensips_scheduler_image = var.opensips_scheduler_image
 
     opensips_logs_group = aws_cloudwatch_log_group.opensips.name
+    opensips_scheduler_logs_group = aws_cloudwatch_log_group.opensips_scheduler.name
     logs_group_region = var.aws_region
     app_environment = var.app_environment
 
@@ -162,12 +168,7 @@ resource "aws_ecs_task_definition" "opensips" {
   memory = module.opensips_container_instances.ec2_instance_type.memory_size - 256
 
   volume {
-    name = "cache"
-
-    efs_volume_configuration {
-      file_system_id          = aws_efs_file_system.cache.id
-      transit_encryption      = "ENABLED"
-    }
+    name = "opensips"
   }
 }
 
@@ -185,11 +186,7 @@ resource "local_file" "opensips_task_definition" {
   "memory": "${aws_ecs_task_definition.opensips.memory}",
   "volumes": [
     {
-      "name": "${aws_ecs_task_definition.opensips.volume.*.name[0]}",
-      "efsVolumeConfiguration": {
-        "fileSystemId": "${aws_efs_file_system.cache.id}",
-        "transitEncryption": "${aws_ecs_task_definition.opensips.volume.*.efs_volume_configuration[0].*.transit_encryption[0]}"
-      }
+      "name": "${aws_ecs_task_definition.opensips.volume.*.name[0]}"
     }
   ]
 }

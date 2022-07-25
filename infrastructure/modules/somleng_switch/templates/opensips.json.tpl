@@ -1,7 +1,7 @@
 [
   {
     "name": "opensips",
-    "image": "${app_image}:latest",
+    "image": "${opensips_image}:latest",
     "logConfiguration": {
       "logDriver": "awslogs",
        "options": {
@@ -12,8 +12,8 @@
     },
     "mountPoints": [
       {
-        "containerPath": "/cache",
-        "sourceVolume": "cache"
+        "sourceVolume": "opensips",
+        "containerPath": "/var/opensips"
       }
     ],
     "essential": true,
@@ -40,7 +40,7 @@
     "environment": [
       {
         "name": "FIFO_NAME",
-        "value": "/cache/opensips/opensips_fifo"
+        "value": "/var/opensips/opensips_fifo"
       },
       {
         "name": "DATABASE_NAME",
@@ -59,5 +59,30 @@
         "value": "${database_port}"
       }
     ]
+  },
+  {
+    "name": "opensips_scheduler",
+    "image": "${opensips_scheduler_image}:latest",
+    "logConfiguration": {
+      "logDriver": "awslogs",
+       "options": {
+         "awslogs-group": "${opensips_scheduler_logs_group}",
+         "awslogs-region": "${logs_group_region}",
+         "awslogs-stream-prefix": "${app_environment}"
+       }
+    },
+    "mountPoints": [
+      {
+        "sourceVolume": "opensips",
+        "containerPath": "/var/opensips"
+      }
+    ],
+    "environment": [
+      {
+        "name": "FIFO_NAME",
+        "value": "/var/opensips/opensips_fifo"
+      }
+    ],
+    "essential": true
   }
 ]
