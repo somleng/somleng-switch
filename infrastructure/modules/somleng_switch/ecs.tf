@@ -136,7 +136,8 @@ resource "aws_ecs_service" "service" {
   network_configuration {
     subnets = var.container_instance_subnets
     security_groups = [
-      aws_security_group.switch.id
+      aws_security_group.switch.id,
+      aws_security_group.inbound_sip_trunks.id
     ]
   }
 
@@ -149,6 +150,18 @@ resource "aws_ecs_service" "service" {
     target_group_arn = aws_lb_target_group.this.arn
     container_name   = var.webserver_container_name
     container_port   = var.webserver_container_port
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.sip.arn
+    container_name   = "freeswitch"
+    container_port   = 5060
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.sip_alternative.arn
+    container_name   = "freeswitch"
+    container_port   = 5080
   }
 
   lifecycle {
