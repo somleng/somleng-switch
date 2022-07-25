@@ -1,0 +1,14 @@
+{
+  "family": "somleng-switch-staging-opensips",
+  "networkMode": "awsvpc",
+  "executionRoleArn": "arn:aws:iam::324279636507:role/somleng-switch-staging-ecs-OpenSIPSTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::324279636507:role/somleng-switch-staging-ecs-OpenSIPSTaskRole",
+  "requiresCompatibilities": ["EC2"],
+  "containerDefinitions": [{"cpu":0,"environment":[{"name":"DATABASE_HOST","value":"somlengv2.cluster-clrslmbm6627.ap-southeast-1.rds.amazonaws.com"},{"name":"DATABASE_NAME","value":"opensips_staging"},{"name":"DATABASE_PORT","value":"5432"},{"name":"DATABASE_USERNAME","value":"somleng"},{"name":"FIFO_NAME","value":"/var/opensips/opensips_fifo"}],"essential":true,"image":"public.ecr.aws/somleng/somleng-switch-opensips:latest","logConfiguration":{"logDriver":"awslogs","options":{"awslogs-group":"somleng-switch-staging-opensips","awslogs-region":"ap-southeast-1","awslogs-stream-prefix":"staging"}},"mountPoints":[{"containerPath":"/var/opensips","sourceVolume":"opensips"}],"name":"opensips","portMappings":[{"containerPort":5060,"hostPort":5060,"protocol":"udp"},{"containerPort":5080,"hostPort":5080,"protocol":"udp"}],"secrets":[{"name":"DATABASE_PASSWORD","valueFrom":"arn:aws:ssm:ap-southeast-1:324279636507:parameter/somleng.db_master_password"},{"name":"EVENT_SOCKET_PASSWORD","valueFrom":"arn:aws:ssm:ap-southeast-1:324279636507:parameter/somleng-switch.staging.freeswitch_event_socket_password"}],"volumesFrom":[]},{"cpu":0,"environment":[{"name":"FIFO_NAME","value":"/var/opensips/opensips_fifo"}],"essential":true,"image":"public.ecr.aws/somleng/somleng-switch-opensips-scheduler:latest","logConfiguration":{"logDriver":"awslogs","options":{"awslogs-group":"somleng-switch-staging-opensips-scheduler","awslogs-region":"ap-southeast-1","awslogs-stream-prefix":"staging"}},"mountPoints":[{"containerPath":"/var/opensips","sourceVolume":"opensips"}],"name":"opensips_scheduler","portMappings":[],"volumesFrom":[]}],
+  "memory": "1792",
+  "volumes": [
+    {
+      "name": "opensips"
+    }
+  ]
+}

@@ -5,11 +5,15 @@ variable "app_environment" {}
 variable "app_image" {}
 variable "nginx_image" {}
 variable "freeswitch_image" {}
+variable "opensips_image" {}
+variable "opensips_scheduler_image" {}
 variable "freeswitch_event_logger_image" {}
 variable s3_mpeg_ecr_repository_url {}
+variable ecs_event_runner_ecr_repository_url {}
 variable "container_instance_subnets" {}
 variable "intra_subnets" {}
 variable "vpc_id" {}
+variable "vpc_cidr_block" {}
 variable "load_balancer" {}
 variable "network_load_balancer" {}
 variable "listener_arn" {}
@@ -45,6 +49,12 @@ variable "max_tasks" {
 variable "min_tasks" {
   default = 1
 }
+variable "opensips_max_tasks" {
+  default = 4
+}
+variable "opensips_min_tasks" {
+  default = 1
+}
 # If the average CPU utilization over a minute drops to this threshold,
 # the number of containers will be reduced (but not below ecs_autoscale_min_instances).
 variable "ecs_as_cpu_low_threshold_per" {
@@ -72,6 +82,13 @@ variable "load_balancer_sip_port" {
 variable "load_balancer_sip_alternative_port" {
   default = 5080
 }
+
+variable "db_name" {}
+variable "db_host" {}
+variable "db_port" {}
+variable "db_security_group" {}
+variable "db_username" {}
+variable "db_password_parameter_arn" {}
 
 variable "json_cdr_password_parameter_arn" {}
 variable "external_sip_ip" {}

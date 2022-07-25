@@ -12,9 +12,14 @@ module "somleng_switch_staging" {
   nginx_image = data.terraform_remote_state.core.outputs.nginx_ecr_repository.repository_uri
   freeswitch_image = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository.repository_uri
   freeswitch_event_logger_image = data.terraform_remote_state.core.outputs.freeswitch_event_logger_ecr_repository.repository_uri
+  opensips_image = data.terraform_remote_state.core.outputs.opensips_ecr_repository.repository_uri
+  opensips_scheduler_image = data.terraform_remote_state.core.outputs.opensips_scheduler_ecr_repository.repository_uri
+
   s3_mpeg_ecr_repository_url = data.terraform_remote_state.core.outputs.s3_mpeg_ecr_repository.repository_url
+  ecs_event_runner_ecr_repository_url = data.terraform_remote_state.core.outputs.ecs_event_runner_ecr_repository.repository_url
 
   vpc_id = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_id
+  vpc_cidr_block = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_cidr_block
   container_instance_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets
   intra_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.intra_subnets
 
@@ -26,6 +31,13 @@ module "somleng_switch_staging" {
   alternative_sip_inbound_ip = data.terraform_remote_state.core_infrastructure.outputs.nlb_eips[0].public_ip
   alternative_sip_outbound_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
   alternative_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
+
+  db_name = "opensips_staging"
+  db_username = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.master_username
+  db_password_parameter_arn = data.terraform_remote_state.core_infrastructure.outputs.db_master_password_parameter.arn
+  db_host = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.endpoint
+  db_port = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.port
+  db_security_group = data.terraform_remote_state.core_infrastructure.outputs.db_security_group.id
 
   load_balancer = data.terraform_remote_state.core_infrastructure.outputs.application_load_balancer
   network_load_balancer = data.terraform_remote_state.core_infrastructure.outputs.network_load_balancer
@@ -40,4 +52,5 @@ module "somleng_switch_staging" {
   load_balancer_sip_alternative_port = 6080
   listener_rule_priority = 120
   min_tasks = 0
+  opensips_min_tasks = 0
 }

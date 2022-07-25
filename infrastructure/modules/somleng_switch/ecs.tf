@@ -16,7 +16,7 @@ resource "aws_ecs_capacity_provider" "container_instance" {
   name = var.app_identifier
 
   auto_scaling_group_provider {
-    auto_scaling_group_arn         = aws_autoscaling_group.container_instance.arn
+    auto_scaling_group_arn         = module.container_instances.autoscaling_group.arn
     managed_termination_protection = "ENABLED"
 
     managed_scaling {
@@ -31,7 +31,10 @@ resource "aws_ecs_capacity_provider" "container_instance" {
 resource "aws_ecs_cluster_capacity_providers" "cluster" {
   cluster_name = aws_ecs_cluster.cluster.name
 
-  capacity_providers = [aws_ecs_capacity_provider.container_instance.name]
+  capacity_providers = [
+    aws_ecs_capacity_provider.container_instance.name,
+    aws_ecs_capacity_provider.opensips.name
+  ]
 }
 
 data "template_file" "container_definitions" {
@@ -87,7 +90,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   container_definitions = data.template_file.container_definitions.rendered
   task_role_arn = aws_iam_role.ecs_task_role.arn
   execution_role_arn = aws_iam_role.task_execution_role.arn
-  memory = data.aws_ec2_instance_type.container_instance.memory_size - 256
+  memory = module.container_instances.ec2_instance_type.memory_size - 256
 
   volume {
     name = local.efs_volume_name
@@ -133,8 +136,7 @@ resource "aws_ecs_service" "service" {
   network_configuration {
     subnets = var.container_instance_subnets
     security_groups = [
-      aws_security_group.appserver.id,
-      aws_security_group.inbound_sip_trunks.id
+      aws_security_group.switch.id
     ]
   }
 
@@ -147,18 +149,6 @@ resource "aws_ecs_service" "service" {
     target_group_arn = aws_lb_target_group.this.arn
     container_name   = var.webserver_container_name
     container_port   = var.webserver_container_port
-  }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.sip.arn
-    container_name   = "freeswitch"
-    container_port   = 5060
-  }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.sip_alternative.arn
-    container_name   = "freeswitch"
-    container_port   = 5080
   }
 
   lifecycle {

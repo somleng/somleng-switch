@@ -149,6 +149,10 @@
       {
         "containerPort": 5080,
         "protocol": "udp"
+      },
+      {
+        "containerPort": 8021,
+        "protocol": "tcp"
       }
     ],
     "environment": [

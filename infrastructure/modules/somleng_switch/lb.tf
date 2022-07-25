@@ -45,9 +45,8 @@ resource "aws_lb_target_group" "sip" {
   connection_termination = true
 
   health_check {
-    protocol = "HTTP"
-    port = var.webserver_container_port
-    path = "/health_checks/freeswitch"
+    protocol = "TCP"
+    port = 5060
     healthy_threshold = 3
     interval = 10
   }
@@ -74,9 +73,8 @@ resource "aws_lb_target_group" "sip_alternative" {
   connection_termination = true
 
   health_check {
-    protocol = "HTTP"
-    port = var.webserver_container_port
-    path = "/health_checks/freeswitch"
+    protocol = "TCP"
+    port = 5060
     healthy_threshold = 3
     interval = 10
   }
