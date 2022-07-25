@@ -49,6 +49,12 @@ variable "max_tasks" {
 variable "min_tasks" {
   default = 1
 }
+variable "opensips_max_tasks" {
+  default = 4
+}
+variable "opensips_min_tasks" {
+  default = 1
+}
 # If the average CPU utilization over a minute drops to this threshold,
 # the number of containers will be reduced (but not below ecs_autoscale_min_instances).
 variable "ecs_as_cpu_low_threshold_per" {
