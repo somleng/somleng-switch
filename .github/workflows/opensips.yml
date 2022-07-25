@@ -24,7 +24,7 @@ jobs:
             {
               "identifier": "somleng-switch-staging_opensips",
               "task_definition": "docker/opensips/deploy/staging/ecs_task_definition.json",
-              "branch": "opensips",
+              "branch": "develop",
               "image_tag": "staging",
               "ecs_service": "somleng-switch-staging-opensips",
               "ecs_cluster": "somleng-switch-staging"
