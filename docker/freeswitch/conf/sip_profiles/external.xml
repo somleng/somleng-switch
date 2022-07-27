@@ -8,7 +8,7 @@
   <settings>
     <X-PRE-PROCESS cmd="include" data="shared/settings.xml"/>
 
-    <param name="ext-sip-ip" value="$${external_sip_ip}"/>
+    <param name="ext-sip-ip" value="$${local_ip_v4}"/>
     <param name="ext-rtp-ip" value="$${external_rtp_ip}"/>
   </settings>
 </profile>
