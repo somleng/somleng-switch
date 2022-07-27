@@ -211,17 +211,17 @@ resource "aws_ecs_service" "opensips" {
     ]
   }
 
-  # load_balancer {
-  #   target_group_arn = aws_lb_target_group.sip.arn
-  #   container_name   = "opensips"
-  #   container_port   = var.sip_port
-  # }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.sip.arn
+    container_name   = "opensips"
+    container_port   = var.sip_port
+  }
 
-  # load_balancer {
-  #   target_group_arn = aws_lb_target_group.sip_alternative.arn
-  #   container_name   = "opensips"
-  #   container_port   = var.sip_alternative_port
-  # }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.sip_alternative.arn
+    container_name   = "opensips"
+    container_port   = var.sip_alternative_port
+  }
 
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.opensips.name
