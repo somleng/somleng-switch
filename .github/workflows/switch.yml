@@ -46,7 +46,7 @@ jobs:
               "identifier": "somleng-switch-staging",
               "branch": "develop",
               "task_definition": "deploy/staging/ecs_task_definition.json",
-              "image_tag": "staging",
+              "image_tag": "opensips_target",
               "ecs_service": "somleng-switch-staging",
               "ecs_cluster": "somleng-switch-staging"
             },
