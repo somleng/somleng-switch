@@ -47,6 +47,49 @@ resource "aws_ecrpublic_repository" "opensips" {
   catalog_data {
     about_text        = "Somleng Switch OpenSIPS"
     architectures     = ["Linux"]
+
+    usage_text = <<EOF
+# How to use this image
+
+## Boostrap the Database
+
+### Create a new OpenSIPS database and configures the desired modules
+
+```
+  $ docker run --rm -e DATABASE_URL="postgres://postgres:@host.docker.internal:5432/opensips" -e DATABASE_MODULES="dialog load_balancer" public.ecr.aws/somleng/somleng-switch-opensips:bootstrap create_db
+```
+
+Replace `DATABASE_URL` with the url of the database you want to use.
+Replace `DATABASE_MODULES` with a list of modules you want to use.
+
+### Add a new module
+
+```
+  $ docker run --rm -e DATABASE_URL="postgres://postgres:@host.docker.internal:5432/opensips" -e DATABASE_MODULES="dialog load_balancer" public.ecr.aws/somleng/somleng-switch-opensips:bootstrap add_module
+```
+
+Replace `DATABASE_URL` with the url of the database you want to use.
+Replace `DATABASE_MODULES` with a list of modules you want to add.
+
+## Run OpenSIPS
+
+```
+  $ docker run --rm -e DATABASE_URL="postgres://postgres:@host.docker.internal:5432/opensips" public.ecr.aws/somleng/somleng-switch-opensips
+```
+
+Replace `DATABASE_URL` with the url of the database you want to use.
+Alternatively you set the following environment variables individually:
+
+```
+  DATABASE_USERNAME
+  DATABASE_PASSWORD
+  DATABASE_HOST
+  DATABASE_PORT
+  DATABASE_NAME
+```
+
+You can also set `FIFO_NAME` to override the FIFO location for OpenSIPS. This is useful when using the [scheduler](https://gallery.ecr.aws/somleng/somleng-switch-opensips-scheduler)
+EOF
   }
 }
 
