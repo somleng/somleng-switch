@@ -65,6 +65,10 @@
       {
         "name": "SIP_ALTERNATIVE_PORT",
         "value": "${sip_alternative_port}"
+      },
+      {
+        "name": "SIP_ADVERTISED_IP",
+        "value": "${sip_advertised_ip}"
       }
     ]
   },

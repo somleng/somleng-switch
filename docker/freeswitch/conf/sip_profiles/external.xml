@@ -13,4 +13,3 @@
     <param name="ext-rtp-ip" value="$${external_rtp_ip}"/>
   </settings>
 </profile>
-

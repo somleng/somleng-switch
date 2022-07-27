@@ -177,10 +177,6 @@
         "value": "${cache_directory}/freeswitch/logs"
       },
       {
-        "name": "FS_EXTERNAL_SIP_IP",
-        "value": "${external_sip_ip}"
-      },
-      {
         "name": "FS_EXTERNAL_RTP_IP",
         "value": "${external_rtp_ip}"
       },

@@ -151,6 +151,7 @@ data "template_file" "opensips" {
 
     sip_port = var.sip_port
     sip_alternative_port = var.sip_alternative_port
+    sip_advertised_ip = var.external_sip_ip
 
     freeswitch_event_socket_password_parameter_arn = aws_ssm_parameter.freeswitch_event_socket_password.arn
     database_password_parameter_arn = var.db_password_parameter_arn

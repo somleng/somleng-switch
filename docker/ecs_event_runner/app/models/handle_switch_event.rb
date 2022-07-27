@@ -7,19 +7,15 @@ class HandleSwitchEvent < ApplicationWorkflow
 
   def call
     if event.task_running? && event.eni_attached?
-      handle_switch_running_event
+      opensips_load_balancer_target.register!
     elsif event.task_stopped? && event.eni_deleted?
-      handle_switch_stopped_event
+      opensips_load_balancer_target.deregister!
     end
   end
 
   private
 
-  def handle_switch_running_event
-    RegisterOpenSIPSLoadBalancerTarget.call(target_ip: event.eni_private_ip)
-  end
-
-  def handle_switch_stopped_event
-    DeregisterOpenSIPSLoadBalancerTarget.call(target_ip: event.eni_private_ip)
+  def opensips_load_balancer_target
+    OpenSIPSLoadBalancerTarget.new(target_ip: event.eni_private_ip)
   end
 end
