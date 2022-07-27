@@ -37,7 +37,7 @@ resource "aws_lb_listener_rule" "this" {
 
 resource "aws_lb_target_group" "sip" {
   name        = "${var.app_identifier}-sip"
-  port        = 5060
+  port        = var.sip_port
   protocol    = "UDP"
   target_type = "ip"
   vpc_id      = var.vpc_id
@@ -46,7 +46,7 @@ resource "aws_lb_target_group" "sip" {
 
   health_check {
     protocol = "TCP"
-    port = 5060
+    port = var.sip_port
     healthy_threshold = 3
     interval = 10
   }
@@ -54,7 +54,7 @@ resource "aws_lb_target_group" "sip" {
 
 resource "aws_lb_listener" "sip" {
   load_balancer_arn = var.network_load_balancer.arn
-  port              = var.load_balancer_sip_port
+  port              = var.sip_port
   protocol          = "UDP"
 
   default_action {
@@ -65,7 +65,7 @@ resource "aws_lb_listener" "sip" {
 
 resource "aws_lb_target_group" "sip_alternative" {
   name        = "${var.app_identifier}-sip-alt"
-  port        = 5080
+  port        = var.sip_alternative_port
   protocol    = "UDP"
   target_type = "ip"
   vpc_id      = var.vpc_id
@@ -74,7 +74,7 @@ resource "aws_lb_target_group" "sip_alternative" {
 
   health_check {
     protocol = "TCP"
-    port = 5060
+    port = var.sip_port
     healthy_threshold = 3
     interval = 10
   }
@@ -82,7 +82,7 @@ resource "aws_lb_target_group" "sip_alternative" {
 
 resource "aws_lb_listener" "sip_alternative" {
   load_balancer_arn = var.network_load_balancer.arn
-  port              = var.load_balancer_sip_alternative_port
+  port              = var.sip_alternative_port
   protocol          = "UDP"
 
   default_action {

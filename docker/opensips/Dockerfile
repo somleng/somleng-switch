@@ -55,6 +55,8 @@ COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 ENV FIFO_NAME "/tmp/opensips_fifo"
 ENV DATABASE_URL "postgres://postgres:@localhost:5432/opensips"
+ENV SIP_PORT 5060
+ENV SIP_ALTERNATIVE_PORT 5080
 
 EXPOSE 5060/udp
 EXPOSE 5080/udp

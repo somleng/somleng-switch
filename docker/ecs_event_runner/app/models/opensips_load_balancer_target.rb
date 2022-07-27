@@ -6,7 +6,7 @@ class OpenSIPSLoadBalancerTarget
   end
 
   def dst_uri
-    "sip:#{target_ip}:5060"
+    "sip:#{target_ip}:#{fs_sip_port}"
   end
 
   def resources
@@ -33,6 +33,10 @@ class OpenSIPSLoadBalancerTarget
 
   def fs_event_socket_port
     ENV.fetch("FS_EVENT_SOCKET_PORT", "8021")
+  end
+
+  def fs_sip_port
+    ENV.fetch("FS_SIP_PORT", "5060")
   end
 
   def resource_type

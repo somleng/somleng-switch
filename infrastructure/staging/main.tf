@@ -48,8 +48,8 @@ module "somleng_switch_staging" {
   sip_subdomain = "sip-staging"
   switch_subdomain = "switch-staging"
   recordings_bucket_name = "raw-recordings-staging.somleng.org"
-  load_balancer_sip_port = 6060
-  load_balancer_sip_alternative_port = 6080
+  sip_port = 6060
+  sip_alternative_port = 6080
   listener_rule_priority = 120
   min_tasks = 0
   opensips_min_tasks = 0

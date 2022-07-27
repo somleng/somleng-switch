@@ -55,6 +55,9 @@ data "template_file" "container_definitions" {
     freeswitch_event_socket_password_parameter_arn = aws_ssm_parameter.freeswitch_event_socket_password.arn
     freeswitch_event_socket_port = var.freeswitch_event_socket_port
 
+    sip_port = var.sip_port
+    sip_alternative_port = var.sip_alternative_port
+
     nginx_logs_group = aws_cloudwatch_log_group.nginx.name
     freeswitch_logs_group = aws_cloudwatch_log_group.freeswitch.name
     freeswitch_event_logger_logs_group = aws_cloudwatch_log_group.freeswitch_event_logger.name

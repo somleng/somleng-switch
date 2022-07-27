@@ -11,6 +11,8 @@ if [ "$1" = 'opensips' ]; then
 
   sed -i "s|DATABASE_URL|\"$DATABASE_URL\"|g" /etc/opensips/opensips.cfg
   sed -i "s|FIFO_NAME|\"$FIFO_NAME\"|g" /etc/opensips/opensips.cfg
+  sed -i "s|SIP_PORT|$SIP_PORT|g" /etc/opensips/opensips.cfg
+  sed -i "s|SIP_ALTERNATIVE_PORT|$SIP_ALTERNATIVE_PORT|g" /etc/opensips/opensips.cfg
 
   exec "$OPENSIPS_CONTAINER_BINARY" -FE
 fi
