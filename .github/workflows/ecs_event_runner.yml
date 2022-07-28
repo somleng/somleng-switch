@@ -56,7 +56,7 @@ jobs:
           [
             {
               "identifier": "somleng-switch-staging_ecs_event_runner",
-              "branch": "opensips_target",
+              "branch": "develop",
               "image_tag": "staging"
             },
             {
