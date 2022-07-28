@@ -76,6 +76,14 @@ RSpec.describe NormalizedCall do
       expect(call.from).to eq("85516701721")
     end
 
+    it "normalizes a SIP FQDN address" do
+      phone_call = build_phone_call(from: "sip:85516701721@sip.example.com:6060")
+
+      call = NormalizedCall.new(phone_call)
+
+      expect(call.from).to eq("85516701721")
+    end
+
     it "normalizes a dial string" do
       phone_call = build_phone_call(
         to: "sofia/gateway/pin_kh_01/85512345678"
