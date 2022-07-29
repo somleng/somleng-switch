@@ -52,7 +52,7 @@ jobs:
             },
             {
               "identifier": "somleng-switch",
-              "branch": "opensips_alternate_port",
+              "branch": "master",
               "task_definition": "deploy/production/ecs_task_definition.json",
               "image_tag": "latest",
               "ecs_service": "somleng-switch",
