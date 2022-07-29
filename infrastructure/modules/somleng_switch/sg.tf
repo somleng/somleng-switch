@@ -22,7 +22,7 @@ resource "aws_security_group_rule" "switch_ingress_freeswitch_event_socket" {
   protocol          = "TCP"
   from_port         = 8021
   security_group_id = aws_security_group.switch.id
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks = [var.vpc_cidr_block]
 }
 
 resource "aws_security_group_rule" "switch_ingress_sip" {
@@ -31,7 +31,7 @@ resource "aws_security_group_rule" "switch_ingress_sip" {
   protocol          = "UDP"
   from_port         = var.sip_port
   security_group_id = aws_security_group.switch.id
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks = [var.vpc_cidr_block]
 }
 
 resource "aws_security_group_rule" "switch_ingress_sip_alternative" {
@@ -40,7 +40,7 @@ resource "aws_security_group_rule" "switch_ingress_sip_alternative" {
   protocol          = "UDP"
   from_port         = var.sip_alternative_port
   security_group_id = aws_security_group.switch.id
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks = [var.vpc_cidr_block]
 }
 
 resource "aws_security_group_rule" "switch_egress" {
