@@ -4,7 +4,7 @@ set -e
 
 while :
 do
-  if [ -f $FIFO_NAME ]; then
+  if [ -p $FIFO_NAME ]; then
     echo "::{\"jsonrpc\":\"2.0\",\"method\":\"lb_reload\"}" > $FIFO_NAME
   fi
 
