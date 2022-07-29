@@ -1,6 +1,10 @@
 <include>
   <param name="sip-trace" value="no"/>
 
+  <!-- If we use localnet.auto then inbound requests from OpenSIPS -->
+  <!-- will be treated as local and the ext-sip-ip and ext-rtp-ip will not be used -->
+  <param name="local-network-acl" value="loopback.auto"/>
+
   <param name="sip-ip" value="$${local_ip_v4}"/>
   <param name="rtp-ip" value="$${local_ip_v4}"/>
 

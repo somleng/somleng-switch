@@ -181,10 +181,6 @@
         "value": "${external_rtp_ip}"
       },
       {
-        "name": "FS_ALTERNATIVE_SIP_INBOUND_IP",
-        "value": "${alternative_sip_inbound_ip}"
-      },
-      {
         "name": "FS_ALTERNATIVE_SIP_OUTBOUND_IP",
         "value": "${alternative_sip_outbound_ip}"
       },

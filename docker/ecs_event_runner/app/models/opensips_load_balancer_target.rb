@@ -25,7 +25,7 @@ class OpenSIPSLoadBalancerTarget < ApplicationWorkflow
     database_connection.exec(<<-SQL)
       INSERT INTO load_balancer (group_id, dst_uri, resources, probe_mode)
       VALUES (1, '#{dst_uri}', '#{resources}', 2),
-             (1, '#{alternative_dst_uri}', '#{resources}', 2);
+             (1, '#{alternative_dst_uri}', '#{alternative_resources}', 2);
     SQL
   end
 
@@ -49,10 +49,12 @@ class OpenSIPSLoadBalancerTarget < ApplicationWorkflow
   end
 
   def resources
-    "pstn=#{event_socket_url}"
+    "gw=#{event_socket_url}"
   end
 
-  private
+  def alternative_resources
+    "gwalt=#{event_socket_url}"
+  end
 
   def event_socket_url
     "fs://:#{fs_event_socket_password}@#{target_ip}:#{fs_event_socket_port}"
