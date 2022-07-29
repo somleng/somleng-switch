@@ -19,11 +19,11 @@
     "essential": true,
     "portMappings": [
       {
-        "containerPort": 5060,
+        "containerPort": ${sip_port},
         "protocol": "udp"
       },
       {
-        "containerPort": 5080,
+        "containerPort": ${sip_alternative_port},
         "protocol": "udp"
       }
     ],
@@ -57,6 +57,18 @@
       {
         "name": "DATABASE_PORT",
         "value": "${database_port}"
+      },
+      {
+        "name": "SIP_PORT",
+        "value": "${sip_port}"
+      },
+      {
+        "name": "SIP_ALTERNATIVE_PORT",
+        "value": "${sip_alternative_port}"
+      },
+      {
+        "name": "SIP_ADVERTISED_IP",
+        "value": "${sip_advertised_ip}"
       }
     ]
   },

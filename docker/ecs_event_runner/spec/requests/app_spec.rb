@@ -17,7 +17,7 @@ RSpec.describe "Handle ECS Events", :opensips do
     invoke_lambda(payload:)
 
     result = opensips_database_connection.exec("SELECT * FROM load_balancer;")
-    expect(result.ntuples).to eq(2)
+    expect(result.ntuples).to eq(3)
     expect(result[0]).to include(
       "dst_uri" => "sip:10.1.1.1:5060",
       "resources" => "pstn=fs://:fs-event-socket-password@10.1.1.1:8021"
@@ -26,6 +26,7 @@ RSpec.describe "Handle ECS Events", :opensips do
       "dst_uri" => "sip:10.1.1.100:5060",
       "resources" => "pstn=fs://:fs-event-socket-password@10.1.1.100:8021"
     )
+    expect(result[2]).to include("dst_uri" => "sip:10.1.1.100:5080")
   end
 
   it "only adds a load balancer target once" do
@@ -51,6 +52,10 @@ RSpec.describe "Handle ECS Events", :opensips do
     stub_env("SWITCH_GROUP" => "service:somleng-switch")
     create_load_balancer_target(
       dst_uri: "sip:10.1.1.1:5060",
+      resources: "pstn=fs://:fs-event-socket-password@10.1.1.1:8021"
+    )
+    create_load_balancer_target(
+      dst_uri: "sip:10.1.1.1:5080",
       resources: "pstn=fs://:fs-event-socket-password@10.1.1.1:8021"
     )
     payload = build_ecs_event_payload(

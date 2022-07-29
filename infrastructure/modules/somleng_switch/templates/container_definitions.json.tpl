@@ -143,11 +143,11 @@
         "protocol": "tcp"
       },
       {
-        "containerPort": 5060,
+        "containerPort": ${sip_port},
         "protocol": "udp"
       },
       {
-        "containerPort": 5080,
+        "containerPort": ${sip_alternative_port},
         "protocol": "udp"
       },
       {
@@ -175,10 +175,6 @@
       {
         "name": "FS_LOG_DIRECTORY",
         "value": "${cache_directory}/freeswitch/logs"
-      },
-      {
-        "name": "FS_EXTERNAL_SIP_IP",
-        "value": "${external_sip_ip}"
       },
       {
         "name": "FS_EXTERNAL_RTP_IP",
@@ -215,6 +211,14 @@
       {
         "name": "FS_EVENT_SOCKET_PORT",
         "value": "${freeswitch_event_socket_port}"
+      },
+      {
+        "name": "FS_SIP_PORT",
+        "value": "${sip_port}"
+      },
+      {
+        "name": "FS_SIP_ALTERNATIVE_PORT",
+        "value": "${sip_alternative_port}"
       }
     ]
   },

@@ -55,6 +55,9 @@ data "template_file" "container_definitions" {
     freeswitch_event_socket_password_parameter_arn = aws_ssm_parameter.freeswitch_event_socket_password.arn
     freeswitch_event_socket_port = var.freeswitch_event_socket_port
 
+    sip_port = var.sip_port
+    sip_alternative_port = var.sip_alternative_port
+
     nginx_logs_group = aws_cloudwatch_log_group.nginx.name
     freeswitch_logs_group = aws_cloudwatch_log_group.freeswitch.name
     freeswitch_event_logger_logs_group = aws_cloudwatch_log_group.freeswitch_event_logger.name
@@ -66,7 +69,6 @@ data "template_file" "container_definitions" {
     rayo_port = var.rayo_port
     json_cdr_url = var.json_cdr_url
     json_cdr_password_parameter_arn = var.json_cdr_password_parameter_arn
-    external_sip_ip = var.external_sip_ip
     external_rtp_ip = var.external_rtp_ip
 
     alternative_sip_inbound_ip = var.alternative_sip_inbound_ip
@@ -136,8 +138,7 @@ resource "aws_ecs_service" "service" {
   network_configuration {
     subnets = var.container_instance_subnets
     security_groups = [
-      aws_security_group.switch.id,
-      aws_security_group.inbound_sip_trunks.id
+      aws_security_group.switch.id
     ]
   }
 
@@ -150,18 +151,6 @@ resource "aws_ecs_service" "service" {
     target_group_arn = aws_lb_target_group.this.arn
     container_name   = var.webserver_container_name
     container_port   = var.webserver_container_port
-  }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.sip.arn
-    container_name   = "freeswitch"
-    container_port   = 5060
-  }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.sip_alternative.arn
-    container_name   = "freeswitch"
-    container_port   = 5080
   }
 
   lifecycle {

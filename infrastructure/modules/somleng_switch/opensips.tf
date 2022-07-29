@@ -20,9 +20,9 @@ resource "aws_security_group" "opensips" {
 
 resource "aws_security_group_rule" "opensips_healthcheck" {
   type              = "ingress"
-  to_port           = 5060
+  to_port           = var.sip_port
   protocol          = "tcp"
-  from_port         = 5060
+  from_port         = var.sip_port
   security_group_id = aws_security_group.opensips.id
   cidr_blocks = [var.vpc_cidr_block]
 }
@@ -149,6 +149,10 @@ data "template_file" "opensips" {
     logs_group_region = var.aws_region
     app_environment = var.app_environment
 
+    sip_port = var.sip_port
+    sip_alternative_port = var.sip_alternative_port
+    sip_advertised_ip = var.external_sip_ip
+
     freeswitch_event_socket_password_parameter_arn = aws_ssm_parameter.freeswitch_event_socket_password.arn
     database_password_parameter_arn = var.db_password_parameter_arn
     database_name = var.db_name
@@ -206,6 +210,18 @@ resource "aws_ecs_service" "opensips" {
       var.db_security_group,
       aws_security_group.inbound_sip_trunks.id
     ]
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.sip.arn
+    container_name   = "opensips"
+    container_port   = var.sip_port
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.sip_alternative.arn
+    container_name   = "opensips"
+    container_port   = var.sip_alternative_port
   }
 
   capacity_provider_strategy {

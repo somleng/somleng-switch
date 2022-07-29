@@ -2,7 +2,7 @@
   <settings>
     <X-PRE-PROCESS cmd="include" data="shared/settings.xml"/>
 
-    <param name="sip-port" value="5080"/>
+    <param name="sip-port" value="$${sip_alternative_port}"/>
     <param name="ext-sip-ip" value="$${alternative_sip_inbound_ip}"/>
     <param name="ext-rtp-ip" value="$${alternative_rtp_ip}"/>
   </settings>

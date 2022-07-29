@@ -31,8 +31,8 @@ class NormalizedCall < SimpleDelegator
   def normalize_number(number)
     return if number.blank?
 
-    # remove port if and scheme if given
-    result = number.gsub(/(\d+)\:\d+/, '\1').gsub(/^[a-z]+\:/, "")
+    # remove port and scheme if given
+    result = number.gsub(/\A[a-z]+\:/, "").gsub(/(\w+)\:\d+\z/, '\1')
     result = Mail::Address.new(result).local
     result = result.split("/").last
     result.delete("+")
