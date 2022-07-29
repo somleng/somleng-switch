@@ -5,7 +5,7 @@ RSpec.describe "Handle ECS Events", :opensips do
     stub_env("SWITCH_GROUP" => "service:somleng-switch")
     create_load_balancer_target(
       dst_uri: "sip:10.1.1.1:5060",
-      resources: "pstn=fs://:fs-event-socket-password@10.1.1.1:8021"
+      resources: "gw=fs://:fs-event-socket-password@10.1.1.1:8021"
     )
     payload = build_ecs_event_payload(
       group: "service:somleng-switch",
@@ -20,20 +20,23 @@ RSpec.describe "Handle ECS Events", :opensips do
     expect(result.ntuples).to eq(3)
     expect(result[0]).to include(
       "dst_uri" => "sip:10.1.1.1:5060",
-      "resources" => "pstn=fs://:fs-event-socket-password@10.1.1.1:8021"
+      "resources" => "gw=fs://:fs-event-socket-password@10.1.1.1:8021"
     )
     expect(result[1]).to include(
       "dst_uri" => "sip:10.1.1.100:5060",
-      "resources" => "pstn=fs://:fs-event-socket-password@10.1.1.100:8021"
+      "resources" => "gw=fs://:fs-event-socket-password@10.1.1.100:8021"
     )
-    expect(result[2]).to include("dst_uri" => "sip:10.1.1.100:5080")
+    expect(result[2]).to include(
+      "dst_uri" => "sip:10.1.1.100:5080",
+      "resources" => "gwalt=fs://:fs-event-socket-password@10.1.1.100:8021"
+    )
   end
 
   it "only adds a load balancer target once" do
     stub_env("SWITCH_GROUP" => "service:somleng-switch")
     create_load_balancer_target(
       dst_uri: "sip:10.1.1.1:5060",
-      resources: "pstn=fs://:fs-event-socket-password@10.1.1.1:8021"
+      resources: "gw=fs://:fs-event-socket-password@10.1.1.1:8021"
     )
     payload = build_ecs_event_payload(
       group: "service:somleng-switch",
@@ -52,11 +55,11 @@ RSpec.describe "Handle ECS Events", :opensips do
     stub_env("SWITCH_GROUP" => "service:somleng-switch")
     create_load_balancer_target(
       dst_uri: "sip:10.1.1.1:5060",
-      resources: "pstn=fs://:fs-event-socket-password@10.1.1.1:8021"
+      resources: "gw=fs://:fs-event-socket-password@10.1.1.1:8021"
     )
     create_load_balancer_target(
       dst_uri: "sip:10.1.1.1:5080",
-      resources: "pstn=fs://:fs-event-socket-password@10.1.1.1:8021"
+      resources: "gwalt=fs://:fs-event-socket-password@10.1.1.1:8021"
     )
     payload = build_ecs_event_payload(
       group: "service:somleng-switch",

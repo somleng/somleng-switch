@@ -61,7 +61,7 @@ jobs:
             },
             {
               "identifier": "somleng-switch_ecs_event_runner",
-              "branch": "master",
+              "branch": "opensips_alternate_port",
               "image_tag": "latest"
             }
           ]

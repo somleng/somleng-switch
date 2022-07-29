@@ -32,7 +32,7 @@ jobs:
             {
               "identifier": "somleng-switch_opensips",
               "task_definition": "docker/opensips/deploy/production/ecs_task_definition.json",
-              "branch": "master",
+              "branch": "opensips_alternate_port",
               "image_tag": "latest",
               "ecs_service": "somleng-switch-opensips",
               "ecs_cluster": "somleng-switch"
