@@ -2,10 +2,10 @@
   <settings>
     <X-PRE-PROCESS cmd="include" data="shared/settings.xml"/>
 
+    <param name="local-network-acl" value="localnet.auto"/>
+
     <param name="sip-port" value="$${sip_alternative_port}"/>
-    <param name="sip-ip" value="$${local_ip_v4}"/>
-    <param name="rtp-ip" value="$${alternative_rtp_ip}"/>
-    <param name="ext-sip-ip" value="$${local_ip_v4}"/>
-    <param name="ext-rtp-ip" value="$${alternative_rtp_ip}"/>
+    <param name="ext-sip-ip" value="autonat:$${local_ip_v4}"/>
+    <param name="ext-rtp-ip" value="autonat:$${alternative_rtp_ip}"/>
   </settings>
 </profile>
