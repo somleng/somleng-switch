@@ -7,4 +7,3 @@
     <param name="ext-rtp-ip" value="$${alternative_rtp_ip}"/>
   </settings>
 </profile>
-
