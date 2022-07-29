@@ -71,7 +71,6 @@ data "template_file" "container_definitions" {
     json_cdr_password_parameter_arn = var.json_cdr_password_parameter_arn
     external_rtp_ip = var.external_rtp_ip
 
-    alternative_sip_inbound_ip = var.alternative_sip_inbound_ip
     alternative_sip_outbound_ip = var.alternative_sip_outbound_ip
     alternative_rtp_ip = var.alternative_rtp_ip
 

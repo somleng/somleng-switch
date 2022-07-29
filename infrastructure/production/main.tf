@@ -29,7 +29,6 @@ module "somleng_switch" {
   external_sip_ip = data.terraform_remote_state.core_infrastructure.outputs.nlb_eips[0].public_ip
   external_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
 
-  alternative_sip_inbound_ip = data.terraform_remote_state.core_infrastructure.outputs.nlb_eips[0].public_ip
   alternative_sip_outbound_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
   alternative_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
 
