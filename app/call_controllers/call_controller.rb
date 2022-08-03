@@ -24,13 +24,17 @@ class CallController < Adhearsion::CallController
   end
 
   def call_platform_client
-    CallPlatform::Client.new
+    if ENV["APP_ENV"] == "test_integration"
+      CallPlatform::FakeClient.new
+    else
+      CallPlatform::Client.new
+    end
   end
 
   private
 
   def register_event_handlers
-    NotifyCallEvent.subscribe_events(call)
+    NotifyCallEvent.subscribe_events(call, client: call_platform_client)
   end
 
   def build_call_properties

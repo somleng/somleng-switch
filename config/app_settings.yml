@@ -24,5 +24,8 @@ staging:
 development: &development
   <<: *default
 
-test:
+test: &test
   <<: *development
+
+test_integration:
+  <<: *test
