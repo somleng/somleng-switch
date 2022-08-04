@@ -81,6 +81,7 @@ jobs:
         with:
           push: false
           load: true
+          context: docker/sipp
           tags: sipp:latest
           cache-from: type=gha,scope=integration-tests-sipp
           cache-to: type=gha,mode=max,scope=integration-tests-sipp
