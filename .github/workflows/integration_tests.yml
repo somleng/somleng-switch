@@ -27,12 +27,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Build FreeSWITCH
+        uses: docker/build-push-action@v2
+        with:
+          push: false
+          context: docker/freeswitch
+          build-args:
+            signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
+          cache-from: type=gha,scope=integration-tests-freeswitch
+          cache-to: type=gha,mode=max,scope=integration-tests-freeswitch
+
       - name: Run docker-compose
         run: |
-          docker-compose build
-          docker-compose run opensips-bootstrap-db
-          docker-compose run opensips-bootstrap-db-data
-          docker-compose up opensips freeswitch somleng-switch -d
+          docker-compose build freeswitch --build-arg signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
 
       - name: Check docker processes
         run: |
