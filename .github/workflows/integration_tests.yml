@@ -74,9 +74,7 @@ jobs:
 
       - name: Run docker-compose
         run: |
-          docker-compose run opensips-bootstrap-db
-          docker-compose run opensips-bootstrap-db-data
-          docker-compose up opensips freeswitch somleng-switch -d
+          docker images
 
       - name: Check docker processes
         run: |
