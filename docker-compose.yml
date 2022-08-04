@@ -44,13 +44,11 @@ services:
     image: opensips:latest
     environment:
       DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
-      SIP_ADVERTISED_IP: opensips
-    ports:
-      - "5060:5060/udp"
+      SIP_ADVERTISED_IP: "1.1.1.1"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
-      test: ["CMD-SHELL", "nc -z -w 5 localhost 5222"]
+      test: ["CMD-SHELL", "nc -z -w 5 localhost 5060"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -71,7 +69,6 @@ services:
     image: somleng-switch:latest
     environment:
       AHN_CORE_HOST: freeswitch
-      AHN_CORE_HTTP_PORT: 8080
       CALL_PLATFORM_STUB_RESPONSES: "true"
     depends_on:
       - freeswitch
@@ -80,3 +77,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+
+  sipp:
+    build:
+      context: docker/sipp
+    image: sipp:latest
