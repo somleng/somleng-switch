@@ -26,6 +26,3 @@ development: &development
 
 test: &test
   <<: *development
-
-test_integration:
-  <<: *test

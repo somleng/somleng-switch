@@ -24,7 +24,7 @@ class CallController < Adhearsion::CallController
   end
 
   def call_platform_client
-    if ENV["APP_ENV"] == "test_integration"
+    if CallPlatform.configuration.stub_responses
       CallPlatform::FakeClient.new
     else
       CallPlatform::Client.new

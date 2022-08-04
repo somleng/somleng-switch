@@ -1,0 +1,15 @@
+name: Integration Tests
+on: workflow_call
+
+env:
+  CI: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run Integration Tests
+        run: |
+          echo "I am here"
