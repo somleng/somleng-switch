@@ -17,6 +17,7 @@ services:
     build:
       context: docker/opensips
       target: bootstrap
+    image: opensips:bootstrap
     environment:
       DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
     extra_hosts:
@@ -26,6 +27,7 @@ services:
     build:
       context: docker/opensips
       target: bootstrap
+    image: opensips:bootstrap
     extra_hosts:
       - "host.docker.internal:host-gateway"
     command: |
@@ -35,6 +37,7 @@ services:
   opensips:
     build:
       context: docker/opensips
+    image: opensips:latest
     environment:
       DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
       SIP_ADVERTISED_IP: opensips
@@ -51,6 +54,7 @@ services:
   freeswitch:
     build:
       context: docker/freeswitch
+    image: freeswitch:latest
     healthcheck:
       test: ["CMD-SHELL", "nc -z -w 5 localhost 5222"]
       interval: 10s
@@ -60,6 +64,7 @@ services:
   somleng-switch:
     build:
       context: .
+    image: somleng-switch:latest
     environment:
       AHN_CORE_HOST: freeswitch
       AHN_CORE_HTTP_PORT: 8080

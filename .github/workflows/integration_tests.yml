@@ -42,6 +42,7 @@ jobs:
           context: docker/freeswitch
           build-args:
             signalwire_token=${{ secrets.signalwire_token }}
+          tags: freeswitch:latest
           cache-from: type=gha,scope=integration-tests-freeswitch
           cache-to: type=gha,mode=max,scope=integration-tests-freeswitch
 
@@ -51,6 +52,7 @@ jobs:
           push: false
           load: true
           context: docker/opensips
+          tags: opensips:latest
           cache-from: type=gha,scope=integration-tests-opensips
           cache-to: type=gha,mode=max,scope=integration-tests-opensips
 
@@ -61,6 +63,7 @@ jobs:
           load: true
           context: docker/opensips
           target: bootstrap
+          tags: opensips:bootstrap
           cache-from: type=gha,scope=integration-tests-opensips-bootstrap
           cache-to: type=gha,mode=max,scope=integration-tests-opensips-bootstrap
 
@@ -69,6 +72,7 @@ jobs:
         with:
           push: false
           load: true
+          tags: somleng-switch:latest
           cache-from: type=gha,scope=integration-tests-somleng-switch
           cache-to: type=gha,mode=max,scope=integration-tests-somleng-switch
 
