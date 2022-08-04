@@ -15,6 +15,7 @@ if [ "$1" = 'create_db' ]; then
 	database_admin_url: $DATABASE_URL
 	EOT
 
+  psql $DATABASE_URL -c "CREATE USER opensips;"
   opensips-cli -x database create
 
 elif [ "$1" = 'add_module' ]; then
