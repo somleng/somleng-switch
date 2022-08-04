@@ -76,6 +76,9 @@ jobs:
           cache-from: type=gha,scope=integration-tests-somleng-switch
           cache-to: type=gha,mode=max,scope=integration-tests-somleng-switch
 
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+
       - name: Run docker-compose
         run: |
           docker-compose run opensips-bootstrap-db
