@@ -19,7 +19,11 @@ services:
       target: bootstrap
     image: opensips:bootstrap
     environment:
-      DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
+      DATABASE_USERNAME: "postgres"
+      DATABASE_PASSWORD:
+      DATABASE_HOST: "host.docker.internal"
+      DATABASE_PORT: 5432
+      DATABASE_NAME: "opensips"
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
