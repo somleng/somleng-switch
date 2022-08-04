@@ -34,10 +34,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Debug Signalwire
-        run: |
-          echo ${{ secrets.signalwire_token }}
-
       - name: Build FreeSWITCH
         uses: docker/build-push-action@v2
         with:
@@ -49,9 +45,38 @@ jobs:
           cache-from: type=gha,scope=integration-tests-freeswitch
           cache-to: type=gha,mode=max,scope=integration-tests-freeswitch
 
+      - name: Build OpenSIPS
+        uses: docker/build-push-action@v2
+        with:
+          push: false
+          load: true
+          context: docker/opensips
+          cache-from: type=gha,scope=integration-tests-opensips
+          cache-to: type=gha,mode=max,scope=integration-tests-opensips
+
+      - name: Build OpenSIPS Bootstrap
+        uses: docker/build-push-action@v2
+        with:
+          push: false
+          load: true
+          context: docker/opensips
+          target: bootstrap
+          cache-from: type=gha,scope=integration-tests-opensips-bootstrap
+          cache-to: type=gha,mode=max,scope=integration-tests-opensips-bootstrap
+
+      - name: Build SomlengSWITCH
+        uses: docker/build-push-action@v2
+        with:
+          push: false
+          load: true
+          cache-from: type=gha,scope=integration-tests-somleng-switch
+          cache-to: type=gha,mode=max,scope=integration-tests-somleng-switch
+
       - name: Run docker-compose
         run: |
-          docker-compose build freeswitch --build-arg signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
+          docker-compose run opensips-bootstrap-db
+          docker-compose run opensips-bootstrap-db-data
+          docker-compose up opensips freeswitch somleng-switch -d
 
       - name: Check docker processes
         run: |

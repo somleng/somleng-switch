@@ -67,7 +67,8 @@ jobs:
 
   integration_tests:
     uses: ./.github/workflows/integration_tests.yml
-    needs: build
+    secrets:
+      signalwire_token: ${{ secrets.SIGNALWIRE_TOKEN }}
 
   deploy:
     name: Deploy
