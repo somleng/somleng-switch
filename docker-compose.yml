@@ -30,7 +30,6 @@ services:
       - "host.docker.internal:host-gateway"
     command: |
       psql --host=host.docker.internal --username=postgres --dbname opensips
-      -c "DELETE FROM load_balancer;"
       -c "INSERT INTO load_balancer (group_id, dst_uri, resources, probe_mode) VALUES('1', 'sip:freeswitch:5060', 'gw=fs://:secret@freeswitch:8021', 2), ('1', 'sip:freeswitch:5080', 'gw=fs://:secret@freeswitch:8021', 2);"
 
   opensips:
