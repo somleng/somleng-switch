@@ -41,7 +41,7 @@ jobs:
           load: true
           context: docker/freeswitch
           build-args:
-            - signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
+            signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
           cache-from: type=gha,scope=integration-tests-freeswitch
           cache-to: type=gha,mode=max,scope=integration-tests-freeswitch
 
