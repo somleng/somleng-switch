@@ -7,6 +7,6 @@ COPY fixtures/ fixtures/
 COPY tests/ tests/
 COPY tests.sh tests.sh
 
-WORKDIR /tmp
+WORKDIR /workspace
 
 EXPOSE 5060

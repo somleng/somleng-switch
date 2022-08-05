@@ -12,6 +12,8 @@
 # because of the complexity of adding code to wait for postgres to start.
 
 version: "3.9"
+volumes:
+  workspace:
 services:
   opensips-bootstrap-db:
     build:
@@ -86,3 +88,5 @@ services:
       context: docker/testing
     image: testing:latest
     command: sipp -sn uas -trace_msg
+    volumes:
+      - workspace:/workspace

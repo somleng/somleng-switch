@@ -76,13 +76,13 @@ jobs:
           cache-from: type=gha,scope=integration-tests-somleng-switch
           cache-to: type=gha,mode=max,scope=integration-tests-somleng-switch
 
-      - name: Build SIPp
+      - name: Build Testing
         uses: docker/build-push-action@v2
         with:
           push: false
           load: true
-          context: docker/sipp
-          tags: sipp:latest
+          context: docker/testing
+          tags: testing:latest
           cache-from: type=gha,scope=integration-tests-sipp
           cache-to: type=gha,mode=max,scope=integration-tests-sipp
 
@@ -90,9 +90,9 @@ jobs:
         run: |
           docker-compose run opensips-bootstrap-db
           docker-compose run opensips-bootstrap-db-data
-          docker-compose up -d opensips freeswitch somleng-switch
+          docker-compose up -d opensips freeswitch somleng-switch testing
           sleep 30
 
       - name: Run Integration Tests
         run: |
-          docker-compose run sipp /tests.sh
+          docker-compose run testing /tests.sh
