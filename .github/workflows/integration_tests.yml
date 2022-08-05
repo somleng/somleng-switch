@@ -95,4 +95,4 @@ jobs:
 
       - name: Run Integration Tests
         run: |
-          docker-compose run sipp sipp -sf examples/smart_inbound.xml opensips:5060 -s 1234 -m 1
+          docker-compose run sipp /tests.sh
