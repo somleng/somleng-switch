@@ -5,12 +5,12 @@ set -e
 echo "Running: `basename $0`"
 
 current_dir=$(dirname "$(readlink -f "$0")")
-scenario=$current_dir/../scenarios/smart_inbound.xml
+scenario=$current_dir/../scenarios/metfone_inbound.xml
 
-rm -f smart_inbound_*_messages.log
+rm -f metfone_inbound_*_messages.log
 
-sipp -sf $scenario opensips:5060 -s 1234 -m 1 -trace_msg > /dev/null
-log_file=$(find . -type f -iname "smart_inbound_*_messages.log")
+sipp -sf $scenario opensips:5060 -s 1294 -m 1 -trace_msg > /dev/null
+log_file=$(find . -type f -iname "metfone_inbound_*_messages.log")
 
 test_string="c=IN IP4 13.250.230.15" # EXT_RTP_IP
 

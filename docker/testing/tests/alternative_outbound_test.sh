@@ -22,14 +22,14 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://somleng-switch:8080/
   "api_version": "2010-04-01",
   "routing_instructions": {
     "dial_string": "85512334667@testing",
-    "nat_supported": true
+    "nat_supported": false
   }
 }
 EOF
 
 sleep 10
 
-test_string="c=IN IP4 13.250.230.15" # EXT_RTP_IP
+test_string="c=IN IP4 18.141.245.230" # ALTERNATIVE_EXT_RTP_IP
 
 if ! grep -q "$test_string" $log_file; then
   cat <<-EOT
