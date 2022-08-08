@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-RUN apk update && apk upgrade && apk add --update --no-cache sipp curl jq
+RUN apk update && apk upgrade && apk add --update --no-cache sipp curl
 
 COPY scenarios/ scenarios/
 COPY tests/ tests/
