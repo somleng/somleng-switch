@@ -3,10 +3,10 @@
 # Usage:
 #
 # Initialize a new database:
-# docker run --rm -e DATABASE_URL="postgres://postgres:@host.docker.internal:5432/opensips" -e DATABASE_MODULES="dialog load_balancer" public.ecr.aws/somleng/somleng-switch-opensips:bootstrap create_db
+# docker run --rm -e DATABASE_HOST="host.docker.internal" -e DATABASE_USER="postgres" -e DATABASE_PASSWORD="password" -e DATABASE_PORT=5432 -e DATABASE_NAME="opensips" -e DATABASE_MODULES="dialog load_balancer" public.ecr.aws/somleng/somleng-switch-opensips:bootstrap create_db
 #
 # Add a database module:
-# docker run --rm -e DATABASE_URL="postgres://postgres:@host.docker.internal:5432/opensips" -e DATABASE_MODULES="rtpproxy" public.ecr.aws/somleng/somleng-switch-opensips:bootstrap add_module
+# docker run --rm -e DATABASE_HOST="host.docker.internal" -e DATABASE_USER="postgres" -e DATABASE_PASSWORD="password" -e DATABASE_PORT=5432 -e DATABASE_NAME="opensips" -e DATABASE_MODULES="rtpproxy" public.ecr.aws/somleng/somleng-switch-opensips:bootstrap add_module
 
 FROM debian:bullseye AS bootstrap
 
@@ -27,7 +27,11 @@ RUN rm -rf /var/lib/apt/lists/*
 
 COPY bootstrap.sh /docker-entrypoint.sh
 
-ENV DATABASE_URL "postgres://postgres:@localhost:5432/opensips"
+ENV DATABASE_USERNAME "postgres"
+ENV DATABASE_PASSWORD ""
+ENV DATABASE_HOST "localhost"
+ENV DATABASE_PORT 5432
+ENV DATABASE_NAME "opensips"
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["create_db"]
