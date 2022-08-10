@@ -14,6 +14,8 @@
 version: "3.9"
 volumes:
   workspace:
+  opensips_fifo:
+
 services:
   opensips-bootstrap-db:
     build:
@@ -29,17 +31,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  opensips-bootstrap-db-data:
-    build:
-      context: docker/opensips
-      target: bootstrap
-    image: opensips:bootstrap
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    command: |
-      psql --host=host.docker.internal --username=postgres --dbname opensips
-      -c "INSERT INTO load_balancer (group_id, dst_uri, resources, probe_mode) VALUES('1', 'sip:freeswitch:5060', 'gw=fs://:secret@freeswitch:8021', 2), ('1', 'sip:freeswitch:5080', 'gwalt=fs://:secret@freeswitch:8021', 2);"
-
   opensips:
     build:
       context: docker/opensips
@@ -47,6 +38,7 @@ services:
     environment:
       DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
       SIP_ADVERTISED_IP: "52.74.4.205"
+      FIFO_NAME: /opensips/fifo/opensips_fifo
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
@@ -54,6 +46,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    volumes:
+      - opensips_fifo:/opensips/fifo
 
   freeswitch:
     build:
@@ -89,5 +83,9 @@ services:
       context: docker/testing
     image: testing:latest
     command: sipp -sn uas -trace_msg
+    environment:
+      OPENSIPS_FIFO_NAME: /opensips/fifo/opensips_fifo
+      DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
     volumes:
       - workspace:/workspace
+      - opensips_fifo:/opensips/fifo
