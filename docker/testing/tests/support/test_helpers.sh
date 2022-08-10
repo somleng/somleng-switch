@@ -27,7 +27,19 @@ create_address_entry () {
 	psql -q $DATABASE_URL -c "INSERT INTO address (ip, mask) VALUES('$ip', 32);"
 }
 
+assert_in_file () {
+	filename="$1"
+	test_string="$2"
 
+	file=$(find . -type f -iname $(basename "$filename"))
 
+	if ! grep -q "$test_string" $file; then
+		cat <<-EOT
+		Error:
+		$test_string not found in:
+		`cat $file`
+		EOT
 
-
+		return 1
+	fi
+}
