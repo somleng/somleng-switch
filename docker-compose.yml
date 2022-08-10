@@ -46,7 +46,7 @@ services:
     image: opensips:latest
     environment:
       DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
-      SIP_ADVERTISED_IP: "1.1.1.1"
+      SIP_ADVERTISED_IP: "52.74.4.205"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
