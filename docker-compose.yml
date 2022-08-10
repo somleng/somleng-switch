@@ -86,6 +86,8 @@ services:
     environment:
       OPENSIPS_FIFO_NAME: /opensips/fifo/opensips_fifo
       DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - workspace:/workspace
       - opensips_fifo:/opensips/fifo
