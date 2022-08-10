@@ -102,7 +102,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build and push OpenSIPS Bootstrap
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: docker/opensips
           target: bootstrap
@@ -114,7 +114,7 @@ jobs:
             ${{ env.OPENSIPS_ECR_REPOSITORY }}:bootstrap
 
       - name: Build and push OpenSIPS
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: "docker/opensips"
           push: true
@@ -126,7 +126,7 @@ jobs:
             ${{ env.OPENSIPS_ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
       - name: Build and push OpenSIPS Scheduler
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: "docker/opensips_scheduler"
           push: true
