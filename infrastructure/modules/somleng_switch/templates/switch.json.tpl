@@ -1,6 +1,6 @@
 [
   {
-    "name": "${webserver_container_name}",
+    "name": "nginx",
     "image": "${nginx_image}:latest",
     "logConfiguration": {
       "logDriver": "awslogs",
@@ -13,23 +13,23 @@
     "essential": true,
     "portMappings": [
       {
-        "containerPort": ${webserver_container_port}
+        "containerPort": 80
       }
     ],
     "dependsOn": [
       {
-        "containerName": "app",
+        "containerName": "switch",
         "condition": "HEALTHY"
       }
     ]
   },
   {
-    "name": "app",
-    "image": "${app_image}:latest",
+    "name": "switch",
+    "image": "${switch_image}:latest",
     "logConfiguration": {
       "logDriver": "awslogs",
        "options": {
-         "awslogs-group": "${app_logs_group}",
+         "awslogs-group": "${switch_logs_group}",
          "awslogs-region": "${logs_group_region}",
          "awslogs-stream-prefix": "${app_environment}"
        }
@@ -54,7 +54,7 @@
     ],
     "portMappings": [
       {
-        "containerPort": ${app_port}
+        "containerPort": 3000
       }
     ],
     "dependsOn": [
@@ -82,7 +82,7 @@
       },
       {
         "name": "AHN_CORE_HTTP_PORT",
-        "value": "${app_port}"
+        "value": "3000"
       },
       {
         "name": "AHN_CORE_PORT",

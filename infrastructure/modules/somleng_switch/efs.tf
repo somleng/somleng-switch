@@ -1,3 +1,7 @@
+locals {
+  efs_volume_name = "cache"
+}
+
 resource "aws_efs_file_system" "cache" {
   creation_token = "${var.app_identifier}-cache"
   encrypted = true

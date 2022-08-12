@@ -194,18 +194,18 @@ jobs:
           container-name: freeswitch-event-logger
           image: ${{ env.FREESWITCH_EVENT_LOGGER_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
 
-      - name: Prepare AppServer task definition
-        id: render-appserver-task-def
+      - name: Prepare SomlengSWITCH task definition
+        id: render-switch-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ steps.render-freeswitch-event-logger-task-def.outputs.task-definition }}
-          container-name: app
+          container-name: switch
           image: ${{ env.APP_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
 
       - name: Deploy App Server
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.render-appserver-task-def.outputs.task-definition }}
+          task-definition: ${{ steps.render-switch-task-def.outputs.task-definition }}
           service: ${{ matrix.ecs_service }}
           cluster: ${{ matrix.ecs_cluster }}
           wait-for-service-stability: true

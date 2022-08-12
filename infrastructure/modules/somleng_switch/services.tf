@@ -99,7 +99,7 @@ resource "aws_lambda_function" "services" {
 
   environment {
     variables = {
-      SWITCH_GROUP = "service:${aws_ecs_task_definition.task_definition.family}"
+      SWITCH_GROUP = "service:${aws_ecs_task_definition.switch.family}"
       FS_EVENT_SOCKET_PASSWORD_SSM_PARAMETER_NAME = aws_ssm_parameter.freeswitch_event_socket_password.name
       FS_EVENT_SOCKET_PORT = 8021
       FS_SIP_PORT = var.sip_port
@@ -145,7 +145,7 @@ resource "aws_cloudwatch_event_rule" "services" {
   "detail-type": ["ECS Task State Change"],
   "detail": {
     "clusterArn": ["${aws_ecs_cluster.cluster.arn}"],
-    "group": ["service:${aws_ecs_task_definition.task_definition.family}"]
+    "group": ["service:${aws_ecs_task_definition.switch.family}"]
   }
 }
 EOF

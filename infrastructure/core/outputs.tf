@@ -1,5 +1,5 @@
-output "app_ecr_repository" {
-  value = aws_ecrpublic_repository.app
+output "switch_ecr_repository" {
+  value = aws_ecrpublic_repository.switch
 }
 
 output "nginx_ecr_repository" {

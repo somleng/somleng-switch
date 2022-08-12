@@ -24,3 +24,31 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "recordings" {
     }
   }
 }
+
+resource "aws_iam_user" "recordings" {
+  name = "${var.app_identifier}_recordings"
+}
+
+resource "aws_iam_access_key" "recordings" {
+  user = aws_iam_user.recordings.name
+}
+
+resource "aws_iam_user_policy" "recordings" {
+  name = aws_iam_user.recordings.name
+  user = aws_iam_user.recordings.name
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Resource": "${aws_s3_bucket.recordings.arn}/*"
+    }
+  ]
+}
+EOF
+}

@@ -1,4 +1,4 @@
-resource "aws_ecrpublic_repository" "app" {
+resource "aws_ecrpublic_repository" "switch" {
   repository_name = "somleng-switch"
   provider = aws.us-east-1
 

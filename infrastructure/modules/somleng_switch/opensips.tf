@@ -4,7 +4,7 @@ module opensips_container_instances {
   app_identifier = "${var.app_identifier}-opensips"
   vpc_id = var.vpc_id
   instance_subnets = var.container_instance_subnets
-  cluster_name = local.cluster_name
+  cluster_name = aws_ecs_cluster.cluster.name
 }
 
 resource "aws_security_group" "inbound_sip_trunks" {

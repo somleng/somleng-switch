@@ -2,7 +2,7 @@
 variable "aws_region" {}
 variable "app_identifier" {}
 variable "app_environment" {}
-variable "app_image" {}
+variable "switch_image" {}
 variable "nginx_image" {}
 variable "freeswitch_image" {}
 variable "opensips_image" {}
@@ -26,17 +26,6 @@ variable "container_insights_enabled" {
   default = false
 }
 
-variable "webserver_container_name" {
-  default = "nginx"
-}
-
-variable "webserver_container_port" {
-  default = 80
-}
-
-variable "app_port" {
-  default = 3000
-}
 variable "network_mode" {
   default = "awsvpc"
 }

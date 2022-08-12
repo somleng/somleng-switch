@@ -9,7 +9,7 @@ module "somleng_switch" {
   app_environment = "production"
   aws_region = var.aws_region
 
-  app_image = data.terraform_remote_state.core.outputs.app_ecr_repository.repository_uri
+  switch_image = data.terraform_remote_state.core.outputs.switch_ecr_repository.repository_uri
   nginx_image = data.terraform_remote_state.core.outputs.nginx_ecr_repository.repository_uri
   freeswitch_image = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository.repository_uri
   freeswitch_event_logger_image = data.terraform_remote_state.core.outputs.freeswitch_event_logger_ecr_repository.repository_uri
