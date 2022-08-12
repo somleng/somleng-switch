@@ -1,12 +1,12 @@
 locals {
-  ecs_event_runner_function_name = "${var.app_identifier}_ecs_event_runner"
+  services_function_name = "${var.app_identifier}_services"
 }
 
-resource "docker_registry_image" "ecs_event_runner" {
-  name = "${var.ecs_event_runner_ecr_repository_url}:latest"
+resource "docker_registry_image" "services" {
+  name = "${var.services_ecr_repository_url}:latest"
 
   build {
-    context = abspath("${path.module}/../../../docker/ecs_event_runner")
+    context = abspath("${path.module}/../../../docker/services")
   }
 
   lifecycle {
@@ -16,8 +16,8 @@ resource "docker_registry_image" "ecs_event_runner" {
   }
 }
 
-resource "aws_iam_role" "ecs_event_runner" {
-  name = local.ecs_event_runner_function_name
+resource "aws_iam_role" "services" {
+  name = local.services_function_name
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -35,13 +35,13 @@ resource "aws_iam_role" "ecs_event_runner" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_event_runner_vpc_access_execution_role" {
-  role       = aws_iam_role.ecs_event_runner.name
+resource "aws_iam_role_policy_attachment" "services_vpc_access_execution_role" {
+  role       = aws_iam_role.services.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
-resource "aws_iam_policy" "ecs_event_runner_custom_policy" {
-  name = local.ecs_event_runner_function_name
+resource "aws_iam_policy" "services_custom_policy" {
+  name = local.services_function_name
 
   policy = <<EOF
 {
@@ -60,40 +60,40 @@ resource "aws_iam_policy" "ecs_event_runner_custom_policy" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_event_runner_custom_policy" {
-  role       = aws_iam_role.ecs_event_runner.name
-  policy_arn = aws_iam_policy.ecs_event_runner_custom_policy.arn
+resource "aws_iam_role_policy_attachment" "services_custom_policy" {
+  role       = aws_iam_role.services.name
+  policy_arn = aws_iam_policy.services_custom_policy.arn
 }
 
-resource "aws_security_group" "ecs_event_runner" {
-  name   = local.ecs_event_runner_function_name
+resource "aws_security_group" "services" {
+  name   = local.services_function_name
   vpc_id = var.vpc_id
 
   tags = {
-    "Name" = local.ecs_event_runner_function_name
+    "Name" = local.services_function_name
   }
 }
 
-resource "aws_security_group_rule" "ecs_event_runner_egress" {
+resource "aws_security_group_rule" "services_egress" {
   type              = "egress"
   to_port           = 0
   protocol          = "-1"
   from_port         = 0
-  security_group_id = aws_security_group.ecs_event_runner.id
+  security_group_id = aws_security_group.services.id
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-resource "aws_lambda_function" "ecs_event_runner" {
-  function_name = local.ecs_event_runner_function_name
-  role = aws_iam_role.ecs_event_runner.arn
+resource "aws_lambda_function" "services" {
+  function_name = local.services_function_name
+  role = aws_iam_role.services.arn
   package_type = "Image"
   architectures = ["arm64"]
-  image_uri = docker_registry_image.ecs_event_runner.name
+  image_uri = docker_registry_image.services.name
   timeout = 300
   memory_size = 512
 
   vpc_config {
-    security_group_ids = [aws_security_group.ecs_event_runner.id, var.db_security_group]
+    security_group_ids = [aws_security_group.services.id, var.db_security_group]
     subnet_ids = var.container_instance_subnets
   }
 
@@ -114,7 +114,7 @@ resource "aws_lambda_function" "ecs_event_runner" {
   }
 
   depends_on = [
-    aws_cloudwatch_log_group.ecs_event_runner
+    aws_cloudwatch_log_group.services
   ]
 
   lifecycle {
@@ -124,20 +124,20 @@ resource "aws_lambda_function" "ecs_event_runner" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "ecs_event_runner" {
-  name              = "/aws/lambda/${local.ecs_event_runner_function_name}"
+resource "aws_cloudwatch_log_group" "services" {
+  name              = "/aws/lambda/${local.services_function_name}"
   retention_in_days = 7
 }
 
-resource "aws_lambda_permission" "ecs_event_runner" {
+resource "aws_lambda_permission" "services" {
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.ecs_event_runner.arn
+  function_name = aws_lambda_function.services.arn
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.ecs_event_runner.arn
+  source_arn    = aws_cloudwatch_event_rule.services.arn
 }
 
-resource "aws_cloudwatch_event_rule" "ecs_event_runner" {
-  name        = local.ecs_event_runner_function_name
+resource "aws_cloudwatch_event_rule" "services" {
+  name        = local.services_function_name
 
   event_pattern = <<EOF
 {
@@ -151,7 +151,7 @@ resource "aws_cloudwatch_event_rule" "ecs_event_runner" {
 EOF
 }
 
-resource "aws_cloudwatch_event_target" "ecs_event_runner" {
-  arn  = aws_lambda_function.ecs_event_runner.arn
-  rule = aws_cloudwatch_event_rule.ecs_event_runner.id
+resource "aws_cloudwatch_event_target" "services" {
+  arn  = aws_lambda_function.services.arn
+  rule = aws_cloudwatch_event_rule.services.id
 }

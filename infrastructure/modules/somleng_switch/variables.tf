@@ -9,7 +9,7 @@ variable "opensips_image" {}
 variable "opensips_scheduler_image" {}
 variable "freeswitch_event_logger_image" {}
 variable s3_mpeg_ecr_repository_url {}
-variable ecs_event_runner_ecr_repository_url {}
+variable services_ecr_repository_url {}
 variable "container_instance_subnets" {}
 variable "intra_subnets" {}
 variable "vpc_id" {}

@@ -8,7 +8,7 @@ provider "docker" {
   }
 
   registry_auth {
-    address  = split("/", var.ecs_event_runner_ecr_repository_url)[0]
+    address  = split("/", var.services_ecr_repository_url)[0]
     username = data.aws_ecr_authorization_token.token.user_name
     password = data.aws_ecr_authorization_token.token.password
   }
