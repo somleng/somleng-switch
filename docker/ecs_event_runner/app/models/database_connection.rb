@@ -1,4 +1,4 @@
-require "pg"
+require "sequel"
 
 class DatabaseConnection
   attr_reader :db_name
@@ -8,24 +8,33 @@ class DatabaseConnection
   end
 
   def exec(sql)
-    connection.exec(sql)
+    connection.run(sql)
   end
 
-  def any_records?(sql)
-    exec(sql).ntuples.positive?
+  def table(table_name)
+    connection[table_name]
+  end
+
+  def transaction(&block)
+    connection.transaction(&block)
   end
 
   def connection
-    @connection ||= PG.connect(pg_connection_options)
+    @connection ||= Sequel.connect(database_url)
   end
 
-  def pg_connection_options
-    {
-      host: ENV["DB_HOST"],
-      port: ENV["DB_PORT"],
-      user: ENV["DB_USER"],
-      password: ENV["DB_PASSWORD"],
-      dbname: db_name
-    }.compact
+  private
+
+  def database_url
+    ENV.fetch("DATABASE_URL") { build_database_url }
+  end
+
+  def build_database_url(options = {})
+    user = options.fetch(:user) { ENV.fetch("DB_USER", "postgres") }
+    password = options.fetch(:password) { ENV["DB_PASSWORD"] }
+    host = options.fetch(:host) { ENV.fetch("DB_HOST", "localhost") }
+    port = options.fetch(:port) { ENV.fetch("DB_PORT", 5432) }
+
+    "postgres://#{user}:#{password}@#{host}:#{port}/#{db_name}"
   end
 end

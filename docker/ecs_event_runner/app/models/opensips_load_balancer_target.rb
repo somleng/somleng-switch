@@ -16,24 +16,22 @@ class OpenSIPSLoadBalancerTarget < ApplicationWorkflow
   private
 
   def load_balancer_target_exists?
-    database_connection.any_records?(
-      "SELECT 1 FROM load_balancer WHERE dst_uri = '#{dst_uri}';"
-    )
+    load_balancer.where(dst_uri:).count.positive?
   end
 
   def create_load_balancer_target
-    database_connection.exec(<<-SQL)
-      INSERT INTO load_balancer (group_id, dst_uri, resources, probe_mode)
-      VALUES (1, '#{dst_uri}', '#{resources}', 2),
-             (1, '#{alternative_dst_uri}', '#{alternative_resources}', 2);
-    SQL
+    database_connection.transaction do
+      load_balancer.insert(group_id: 1, dst_uri:, resources:, probe_mode: 2)
+      load_balancer.insert(group_id: 1, dst_uri: alternative_dst_uri, resources: alternative_resources, probe_mode: 2)
+    end
   end
 
   def delete_load_balancer_target
-    database_connection.exec(<<-SQL)
-      DELETE FROM load_balancer
-      WHERE dst_uri='#{dst_uri}' OR dst_uri='#{alternative_dst_uri}';
-    SQL
+    load_balancer.where(dst_uri: [dst_uri, alternative_dst_uri]).delete
+  end
+
+  def load_balancer
+    @load_balancer = database_connection.table(:load_balancer)
   end
 
   def database_connection

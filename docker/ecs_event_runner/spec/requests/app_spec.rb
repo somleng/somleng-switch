@@ -16,19 +16,19 @@ RSpec.describe "Handle ECS Events", :opensips do
 
     invoke_lambda(payload:)
 
-    result = opensips_database_connection.exec("SELECT * FROM load_balancer;")
-    expect(result.ntuples).to eq(3)
+    result = load_balancer.all
+    expect(result.count).to eq(3)
     expect(result[0]).to include(
-      "dst_uri" => "sip:10.1.1.1:5060",
-      "resources" => "gw=fs://:fs-event-socket-password@10.1.1.1:8021"
+      dst_uri: "sip:10.1.1.1:5060",
+      resources: "gw=fs://:fs-event-socket-password@10.1.1.1:8021"
     )
     expect(result[1]).to include(
-      "dst_uri" => "sip:10.1.1.100:5060",
-      "resources" => "gw=fs://:fs-event-socket-password@10.1.1.100:8021"
+      dst_uri: "sip:10.1.1.100:5060",
+      resources: "gw=fs://:fs-event-socket-password@10.1.1.100:8021"
     )
     expect(result[2]).to include(
-      "dst_uri" => "sip:10.1.1.100:5080",
-      "resources" => "gwalt=fs://:fs-event-socket-password@10.1.1.100:8021"
+      dst_uri: "sip:10.1.1.100:5080",
+      resources: "gwalt=fs://:fs-event-socket-password@10.1.1.100:8021"
     )
   end
 
@@ -47,8 +47,7 @@ RSpec.describe "Handle ECS Events", :opensips do
 
     invoke_lambda(payload:)
 
-    result = opensips_database_connection.exec("SELECT * FROM load_balancer;")
-    expect(result.ntuples).to eq(1)
+    expect(load_balancer.count).to eq(1)
   end
 
   it "removes load balancer targets" do
@@ -70,8 +69,7 @@ RSpec.describe "Handle ECS Events", :opensips do
 
     invoke_lambda(payload:)
 
-    result = opensips_database_connection.exec("SELECT * FROM load_balancer;")
-    expect(result.ntuples).to eq(0)
+    expect(load_balancer.count).to eq(0)
   end
 
   it "ignores events from other tasks" do
@@ -80,8 +78,11 @@ RSpec.describe "Handle ECS Events", :opensips do
       group: "service:somleng-switch-opensips"
     )
 
-    result = opensips_database_connection.exec("SELECT * FROM load_balancer;")
-    expect(result.ntuples).to eq(0)
     invoke_lambda(payload:)
+    expect(load_balancer.count).to eq(0)
+  end
+
+  def load_balancer
+    opensips_database_connection.table(:load_balancer)
   end
 end
