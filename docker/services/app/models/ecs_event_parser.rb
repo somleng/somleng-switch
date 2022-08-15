@@ -6,6 +6,7 @@ class ECSEventParser
     :eni_deleted?,
     :eni_private_ip,
     :group,
+    :event_type,
     keyword_init: true
   )
 
@@ -17,6 +18,7 @@ class ECSEventParser
 
   def parse_event
     Event.new(
+      event_type: :ecs,
       task_running?: task_running?,
       task_stopped?: task_stopped?,
       eni_attached?: eni_attached?,

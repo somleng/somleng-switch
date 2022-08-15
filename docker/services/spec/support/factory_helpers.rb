@@ -1,8 +1,10 @@
 module FactoryHelpers
-  def create_load_balancer_target(dst_uri:, resources:, group_id: 1, probe_mode: 2)
-    opensips_database_connection.exec(
-      "INSERT INTO load_balancer (group_id, dst_uri, resources, probe_mode) VALUES (#{group_id}, '#{dst_uri}', '#{resources}', #{probe_mode});"
-    )
+  def create_load_balancer_target(target_ip:)
+    OpenSIPSLoadBalancerTarget.new(target_ip:).save!
+  end
+
+  def create_address(ip:)
+    OpenSIPSAddress.new(ip:).save!
   end
 end
 

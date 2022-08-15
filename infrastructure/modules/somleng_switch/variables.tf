@@ -20,7 +20,6 @@ variable "listener_arn" {}
 variable "sip_subdomain" {}
 variable "switch_subdomain" {}
 variable "route53_zone" {}
-variable "listener_rule_priority" {}
 variable "recordings_bucket_name" {}
 variable "container_insights_enabled" {
   default = false

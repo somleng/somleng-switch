@@ -1,15 +1,15 @@
-class OpenSIPSLoadBalancerTarget < ApplicationWorkflow
+class OpenSIPSLoadBalancerTarget < ApplicationRecord
   attr_reader :target_ip
 
   def initialize(target_ip:)
     @target_ip = target_ip
   end
 
-  def register!
+  def save!
     create_load_balancer_target unless load_balancer_target_exists?
   end
 
-  def deregister!
+  def delete!
     delete_load_balancer_target
   end
 
@@ -31,7 +31,7 @@ class OpenSIPSLoadBalancerTarget < ApplicationWorkflow
   end
 
   def load_balancer
-    @load_balancer = database_connection.table(:load_balancer)
+    @load_balancer ||= database_connection.table(:load_balancer)
   end
 
   def database_connection

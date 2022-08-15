@@ -15,13 +15,18 @@ module App
     end
 
     def initialize(event:, context:)
-      @event = ECSEventParser.new(event).parse_event
+      @event = EventParser.new(event).parse_event
       @context = context
     end
 
     def process
       DecryptEnvironmentVariables.call
-      HandleSwitchEvent.call(event:) if event.group == switch_group
+      case event.event_type
+      when :ecs
+        HandleSwitchEvent.call(event:) if event.group == switch_group
+      when :sqs_message
+        HandleSQSMessageEvent.call(event:)
+      end
     end
 
     private

@@ -7,9 +7,9 @@ class HandleSwitchEvent < ApplicationWorkflow
 
   def call
     if event.task_running? && event.eni_attached?
-      opensips_load_balancer_target.register!
+      opensips_load_balancer_target.save!
     elsif event.task_stopped? && event.eni_deleted?
-      opensips_load_balancer_target.deregister!
+      opensips_load_balancer_target.delete!
     end
   end
 

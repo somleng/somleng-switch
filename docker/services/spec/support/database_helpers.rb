@@ -43,6 +43,12 @@ RSpec.configure do |config|
       )
     end
 
+    unless opensips_database_connection.table_exists?(:address)
+      opensips_database_connection.exec(
+        file_fixture("opensips_permissions_create.sql").read
+      )
+    end
+
     example.run
 
     opensips_database_connection.cleanup

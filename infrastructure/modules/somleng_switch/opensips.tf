@@ -1,3 +1,4 @@
+# Container Instances
 module opensips_container_instances {
   source = "../container_instances"
 
@@ -13,6 +14,24 @@ resource "aws_security_group" "inbound_sip_trunks" {
   vpc_id = var.vpc_id
 }
 
+# Capacity Provider
+resource "aws_ecs_capacity_provider" "opensips" {
+  name = "${var.app_identifier}-opensips"
+
+  auto_scaling_group_provider {
+    auto_scaling_group_arn         = module.opensips_container_instances.autoscaling_group.arn
+    managed_termination_protection = "ENABLED"
+
+    managed_scaling {
+      maximum_scaling_step_size = 1000
+      minimum_scaling_step_size = 1
+      status                    = "ENABLED"
+      target_capacity           = 100
+    }
+  }
+}
+
+# Security Group
 resource "aws_security_group" "opensips" {
   name   = "${var.app_identifier}-opensips"
   vpc_id = var.vpc_id
@@ -36,22 +55,15 @@ resource "aws_security_group_rule" "opensips_egress" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-resource "aws_ecs_capacity_provider" "opensips" {
-  name = "${var.app_identifier}-opensips"
-
-  auto_scaling_group_provider {
-    auto_scaling_group_arn         = module.opensips_container_instances.autoscaling_group.arn
-    managed_termination_protection = "ENABLED"
-
-    managed_scaling {
-      maximum_scaling_step_size = 1000
-      minimum_scaling_step_size = 1
-      status                    = "ENABLED"
-      target_capacity           = 100
-    }
-  }
+# SSM Parameters
+data "aws_ssm_parameter" "db_password" {
+  name = element(
+    split("/", var.db_password_parameter_arn),
+    length(split("/", var.db_password_parameter_arn)) - 1
+  )
 }
 
+# IAM
 resource "aws_iam_role" "opensips_task_role" {
   name = "${var.app_identifier}-ecs-OpenSIPSTaskRole"
 
@@ -127,6 +139,7 @@ resource "aws_iam_role_policy_attachment" "opensips_task_execution_role_amazon_e
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+# Log Groups
 resource "aws_cloudwatch_log_group" "opensips" {
   name = "${var.app_identifier}-opensips"
   retention_in_days = 7
@@ -137,6 +150,7 @@ resource "aws_cloudwatch_log_group" "opensips_scheduler" {
   retention_in_days = 7
 }
 
+# ECS
 data "template_file" "opensips" {
   template = file("${path.module}/templates/opensips.json.tpl")
 
@@ -238,6 +252,64 @@ resource "aws_ecs_service" "opensips" {
   }
 }
 
+# Load Balancer
+resource "aws_lb_target_group" "sip" {
+  name        = "${var.app_identifier}-sip"
+  port        = var.sip_port
+  protocol    = "UDP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+
+  connection_termination = true
+
+  health_check {
+    protocol = "TCP"
+    port = var.sip_port
+    healthy_threshold = 3
+    interval = 10
+  }
+}
+
+resource "aws_lb_listener" "sip" {
+  load_balancer_arn = var.network_load_balancer.arn
+  port              = var.sip_port
+  protocol          = "UDP"
+
+  default_action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.sip.arn
+  }
+}
+
+resource "aws_lb_target_group" "sip_alternative" {
+  name        = "${var.app_identifier}-sip-alt"
+  port        = var.sip_alternative_port
+  protocol    = "UDP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+
+  connection_termination = true
+
+  health_check {
+    protocol = "TCP"
+    port = var.sip_port
+    healthy_threshold = 3
+    interval = 10
+  }
+}
+
+resource "aws_lb_listener" "sip_alternative" {
+  load_balancer_arn = var.network_load_balancer.arn
+  port              = var.sip_alternative_port
+  protocol          = "UDP"
+
+  default_action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.sip_alternative.arn
+  }
+}
+
+# Autoscaling
 resource "aws_appautoscaling_policy" "opensips_policy" {
   name               = "opensips-scale"
   service_namespace  = aws_appautoscaling_target.opensips_scale_target.service_namespace

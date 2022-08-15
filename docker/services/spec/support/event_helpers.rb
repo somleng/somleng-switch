@@ -1,6 +1,32 @@
 require "json"
 
 module EventHelpers
+  def build_sqs_message_event_payload(data = {})
+    data.reverse_merge!(
+      event_source_arn: "arn:aws:sqs:us-east-2:123456789012:somleng-switch-permissions",
+      body: "{}",
+      attributes: {}
+    )
+
+    {
+      "job_class": "DailyJob"
+    }
+
+    payload = JSON.parse(file_fixture("sqs_message_event.json").read)
+
+    overrides = {
+      "Records" => [
+        {
+          "eventSourceARN" => data.fetch(:event_source_arn),
+          "body" => data.fetch(:body),
+          "attributes" => data.fetch(:attributes)
+        }
+      ]
+    }
+
+    payload.deep_merge(overrides)
+  end
+
   def build_ecs_event_payload(data = {})
     data.reverse_merge!(
       eni_private_ip: "10.0.0.1",

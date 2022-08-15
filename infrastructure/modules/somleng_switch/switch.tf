@@ -1,3 +1,4 @@
+# Container Instances
 module switch_container_instances {
   source = "../container_instances"
 
@@ -99,8 +100,106 @@ resource "aws_security_group_rule" "switch_egress" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-# IAM
+# SSM Parameters
+resource "aws_ssm_parameter" "switch_application_master_key" {
+  name  = "somleng-switch.${var.app_environment}.application_master_key"
+  type  = "SecureString"
+  value = "change-me"
 
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "rayo_password" {
+  name  = "somleng-switch.${var.app_environment}.rayo_password"
+  type  = "SecureString"
+  value = "change-me"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "freeswitch_event_socket_password" {
+  name  = "somleng-switch.${var.app_environment}.freeswitch_event_socket_password"
+  type  = "SecureString"
+  value = "change-me"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "recordings_bucket_access_key_id" {
+  name  = "somleng-switch.${var.app_environment}.recordings_bucket_access_key_id"
+  type  = "SecureString"
+  value = aws_iam_access_key.recordings.id
+}
+
+resource "aws_ssm_parameter" "recordings_bucket_secret_access_key" {
+  name  = "somleng-switch.${var.app_environment}.recordings_bucket_secret_access_key"
+  type  = "SecureString"
+  value = aws_iam_access_key.recordings.secret
+}
+
+# S3
+resource "aws_s3_bucket" "recordings" {
+  bucket = var.recordings_bucket_name
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "recordings" {
+  bucket = aws_s3_bucket.recordings.id
+
+  rule {
+    id = "rule-1"
+    status = "Enabled"
+
+    expiration {
+      days = 7
+    }
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "recordings" {
+  bucket = aws_s3_bucket.recordings.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "aws:kms"
+    }
+  }
+}
+
+resource "aws_iam_user" "recordings" {
+  name = "${var.app_identifier}_recordings"
+}
+
+resource "aws_iam_access_key" "recordings" {
+  user = aws_iam_user.recordings.name
+}
+
+resource "aws_iam_user_policy" "recordings" {
+  name = aws_iam_user.recordings.name
+  user = aws_iam_user.recordings.name
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Resource": "${aws_s3_bucket.recordings.arn}/*"
+    }
+  ]
+}
+EOF
+}
+
+# IAM
 data "aws_iam_policy_document" "ecs_task_assume_role_policy" {
   version = "2012-10-17"
   statement {
@@ -152,7 +251,7 @@ resource "aws_iam_policy" "task_execution_custom_policy" {
         "ssm:GetParameters"
       ],
       "Resource": [
-        "${aws_ssm_parameter.application_master_key.arn}",
+        "${aws_ssm_parameter.switch_application_master_key.arn}",
         "${aws_ssm_parameter.rayo_password.arn}",
         "${aws_ssm_parameter.freeswitch_event_socket_password.arn}",
         "${var.json_cdr_password_parameter_arn}",
@@ -199,6 +298,7 @@ resource "aws_iam_role_policy_attachment" "task_execution_role_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+# ECS
 data "template_file" "switch" {
   template = file("${path.module}/templates/switch.json.tpl")
 
@@ -210,7 +310,7 @@ data "template_file" "switch" {
     freeswitch_event_logger_image = var.freeswitch_event_logger_image
 
     region = var.aws_region
-    application_master_key_parameter_arn = aws_ssm_parameter.application_master_key.arn
+    application_master_key_parameter_arn = aws_ssm_parameter.switch_application_master_key.arn
     freeswitch_event_socket_password_parameter_arn = aws_ssm_parameter.freeswitch_event_socket_password.arn
     freeswitch_event_socket_port = var.freeswitch_event_socket_port
 
@@ -306,7 +406,7 @@ resource "aws_ecs_service" "switch" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.this.arn
+    target_group_arn = aws_lb_target_group.switch_http.arn
     container_name   = "nginx"
     container_port   = 80
   }
@@ -320,8 +420,45 @@ resource "aws_ecs_service" "switch" {
   ]
 }
 
-# Autoscaling
+# Load Balancer
+resource "aws_lb_target_group" "switch_http" {
+  name = var.app_identifier
+  port = 80
+  protocol = "HTTP"
+  vpc_id = var.vpc_id
+  target_type = "ip"
+  deregistration_delay = 60
 
+  health_check {
+    protocol = "HTTP"
+    path = "/health_checks"
+    healthy_threshold = 3
+    interval = 10
+  }
+}
+
+resource "aws_lb_listener_rule" "switch_http" {
+  priority = var.app_environment == "production" ? 20 : 120
+
+  listener_arn = var.listener_arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.switch_http.id
+  }
+
+  condition {
+    host_header {
+      values = [aws_route53_record.switch.fqdn]
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [action]
+  }
+}
+
+# Autoscaling
 resource "aws_appautoscaling_target" "switch_scale_target" {
   service_namespace  = "ecs"
   resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.switch.name}"
