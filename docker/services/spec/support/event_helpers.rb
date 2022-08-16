@@ -8,10 +8,6 @@ module EventHelpers
       attributes: {}
     )
 
-    {
-      "job_class": "DailyJob"
-    }
-
     payload = JSON.parse(file_fixture("sqs_message_event.json").read)
 
     overrides = {

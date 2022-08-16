@@ -1,10 +1,10 @@
 module FactoryHelpers
-  def create_load_balancer_target(target_ip:)
-    OpenSIPSLoadBalancerTarget.new(target_ip:).save!
+  def create_load_balancer_target(dst_uri:, resources:)
+    opensips_database_connection.table(:load_balancer).insert(dst_uri:, resources:)
   end
 
   def create_address(ip:)
-    OpenSIPSAddress.new(ip:).save!
+    opensips_database_connection.table(:address).insert(ip:)
   end
 end
 

@@ -7,8 +7,8 @@ class SQSMessageEventParser
 
   Record = Struct.new(
     :body,
-    :attributes,
-    :event_source_arn,
+    :job_class,
+    :job_args,
     keyword_init: true
   )
 
@@ -19,20 +19,18 @@ class SQSMessageEventParser
   end
 
   def parse_event
-    Event.new(
-      event_type: :sqs_message,
-      records:
-    )
+    Event.new(event_type: :sqs_message, records:)
   end
 
   private
 
   def records
     event.fetch("Records").each_with_object([]) do |record, result|
+      body = JSON.parse(record.fetch("body"))
+
       result << Record.new(
-        body: record.fetch("body"),
-        attributes: record.fetch("attributes"),
-        event_source_arn: record.fetch("eventSourceARN")
+        job_class: body.fetch("job_class").constantize,
+        job_args: body.fetch("job_args", [])
       )
     end
   end
