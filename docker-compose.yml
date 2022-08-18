@@ -57,7 +57,7 @@ services:
       FS_EXTERNAL_RTP_IP: "13.250.230.15"
       FS_ALTERNATIVE_RTP_IP: "18.141.245.230"
     healthcheck:
-      test: ["CMD-SHELL", "nc -z -w 5 localhost 5222"]
+      test: ["CMD-SHELL", "fs_cli -p secret -x 'rayo status' | rayo_status_parser"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -70,8 +70,6 @@ services:
       AHN_CORE_HOST: freeswitch
       CALL_PLATFORM_STUB_RESPONSES: "true"
       AHN_CORE_HTTP_PORT: "8080"
-    depends_on:
-      - freeswitch
     healthcheck:
       test: ["CMD-SHELL", "wget --server-response --spider --quiet http://localhost:8080/health_checks 2>&1 | grep '200 OK' > /dev/null"]
       interval: 10s

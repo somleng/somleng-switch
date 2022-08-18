@@ -1,0 +1,5 @@
+#!/bin/sh
+
+set -e
+
+cat | grep -A1 'ACTIVE STREAMS' | grep -v 'ACTIVE STREAMS' | grep -q "STATE='READY'"
