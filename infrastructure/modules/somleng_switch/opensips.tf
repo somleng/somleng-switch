@@ -190,27 +190,6 @@ resource "aws_ecs_task_definition" "opensips" {
   }
 }
 
-resource "local_file" "opensips_task_definition" {
-  filename = "${path.module}/../../../docker/opensips/deploy/${var.app_environment}/ecs_task_definition.json"
-  file_permission = "644"
-  content = <<EOF
-{
-  "family": "${aws_ecs_task_definition.opensips.family}",
-  "networkMode": "${aws_ecs_task_definition.opensips.network_mode}",
-  "executionRoleArn": "${aws_ecs_task_definition.opensips.execution_role_arn}",
-  "taskRoleArn": "${aws_ecs_task_definition.opensips.task_role_arn}",
-  "requiresCompatibilities": ["EC2"],
-  "containerDefinitions": ${aws_ecs_task_definition.opensips.container_definitions},
-  "memory": "${aws_ecs_task_definition.opensips.memory}",
-  "volumes": [
-    {
-      "name": "${aws_ecs_task_definition.opensips.volume.*.name[0]}"
-    }
-  ]
-}
-EOF
-}
-
 resource "aws_ecs_service" "opensips" {
   name            = aws_ecs_task_definition.opensips.family
   cluster         = aws_ecs_cluster.cluster.id
