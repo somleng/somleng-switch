@@ -57,12 +57,6 @@
         "containerPort": 3000
       }
     ],
-    "dependsOn": [
-      {
-        "containerName": "freeswitch",
-        "condition": "HEALTHY"
-      }
-    ],
     "environment": [
       {
         "name": "AHN_ENV",
@@ -103,7 +97,7 @@
     },
     "startTimeout": 120,
     "healthCheck": {
-      "command": [ "CMD-SHELL", "nc -z -w 5 localhost ${rayo_port}" ],
+      "command": ["CMD-SHELL", "fs_cli -p $FS_EVENT_SOCKET_PASSWORD -x 'rayo status' | rayo_status_parser"],
       "interval": 10,
       "retries": 10,
       "timeout": 5

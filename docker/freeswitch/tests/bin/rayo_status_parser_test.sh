@@ -3,7 +3,7 @@
 echo "Running: $(basename $0)"
 
 current_dir=$(dirname "$(readlink -f "$0")")
-rayo_status_parser=$current_dir/../bin/rayo_status_parser
+rayo_status_parser=$current_dir/../../bin/rayo_status_parser
 
 cat <<-EOT | $rayo_status_parser
 	ENTITIES
