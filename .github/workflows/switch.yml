@@ -49,7 +49,6 @@ jobs:
             {
               "identifier": "somleng-switch-staging",
               "branch": "handle_inbound_permissions_with_opensips",
-              "task_definition": "deploy/staging/ecs_task_definition.json",
               "image_tag": "staging",
               "ecs_service": "somleng-switch-staging",
               "ecs_cluster": "somleng-switch-staging"
@@ -57,7 +56,6 @@ jobs:
             {
               "identifier": "somleng-switch",
               "branch": "master",
-              "task_definition": "deploy/production/ecs_task_definition.json",
               "image_tag": "latest",
               "ecs_service": "somleng-switch",
               "ecs_cluster": "somleng-switch"
@@ -174,11 +172,15 @@ jobs:
             ${{ env.APP_ECR_REPOSITORY_URI }}:${{ matrix.image_tag }}
             ${{ env.APP_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
 
+      - name: Get current task definition
+        run: |
+          aws ecs describe-task-definition --task-definition "${{ matrix.identifier }}" --query 'taskDefinition' > task-definition.json
+
       - name: Prepare NGINX task definition
         id: render-nginx-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ matrix.task_definition }}
+          task-definition: task-definition.json
           container-name: nginx
           image: ${{ env.NGINX_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
 

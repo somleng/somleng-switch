@@ -362,31 +362,6 @@ resource "aws_ecs_task_definition" "switch" {
   }
 }
 
-resource "local_file" "switch" {
-  filename = "${path.module}/../../../deploy/${var.app_environment}/ecs_task_definition.json"
-  file_permission = "644"
-  content = <<EOF
-{
-  "family": "${aws_ecs_task_definition.switch.family}",
-  "networkMode": "${aws_ecs_task_definition.switch.network_mode}",
-  "executionRoleArn": "${aws_ecs_task_definition.switch.execution_role_arn}",
-  "taskRoleArn": "${aws_ecs_task_definition.switch.task_role_arn}",
-  "requiresCompatibilities": ["EC2"],
-  "containerDefinitions": ${aws_ecs_task_definition.switch.container_definitions},
-  "memory": "${aws_ecs_task_definition.switch.memory}",
-  "volumes": [
-    {
-      "name": "${aws_ecs_task_definition.switch.volume.*.name[0]}",
-      "efsVolumeConfiguration": {
-        "fileSystemId": "${aws_efs_file_system.cache.id}",
-        "transitEncryption": "${aws_ecs_task_definition.switch.volume.*.efs_volume_configuration[0].*.transit_encryption[0]}"
-      }
-    }
-  ]
-}
-EOF
-}
-
 resource "aws_ecs_service" "switch" {
   name            = var.app_identifier
   cluster         = aws_ecs_cluster.cluster.id
