@@ -85,7 +85,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ap-southeast-1
       ECR_REGISTRY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com
-      ECR_REPOSITORY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com/ecs-event-runner
+      ECR_REPOSITORY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com/somleng-switch-services
       IMAGE_TAG: ${{ github.sha }}
 
     strategy:
