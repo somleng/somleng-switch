@@ -8,12 +8,6 @@ module opensips_container_instances {
   cluster_name = aws_ecs_cluster.cluster.name
 }
 
-resource "aws_security_group" "inbound_sip_trunks" {
-  name   = var.inbound_sip_trunks_security_group_name
-  description = var.inbound_sip_trunks_security_group_description
-  vpc_id = var.vpc_id
-}
-
 # Capacity Provider
 resource "aws_ecs_capacity_provider" "opensips" {
   name = "${var.app_identifier}-opensips"
@@ -44,6 +38,24 @@ resource "aws_security_group_rule" "opensips_healthcheck" {
   from_port         = var.sip_port
   security_group_id = aws_security_group.opensips.id
   cidr_blocks = [var.vpc_cidr_block]
+}
+
+resource "aws_security_group_rule" "opensips_sip" {
+  type              = "ingress"
+  to_port           = var.sip_port
+  protocol          = "udp"
+  from_port         = var.sip_port
+  security_group_id = aws_security_group.opensips.id
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "opensips_sip_alternative" {
+  type              = "ingress"
+  to_port           = var.sip_alternative_port
+  protocol          = "udp"
+  from_port         = var.sip_alternative_port
+  security_group_id = aws_security_group.opensips.id
+  cidr_blocks = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "opensips_egress" {
@@ -200,8 +212,7 @@ resource "aws_ecs_service" "opensips" {
     subnets = var.container_instance_subnets
     security_groups = [
       aws_security_group.opensips.id,
-      var.db_security_group,
-      aws_security_group.inbound_sip_trunks.id
+      var.db_security_group
     ]
   }
 
