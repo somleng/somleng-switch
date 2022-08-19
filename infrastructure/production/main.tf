@@ -46,7 +46,6 @@ module "somleng_switch" {
   inbound_sip_trunks_security_group_name = "somleng-inbound-sip-trunks"
   sip_subdomain = "sip"
   switch_subdomain = "ahn"
-  listener_rule_priority = 20
   recordings_bucket_name = "raw-recordings.somleng.org"
-  max_tasks = 10
+  switch_max_tasks = 10
 }
