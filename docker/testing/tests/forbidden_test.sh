@@ -2,9 +2,9 @@
 
 set -e
 
-exit 0
-
 echo "Running: $(basename $0)"
+
+exit 0
 
 current_dir=$(dirname "$(readlink -f "$0")")
 scenario=$current_dir/../scenarios/forbidden.xml

@@ -2,6 +2,8 @@ locals {
   services_function_name = "${var.app_identifier}_services"
 }
 
+# Docker image
+
 resource "docker_registry_image" "services" {
   name = "${var.services_ecr_repository_url}:latest"
 
@@ -16,6 +18,7 @@ resource "docker_registry_image" "services" {
   }
 }
 
+# IAM
 resource "aws_iam_role" "services" {
   name = local.services_function_name
   assume_role_policy = <<EOF
@@ -53,6 +56,17 @@ resource "aws_iam_policy" "services_custom_policy" {
       "Resource": [
         "${aws_ssm_parameter.freeswitch_event_socket_password.arn}",
         "${var.db_password_parameter_arn}"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "sqs:DeleteMessage",
+        "sqs:ReceiveMessage",
+        "sqs:GetQueueAttributes"
+      ],
+      "Resource": [
+        "${aws_sqs_queue.services.arn}"
       ]
     }
   ]
@@ -153,4 +167,24 @@ EOF
 resource "aws_cloudwatch_event_target" "services" {
   arn  = aws_lambda_function.services.arn
   rule = aws_cloudwatch_event_rule.services.id
+}
+
+# SQS
+
+resource "aws_sqs_queue" "services_dead_letter" {
+  name = "${var.app_identifier}-services-dead-letter"
+}
+
+resource "aws_sqs_queue" "services" {
+  name           = "${var.app_identifier}-services"
+  redrive_policy = "{\"deadLetterTargetArn\":\"${aws_sqs_queue.services_dead_letter.arn}\",\"maxReceiveCount\":10}"
+
+  # https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-queueconfig
+  visibility_timeout_seconds = aws_lambda_function.services.timeout * 10
+}
+
+resource "aws_lambda_event_source_mapping" "services_sqs" {
+  event_source_arn = aws_sqs_queue.services.arn
+  function_name    = aws_lambda_function.services.arn
+  maximum_batching_window_in_seconds = 0
 }

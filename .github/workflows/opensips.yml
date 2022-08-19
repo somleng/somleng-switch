@@ -138,6 +138,7 @@ jobs:
       - name: Get current task definition
         run: |
           aws ecs describe-task-definition --task-definition "${{ matrix.identifier }}" --query 'taskDefinition' > task-definition.json
+          cat task-definition.json
 
       - name: Prepare OpenSIPS task definition
         id: render-opensips-task-def
