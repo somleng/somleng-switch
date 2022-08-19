@@ -90,7 +90,7 @@ jobs:
         run: |
           docker-compose run opensips-bootstrap-db
           docker-compose up -d opensips freeswitch somleng-switch testing
-          sleep 30
+          sleep 60
 
       - name: Run Integration Tests
         run: |
