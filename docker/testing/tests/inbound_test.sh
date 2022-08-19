@@ -13,6 +13,12 @@ create_load_balancer_entry "gw" "5060"
 create_address_entry $(hostname -i)
 reload_opensips_tables
 
+psql $DATABASE_URL \
+		-c "SELECT * FROM load_balancer;" \
+		-c "SELECT * FROM address;"
+
+sleep 10
+
 rm -f smart_inbound_*_messages.log
 sipp -sf $scenario opensips:5060 -s 1234 -m 1 -trace_msg > /dev/null
 
