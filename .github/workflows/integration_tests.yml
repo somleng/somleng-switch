@@ -93,5 +93,10 @@ jobs:
           sleep 30
 
       - name: Run Integration Tests
+        continue-on-error: true
         run: |
           docker-compose run testing /tests.sh
+
+      - name: Output logs
+        run: |
+          docker-compose logs opensips

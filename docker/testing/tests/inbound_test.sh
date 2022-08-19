@@ -11,16 +11,7 @@ source $current_dir/support/test_helpers.sh
 reset_db
 create_load_balancer_entry "gw" "5060"
 create_address_entry $(hostname -i)
-
-ls -lat $OPENSIPS_FIFO_NAME
-
 reload_opensips_tables
-
-ls -lat $OPENSIPS_FIFO_NAME
-
-psql $DATABASE_URL \
-		-c "SELECT * FROM load_balancer;" \
-		-c "SELECT * FROM address;"
 
 rm -f smart_inbound_*_messages.log
 sipp -sf $scenario opensips:5060 -s 1234 -m 1 -trace_msg > /dev/null
