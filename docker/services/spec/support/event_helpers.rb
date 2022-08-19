@@ -2,11 +2,11 @@ require "json"
 
 module EventHelpers
   def build_sqs_message_event_payload(data = {})
-    data.reverse_merge!(
+    data = {
       event_source_arn: "arn:aws:sqs:us-east-2:123456789012:somleng-switch-permissions",
       body: "{}",
       attributes: {}
-    )
+    }.merge(data)
 
     payload = JSON.parse(file_fixture("sqs_message_event.json").read)
 
@@ -20,16 +20,16 @@ module EventHelpers
       ]
     }
 
-    payload.deep_merge(overrides)
+    payload.merge(overrides)
   end
 
   def build_ecs_event_payload(data = {})
-    data.reverse_merge!(
+    data = {
       eni_private_ip: "10.0.0.1",
       eni_status: "ATTACHED",
       last_status: "RUNNING",
       group: "service:somleng-switch"
-    )
+    }.merge(data)
 
     data[:attachment_details] ||= [
       {
@@ -56,7 +56,7 @@ module EventHelpers
       }
     }
 
-    payload.deep_merge(overrides)
+    payload.merge(overrides)
   end
 end
 
