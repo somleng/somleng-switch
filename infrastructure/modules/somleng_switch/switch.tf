@@ -345,7 +345,7 @@ data "template_file" "switch" {
 
 resource "aws_ecs_task_definition" "switch" {
   family                   = var.app_identifier
-  network_mode             = var.network_mode
+  network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
   container_definitions = data.template_file.switch.rendered
   task_role_arn = aws_iam_role.ecs_task_role.arn
@@ -366,7 +366,7 @@ resource "aws_ecs_service" "switch" {
   name            = var.app_identifier
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.switch.arn
-  desired_count   = var.min_tasks
+  desired_count   = var.switch_min_tasks
 
   network_configuration {
     subnets = var.container_instance_subnets
@@ -438,8 +438,8 @@ resource "aws_appautoscaling_target" "switch_scale_target" {
   service_namespace  = "ecs"
   resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.switch.name}"
   scalable_dimension = "ecs:service:DesiredCount"
-  min_capacity       = var.min_tasks
-  max_capacity       = var.max_tasks
+  min_capacity       = var.switch_min_tasks
+  max_capacity       = var.switch_max_tasks
 }
 
 resource "aws_appautoscaling_policy" "switch_policy" {

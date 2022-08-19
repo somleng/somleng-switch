@@ -49,6 +49,6 @@ module "somleng_switch_staging" {
   recordings_bucket_name = "raw-recordings-staging.somleng.org"
   sip_port = 6060
   sip_alternative_port = 6080
-  min_tasks = 0
+  switch_min_tasks = 0
   opensips_min_tasks = 0
 }

@@ -25,16 +25,10 @@ variable "container_insights_enabled" {
   default = false
 }
 
-variable "network_mode" {
-  default = "awsvpc"
-}
-variable "enable_dashboard" {
-  default = false
-}
-variable "max_tasks" {
+variable "switch_max_tasks" {
   default = 4
 }
-variable "min_tasks" {
+variable "switch_min_tasks" {
   default = 1
 }
 variable "opensips_max_tasks" {

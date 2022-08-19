@@ -56,7 +56,7 @@ jobs:
           [
             {
               "identifier": "somleng-switch-staging_services",
-              "branch": "handle_inbound_permissions_with_opensips",
+              "branch": "develop",
               "image_tag": "staging"
             },
             {
