@@ -28,7 +28,7 @@ jobs:
           [
             {
               "identifier": "somleng-switch-staging-opensips",
-              "branch": "develop",
+              "branch": "finish_permissions",
               "image_tag": "staging",
               "ecs_service": "somleng-switch-staging-opensips",
               "ecs_cluster": "somleng-switch-staging"
