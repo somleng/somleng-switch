@@ -17,7 +17,7 @@ psql $DATABASE_URL \
 		-c "SELECT * FROM load_balancer;" \
 		-c "SELECT * FROM address;"
 
-sleep 10
+sleep 60
 
 rm -f smart_inbound_*_messages.log
 sipp -sf $scenario opensips:5060 -s 1234 -m 1 -trace_msg > /dev/null
