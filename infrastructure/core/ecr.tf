@@ -1,4 +1,4 @@
-resource "aws_ecrpublic_repository" "app" {
+resource "aws_ecrpublic_repository" "switch" {
   repository_name = "somleng-switch"
   provider = aws.us-east-1
 
@@ -111,6 +111,15 @@ resource "aws_ecr_repository" "s3_mpeg" {
   }
 }
 
+resource "aws_ecr_repository" "services" {
+  name = "somleng-switch-services"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
+# Delete this after production is deployed
 resource "aws_ecr_repository" "ecs_event_runner" {
   name = "ecs-event-runner"
 

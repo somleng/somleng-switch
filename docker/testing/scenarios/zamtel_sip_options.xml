@@ -36,7 +36,7 @@
     ]]>
   </send>
 
-  <recv response="200" timeout="5000" crlf="true">
+  <recv response="200" timeout="5000">
   </recv>
 
   <!-- definition of the response time repartition table (unit is ms)   -->

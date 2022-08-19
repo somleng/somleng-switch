@@ -9,7 +9,7 @@ module "somleng_switch" {
   app_environment = "production"
   aws_region = var.aws_region
 
-  app_image = data.terraform_remote_state.core.outputs.app_ecr_repository.repository_uri
+  switch_image = data.terraform_remote_state.core.outputs.switch_ecr_repository.repository_uri
   nginx_image = data.terraform_remote_state.core.outputs.nginx_ecr_repository.repository_uri
   freeswitch_image = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository.repository_uri
   freeswitch_event_logger_image = data.terraform_remote_state.core.outputs.freeswitch_event_logger_ecr_repository.repository_uri
@@ -17,7 +17,7 @@ module "somleng_switch" {
   opensips_scheduler_image = data.terraform_remote_state.core.outputs.opensips_scheduler_ecr_repository.repository_uri
 
   s3_mpeg_ecr_repository_url = data.terraform_remote_state.core.outputs.s3_mpeg_ecr_repository.repository_url
-  ecs_event_runner_ecr_repository_url = data.terraform_remote_state.core.outputs.ecs_event_runner_ecr_repository.repository_url
+  services_ecr_repository_url = data.terraform_remote_state.core.outputs.services_ecr_repository.repository_url
 
   vpc_id = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_id
   vpc_cidr_block = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_cidr_block
@@ -46,7 +46,6 @@ module "somleng_switch" {
   inbound_sip_trunks_security_group_name = "somleng-inbound-sip-trunks"
   sip_subdomain = "sip"
   switch_subdomain = "ahn"
-  listener_rule_priority = 20
   recordings_bucket_name = "raw-recordings.somleng.org"
-  max_tasks = 10
+  switch_max_tasks = 10
 }

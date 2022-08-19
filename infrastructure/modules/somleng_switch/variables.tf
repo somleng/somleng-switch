@@ -2,14 +2,14 @@
 variable "aws_region" {}
 variable "app_identifier" {}
 variable "app_environment" {}
-variable "app_image" {}
+variable "switch_image" {}
 variable "nginx_image" {}
 variable "freeswitch_image" {}
 variable "opensips_image" {}
 variable "opensips_scheduler_image" {}
 variable "freeswitch_event_logger_image" {}
 variable s3_mpeg_ecr_repository_url {}
-variable ecs_event_runner_ecr_repository_url {}
+variable services_ecr_repository_url {}
 variable "container_instance_subnets" {}
 variable "intra_subnets" {}
 variable "vpc_id" {}
@@ -20,33 +20,15 @@ variable "listener_arn" {}
 variable "sip_subdomain" {}
 variable "switch_subdomain" {}
 variable "route53_zone" {}
-variable "listener_rule_priority" {}
 variable "recordings_bucket_name" {}
 variable "container_insights_enabled" {
   default = false
 }
 
-variable "webserver_container_name" {
-  default = "nginx"
-}
-
-variable "webserver_container_port" {
-  default = 80
-}
-
-variable "app_port" {
-  default = 3000
-}
-variable "network_mode" {
-  default = "awsvpc"
-}
-variable "enable_dashboard" {
-  default = false
-}
-variable "max_tasks" {
+variable "switch_max_tasks" {
   default = 4
 }
-variable "min_tasks" {
+variable "switch_min_tasks" {
   default = 1
 }
 variable "opensips_max_tasks" {

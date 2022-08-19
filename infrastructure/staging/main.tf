@@ -8,7 +8,7 @@ module "somleng_switch_staging" {
   aws_region = var.aws_region
   app_identifier = "somleng-switch-staging"
   app_environment = "staging"
-  app_image = data.terraform_remote_state.core.outputs.app_ecr_repository.repository_uri
+  switch_image = data.terraform_remote_state.core.outputs.switch_ecr_repository.repository_uri
   nginx_image = data.terraform_remote_state.core.outputs.nginx_ecr_repository.repository_uri
   freeswitch_image = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository.repository_uri
   freeswitch_event_logger_image = data.terraform_remote_state.core.outputs.freeswitch_event_logger_ecr_repository.repository_uri
@@ -16,7 +16,7 @@ module "somleng_switch_staging" {
   opensips_scheduler_image = data.terraform_remote_state.core.outputs.opensips_scheduler_ecr_repository.repository_uri
 
   s3_mpeg_ecr_repository_url = data.terraform_remote_state.core.outputs.s3_mpeg_ecr_repository.repository_url
-  ecs_event_runner_ecr_repository_url = data.terraform_remote_state.core.outputs.ecs_event_runner_ecr_repository.repository_url
+  services_ecr_repository_url = data.terraform_remote_state.core.outputs.services_ecr_repository.repository_url
 
   vpc_id = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_id
   vpc_cidr_block = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_cidr_block
@@ -49,7 +49,6 @@ module "somleng_switch_staging" {
   recordings_bucket_name = "raw-recordings-staging.somleng.org"
   sip_port = 6060
   sip_alternative_port = 6080
-  listener_rule_priority = 120
-  min_tasks = 0
+  switch_min_tasks = 0
   opensips_min_tasks = 0
 }

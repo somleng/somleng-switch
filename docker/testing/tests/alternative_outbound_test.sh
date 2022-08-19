@@ -2,7 +2,10 @@
 
 set -e
 
-echo "Running: `basename $0`"
+echo "Running: $(basename $0)"
+
+current_dir=$(dirname "$(readlink -f "$0")")
+source $current_dir/support/test_helpers.sh
 
 log_file=$(find . -type f -iname "uas_*_messages.log")
 cat /dev/null > $log_file
@@ -29,13 +32,8 @@ EOF
 
 sleep 10
 
-test_string="c=IN IP4 18.141.245.230" # ALTERNATIVE_EXT_RTP_IP
-
-if ! grep -q "$test_string" $log_file; then
-  cat <<-EOT
-	Error:
-	$test_string not found in:
-	`cat $log_file`
-	EOT
-  exit 1
+if ! assert_in_file $log_file "c=IN IP4 18.141.245.230"; then
+	exit 1
 fi
+
+echo "Finishing"

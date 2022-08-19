@@ -1,5 +1,5 @@
-output "app_ecr_repository" {
-  value = aws_ecrpublic_repository.app
+output "switch_ecr_repository" {
+  value = aws_ecrpublic_repository.switch
 }
 
 output "nginx_ecr_repository" {
@@ -26,6 +26,6 @@ output "s3_mpeg_ecr_repository" {
   value = aws_ecr_repository.s3_mpeg
 }
 
-output "ecs_event_runner_ecr_repository" {
-  value = aws_ecr_repository.ecs_event_runner
+output "services_ecr_repository" {
+  value = aws_ecr_repository.services
 }
