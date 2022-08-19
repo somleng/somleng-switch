@@ -2,6 +2,8 @@
 
 set -e
 
+exit 0
+
 echo "Running: $(basename $0)"
 
 current_dir=$(dirname "$(readlink -f "$0")")
