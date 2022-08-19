@@ -35,5 +35,3 @@ sleep 10
 if ! assert_in_file $log_file "c=IN IP4 18.141.245.230"; then
 	exit 1
 fi
-
-echo "Finishing"
