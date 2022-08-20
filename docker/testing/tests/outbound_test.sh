@@ -2,8 +2,6 @@
 
 set -e
 
-echo "Running: $(basename $0)"
-
 current_dir=$(dirname "$(readlink -f "$0")")
 source $current_dir/support/test_helpers.sh
 
@@ -33,5 +31,10 @@ EOF
 sleep 10
 
 if ! assert_in_file $log_file "c=IN IP4 13.250.230.15"; then
+	exit 1
+fi
+
+# Checks that FreeSWITCH sets an empty rport
+if ! assert_in_file $log_file "rport;"; then
 	exit 1
 fi

@@ -2,8 +2,6 @@
 
 set -e
 
-echo "Running: $(basename $0)"
-
 current_dir=$(dirname "$(readlink -f "$0")")
 source $current_dir/support/test_helpers.sh
 
