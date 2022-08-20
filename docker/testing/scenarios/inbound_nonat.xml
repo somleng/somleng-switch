@@ -54,10 +54,63 @@
   <recv response="100" timeout="5000">
   </recv>
 
+  <recv response="180" optional="true">
+  </recv>
+
+  <recv response="183" optional="true">
+  </recv>
+
+  <!-- By adding rrs="true" (Record Route Sets), the route sets         -->
+  <!-- are saved and used for following messages sent. Useful to test   -->
+  <!-- against stateful SIP proxies/B2BUAs.                             -->
+  <recv response="200" rtd="true" rrs="true">
+  </recv>
+
+  <!-- Packet lost can be simulated in any send/recv message by         -->
+  <!-- by adding the 'lost = "10"'. Value can be [1-100] percent.       -->
+  <send>
+    <![CDATA[
+      ACK sip:1234@[remote_ip]:[remote_port] SIP/2.0
+      Via: SIP/2.0/UDP [local_ip]:[local_port];branch=[branch]
+      From: sipp <sip:855715100860@[local_ip]:[local_port]>;tag=[pid]SIPpTag00[call_number]
+      To: "1234"<sip:1234@[remote_ip]:[remote_port]>[peer_tag_param]
+      Call-ID: [call_id]
+      CSeq: 1 ACK
+      Contact: sip:855715100860@[local_ip]:[local_port]
+      Max-Forwards: 70
+      Subject: Performance Test
+      Content-Length: 0
+      [routes]
+    ]]>
+  </send>
+
+  <!-- This delay can be customized by the -d command-line option       -->
+  <!-- or by adding a 'milliseconds = "value"' option here.             -->
+  <pause/>
+
+  <!-- The 'crlf' option inserts a blank line in the statistics report. -->
+  <send retrans="500">
+    <![CDATA[
+      BYE sip:1234@[remote_ip]:[remote_port] SIP/2.0
+      Via: SIP/2.0/UDP [local_ip]:[local_port];branch=[branch]
+      From: sipp <sip:855715100860@[local_ip]:[local_port]>;tag=[pid]SIPpTag00[call_number]
+      To: "1234"<sip:1234@[remote_ip]:[remote_port]>[peer_tag_param]
+      Call-ID: [call_id]
+      CSeq: 2 BYE
+      Contact: sip:855715100860@[local_ip]:[local_port]
+      Max-Forwards: 70
+      Subject: Performance Test
+      Content-Length: 0
+      [routes]
+    ]]>
+  </send>
+
+  <recv response="200" crlf="true">
+  </recv>
+
   <!-- definition of the response time repartition table (unit is ms)   -->
   <ResponseTimeRepartition value="10, 20, 30, 40, 50, 100, 150, 200"/>
 
   <!-- definition of the call length repartition table (unit is ms)     -->
   <CallLengthRepartition value="10, 50, 100, 500, 1000, 5000, 10000"/>
 </scenario>
-

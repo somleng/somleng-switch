@@ -61,6 +61,55 @@
   <recv response="100" timeout="5000">
   </recv>
 
+  <recv response="183" optional="true">
+  </recv>
+
+  <!-- By adding rrs="true" (Record Route Sets), the route sets         -->
+  <!-- are saved and used for following messages sent. Useful to test   -->
+  <!-- against stateful SIP proxies/B2BUAs.                             -->
+  <recv response="200" rtd="true" rrs="true">
+  </recv>
+
+  <!-- Packet lost can be simulated in any send/recv message by         -->
+  <!-- by adding the 'lost = "10"'. Value can be [1-100] percent.       -->
+  <send>
+    <![CDATA[
+      ACK sip:1234@freeswitch:5060;transport=udp SIP/2.0
+      Via: SIP/2.0/UDP 27.109.112.140:5060;branch=[branch]
+      Call-ID: [call_id]
+      From: "+85512234567" <sip:+85512234567@27.109.112.140;transport=udp;user=phone>;tag=[pid]SIPpTag00[call_number]
+      To: "1234" <sip:1234@52.74.4.205;transport=udp;user=phone>[peer_tag_param]
+      CSeq: 1 ACK
+      Max-Forwards: 29
+      Content-Length: 0
+      [routes]
+    ]]>
+  </send>
+
+  <!-- This delay can be customized by the -d command-line option       -->
+  <!-- or by adding a 'milliseconds = "value"' option here.             -->
+  <pause milliseconds="1000"/>
+
+  <!-- The 'crlf' option inserts a blank line in the statistics report. -->
+  <send retrans="500">
+    <![CDATA[
+      BYE sip:1234@freeswitch:5060;transport=udp SIP/2.0
+      Via: SIP/2.0/UDP 27.109.112.140:5060;branch=[branch]
+      Call-ID: [call_id]
+      From: "+85512234567" <sip:+85512234567@27.109.112.140;transport=udp;user=phone>;tag=[pid]SIPpTag00[call_number]
+      To: "1234" <sip:1234@52.74.4.205;transport=udp;user=phone>[peer_tag_param]
+      CSeq: 2 BYE
+      Contact: sip:sipp@27.109.112.140:[local_port]
+      Max-Forwards: 29
+      Reason: Q.850;cause=31;text="Normal, unspecified"
+      Content-Length: 0
+      [routes]
+    ]]>
+  </send>
+
+  <recv response="200" crlf="true">
+  </recv>
+
   <!-- definition of the response time repartition table (unit is ms)   -->
   <ResponseTimeRepartition value="10, 20, 30, 40, 50, 100, 150, 200"/>
 

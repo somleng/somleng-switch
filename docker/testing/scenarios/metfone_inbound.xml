@@ -72,7 +72,7 @@
   <!-- By adding rrs="true" (Record Route Sets), the route sets         -->
   <!-- are saved and used for following messages sent. Useful to test   -->
   <!-- against stateful SIP proxies/B2BUAs.                             -->
-  <recv response="200" rtd="true">
+  <recv response="200" rtd="true" rrs="true">
   </recv>
 
   <!-- Packet lost can be simulated in any send/recv message by         -->
@@ -86,9 +86,9 @@
       To: "1294" <sip:1294@52.74.4.205;transport=udp;user=phone>[peer_tag_param]
       CSeq: 57106 ACK
       Max-Forwards: 70
-      Route: <sip:52.74.4.205:5060;lr;did=1a1.3046aee1>
       P-Charging-Vector: icid-value=A41680119C62202285175914;orig-ioi=10.65.104.1
       Content-Length: 0
+      [routes]
     ]]>
   </send>
 
@@ -107,10 +107,10 @@
       To: "1294" <sip:1294@52.74.4.205;transport=udp;user=phone>[peer_tag_param]
       CSeq: 57108 BYE
       Max-Forwards: 29
-      Route: <sip:52.74.4.205:5060;lr;did=1a1.3046aee1>
       P-Charging-Vector: icid-value=A41680119C62202285175914;orig-ioi=10.65.104.1
       Reason: Q.850;cause=16;text="Normal call clearing"
       Content-Length: 0
+      [routes]
     ]]>
   </send>
 

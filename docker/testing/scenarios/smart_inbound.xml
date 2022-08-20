@@ -67,7 +67,7 @@
   <!-- By adding rrs="true" (Record Route Sets), the route sets         -->
   <!-- are saved and used for following messages sent. Useful to test   -->
   <!-- against stateful SIP proxies/B2BUAs.                             -->
-  <recv response="200" rtd="true">
+  <recv response="200" rtd="true" rrs="true">
   </recv>
 
   <!-- Packet lost can be simulated in any send/recv message by         -->
@@ -82,7 +82,7 @@
       CSeq: 1 ACK
       Max-Forwards: 29
       Content-Length: 0
-      Route: <sip:52.74.4.205:5060;lr;did=b46.ac484934>
+      [routes]
     ]]>
   </send>
 
@@ -93,7 +93,6 @@
   <!-- The 'crlf' option inserts a blank line in the statistics report. -->
   <send retrans="500">
     <![CDATA[
-
       BYE sip:1234@freeswitch:5060;transport=udp SIP/2.0
       Via: SIP/2.0/UDP 27.109.112.140:5060;branch=[branch]
       Call-ID: [call_id]
@@ -104,7 +103,7 @@
       Max-Forwards: 29
       Reason: Q.850;cause=31;text="Normal, unspecified"
       Content-Length: 0
-      Route: <sip:52.74.4.205:5060;lr;did=b46.ac484934>
+      [routes]
     ]]>
   </send>
 
