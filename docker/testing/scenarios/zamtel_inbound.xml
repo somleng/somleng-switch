@@ -77,7 +77,7 @@
   <!-- By adding rrs="true" (Record Route Sets), the route sets         -->
   <!-- are saved and used for following messages sent. Useful to test   -->
   <!-- against stateful SIP proxies/B2BUAs.                             -->
-  <recv response="200" rtd="true">
+  <recv response="200" rtd="true" rrs="true">
   </recv>
 
   <!-- Packet lost can be simulated in any send/recv message by         -->
@@ -92,7 +92,7 @@
       CSeq: 1 ACK
       Max-Forwards: 70
       Content-Length: 0
-      Route: <sip:52.74.4.205:5080;lr;did=36a.27e17bf3>
+      [routes]
     ]]>
   </send>
 
@@ -112,7 +112,7 @@
       Max-Forwards: 70
       Reason: Q.850;cause=16;text="Normal call clearing"
       Content-Length: 0
-      Route: <sip:52.74.4.205:5080;lr;did=36a.27e17bf3>
+      [routes]
     ]]>
   </send>
 

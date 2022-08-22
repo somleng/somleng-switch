@@ -2,8 +2,6 @@
 
 set -e
 
-echo "Running: $(basename $0)"
-
 current_dir=$(dirname "$(readlink -f "$0")")
 source $current_dir/support/test_helpers.sh
 
@@ -35,5 +33,3 @@ sleep 10
 if ! assert_in_file $log_file "c=IN IP4 18.141.245.230"; then
 	exit 1
 fi
-
-echo "Finishing"

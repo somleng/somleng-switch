@@ -29,7 +29,7 @@ class SQSMessageEventParser
       body = JSON.parse(record.fetch("body"))
 
       result << Record.new(
-        job_class: body.fetch("job_class").constantize,
+        job_class: Object.const_get(body.fetch("job_class")),
         job_args: body.fetch("job_args", [])
       )
     end

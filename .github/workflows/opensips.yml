@@ -143,7 +143,7 @@ jobs:
         id: render-opensips-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: task-definition.json
+          task-definition: docker/opensips/task-definition.json
           container-name: opensips
           image: ${{ env.OPENSIPS_ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 

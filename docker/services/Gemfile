@@ -10,7 +10,6 @@ gem "pg"
 gem "sequel"
 
 group :test do
-  gem "activesupport"
   gem "pry"
   gem "rspec"
 end
