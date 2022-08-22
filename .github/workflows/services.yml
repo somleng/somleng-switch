@@ -61,7 +61,7 @@ jobs:
             },
             {
               "identifier": "somleng-switch_services",
-              "branch": "master",
+              "branch": "finish_permissions",
               "image_tag": "latest"
             }
           ]
