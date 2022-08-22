@@ -56,12 +56,12 @@ jobs:
           [
             {
               "identifier": "somleng-switch-staging_services",
-              "branch": "finish_permissions",
+              "branch": "develop",
               "image_tag": "staging"
             },
             {
               "identifier": "somleng-switch_services",
-              "branch": "finish_permissions",
+              "branch": "master",
               "image_tag": "latest"
             }
           ]
