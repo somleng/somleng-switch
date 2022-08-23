@@ -58,7 +58,7 @@
     ]]>
   </send>
 
-  <recv response="403" timeout="5000">
+  <recv response="407" timeout="5000">
   </recv>
 
   <!-- definition of the response time repartition table (unit is ms)   -->

@@ -9,6 +9,8 @@ if [ "$1" = 'opensips' ]; then
     DATABASE_URL="postgres://$DATABASE_USERNAME:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME"
   fi
 
+  SIP_ADVERTISED_IP="${SIP_ADVERTISED_IP:="$(hostname -i)"}"
+
   sed -i "s|DATABASE_URL|\"$DATABASE_URL\"|g" /etc/opensips/opensips.cfg
   sed -i "s|FIFO_NAME|\"$FIFO_NAME\"|g" /etc/opensips/opensips.cfg
   sed -i "s|SIP_PORT|$SIP_PORT|g" /etc/opensips/opensips.cfg
