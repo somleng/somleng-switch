@@ -24,7 +24,7 @@ create_load_balancer_entry () {
 
 create_address_entry () {
   ip="$1"
-  psql -q $DATABASE_URL -c "INSERT INTO address (ip, mask) VALUES('$ip', 32);"
+  psql -q $DATABASE_URL -c "INSERT INTO address (ip) VALUES('$ip');"
 }
 
 assert_in_file () {
