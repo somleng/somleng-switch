@@ -27,7 +27,7 @@
   <send retrans="500">
     <![CDATA[
 
-      REGISTER sip:[username]@[remote_ip]:[remote_port] SIP/2.0
+      REGISTER sip:[remote_ip]:[remote_port] SIP/2.0
       Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
       From: [username] <sip:[username]@[local_ip]:[local_port]>;tag=[pid]SIPpTag00[call_number]
       To: [username] <sip:[username]@[remote_ip]:[remote_port]>
@@ -48,7 +48,7 @@
   <send retrans="500">
     <![CDATA[
 
-      REGISTER sip:[username]@[remote_ip]:[remote_port] SIP/2.0
+      REGISTER sip:[remote_ip]:[remote_port] SIP/2.0
       Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
       From: [username] <sip:[username]@[local_ip]:[local_port]>;tag=[pid]SIPpTag00[call_number]
       To: [username] <sip:[username]@[remote_ip]:[remote_port]>

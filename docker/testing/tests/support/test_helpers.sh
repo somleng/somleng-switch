@@ -38,6 +38,8 @@ create_subscriber_entry () {
 }
 
 create_address_entry () {
+  ip="$1"
+
   psql -q $DATABASE_URL -c "INSERT INTO address (ip) VALUES('$ip');"
 }
 

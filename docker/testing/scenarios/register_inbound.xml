@@ -27,7 +27,7 @@
   <send retrans="500">
     <![CDATA[
 
-      REGISTER sip:[username]@[remote_ip]:[remote_port] SIP/2.0
+      REGISTER sip:[remote_ip]:[remote_port] SIP/2.0
       Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
       From: [username] <sip:[username]@[local_ip]:[local_port]>;tag=[pid]SIPpTag00[call_number]
       To: [username] <sip:[username]@[remote_ip]:[remote_port]>
@@ -48,7 +48,7 @@
   <send retrans="500">
     <![CDATA[
 
-      REGISTER sip:[username]@[remote_ip]:[remote_port] SIP/2.0
+      REGISTER sip:[remote_ip]:[remote_port] SIP/2.0
       Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
       From: [username] <sip:[username]@[local_ip]:[local_port]>;tag=[pid]SIPpTag00[call_number]
       To: [username] <sip:[username]@[remote_ip]:[remote_port]>
@@ -71,13 +71,13 @@
       INVITE sip:[service]@[remote_ip]:[remote_port] SIP/2.0
       Via: SIP/2.0/UDP [local_ip]:[local_port];branch=[branch]
       Call-ID: [call_id]
-      From: "+85512234567"<sip:+85512234567@[local_ip];transport=udp;user=phone>;tag=[pid]SIPpTag00[call_number]
+      From: [username] <sip:[username]@[local_ip];transport=udp;user=phone>;tag=[pid]SIPpTag00[call_number]
       To: "[service]"<sip:[service]@[remote_ip];transport=udp;user=phone>
       CSeq: 1 INVITE
       Max-Forwards: 29
-      Contact: <sip:[local_ip]:[local_port];transport=udp>
+      Contact: <sip:[username]:[local_port];transport=udp>
       Allow: INVITE,ACK,OPTIONS,BYE,CANCEL,INFO,PRACK,NOTIFY,MESSAGE,UPDATE
-      P-Asserted-Identity: <tel:+85512234567>
+      Remote-Party-ID: "0714672953" <sip:0714672953@[remote_ip]>;party=calling;screen=no;privacy=off
       P-Early-Media: supported
       Supported: 100rel,timer,histinfo,precondition
       Min-SE: 90
@@ -103,13 +103,13 @@
       INVITE sip:[service]@[remote_ip]:[remote_port] SIP/2.0
       Via: SIP/2.0/UDP [local_ip]:[local_port];branch=[branch]
       Call-ID: [call_id]
-      From: "+85512234567"<sip:+85512234567@[local_ip];transport=udp;user=phone>;tag=[pid]SIPpTag00[call_number]
+      From: [username] <sip:[username]@[local_ip];transport=udp;user=phone>;tag=[pid]SIPpTag00[call_number]
       To: "[service]"<sip:[service]@[remote_ip];transport=udp;user=phone>
       CSeq: 1 INVITE
       Max-Forwards: 29
-      Contact: <sip:[local_ip]:[local_port];transport=udp>
+      Contact: <sip:[username]:[local_port];transport=udp>
       Allow: INVITE,ACK,OPTIONS,BYE,CANCEL,INFO,PRACK,NOTIFY,MESSAGE,UPDATE
-      P-Asserted-Identity: <tel:+85512234567>
+      Remote-Party-ID: "0714672953" <sip:0714672953@[remote_ip]>;party=calling;screen=no;privacy=off
       P-Early-Media: supported
       Supported: 100rel,timer,histinfo,precondition
       Min-SE: 90
@@ -149,11 +149,10 @@
     <![CDATA[
       ACK sip:[service]@[remote_ip]:[remote_port] SIP/2.0
       Via: SIP/2.0/UDP [local_ip]:[local_port];branch=[branch]
-      From: "+85512234567"<sip:+85512234567@[local_ip];transport=udp;user=phone>;tag=[pid]SIPpTag00[call_number]
+      From: "[username]"<sip:[username]@[local_ip];transport=udp;user=phone>;tag=[pid]SIPpTag00[call_number]
       To: "[service]"<sip:[service]@[remote_ip]:[remote_port]>[peer_tag_param]
       Call-ID: [call_id]
       CSeq: 1 ACK
-      Contact: <sip:[local_ip]:[local_port];transport=udp>
       Max-Forwards: 70
       Subject: Performance Test
       Content-Length: 0
@@ -170,11 +169,11 @@
     <![CDATA[
       BYE sip:[service]@[remote_ip]:[remote_port] SIP/2.0
       Via: SIP/2.0/UDP [local_ip]:[local_port];branch=[branch]
-      From: "+85512234567"<sip:+85512234567@[local_ip];transport=udp;user=phone>;tag=[pid]SIPpTag00[call_number]
+      From: "[username]"<sip:[username]@[local_ip];transport=udp;user=phone>;tag=[pid]SIPpTag00[call_number]
       To: "[service]"<sip:[service]@[remote_ip]:[remote_port]>[peer_tag_param]
       Call-ID: [call_id]
       CSeq: 2 BYE
-      Contact: <sip:[local_ip]:[local_port];transport=udp>
+      Contact: <sip:[username]@[local_ip]:[local_port];transport=udp>
       Max-Forwards: 70
       Subject: Performance Test
       Content-Length: 0
