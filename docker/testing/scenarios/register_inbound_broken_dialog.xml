@@ -147,7 +147,7 @@
   <!-- by adding the 'lost = "10"'. Value can be [1-100] percent.       -->
   <send>
     <![CDATA[
-      ACK [next_url] SIP/2.0
+      ACK sip:[service]@[remote_ip]:[remote_port] SIP/2.0
       Via: SIP/2.0/UDP [local_ip]:[local_port];branch=[branch]
       From: "[username]"<sip:[username]@[local_ip];transport=udp;user=phone>;tag=[pid]SIPpTag00[call_number]
       To: "[service]"<sip:[service]@[remote_ip]:[remote_port]>[peer_tag_param]
@@ -167,7 +167,7 @@
   <!-- The 'crlf' option inserts a blank line in the statistics report. -->
   <send retrans="500">
     <![CDATA[
-      BYE [next_url] SIP/2.0
+      BYE sip:[service]@[remote_ip]:[remote_port] SIP/2.0
       Via: SIP/2.0/UDP [local_ip]:[local_port];branch=[branch]
       From: "[username]"<sip:[username]@[local_ip];transport=udp;user=phone>;tag=[pid]SIPpTag00[call_number]
       To: "[service]"<sip:[service]@[remote_ip]:[remote_port]>[peer_tag_param]

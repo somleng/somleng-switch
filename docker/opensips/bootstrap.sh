@@ -16,11 +16,14 @@ if [ "$1" = 'create_db' ]; then
 	[default]
 	database_modules: $DATABASE_MODULES
 	database_admin_url: $DATABASE_URL
+	database_name: $DATABASE_NAME
 	EOT
 
-  psql --host=$DATABASE_HOST --username=$DATABASE_USERNAME --port=$DATABASE_PORT --dbname postgres -c "CREATE USER opensips;"
-  opensips-cli -x database create
+  psql --host=$DATABASE_HOST --username=$DATABASE_USERNAME --port=$DATABASE_PORT --dbname postgres <<-SQL
+    SELECT 'CREATE USER opensips;' WHERE NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'opensips')\gexec
+	SQL
 
+  opensips-cli -x database create
 elif [ "$1" = 'add_module' ]; then
   cat <<-EOT > /etc/opensips-cli.cfg
 	[default]
