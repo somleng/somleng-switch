@@ -38,7 +38,6 @@ services:
     environment:
       DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
       FIFO_NAME: /opensips/fifo/opensips_fifo
-      SIP_ADVERTISED_IP: "192.168.1.188"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:

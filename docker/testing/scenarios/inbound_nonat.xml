@@ -27,8 +27,8 @@
       INVITE sip:1234@[remote_ip]:[remote_port] SIP/2.0
       Via: SIP/2.0/UDP [local_ip]:[local_port];branch=[branch]
       Call-ID: [call_id]
-      From: "+85512234567"<sip:+85512234567@27.109.112.140;transport=udp;user=phone>;tag=[pid]SIPpTag00[call_number]
-      To: "1234"<sip:1294@52.74.4.205;transport=udp;user=phone>
+      From: "+85512234567"<sip:+85512234567@[local_ip];transport=udp;user=phone>;tag=[pid]SIPpTag00[call_number]
+      To: "1234"<sip:1294@[remote_ip];transport=udp;user=phone>
       CSeq: 1 INVITE
       Max-Forwards: 29
       Contact: <sip:[local_ip]:[local_port];transport=udp>
@@ -70,13 +70,13 @@
   <!-- by adding the 'lost = "10"'. Value can be [1-100] percent.       -->
   <send>
     <![CDATA[
-      ACK sip:1234@[remote_ip]:[remote_port] SIP/2.0
+      ACK [next_url] SIP/2.0
       Via: SIP/2.0/UDP [local_ip]:[local_port];branch=[branch]
       From: sipp <sip:855715100860@[local_ip]:[local_port]>;tag=[pid]SIPpTag00[call_number]
       To: "1234"<sip:1234@[remote_ip]:[remote_port]>[peer_tag_param]
       Call-ID: [call_id]
       CSeq: 1 ACK
-      Contact: sip:855715100860@[local_ip]:[local_port]
+      Contact: <sip:[local_ip]:[local_port];transport=udp>
       Max-Forwards: 70
       Subject: Performance Test
       Content-Length: 0
@@ -91,13 +91,13 @@
   <!-- The 'crlf' option inserts a blank line in the statistics report. -->
   <send retrans="500">
     <![CDATA[
-      BYE sip:1234@[remote_ip]:[remote_port] SIP/2.0
+      BYE [next_url] SIP/2.0
       Via: SIP/2.0/UDP [local_ip]:[local_port];branch=[branch]
       From: sipp <sip:855715100860@[local_ip]:[local_port]>;tag=[pid]SIPpTag00[call_number]
       To: "1234"<sip:1234@[remote_ip]:[remote_port]>[peer_tag_param]
       Call-ID: [call_id]
       CSeq: 2 BYE
-      Contact: sip:855715100860@[local_ip]:[local_port]
+      Contact: <sip:[local_ip]:[local_port];transport=udp>
       Max-Forwards: 70
       Subject: Performance Test
       Content-Length: 0
