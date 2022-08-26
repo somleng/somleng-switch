@@ -16,7 +16,6 @@ if [ "$1" = 'create_db' ]; then
 	[default]
 	database_modules: $DATABASE_MODULES
 	database_admin_url: $DATABASE_URL
-	database_name: $DATABASE_NAME
 	EOT
 
   psql --host=$DATABASE_HOST --username=$DATABASE_USERNAME --port=$DATABASE_PORT --dbname postgres <<-SQL

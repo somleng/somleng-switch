@@ -27,7 +27,7 @@ services:
       DATABASE_PASSWORD:
       DATABASE_HOST: "host.docker.internal"
       DATABASE_PORT: 5432
-      DATABASE_NAME: "opensips_test"
+      DATABASE_NAME: "opensips"
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -36,7 +36,7 @@ services:
       context: docker/opensips
     image: opensips:latest
     environment:
-      DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips_test"
+      DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
       FIFO_NAME: /opensips/fifo/opensips_fifo
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -87,7 +87,7 @@ services:
     command: sipp -sn uas -trace_msg
     environment:
       OPENSIPS_FIFO_NAME: /opensips/fifo/opensips_fifo
-      DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips_test"
+      DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
