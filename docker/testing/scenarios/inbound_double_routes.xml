@@ -28,7 +28,7 @@
       Via: SIP/2.0/UDP [local_ip]:[local_port];branch=[branch]
       Call-ID: [call_id]
       From: "+85512234567"<sip:+85512234567@[local_ip];transport=udp;user=phone>;tag=[pid]SIPpTag00[call_number]
-      To: "1234"<sip:1234@[remote_ip];transport=udp;user=phone>
+      To: "[service]"<sip:[service]@[remote_ip];transport=udp;user=phone>
       CSeq: 1 INVITE
       Max-Forwards: 29
       Contact: <sip:[local_ip]:[local_port];transport=udp>
@@ -73,30 +73,9 @@
       ACK [next_url] SIP/2.0
       Via: SIP/2.0/UDP [local_ip]:[local_port];branch=[branch]
       From: sipp <sip:855715100860@[local_ip]:[local_port]>;tag=[pid]SIPpTag00[call_number]
-      To: "1234"<sip:1234@[remote_ip]:[remote_port]>[peer_tag_param]
+      To: "[service]"<sip:[service]@[remote_ip]:[remote_port]>[peer_tag_param]
       Call-ID: [call_id]
       CSeq: 1 ACK
-      Contact: <sip:[local_ip]:[local_port];transport=udp>
-      Max-Forwards: 70
-      Subject: Performance Test
-      Content-Length: 0
-      Route: <sip:86.4.139.77:5060;lr;did=f8.9df935e4>
-    ]]>
-  </send>
-
-  <!-- This delay can be customized by the -d command-line option       -->
-  <!-- or by adding a 'milliseconds = "value"' option here.             -->
-  <pause/>
-
-  <!-- The 'crlf' option inserts a blank line in the statistics report. -->
-  <send retrans="500">
-    <![CDATA[
-      BYE [next_url] SIP/2.0
-      Via: SIP/2.0/UDP [local_ip]:[local_port];branch=[branch]
-      From: sipp <sip:855715100860@[local_ip]:[local_port]>;tag=[pid]SIPpTag00[call_number]
-      To: "1234"<sip:1234@[remote_ip]:[remote_port]>[peer_tag_param]
-      Call-ID: [call_id]
-      CSeq: 2 BYE
       Contact: <sip:[local_ip]:[local_port];transport=udp>
       Max-Forwards: 70
       Subject: Performance Test
@@ -105,8 +84,24 @@
     ]]>
   </send>
 
-  <recv response="200" crlf="true">
+  <!-- This delay can be customized by the -d command-line option       -->
+  <!-- or by adding a 'milliseconds = "value"' option here.             -->
+
+  <recv request="BYE" timeout="10000">
   </recv>
+
+   <send>
+    <![CDATA[
+      SIP/2.0 200 OK
+      [last_Via:]
+      [last_From:]
+      [last_To:];tag=[call_number]
+      [last_Call-ID:]
+      [last_CSeq:]
+      Contact: <sip:[local_ip]:[local_port];transport=udp>
+      Content-Length: 0
+    ]]>
+  </send>
 
   <!-- definition of the response time repartition table (unit is ms)   -->
   <ResponseTimeRepartition value="10, 20, 30, 40, 50, 100, 150, 200"/>

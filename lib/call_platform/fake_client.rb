@@ -3,10 +3,16 @@ module CallPlatform
     def notify_call_event(_params); end
 
     def create_call(params)
+      twiml = case params.fetch(:to)
+              when "1111" then "<Response><Say>Hello World!</Say><Hangup /></Response>"
+              else
+                "<Response><Play>https://demo.twilio.com/docs/classic.mp3</Play></Response>"
+              end
+
       InboundPhoneCallResponse.new(
-        voice_url: "https://demo.twilio.com/docs/voice.xml",
-        voice_method: "GET",
-        twiml: nil,
+        voice_url: nil,
+        voice_method: nil,
+        twiml: twiml,
         account_sid: SecureRandom.uuid,
         auth_token: SecureRandom.uuid,
         call_sid: SecureRandom.uuid,
