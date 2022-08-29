@@ -21,7 +21,7 @@ RUN apt-get -y update -qq && apt-get -y install gnupg2 ca-certificates
 RUN apt-key adv --fetch-keys https://apt.opensips.org/pubkey.gpg
 RUN echo "deb https://apt.opensips.org bullseye ${OPENSIPS_VERSION}-${OPENSIPS_BUILD}" > /etc/apt/sources.list.d/opensips.list
 RUN echo "deb https://apt.opensips.org bullseye cli-nightly" > /etc/apt/sources.list.d/opensips-cli.list
-RUN apt-get -y update -qq && apt-get -y install opensips opensips-postgres-module opensips-cli python3-psycopg2
+RUN apt-get -y update -qq && apt-get -y install opensips opensips-postgres-module opensips-cli python3-psycopg2 m4
 
 RUN rm -rf /var/lib/apt/lists/*
 
@@ -50,7 +50,7 @@ ARG OPENSIPS_BUILD=releases
 RUN apt-get -y update -qq && apt-get -y install gnupg2 ca-certificates
 RUN apt-key adv --fetch-keys https://apt.opensips.org/pubkey.gpg
 RUN echo "deb https://apt.opensips.org bullseye ${OPENSIPS_VERSION}-${OPENSIPS_BUILD}" >/etc/apt/sources.list.d/opensips.list
-RUN apt-get -y update -qq && apt-get -y install opensips opensips-postgres-module
+RUN apt-get -y update -qq && apt-get -y install opensips opensips-postgres-module opensips-auth-modules
 
 RUN rm -rf /var/lib/apt/lists/*
 
@@ -61,7 +61,6 @@ ENV FIFO_NAME "/tmp/opensips_fifo"
 ENV DATABASE_URL "postgres://postgres:@localhost:5432/opensips"
 ENV SIP_PORT 5060
 ENV SIP_ALTERNATIVE_PORT 5080
-ENV SIP_ADVERTISED_IP "127.0.0.1"
 
 EXPOSE 5060/udp
 EXPOSE 5080/udp

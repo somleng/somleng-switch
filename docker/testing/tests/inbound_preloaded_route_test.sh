@@ -12,6 +12,6 @@ create_address_entry $(hostname -i)
 reload_opensips_tables
 
 rm -f metfone_inbound_*_messages.log
-sipp -sf $scenario opensips:5060 -s 1294 -m 1 > /dev/null
+sipp -sf $scenario opensips:5060 -s 1294 -m 1 -trace_msg > /dev/null
 
 reset_db
