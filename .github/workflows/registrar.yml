@@ -98,7 +98,6 @@ jobs:
         with:
           context: "docker/registrar"
           push: true
-          target: registrar
           platforms: linux/amd64
           cache-from: type=gha,scope=${{ matrix.identifier }}
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
