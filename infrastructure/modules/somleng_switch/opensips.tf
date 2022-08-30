@@ -87,11 +87,6 @@ resource "aws_iam_role" "opensips_task_role" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "opensips_task_role_cloudwatch_agent_server_policy" {
-  role = aws_iam_role.ecs_cwagent_daemon_service_task_role.id
-  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
-}
-
 resource "aws_iam_role" "opensips_task_execution_role" {
   name = "${var.app_identifier}-ecs-OpenSIPSTaskExecutionRole"
 
