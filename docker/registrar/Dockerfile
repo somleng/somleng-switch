@@ -13,7 +13,7 @@ RUN echo "deb https://apt.opensips.org bullseye ${OPENSIPS_VERSION}-${OPENSIPS_B
 RUN apt-get -y update -qq && apt-get -y install opensips opensips-postgres-module opensips-auth-modules
 
 # debug tools (delete me when deploying)
-RUN apt-get -y update -qq && apt-get -y install curl tcpdump procps
+RUN apt-get -y update -qq && apt-get -y install curl tcpdump procps ngrep
 
 RUN rm -rf /var/lib/apt/lists/*
 
