@@ -53,5 +53,5 @@ module "somleng_switch_staging" {
   sip_alternative_port = 6080
   switch_min_tasks = 0
   opensips_min_tasks = 0
-  registrar_min_tasks = 0
+  registrar_min_tasks = 1
 }

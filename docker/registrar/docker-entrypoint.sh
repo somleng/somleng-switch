@@ -2,7 +2,7 @@
 
 set -e
 
-if [ "$1" = 'registrar' ]; then
+if [ "$1" = 'opensips' ]; then
   OPENSIPS_CONTAINER_BINARY="/usr/sbin/opensips"
 
   if [ -n "$DATABASE_HOST" ]; then
