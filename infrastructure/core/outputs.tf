@@ -18,6 +18,10 @@ output "opensips_ecr_repository" {
   value = aws_ecrpublic_repository.opensips
 }
 
+output "registrar_ecr_repository" {
+  value = aws_ecrpublic_repository.registrar
+}
+
 output "opensips_scheduler_ecr_repository" {
   value = aws_ecrpublic_repository.opensips_scheduler
 }

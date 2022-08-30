@@ -67,14 +67,6 @@ resource "aws_security_group_rule" "opensips_egress" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-# SSM Parameters
-data "aws_ssm_parameter" "db_password" {
-  name = element(
-    split("/", var.db_password_parameter_arn),
-    length(split("/", var.db_password_parameter_arn)) - 1
-  )
-}
-
 # IAM
 resource "aws_iam_role" "opensips_task_role" {
   name = "${var.app_identifier}-ecs-OpenSIPSTaskRole"

@@ -7,11 +7,13 @@ variable "nginx_image" {}
 variable "freeswitch_image" {}
 variable "opensips_image" {}
 variable "opensips_scheduler_image" {}
+variable "registrar_image" {}
 variable "freeswitch_event_logger_image" {}
 variable s3_mpeg_ecr_repository_url {}
 variable services_ecr_repository_url {}
 variable "container_instance_subnets" {}
 variable "intra_subnets" {}
+variable "public_subnets" {}
 variable "vpc_id" {}
 variable "vpc_cidr_block" {}
 variable "load_balancer" {}
@@ -37,6 +39,15 @@ variable "opensips_max_tasks" {
 variable "opensips_min_tasks" {
   default = 1
 }
+
+variable "registrar_min_tasks" {
+  default = 1
+}
+
+variable "registrar_max_tasks" {
+  default = 4
+}
+
 # If the average CPU utilization over a minute drops to this threshold,
 # the number of containers will be reduced (but not below ecs_autoscale_min_instances).
 variable "ecs_as_cpu_low_threshold_per" {

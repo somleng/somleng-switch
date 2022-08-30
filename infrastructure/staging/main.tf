@@ -14,6 +14,7 @@ module "somleng_switch_staging" {
   freeswitch_event_logger_image = data.terraform_remote_state.core.outputs.freeswitch_event_logger_ecr_repository.repository_uri
   opensips_image = data.terraform_remote_state.core.outputs.opensips_ecr_repository.repository_uri
   opensips_scheduler_image = data.terraform_remote_state.core.outputs.opensips_scheduler_ecr_repository.repository_uri
+  registrar_image = data.terraform_remote_state.core.outputs.registrar_ecr_repository.repository_uri
 
   s3_mpeg_ecr_repository_url = data.terraform_remote_state.core.outputs.s3_mpeg_ecr_repository.repository_url
   services_ecr_repository_url = data.terraform_remote_state.core.outputs.services_ecr_repository.repository_url
@@ -22,6 +23,7 @@ module "somleng_switch_staging" {
   vpc_cidr_block = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_cidr_block
   container_instance_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets
   intra_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.intra_subnets
+  public_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.public_subnets
 
   json_cdr_password_parameter_arn = data.aws_ssm_parameter.somleng_services_password.arn
   json_cdr_url = "https://api-staging.somleng.org/services/call_data_records"
@@ -51,4 +53,5 @@ module "somleng_switch_staging" {
   sip_alternative_port = 6080
   switch_min_tasks = 0
   opensips_min_tasks = 0
+  registrar_min_tasks = 0
 }
