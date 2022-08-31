@@ -6,6 +6,7 @@ module registrar_container_instances {
   vpc_id = var.vpc_id
   instance_subnets = var.public_subnets
   cluster_name = aws_ecs_cluster.cluster.name
+  security_groups = [var.db_security_group]
 }
 
 # Capacity Provider

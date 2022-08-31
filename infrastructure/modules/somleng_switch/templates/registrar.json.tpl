@@ -13,6 +13,7 @@
     "essential": true,
     "portMappings": [
       {
+        "hostPort" : ${sip_port},
         "containerPort": ${sip_port},
         "protocol": "udp"
       }

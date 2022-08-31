@@ -58,7 +58,7 @@ resource "aws_launch_template" "this" {
     name = aws_iam_instance_profile.this.name
   }
 
-  vpc_security_group_ids = [aws_security_group.this.id]
+  vpc_security_group_ids = concat([aws_security_group.this.id], var.security_groups)
 
   user_data = base64encode(join("\n", [
     "#cloud-config",
