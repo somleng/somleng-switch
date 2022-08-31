@@ -9,6 +9,38 @@ module registrar_container_instances {
   security_groups = [var.db_security_group]
 }
 
+resource "aws_network_interface" "registrar" {
+  count = var.registrar_max_tasks
+
+  subnet_id       = var.public_subnets[count.index % length(var.public_subnets)]
+  security_groups = [module.registrar_container_instances.security_group.id]
+
+  tags = {
+    Name = "SIP Proxy ENI ${count.index + 1}",
+    SIPProxyENI = ""
+  }
+
+  lifecycle {
+    ignore_changes = [attachment]
+  }
+}
+
+resource "aws_eip" "registrar" {
+  count = var.registrar_max_tasks
+  vpc      = true
+
+  tags = {
+    Name = "SIP Proxy EIP ${count.index + 1}"
+  }
+}
+
+resource "aws_eip_association" "registrar" {
+  count = var.registrar_max_tasks
+
+  network_interface_id = aws_network_interface.registrar[count.index].id
+  allocation_id = aws_eip.registrar[count.index].id
+}
+
 # Capacity Provider
 resource "aws_ecs_capacity_provider" "registrar" {
   name = "${var.app_identifier}-registrar"
