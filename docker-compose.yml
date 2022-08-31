@@ -48,6 +48,20 @@ services:
     volumes:
       - opensips_fifo:/opensips/fifo
 
+  registrar:
+    build:
+      context: docker/registrar
+    image: registrar:latest
+    environment:
+      DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z -w 5 localhost 5060"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   freeswitch:
     build:
       context: docker/freeswitch
@@ -55,6 +69,7 @@ services:
     environment:
       FS_EXTERNAL_RTP_IP: "13.250.230.15"
       FS_ALTERNATIVE_RTP_IP: "18.141.245.230"
+      FS_OUTBOUND_PROXY: "registrar"
     healthcheck:
       test:
         ["CMD-SHELL", "fs_cli -p secret -x 'rayo status' | rayo_status_parser"]
@@ -84,7 +99,7 @@ services:
     build:
       context: docker/testing
     image: testing:latest
-    command: sipp -sn uas -trace_msg
+    command: sipp -sf /scenarios/uas.xml -trace_msg
     environment:
       OPENSIPS_FIFO_NAME: /opensips/fifo/opensips_fifo
       DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"

@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-RUN apk update && apk upgrade && apk add --update --no-cache sipp curl postgresql-client
+RUN apk update && apk upgrade && apk add --update --no-cache sipp curl postgresql-client bind-tools
 
 COPY scenarios/ scenarios/
 COPY tests/ tests/
