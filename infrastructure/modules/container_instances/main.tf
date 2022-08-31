@@ -7,6 +7,8 @@ data "aws_ec2_instance_type" "this" {
   instance_type = var.instance_type
 }
 
+# IAM
+
 resource "aws_iam_role" "this" {
   name = "${var.app_identifier}_ecs_container_instance_role"
 
@@ -46,6 +48,7 @@ resource "aws_iam_role_policy_attachment" "ssm" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+# Launch Template
 resource "aws_launch_template" "this" {
   name_prefix                 = var.app_identifier
   image_id                    = jsondecode(data.aws_ssm_parameter.this_ami.value).image_id
@@ -79,6 +82,8 @@ resource "aws_launch_template" "this" {
   }
 }
 
+# Security Group
+
 resource "aws_security_group" "this" {
   name   = "${var.app_identifier}-container-instance"
   vpc_id = var.vpc_id
@@ -92,6 +97,8 @@ resource "aws_security_group_rule" "egress" {
   security_group_id = aws_security_group.this.id
   cidr_blocks = ["0.0.0.0/0"]
 }
+
+# Autoscaling Group
 
 resource "aws_autoscaling_group" "this" {
   name                 = var.app_identifier

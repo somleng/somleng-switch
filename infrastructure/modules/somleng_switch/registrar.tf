@@ -1,15 +1,38 @@
-# Security Group
-resource "aws_security_group" "registrar" {
-  name   = "${var.app_identifier}-registrar"
+# Container Instances
+module registrar_container_instances {
+  source = "../container_instances"
+
+  app_identifier = "${var.app_identifier}-registrar"
   vpc_id = var.vpc_id
+  instance_subnets = var.public_subnets
+  cluster_name = aws_ecs_cluster.cluster.name
 }
+
+# Capacity Provider
+resource "aws_ecs_capacity_provider" "registrar" {
+  name = "${var.app_identifier}-registrar"
+
+  auto_scaling_group_provider {
+    auto_scaling_group_arn         = module.registrar_container_instances.autoscaling_group.arn
+    managed_termination_protection = "ENABLED"
+
+    managed_scaling {
+      maximum_scaling_step_size = 1000
+      minimum_scaling_step_size = 1
+      status                    = "ENABLED"
+      target_capacity           = 100
+    }
+  }
+}
+
+# Security Group
 
 resource "aws_security_group_rule" "registrar_healthcheck" {
   type              = "ingress"
   to_port           = var.sip_port
   protocol          = "tcp"
   from_port         = var.sip_port
-  security_group_id = aws_security_group.registrar.id
+  security_group_id = module.registrar_container_instances.security_group.id
   cidr_blocks = [var.vpc_cidr_block]
 }
 
@@ -18,7 +41,7 @@ resource "aws_security_group_rule" "registrar_sip" {
   to_port           = var.sip_port
   protocol          = "udp"
   from_port         = var.sip_port
-  security_group_id = aws_security_group.registrar.id
+  security_group_id = module.registrar_container_instances.security_group.id
   cidr_blocks = ["0.0.0.0/0"]
 }
 
@@ -27,16 +50,7 @@ resource "aws_security_group_rule" "registrar_icmp" {
   to_port           = -1
   protocol          = "icmp"
   from_port         = -1
-  security_group_id = aws_security_group.registrar.id
-  cidr_blocks = ["0.0.0.0/0"]
-}
-
-resource "aws_security_group_rule" "registrar_egress" {
-  type              = "egress"
-  to_port           = 0
-  protocol          = "-1"
-  from_port         = 0
-  security_group_id = aws_security_group.registrar.id
+  security_group_id = module.registrar_container_instances.security_group.id
   cidr_blocks = ["0.0.0.0/0"]
 }
 
@@ -58,33 +72,6 @@ resource "aws_iam_role" "registrar_task_role" {
   ]
 }
 EOF
-}
-
-resource "aws_iam_policy" "registrar_ssm_access" {
-  name = "${var.app_identifier}-registrar-ssm-access"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ssmmessages:CreateControlChannel",
-        "ssmmessages:CreateDataChannel",
-        "ssmmessages:OpenControlChannel",
-        "ssmmessages:OpenDataChannel"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy_attachment" "registrar_task_role_ssm_access" {
-  role = aws_iam_role.registrar_task_role.id
-  policy_arn = aws_iam_policy.registrar_ssm_access.arn
 }
 
 resource "aws_iam_role" "registrar_task_execution_role" {
@@ -166,13 +153,12 @@ data "template_file" "registrar" {
 
 resource "aws_ecs_task_definition" "registrar" {
   family                   = "${var.app_identifier}-registrar"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
+  network_mode             = "bridge"
+  requires_compatibilities = ["EC2"]
   task_role_arn = aws_iam_role.registrar_task_role.arn
   execution_role_arn = aws_iam_role.registrar_task_execution_role.arn
   container_definitions = data.template_file.registrar.rendered
-  memory = 1024
-  cpu = 512
+  memory = module.registrar_container_instances.ec2_instance_type.memory_size - 256
 }
 
 resource "aws_ecs_service" "registrar" {
@@ -180,16 +166,10 @@ resource "aws_ecs_service" "registrar" {
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.registrar.arn
   desired_count   = var.registrar_min_tasks
-  launch_type = "FARGATE"
-  enable_execute_command = true
 
-  network_configuration {
-    subnets = var.public_subnets
-    security_groups = [
-      aws_security_group.registrar.id,
-      var.db_security_group
-    ]
-    assign_public_ip = true
+  capacity_provider_strategy {
+    capacity_provider = aws_ecs_capacity_provider.registrar.name
+    weight = 1
   }
 
   depends_on = [
