@@ -7,6 +7,7 @@ systemctl start amazon-ssm-agent
 cat <<'EOF' >> /etc/ecs/ecs.config
 ECS_CLUSTER=${cluster_name}
 ECS_RESERVED_MEMORY=128
+ECS_ENABLE_CONTAINER_METADATA=true
 EOF
 
 start ecs
