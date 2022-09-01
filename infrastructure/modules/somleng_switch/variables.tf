@@ -24,7 +24,6 @@ variable "switch_subdomain" {}
 variable "registrar_subdomain" {}
 variable "route53_zone" {}
 variable "recordings_bucket_name" {}
-variable "service_discovery_namespace" {}
 variable "container_insights_enabled" {
   default = false
 }

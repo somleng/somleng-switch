@@ -33,6 +33,7 @@ resource "aws_eip" "registrar" {
   tags = {
     Name = "SIP Proxy ${count.index + 1}"
     (local.registrar_eip_tag) = "true"
+    Priority = count.index + 1
   }
 }
 
@@ -85,7 +86,7 @@ resource "aws_security_group_rule" "registrar_icmp" {
 # IAM
 
 resource "aws_iam_policy" "container_instance_custom_policy" {
-  name = "${var.app_identifier}-container-instance-custom_policy"
+  name = "${var.app_identifier}-registrar-container-instance-custom_policy"
 
   policy = <<EOF
 {
@@ -94,7 +95,7 @@ resource "aws_iam_policy" "container_instance_custom_policy" {
     {
       "Effect": "Allow",
       "Action": [
-        "ec2:AttachNetworkInterface",
+        "ec2:AssociateAddress",
         "ec2:DescribeAddresses"
       ],
       "Resource": [
@@ -207,26 +208,6 @@ data "template_file" "registrar" {
   }
 }
 
-resource "aws_service_discovery_service" "registrar" {
-  name = var.registrar_subdomain
-
-  dns_config {
-    namespace_id = var.service_discovery_namespace.id
-
-    dns_records {
-      ttl  = 10
-      type = "SRV"
-    }
-
-    routing_policy = "MULTIVALUE"
-  }
-
-  health_check_config {
-    failure_threshold = 10
-    type              = "TCP"
-  }
-}
-
 resource "aws_ecs_task_definition" "registrar" {
   family                   = "${var.app_identifier}-registrar"
   network_mode             = "bridge"
@@ -283,3 +264,22 @@ resource "aws_appautoscaling_target" "registrar_scale_target" {
   min_capacity       = var.registrar_min_tasks
   max_capacity       = var.registrar_max_tasks
 }
+
+# Route 53
+resource "aws_route53_record" "registrar_a" {
+  for_each = { for index, eip in aws_eip.registrar : index => eip }
+  zone_id = var.route53_zone.zone_id
+  name    = "${var.registrar_subdomain}${each.key + 1}"
+  type    = "A"
+  ttl     = 300
+  records = [each.value.public_ip]
+}
+
+resource "aws_route53_record" "registrar_srv" {
+  zone_id = var.route53_zone.zone_id
+  name    = "_sip._udp.${var.registrar_subdomain}"
+  type    = "SRV"
+  ttl     = 300
+  records = [for record in values(aws_route53_record.registrar_a) :  "1 1 ${var.sip_port} ${record.fqdn}"]
+}
+

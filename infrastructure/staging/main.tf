@@ -24,7 +24,6 @@ module "somleng_switch_staging" {
   container_instance_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets
   intra_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.intra_subnets
   public_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.public_subnets
-  service_discovery_namespace = data.terraform_remote_state.core_infrastructure.outputs.service_discovery_namespace_somleng_org
 
   json_cdr_password_parameter_arn = data.aws_ssm_parameter.somleng_services_password.arn
   json_cdr_url = "https://api-staging.somleng.org/services/call_data_records"
