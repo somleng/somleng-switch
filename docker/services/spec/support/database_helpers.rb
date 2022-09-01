@@ -11,6 +11,14 @@ module DatabaseHelpers
   end
 
   class TestDatabaseConnection < DatabaseConnection
+    def create_tables(tables)
+      tables.each do |table_name, create_script|
+        next if table_exists?(table_name)
+
+        exec(create_script)
+      end
+    end
+
     def cleanup
       connection.tables.each do |db_table|
         exec("TRUNCATE TABLE #{db_table};")
@@ -37,17 +45,11 @@ RSpec.configure do |config|
   config.around(opensips: true) do |example|
     setup_database(ENV.fetch("OPENSIPS_DB_NAME"))
 
-    unless opensips_database_connection.table_exists?(:load_balancer)
-      opensips_database_connection.exec(
-        file_fixture("opensips_load_balancer_create.sql").read
-      )
-    end
-
-    unless opensips_database_connection.table_exists?(:address)
-      opensips_database_connection.exec(
-        file_fixture("opensips_permissions_create.sql").read
-      )
-    end
+    opensips_database_connection.create_tables(
+      load_balancer: file_fixture("opensips_load_balancer_create.sql").read,
+      address: file_fixture("opensips_permissions_create.sql").read,
+      domain: file_fixture("opensips_domain_create.sql").read
+    )
 
     example.run
 

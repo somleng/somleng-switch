@@ -6,6 +6,10 @@ module FactoryHelpers
   def create_address(ip:)
     opensips_database_connection.table(:address).insert(ip:)
   end
+
+  def create_domain(domain:)
+    opensips_database_connection.table(:domain).insert(domain:)
+  end
 end
 
 RSpec.configure do |config|

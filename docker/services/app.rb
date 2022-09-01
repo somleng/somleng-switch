@@ -23,7 +23,7 @@ module App
       DecryptEnvironmentVariables.call
       case event.event_type
       when :ecs
-        HandleSwitchEvent.call(event:) if event.group == switch_group
+        handle_ecs_event(event)
       when :sqs_message
         HandleSQSMessageEvent.call(event:)
       end
@@ -31,8 +31,25 @@ module App
 
     private
 
+    def handle_ecs_event(event)
+      case event.group
+      when switch_group
+        HandleSwitchEvent.call(event:)
+      when sip_proxy_group || registrar_group
+        HandleSIPProxyEvent.call(event:)
+      end
+    end
+
     def switch_group
       ENV.fetch("SWITCH_GROUP")
+    end
+
+    def sip_proxy_group
+      ENV.fetch("SIP_PROXY_GROUP")
+    end
+
+    def registrar_group
+      ENV.fetch("REGISTRAR_GROUP")
     end
   end
 end
