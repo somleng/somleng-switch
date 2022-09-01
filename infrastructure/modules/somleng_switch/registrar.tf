@@ -248,12 +248,6 @@ resource "aws_ecs_service" "registrar" {
     weight = 1
   }
 
-  service_registries {
-    registry_arn = aws_service_discovery_service.registrar.arn
-    container_name = "registrar"
-    container_port = var.sip_port
-  }
-
   depends_on = [
     aws_iam_role.registrar_task_role
   ]
