@@ -7,6 +7,21 @@ data "aws_ec2_instance_type" "this" {
   instance_type = var.instance_type
 }
 
+locals {
+  user_data = concat([
+    {
+      path = "/opt/setup.sh"
+      content = templatefile(
+        "${path.module}/templates/setup.sh",
+        {
+          cluster_name = var.cluster_name
+        }
+      )
+      permissions = "755"
+    }
+  ], var.user_data)
+}
+
 # IAM
 
 resource "aws_iam_role" "this" {
@@ -59,21 +74,12 @@ resource "aws_launch_template" "this" {
   }
 
   vpc_security_group_ids = concat([aws_security_group.this.id], var.security_groups)
-
   user_data = base64encode(join("\n", [
     "#cloud-config",
     yamlencode({
       # https://cloudinit.readthedocs.io/en/latest/topics/modules.html
-      write_files : [
-        {
-          path : "/opt/setup.sh",
-          content : templatefile("${path.module}/templates/setup.sh", { cluster_name = var.cluster_name }),
-          permissions : "0755",
-        },
-      ],
-      runcmd : [
-        ["/opt/setup.sh"]
-      ],
+      write_files: local.user_data,
+      runcmd: [for i, v in local.user_data : v.path]
     })
   ]))
 

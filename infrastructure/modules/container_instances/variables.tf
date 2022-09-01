@@ -9,3 +9,16 @@ variable "cluster_name" {}
 variable "security_groups" {
   default = []
 }
+
+variable "user_data" {
+  type = list(
+    object(
+      {
+        path = string,
+        content = string,
+        permissions = string
+      }
+    )
+  )
+  default = []
+}

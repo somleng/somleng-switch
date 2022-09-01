@@ -1,3 +1,7 @@
+locals {
+  registrar_eip_tag = "SIPProxy"
+}
+
 # Container Instances
 module registrar_container_instances {
   source = "../container_instances"
@@ -7,22 +11,19 @@ module registrar_container_instances {
   instance_subnets = var.public_subnets
   cluster_name = aws_ecs_cluster.cluster.name
   security_groups = [var.db_security_group]
-}
+  user_data = [
+    {
+      path = "/opt/setup_registrar.sh",
+      content = templatefile(
+        "${path.module}/templates/setup_registrar.sh",
+        {
+          eip_tag = local.registrar_eip_tag
+        }
+      ),
+      permissions = "755"
+    }
 
-resource "aws_network_interface" "registrar" {
-  count = var.registrar_max_tasks
-
-  subnet_id       = var.public_subnets[count.index % length(var.public_subnets)]
-  security_groups = [module.registrar_container_instances.security_group.id]
-
-  tags = {
-    Name = "SIP Proxy ENI ${count.index + 1}",
-    SIPProxyENI = ""
-  }
-
-  lifecycle {
-    ignore_changes = [attachment]
-  }
+  ]
 }
 
 resource "aws_eip" "registrar" {
@@ -30,15 +31,9 @@ resource "aws_eip" "registrar" {
   vpc      = true
 
   tags = {
-    Name = "SIP Proxy EIP ${count.index + 1}"
+    Name = "SIP Proxy ${count.index + 1}"
+    (local.registrar_eip_tag) = "true"
   }
-}
-
-resource "aws_eip_association" "registrar" {
-  count = var.registrar_max_tasks
-
-  network_interface_id = aws_network_interface.registrar[count.index].id
-  allocation_id = aws_eip.registrar[count.index].id
 }
 
 # Capacity Provider
@@ -88,6 +83,34 @@ resource "aws_security_group_rule" "registrar_icmp" {
 }
 
 # IAM
+
+resource "aws_iam_policy" "container_instance_custom_policy" {
+  name = "${var.app_identifier}-container-instance-custom_policy"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:AttachNetworkInterface",
+        "ec2:DescribeAddresses"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "container_instance_custom_policy" {
+  role = module.registrar_container_instances.iam_role.id
+  policy_arn = aws_iam_policy.container_instance_custom_policy.arn
+}
+
 resource "aws_iam_role" "registrar_task_role" {
   name = "${var.app_identifier}-ecs-registrarTaskRole"
 
@@ -184,6 +207,26 @@ data "template_file" "registrar" {
   }
 }
 
+resource "aws_service_discovery_service" "registrar" {
+  name = var.registrar_subdomain
+
+  dns_config {
+    namespace_id = var.service_discovery_namespace.id
+
+    dns_records {
+      ttl  = 10
+      type = "SRV"
+    }
+
+    routing_policy = "MULTIVALUE"
+  }
+
+  health_check_config {
+    failure_threshold = 10
+    type              = "TCP"
+  }
+}
+
 resource "aws_ecs_task_definition" "registrar" {
   family                   = "${var.app_identifier}-registrar"
   network_mode             = "bridge"
@@ -203,6 +246,12 @@ resource "aws_ecs_service" "registrar" {
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.registrar.name
     weight = 1
+  }
+
+  service_registries {
+    registry_arn = aws_service_discovery_service.registrar.arn
+    container_name = "registrar"
+    container_port = var.sip_port
   }
 
   depends_on = [

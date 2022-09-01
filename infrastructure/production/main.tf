@@ -23,6 +23,8 @@ module "somleng_switch" {
   vpc_cidr_block = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_cidr_block
   container_instance_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_subnets
   intra_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.intra_subnets
+  public_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.public_subnets
+  service_discovery_namespace = data.terraform_remote_state.core_infrastructure.outputs.service_discovery_namespace_somleng_org
 
   json_cdr_password_parameter_arn = data.aws_ssm_parameter.somleng_services_password.arn
   json_cdr_url = "https://api.somleng.org/services/call_data_records"
@@ -46,6 +48,8 @@ module "somleng_switch" {
   inbound_sip_trunks_security_group_name = "somleng-inbound-sip-trunks"
   sip_subdomain = "sip"
   switch_subdomain = "ahn"
+  registrar_subdomain = "registrar"
+
   recordings_bucket_name = "raw-recordings.somleng.org"
   switch_max_tasks = 10
 }
