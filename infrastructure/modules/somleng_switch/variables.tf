@@ -28,6 +28,9 @@ variable "recordings_bucket_name" {}
 variable "container_insights_enabled" {
   default = false
 }
+variable registrar_health_checks {
+  default = true
+}
 
 variable "switch_max_tasks" {
   default = 4

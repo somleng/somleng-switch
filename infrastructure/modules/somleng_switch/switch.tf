@@ -471,7 +471,7 @@ resource "aws_appautoscaling_policy" "freeswitch_session_count" {
     customized_metric_specification {
       metric_name = aws_cloudwatch_log_metric_filter.freeswitch_session_count.metric_transformation.*.name[0]
       namespace   = aws_cloudwatch_log_metric_filter.freeswitch_session_count.metric_transformation.*.namespace[0]
-      statistic   = "Maximum"
+      statistic   = "Average"
       unit        = aws_cloudwatch_log_metric_filter.freeswitch_session_count.metric_transformation.*.unit[0]
     }
 

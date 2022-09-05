@@ -261,7 +261,7 @@ resource "aws_route53_record" "registrar_a" {
 }
 
 resource "aws_route53_health_check" "registrar" {
-  for_each = aws_route53_record.registrar_a
+  for_each = var.registrar_health_checks ? aws_route53_record.registrar_a : {}
 
   reference_name =  each.value.set_identifier
   ip_address        = one(each.value.records)
