@@ -192,7 +192,7 @@ data "template_file" "registrar" {
 
 resource "aws_ecs_task_definition" "registrar" {
   family                   = var.registrar_identifier
-  network_mode             = "bridge"
+  network_mode             = "host"
   requires_compatibilities = ["EC2"]
   execution_role_arn = aws_iam_role.registrar_task_execution_role.arn
   container_definitions = data.template_file.registrar.rendered

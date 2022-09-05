@@ -11,18 +11,6 @@
        }
     },
     "essential": true,
-    "portMappings": [
-      {
-        "hostPort" : ${sip_port},
-        "containerPort": ${sip_port},
-        "protocol": "udp"
-      },
-      {
-        "hostPort" : ${sip_port},
-        "containerPort": ${sip_port},
-        "protocol": "tcp"
-      }
-    ],
     "secrets": [
       {
         "name": "DATABASE_PASSWORD",
