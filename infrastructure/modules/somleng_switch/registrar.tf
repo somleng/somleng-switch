@@ -56,23 +56,14 @@ resource "aws_ecs_capacity_provider" "registrar" {
 
 # Security Group
 
-# resource "aws_security_group_rule" "registrar_healthcheck" {
-#   type              = "ingress"
-#   to_port           = var.sip_port
-#   protocol          = "tcp"
-#   from_port         = var.sip_port
-#   security_group_id = module.registrar_container_instances.security_group.id
-#   cidr_blocks      = data.aws_ip_ranges.route53_healthchecks.cidr_blocks
-#   ipv6_cidr_blocks = data.aws_ip_ranges.route53_healthchecks.ipv6_cidr_blocks
-# }
-
 resource "aws_security_group_rule" "registrar_healthcheck" {
   type              = "ingress"
   to_port           = var.sip_port
   protocol          = "tcp"
   from_port         = var.sip_port
   security_group_id = module.registrar_container_instances.security_group.id
-  cidr_blocks      = ["0.0.0.0/0"]
+  cidr_blocks      = data.aws_ip_ranges.route53_healthchecks.cidr_blocks
+  ipv6_cidr_blocks = data.aws_ip_ranges.route53_healthchecks.ipv6_cidr_blocks
 }
 
 resource "aws_security_group_rule" "registrar_sip" {
@@ -256,32 +247,32 @@ resource "aws_appautoscaling_target" "registrar_scale_target" {
 }
 
 # Route 53
-resource "aws_route53_record" "registrar_a" {
-  for_each = { for index, eip in aws_eip.registrar : index => eip }
-  zone_id = var.route53_zone.zone_id
-  name    = var.registrar_subdomain
-  type    = "A"
-  ttl     = 300
-  records = [each.value.public_ip]
-
-  multivalue_answer_routing_policy = true
-
-  set_identifier = "${var.registrar_identifier}-${each.key + 1}"
-}
 
 resource "aws_route53_health_check" "registrar" {
-  for_each = var.registrar_health_checks ? aws_route53_record.registrar_a : {}
+  for_each = { for index, eip in aws_eip.registrar : index => eip }
 
-  reference_name =  each.value.set_identifier
-  ip_address        = one(each.value.records)
+  reference_name    = "${var.registrar_subdomain}-${each.key + 1}"
+  ip_address        = each.value.public_ip
   port              = var.sip_port
   type              = "TCP"
   request_interval = 30
 
-
   tags = {
-    Name = each.value.set_identifier
+    Name = "${var.registrar_subdomain}-${each.key + 1}"
   }
+}
+
+resource "aws_route53_record" "registrar_a" {
+  for_each = aws_route53_health_check.registrar
+  zone_id = var.route53_zone.zone_id
+  name    = var.registrar_subdomain
+  type    = "A"
+  ttl     = 300
+  records = [each.value.ip_address]
+
+  multivalue_answer_routing_policy = true
+  set_identifier = "${var.registrar_identifier}-${each.key + 1}"
+  health_check_id = each.value.id
 }
 
 resource "aws_route53_record" "registrar_srv" {
