@@ -94,11 +94,11 @@ EOF
 }
 
 resource "aws_ecrpublic_repository" "registrar" {
-  repository_name = "somleng-switch-registrar"
+  repository_name = "somleng-registrar"
   provider = aws.us-east-1
 
   catalog_data {
-    about_text        = "Somleng Switch Registrar"
+    about_text        = "Somleng Registrar"
     architectures     = ["Linux"]
   }
 }

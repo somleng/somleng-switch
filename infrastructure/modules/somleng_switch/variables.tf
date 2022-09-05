@@ -1,6 +1,7 @@
 
 variable "aws_region" {}
 variable "app_identifier" {}
+variable "registrar_identifier" {}
 variable "app_environment" {}
 variable "switch_image" {}
 variable "nginx_image" {}

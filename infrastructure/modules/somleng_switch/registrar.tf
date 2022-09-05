@@ -6,7 +6,7 @@ locals {
 module registrar_container_instances {
   source = "../container_instances"
 
-  app_identifier = "${var.app_identifier}-registrar"
+  app_identifier = var.registrar_identifier
   vpc_id = var.vpc_id
   instance_subnets = var.public_subnets
   cluster_name = aws_ecs_cluster.cluster.name
@@ -39,7 +39,7 @@ resource "aws_eip" "registrar" {
 
 # Capacity Provider
 resource "aws_ecs_capacity_provider" "registrar" {
-  name = "${var.app_identifier}-registrar"
+  name = var.registrar_identifier
 
   auto_scaling_group_provider {
     auto_scaling_group_arn         = module.registrar_container_instances.autoscaling_group.arn
@@ -62,7 +62,8 @@ resource "aws_security_group_rule" "registrar_healthcheck" {
   protocol          = "tcp"
   from_port         = var.sip_port
   security_group_id = module.registrar_container_instances.security_group.id
-  cidr_blocks = [var.vpc_cidr_block]
+  cidr_blocks      = data.aws_ip_ranges.route53_healthchecks.cidr_blocks
+  ipv6_cidr_blocks = data.aws_ip_ranges.route53_healthchecks.ipv6_cidr_blocks
 }
 
 resource "aws_security_group_rule" "registrar_sip" {
@@ -86,7 +87,7 @@ resource "aws_security_group_rule" "registrar_icmp" {
 # IAM
 
 resource "aws_iam_policy" "container_instance_custom_policy" {
-  name = "${var.app_identifier}-registrar-container-instance-custom_policy"
+  name = "${var.registrar_identifier}-container-instance-custom_policy"
 
   policy = <<EOF
 {
@@ -112,27 +113,8 @@ resource "aws_iam_role_policy_attachment" "container_instance_custom_policy" {
   policy_arn = aws_iam_policy.container_instance_custom_policy.arn
 }
 
-resource "aws_iam_role" "registrar_task_role" {
-  name = "${var.app_identifier}-ecs-registrarTaskRole"
-
-  assume_role_policy = <<EOF
-{
-  "Version": "2008-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": ["ecs-tasks.amazonaws.com"]
-      },
-      "Effect": "Allow"
-    }
-  ]
-}
-EOF
-}
-
 resource "aws_iam_role" "registrar_task_execution_role" {
-  name = "${var.app_identifier}-ecs-registrarTaskExecutionRole"
+  name = "${var.registrar_identifier}-ecsTaskExecutionRole"
 
   assume_role_policy = <<EOF
 {
@@ -151,7 +133,7 @@ EOF
 }
 
 resource "aws_iam_policy" "registrar_task_execution_custom_policy" {
-  name = "${var.app_identifier}-registrar-task-execution-custom-policy"
+  name = "${var.registrar_identifier}-task-execution-custom-policy"
 
   policy = <<EOF
 {
@@ -183,7 +165,7 @@ resource "aws_iam_role_policy_attachment" "registrar_task_execution_role_amazon_
 
 # Log Groups
 resource "aws_cloudwatch_log_group" "registrar" {
-  name = "${var.app_identifier}-registrar"
+  name = var.registrar_identifier
   retention_in_days = 7
 }
 
@@ -209,10 +191,9 @@ data "template_file" "registrar" {
 }
 
 resource "aws_ecs_task_definition" "registrar" {
-  family                   = "${var.app_identifier}-registrar"
+  family                   = var.registrar_identifier
   network_mode             = "bridge"
   requires_compatibilities = ["EC2"]
-  task_role_arn = aws_iam_role.registrar_task_role.arn
   execution_role_arn = aws_iam_role.registrar_task_execution_role.arn
   container_definitions = data.template_file.registrar.rendered
   memory = module.registrar_container_instances.ec2_instance_type.memory_size - 256
@@ -230,7 +211,7 @@ resource "aws_ecs_service" "registrar" {
   }
 
   depends_on = [
-    aws_iam_role.registrar_task_role
+    aws_iam_role.registrar_task_execution_role
   ]
 
   lifecycle {
@@ -269,10 +250,29 @@ resource "aws_appautoscaling_target" "registrar_scale_target" {
 resource "aws_route53_record" "registrar_a" {
   for_each = { for index, eip in aws_eip.registrar : index => eip }
   zone_id = var.route53_zone.zone_id
-  name    = "${var.registrar_subdomain}${each.key + 1}"
+  name    = var.registrar_subdomain
   type    = "A"
   ttl     = 300
   records = [each.value.public_ip]
+
+  multivalue_answer_routing_policy = true
+
+  set_identifier = "${var.registrar_identifier}-${each.key + 1}"
+}
+
+resource "aws_route53_health_check" "registrar" {
+  for_each = aws_route53_record.registrar_a
+
+  reference_name =  each.value.set_identifier
+  ip_address        = one(each.value.records)
+  port              = var.sip_port
+  type              = "TCP"
+  request_interval = 30
+
+
+  tags = {
+    Name = each.value.set_identifier
+  }
 }
 
 resource "aws_route53_record" "registrar_srv" {

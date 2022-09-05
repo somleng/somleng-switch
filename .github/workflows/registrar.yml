@@ -22,17 +22,17 @@ jobs:
           matrixSource=$(cat << EOF
           [
             {
-              "identifier": "somleng-switch-staging-registrar",
+              "identifier": "somleng-registrar-staging",
               "branch": "fix_nat",
               "image_tag": "staging",
-              "ecs_service": "somleng-switch-staging-registrar",
+              "ecs_service": "somleng-registrar-staging",
               "ecs_cluster": "somleng-switch-staging"
             },
             {
-              "identifier": "somleng-switch-registrar",
+              "identifier": "somleng-registrar",
               "branch": "master",
               "image_tag": "latest",
-              "ecs_service": "somleng-switch-registrar",
+              "ecs_service": "somleng-registrar",
               "ecs_cluster": "somleng-switch"
             }
           ]
@@ -58,7 +58,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ap-southeast-1
       ECR_PUBLIC_REGISTRY: public.ecr.aws
-      REGISTRAR_ECR_REPOSITORY: public.ecr.aws/somleng/somleng-switch-registrar
+      REGISTRAR_ECR_REPOSITORY: public.ecr.aws/somleng/somleng-registrar
       IMAGE_TAG: ${{ github.sha }}
 
     strategy:

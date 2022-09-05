@@ -7,6 +7,7 @@ module "somleng_switch_staging" {
 
   aws_region = var.aws_region
   app_identifier = "somleng-switch-staging"
+  registrar_identifier = "somleng-registrar-staging"
   app_environment = "staging"
   switch_image = data.terraform_remote_state.core.outputs.switch_ecr_repository.repository_uri
   nginx_image = data.terraform_remote_state.core.outputs.nginx_ecr_repository.repository_uri
