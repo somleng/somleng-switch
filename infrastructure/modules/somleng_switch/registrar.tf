@@ -192,7 +192,7 @@ data "template_file" "registrar" {
 
 resource "aws_ecs_task_definition" "registrar" {
   family                   = var.registrar_identifier
-  network_mode             = "host"
+  network_mode             = "bridge"
   requires_compatibilities = ["EC2"]
   execution_role_arn = aws_iam_role.registrar_task_execution_role.arn
   container_definitions = data.template_file.registrar.rendered
@@ -204,6 +204,7 @@ resource "aws_ecs_service" "registrar" {
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.registrar.arn
   desired_count   = var.registrar_min_tasks
+  deployment_minimum_healthy_percent = var.registrar_min_tasks / 2
 
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.registrar.name
