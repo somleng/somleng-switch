@@ -9,7 +9,7 @@ set -e
 DATABASE_URL="postgres://$DATABASE_USERNAME:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME"
 
 if [ "$1" = 'create_db' ]; then
-  DATABASE_MODULES="${DATABASE_MODULES:="dialog load_balancer permissions auth_db alias_db usrloc"}"
+  DATABASE_MODULES="${DATABASE_MODULES:="dialog load_balancer permissions auth_db alias_db usrloc domain rtpengine"}"
   PGPASSWORD=$DATABASE_PASSWORD
 
   cat <<-EOT > /etc/opensips-cli.cfg

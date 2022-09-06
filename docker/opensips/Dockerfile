@@ -8,7 +8,7 @@
 # Add a database module:
 # docker run --rm -e DATABASE_HOST="host.docker.internal" -e DATABASE_USER="postgres" -e DATABASE_PASSWORD="password" -e DATABASE_PORT=5432 -e DATABASE_NAME="opensips" -e DATABASE_MODULES="rtpproxy" public.ecr.aws/somleng/somleng-switch-opensips:bootstrap add_module
 
-FROM debian:bullseye AS bootstrap
+FROM debian:bullseye-slim AS bootstrap
 
 USER root
 
@@ -38,7 +38,7 @@ CMD ["create_db"]
 
 # Main image
 
-FROM debian:bullseye
+FROM debian:bullseye-slim
 
 USER root
 
@@ -50,20 +50,12 @@ ARG OPENSIPS_BUILD=releases
 RUN apt-get -y update -qq && apt-get -y install gnupg2 ca-certificates
 RUN apt-key adv --fetch-keys https://apt.opensips.org/pubkey.gpg
 RUN echo "deb https://apt.opensips.org bullseye ${OPENSIPS_VERSION}-${OPENSIPS_BUILD}" >/etc/apt/sources.list.d/opensips.list
-RUN apt-get -y update -qq && apt-get -y install opensips opensips-postgres-module opensips-auth-modules
+RUN apt-get -y update -qq && apt-get -y install opensips opensips-postgres-module opensips-auth-modules netcat
 
 RUN rm -rf /var/lib/apt/lists/*
 
 COPY opensips.cfg /etc/opensips/opensips.cfg
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-
-ENV FIFO_NAME "/tmp/opensips_fifo"
-ENV DATABASE_URL "postgres://postgres:@localhost:5432/opensips"
-ENV SIP_PORT 5060
-ENV SIP_ALTERNATIVE_PORT 5080
-
-EXPOSE 5060/udp
-EXPOSE 5080/udp
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["opensips"]

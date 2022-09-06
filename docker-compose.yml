@@ -41,10 +41,13 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
-      test: ["CMD-SHELL", "nc -z -w 5 localhost 5060"]
+      test: ["CMD-SHELL", "nc -z -w 5 $$(hostname -i) 5060"]
       interval: 10s
       timeout: 5s
       retries: 10
+    expose:
+      - "5060/udp"
+      - "5080/udp"
     volumes:
       - opensips_fifo:/opensips/fifo
 
@@ -54,13 +57,32 @@ services:
     image: registrar:latest
     environment:
       DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
+      FIFO_NAME: /opensips/fifo/registrar_fifo
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
-      test: ["CMD-SHELL", "nc -z -w 5 localhost 5060"]
+      test: ["CMD-SHELL", "nc -z -w 5 $$(hostname -i) 5060"]
       interval: 10s
       timeout: 5s
       retries: 10
+    expose:
+      - "5060/udp"
+    volumes:
+      - opensips_fifo:/opensips/fifo
+
+  media_proxy:
+    build:
+      context: docker/media_proxy
+    image: media_proxy:latest
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z -w 5 $$(hostname -i) 25060"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    expose:
+      - "2223/udp"
 
   freeswitch:
     build:
@@ -70,6 +92,11 @@ services:
       FS_EXTERNAL_RTP_IP: "13.250.230.15"
       FS_ALTERNATIVE_RTP_IP: "18.141.245.230"
       FS_OUTBOUND_PROXY: "registrar"
+    expose:
+      - "5060/udp"
+      - "5222/tcp"
+      - "5080/udp"
+      - "8021/tcp"
     healthcheck:
       test:
         ["CMD-SHELL", "fs_cli -p secret -x 'rayo status' | rayo_status_parser"]
@@ -94,6 +121,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    expose:
+      - "8080/tcp"
 
   testing:
     build:
@@ -102,6 +131,7 @@ services:
     command: sipp -sf /scenarios/uas.xml -trace_msg
     environment:
       OPENSIPS_FIFO_NAME: /opensips/fifo/opensips_fifo
+      REGISTRAR_FIFO_NAME: /opensips/fifo/registrar_fifo
       DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
     extra_hosts:
       - "host.docker.internal:host-gateway"
