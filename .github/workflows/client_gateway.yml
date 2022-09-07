@@ -58,6 +58,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ap-southeast-1
       ECR_PUBLIC_REGISTRY: public.ecr.aws
+      GATEWAY_ECR_REPOSITORY: public.ecr.aws/somleng/gateway
       CLIENT_GATEWAY_ECR_REPOSITORY: public.ecr.aws/somleng/client-gateway
       IMAGE_TAG: ${{ github.sha }}
 
@@ -102,7 +103,7 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.identifier }}-bootstrap
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-bootstrap
           tags: |
-            ${{ env.OPENSIPS_ECR_REPOSITORY }}:bootstrap
+            ${{ env.GATEWAY_ECR_REPOSITORY }}:bootstrap
 
       - name: Build and push client gateway
         uses: docker/build-push-action@v3

@@ -103,6 +103,16 @@ resource "aws_ecrpublic_repository" "client_gateway" {
   }
 }
 
+resource "aws_ecrpublic_repository" "gateway" {
+  repository_name = "gateway"
+  provider = aws.us-east-1
+
+  catalog_data {
+    about_text        = "Somleng Gateway"
+    architectures     = ["Linux"]
+  }
+}
+
 resource "aws_ecrpublic_repository" "opensips_scheduler" {
   repository_name = "somleng-switch-opensips-scheduler"
   provider = aws.us-east-1
