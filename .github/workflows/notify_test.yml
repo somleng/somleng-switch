@@ -1,0 +1,16 @@
+name: CI notify
+
+# Only trigger, when the build workflow succeeded
+on:
+  workflow_run:
+    workflows: ["CI build"]
+    types:
+      - completed
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Hello World
+        run: echo "Hello World"
