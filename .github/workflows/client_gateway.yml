@@ -1,7 +1,7 @@
 name: Client Gateway
 on:
   workflow_run:
-    workflows: ["Gateway Commons"]
+    workflows: [Gateway Commons]
     types: [completed]
     branches: [fix_nat]
 
