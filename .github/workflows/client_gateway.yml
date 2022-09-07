@@ -1,8 +1,5 @@
 name: Client Gateway
-on:
-  workflow_run:
-    workflows: [Gateway Commons]
-    types: [completed]
+on: push
 
 env:
   CI: true
@@ -10,7 +7,6 @@ env:
 jobs:
   build:
     name: Build
-    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
@@ -69,6 +65,13 @@ jobs:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
 
     steps:
+      - name: Wait for Gateway Commons
+        uses: lewagon/wait-on-check-action@v1.0.0
+        with:
+          ref: ${{ github.ref }}
+          check-name: 'Gateway Commons'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Checkout
         uses: actions/checkout@v3
 

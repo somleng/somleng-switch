@@ -1,5 +1,5 @@
-on: push
 name: Gateway Commons
+on: push
 
 jobs:
   build:
