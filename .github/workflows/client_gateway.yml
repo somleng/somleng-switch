@@ -95,7 +95,7 @@ jobs:
       - name: Build and push client gateway
         uses: docker/build-push-action@v3
         with:
-          context: "docker/client_gateway"
+          context: "docker/gateway"
           target: "client_gateway"
           push: true
           platforms: linux/amd64
