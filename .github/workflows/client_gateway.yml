@@ -1,4 +1,4 @@
-name: Client Gateway2
+name: Client Gateway
 on: push
 
 jobs:
@@ -67,7 +67,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
           check-name: 'Gateway Commons'
-          check-regexp: "Deploy\sGateway\sCommons."
+          check-regexp: "Deploy\\sGateway\\sCommons."
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout
