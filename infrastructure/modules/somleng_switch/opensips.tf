@@ -168,7 +168,7 @@ data "template_file" "opensips" {
 
     freeswitch_event_socket_password_parameter_arn = aws_ssm_parameter.freeswitch_event_socket_password.arn
     database_password_parameter_arn = var.db_password_parameter_arn
-    database_name = var.db_name
+    database_name = var.public_gateway_db_name
     database_username = var.db_username
     database_host = var.db_host
     database_port = var.db_port

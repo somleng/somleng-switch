@@ -183,7 +183,7 @@ data "template_file" "client_gateway" {
     sip_port = var.sip_port
 
     database_password_parameter_arn = var.db_password_parameter_arn
-    database_name = var.db_name
+    database_name = var.client_gateway_db_name
     database_username = var.db_username
     database_host = var.db_host
     database_port = var.db_port

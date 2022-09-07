@@ -120,7 +120,8 @@ resource "aws_lambda_function" "services" {
       FS_EVENT_SOCKET_PORT = 8021
       FS_SIP_PORT = var.sip_port
       FS_SIP_ALTERNATIVE_PORT = var.sip_alternative_port
-      OPENSIPS_DB_NAME = var.db_name
+      PUBLIC_GATEWAY_DB_NAME = var.public_gateway_db_name
+      CLIENT_GATEWAY_DB_NAME = var.client_gateway_db_name
       DB_PASSWORD_SSM_PARAMETER_NAME = data.aws_ssm_parameter.db_password.name
       DB_HOST = var.db_host
       DB_PORT = var.db_port

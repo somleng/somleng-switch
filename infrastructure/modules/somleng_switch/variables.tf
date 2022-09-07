@@ -81,7 +81,8 @@ variable "sip_alternative_port" {
   default = 5080
 }
 
-variable "db_name" {}
+variable "public_gateway_db_name" {}
+variable "client_gateway_db_name" {}
 variable "db_host" {}
 variable "db_port" {}
 variable "db_security_group" {}

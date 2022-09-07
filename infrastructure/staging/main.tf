@@ -34,7 +34,8 @@ module "somleng_switch_staging" {
   alternative_sip_outbound_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
   alternative_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
 
-  db_name = "opensips_staging"
+  public_gateway_db_name = "opensips_public_gateway_staging"
+  client_gateway_db_name = "opensips_client_gateway_staging"
   db_username = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.master_username
   db_password_parameter_arn = data.terraform_remote_state.core_infrastructure.outputs.db_master_password_parameter.arn
   db_host = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.endpoint
