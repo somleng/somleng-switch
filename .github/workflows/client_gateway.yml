@@ -62,14 +62,6 @@ jobs:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
 
     steps:
-      - name: Wait for Gateway Commons
-        uses: lewagon/wait-on-check-action@v1.0.0
-        with:
-          ref: ${{ github.ref }}
-          check-name: 'Gateway Commons'
-          check-regexp: "Deploy\\sGateway\\sCommons."
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -129,6 +121,13 @@ jobs:
           task-definition: ${{ steps.render-opensips-scheduler-task-def.outputs.task-definition }}
           container-name: client_gateway
           image: ${{ env.CLIENT_GATEWAY_ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+
+      - name: Wait for Gateway Commons
+        uses: lewagon/wait-on-check-action@v1.0.0
+        with:
+          ref: ${{ github.ref }}
+          check-regexp: Deploy Gateway Commons.
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
