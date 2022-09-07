@@ -1,0 +1,15 @@
+on:
+  workflow_run:
+    workflows: ["Gateway Commons"]
+    types:
+      - completed
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Hello World
+        run: |
+          echo "Hello World"
