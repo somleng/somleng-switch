@@ -70,6 +70,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
           check-name: 'Gateway Commons'
+          check-regexp: "Deploy\sGateway\sCommons."
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout

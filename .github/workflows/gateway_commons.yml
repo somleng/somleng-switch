@@ -34,7 +34,7 @@ jobs:
           echo ::set-output name=matrixLength::$(echo $matrix | jq length)
 
   deploy:
-    name: Deploy
+    name: Deploy Gateway Commons
     runs-on: ubuntu-latest
     needs:
       - build
