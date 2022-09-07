@@ -12,7 +12,7 @@ reset_db
 create_rtpengine_entry "udp:media_proxy:2223"
 reload_opensips_tables
 
-sip_proxy="$(dig +short registrar)"
+sip_proxy="$(dig +short client_gateway)"
 media_proxy="$(dig +short media_proxy)"
 
 curl -s -o /dev/null -XPOST -u "adhearsion:password" http://somleng-switch:8080/calls \

@@ -36,9 +36,9 @@ ENV DATABASE_NAME "opensips"
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["create_db"]
 
-# Main image
+# Build
 
-FROM debian:bullseye-slim
+FROM debian:bullseye-slim AS build
 
 USER root
 
@@ -54,8 +54,20 @@ RUN apt-get -y update -qq && apt-get -y install opensips opensips-postgres-modul
 
 RUN rm -rf /var/lib/apt/lists/*
 
-COPY opensips.cfg /etc/opensips/opensips.cfg
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["opensips"]
+
+# Public Gateway
+
+FROM build AS public_gateway
+
+COPY public_gateway/opensips.cfg /etc/opensips/opensips.cfg
+COPY public_gateway/docker-entrypoint.sh /docker-entrypoint.sh
+
+# Client Gateway
+
+FROM build AS client_gateway
+
+COPY client_gateway/opensips.cfg /etc/opensips/opensips.cfg
+COPY client_gateway/docker-entrypoint.sh /docker-entrypoint.sh
+

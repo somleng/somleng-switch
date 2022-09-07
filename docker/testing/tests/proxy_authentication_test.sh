@@ -8,4 +8,4 @@ source $current_dir/support/test_helpers.sh
 
 reset_db
 
-sipp -sf $scenario opensips:5060 -s 1234 -m 1 > /dev/null
+sipp -sf $scenario public_gateway:5060 -s 1234 -m 1 > /dev/null

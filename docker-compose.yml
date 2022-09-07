@@ -19,7 +19,7 @@ volumes:
 services:
   opensips-bootstrap-db:
     build:
-      context: docker/opensips
+      context: docker/gateway
       target: bootstrap
     image: opensips:bootstrap
     environment:
@@ -31,13 +31,14 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  opensips:
+  public_gateway:
     build:
-      context: docker/opensips
-    image: opensips:latest
+      context: docker/gateway
+      target: public_gateway
+    image: public_gateway:latest
     environment:
       DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
-      FIFO_NAME: /opensips/fifo/opensips_fifo
+      FIFO_NAME: /opensips/fifo/public_gateway_fifo
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
@@ -51,13 +52,14 @@ services:
     volumes:
       - opensips_fifo:/opensips/fifo
 
-  registrar:
+  client_gateway:
     build:
-      context: docker/registrar
-    image: registrar:latest
+      context: docker/gateway
+      target: client_gateway
+    image: client_gateway:latest
     environment:
       DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
-      FIFO_NAME: /opensips/fifo/registrar_fifo
+      FIFO_NAME: /opensips/fifo/client_gateway_fifo
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
@@ -91,7 +93,6 @@ services:
     environment:
       FS_EXTERNAL_RTP_IP: "13.250.230.15"
       FS_ALTERNATIVE_RTP_IP: "18.141.245.230"
-      FS_OUTBOUND_PROXY: "registrar"
     expose:
       - "5060/udp"
       - "5222/tcp"
@@ -130,8 +131,8 @@ services:
     image: testing:latest
     command: sipp -sf /scenarios/uas.xml -trace_msg
     environment:
-      OPENSIPS_FIFO_NAME: /opensips/fifo/opensips_fifo
-      REGISTRAR_FIFO_NAME: /opensips/fifo/registrar_fifo
+      PUBLIC_GATEWAY_FIFO_NAME: /opensips/fifo/public_gateway_fifo
+      CLIENT_GATEWAY_FIFO_NAME: /opensips/fifo/client_gateway_fifo
       DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
     extra_hosts:
       - "host.docker.internal:host-gateway"

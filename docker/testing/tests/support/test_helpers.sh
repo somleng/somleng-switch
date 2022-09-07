@@ -15,10 +15,10 @@ reset_db () {
 }
 
 reload_opensips_tables () {
-  echo "::{\"jsonrpc\":\"2.0\",\"method\":\"lb_reload\"}" | tee $OPENSIPS_FIFO_NAME > /dev/null
-  echo "::{\"jsonrpc\":\"2.0\",\"method\":\"address_reload\"}" | tee $OPENSIPS_FIFO_NAME > /dev/null
-  echo "::{\"jsonrpc\":\"2.0\",\"method\":\"domain_reload\"}" | tee $OPENSIPS_FIFO_NAME $REGISTRAR_FIFO_NAME > /dev/null
-  echo "::{\"jsonrpc\":\"2.0\",\"method\":\"rtpengine_reload\"}" | tee $OPENSIPS_FIFO_NAME $REGISTRAR_FIFO_NAME > /dev/null
+  echo "::{\"jsonrpc\":\"2.0\",\"method\":\"lb_reload\"}" | tee $PUBLIC_GATEWAY_FIFO_NAME > /dev/null
+  echo "::{\"jsonrpc\":\"2.0\",\"method\":\"address_reload\"}" | tee $PUBLIC_GATEWAY_FIFO_NAME > /dev/null
+  echo "::{\"jsonrpc\":\"2.0\",\"method\":\"domain_reload\"}" | tee $PUBLIC_GATEWAY_FIFO_NAME $CLIENT_GATEWAY_FIFO_NAME > /dev/null
+  echo "::{\"jsonrpc\":\"2.0\",\"method\":\"rtpengine_reload\"}" | tee $PUBLIC_GATEWAY_FIFO_NAME $CLIENT_GATEWAY_FIFO_NAME > /dev/null
 }
 
 create_load_balancer_entry () {

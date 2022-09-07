@@ -12,7 +12,7 @@ create_address_entry $(hostname -i)
 reload_opensips_tables
 
 rm -f inbound_double_routes_*_messages.log
-sipp -sf $scenario opensips:5060 -s 1111 -m 1 -trace_msg > /dev/null
+sipp -sf $scenario public_gateway:5060 -s 1111 -m 1 -trace_msg > /dev/null
 
 reset_db
 
