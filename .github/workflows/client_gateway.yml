@@ -1,8 +1,9 @@
-name: Client Gateway
+name: Foobar Gateway
 on:
   workflow_run:
-    workflows: [Gateway Commons]
+    workflows: [GatewayFoo]
     types: [completed]
+    branches: [fix_nat]
 
 env:
   CI: true
