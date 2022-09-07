@@ -94,7 +94,7 @@ EOF
 }
 
 resource "aws_ecrpublic_repository" "client_gateway" {
-  repository_name = "somleng-client-gateway"
+  repository_name = "client-gateway"
   provider = aws.us-east-1
 
   catalog_data {
