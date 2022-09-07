@@ -1,14 +1,14 @@
 
 variable "aws_region" {}
 variable "app_identifier" {}
-variable "registrar_identifier" {}
+variable "client_gateway_identifier" {}
 variable "app_environment" {}
 variable "switch_image" {}
 variable "nginx_image" {}
 variable "freeswitch_image" {}
 variable "opensips_image" {}
 variable "opensips_scheduler_image" {}
-variable "registrar_image" {}
+variable "client_gateway_image" {}
 variable "freeswitch_event_logger_image" {}
 variable s3_mpeg_ecr_repository_url {}
 variable services_ecr_repository_url {}
@@ -22,13 +22,13 @@ variable "network_load_balancer" {}
 variable "listener_arn" {}
 variable "sip_subdomain" {}
 variable "switch_subdomain" {}
-variable "registrar_subdomain" {}
+variable "client_gateway_subdomain" {}
 variable "route53_zone" {}
 variable "recordings_bucket_name" {}
 variable "container_insights_enabled" {
   default = false
 }
-variable registrar_health_checks {
+variable client_gateway_health_checks {
   default = true
 }
 
@@ -45,11 +45,11 @@ variable "opensips_min_tasks" {
   default = 1
 }
 
-variable "registrar_min_tasks" {
+variable "client_gateway_min_tasks" {
   default = 1
 }
 
-variable "registrar_max_tasks" {
+variable "client_gateway_max_tasks" {
   default = 4
 }
 

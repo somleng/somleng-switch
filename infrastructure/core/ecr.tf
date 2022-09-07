@@ -93,12 +93,12 @@ EOF
   }
 }
 
-resource "aws_ecrpublic_repository" "registrar" {
-  repository_name = "somleng-registrar"
+resource "aws_ecrpublic_repository" "client_gateway" {
+  repository_name = "somleng-client-gateway"
   provider = aws.us-east-1
 
   catalog_data {
-    about_text        = "Somleng Registrar"
+    about_text        = "Somleng Client Gateway"
     architectures     = ["Linux"]
   }
 }

@@ -1,11 +1,11 @@
 [
   {
-    "name": "registrar",
-    "image": "${registrar_image}:latest",
+    "name": "client_gateway",
+    "image": "${client_gateway_image}:latest",
     "logConfiguration": {
       "logDriver": "awslogs",
        "options": {
-         "awslogs-group": "${registrar_logs_group}",
+         "awslogs-group": "${client_gateway_logs_group}",
          "awslogs-region": "${logs_group_region}",
          "awslogs-stream-prefix": "${app_environment}"
        }

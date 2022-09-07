@@ -47,7 +47,7 @@ module "somleng_switch" {
   inbound_sip_trunks_security_group_name = "somleng-inbound-sip-trunks"
   sip_subdomain = "sip"
   switch_subdomain = "ahn"
-  registrar_subdomain = "registrar"
+  client_gateway_subdomain = "client_gateway"
 
   recordings_bucket_name = "raw-recordings.somleng.org"
   switch_max_tasks = 10
