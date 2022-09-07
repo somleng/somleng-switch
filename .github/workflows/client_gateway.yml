@@ -1,5 +1,10 @@
-on: push
 name: Client Gateway
+on:
+  workflow_run:
+    workflows:
+      - "Gateway Commons"
+    types:
+      - completed
 
 env:
   CI: true
@@ -7,13 +12,6 @@ env:
 jobs:
   build:
     name: Build
-    on:
-      workflow_run:
-        workflows:
-         - "Gateway Commons"
-        types:
-          - completed
-
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     outputs:
