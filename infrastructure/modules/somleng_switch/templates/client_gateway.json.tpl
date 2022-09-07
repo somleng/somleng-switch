@@ -10,6 +10,12 @@
          "awslogs-stream-prefix": "${app_environment}"
        }
     },
+    "mountPoints": [
+      {
+        "sourceVolume": "opensips",
+        "containerPath": "/var/opensips"
+      }
+    ],
     "essential": true,
     "portMappings": [
       {
@@ -31,6 +37,14 @@
     ],
     "environment": [
       {
+        "name": "FIFO_NAME",
+        "value": "/var/opensips/opensips_fifo"
+      },
+      {
+        "name": "MI_COMMANDS",
+        "value": "domain_reload,rtpengine_reload"
+      },
+      {
         "name": "DATABASE_NAME",
         "value": "${database_name}"
       },
@@ -51,5 +65,22 @@
         "value": "${sip_port}"
       }
     ]
+  },
+  {
+    "name": "opensips_scheduler",
+    "image": "${opensips_scheduler_image}:latest",
+    "mountPoints": [
+      {
+        "sourceVolume": "opensips",
+        "containerPath": "/var/opensips"
+      }
+    ],
+    "environment": [
+      {
+        "name": "FIFO_NAME",
+        "value": "/var/opensips/opensips_fifo"
+      }
+    ],
+    "essential": true
   }
 ]

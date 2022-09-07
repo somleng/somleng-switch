@@ -5,8 +5,10 @@ set -e
 while :
 do
   if [ -p $FIFO_NAME ]; then
-    echo "::{\"jsonrpc\":\"2.0\",\"method\":\"lb_reload\"}" > $FIFO_NAME
-    echo "::{\"jsonrpc\":\"2.0\",\"method\":\"address_reload\"}" > $FIFO_NAME
+    for mi_command in ${MI_COMMANDS//,/ }
+    do
+      echo "::{\"jsonrpc\":\"2.0\",\"method\":\"$mi_command\"}" > $FIFO_NAME
+    done
   fi
 
   sleep 30s

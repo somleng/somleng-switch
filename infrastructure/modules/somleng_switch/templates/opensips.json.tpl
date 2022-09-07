@@ -43,6 +43,10 @@
         "value": "/var/opensips/opensips_fifo"
       },
       {
+        "name": "MI_COMMANDS",
+        "value": "lb_reload,address_reload"
+      },
+      {
         "name": "DATABASE_NAME",
         "value": "${database_name}"
       },

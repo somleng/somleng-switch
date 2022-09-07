@@ -175,6 +175,7 @@ data "template_file" "client_gateway" {
 
   vars = {
     client_gateway_image = var.client_gateway_image
+    opensips_scheduler_image = var.opensips_scheduler_image
 
     client_gateway_logs_group = aws_cloudwatch_log_group.client_gateway.name
     logs_group_region = var.aws_region
@@ -197,6 +198,10 @@ resource "aws_ecs_task_definition" "client_gateway" {
   execution_role_arn = aws_iam_role.client_gateway_task_execution_role.arn
   container_definitions = data.template_file.client_gateway.rendered
   memory = module.client_gateway_container_instances.ec2_instance_type.memory_size - 256
+
+  volume {
+    name = "opensips"
+  }
 }
 
 resource "aws_ecs_service" "client_gateway" {
