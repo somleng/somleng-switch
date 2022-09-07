@@ -1,9 +1,6 @@
 name: Client Gateway
 on: push
 
-env:
-  CI: true
-
 jobs:
   build:
     name: Build
