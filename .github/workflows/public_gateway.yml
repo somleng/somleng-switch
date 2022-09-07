@@ -99,18 +99,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and push OpenSIPS Bootstrap
-        uses: docker/build-push-action@v3
-        with:
-          context: docker/opensips
-          target: bootstrap
-          push: true
-          platforms: linux/amd64
-          cache-from: type=gha,scope=${{ matrix.identifier }}-bootstrap
-          cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-bootstrap
-          tags: |
-            ${{ env.OPENSIPS_ECR_REPOSITORY }}:bootstrap
-
       - name: Build and push OpenSIPS
         uses: docker/build-push-action@v3
         with:
