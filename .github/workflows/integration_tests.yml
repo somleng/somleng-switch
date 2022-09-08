@@ -112,8 +112,7 @@ jobs:
 
       - name: Run docker-compose
         run: |
-          docker-compose run -e DATABASE_NAME=opensips_public_gateway_test gateway-bootstrap create_db public_gateway
-          docker-compose run -e DATABASE_NAME=opensips_client_gateway_test gateway-bootstrap create_db client_gateway
+          docker-compose run -e DATABASE_NAME=opensips_${{ inputs.context }}_test gateway-bootstrap create_db ${{ inputs.context }}
           docker-compose up -d client_gateway public_gateway media_proxy freeswitch somleng-switch testing
           sleep 30
 
