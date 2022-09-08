@@ -5,7 +5,7 @@
     "logConfiguration": {
       "logDriver": "awslogs",
        "options": {
-         "awslogs-group": "${client_gateway_logs_group}",
+         "awslogs-group": "${logs_group}",
          "awslogs-region": "${logs_group_region}",
          "awslogs-stream-prefix": "${app_environment}"
        }

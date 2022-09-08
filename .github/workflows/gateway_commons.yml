@@ -47,7 +47,7 @@ jobs:
       AWS_DEFAULT_REGION: ap-southeast-1
       ECR_PUBLIC_REGISTRY: public.ecr.aws
       GATEWAY_ECR_REPOSITORY: public.ecr.aws/somleng/gateway
-      OPENSIPS_SCHEDULER_ECR_REPOSITORY: public.ecr.aws/somleng/somleng-switch-opensips-scheduler
+      OPENSIPS_SCHEDULER_ECR_REPOSITORY: public.ecr.aws/somleng/opensips-scheduler
       IMAGE_TAG: ${{ github.sha }}
 
     strategy:

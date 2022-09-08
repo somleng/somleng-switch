@@ -1,19 +1,19 @@
 # Container Instances
-module opensips_container_instances {
+module public_gateway_container_instances {
   source = "../container_instances"
 
-  app_identifier = "${var.app_identifier}-opensips"
+  app_identifier = var.public_gateway_identifier
   vpc_id = var.vpc_id
   instance_subnets = var.container_instance_subnets
   cluster_name = aws_ecs_cluster.cluster.name
 }
 
 # Capacity Provider
-resource "aws_ecs_capacity_provider" "opensips" {
-  name = "${var.app_identifier}-opensips"
+resource "aws_ecs_capacity_provider" "public_gateway" {
+  name = var.public_gateway_identifier
 
   auto_scaling_group_provider {
-    auto_scaling_group_arn         = module.opensips_container_instances.autoscaling_group.arn
+    auto_scaling_group_arn         = module.public_gateway_container_instances.autoscaling_group.arn
     managed_termination_protection = "ENABLED"
 
     managed_scaling {
@@ -26,50 +26,50 @@ resource "aws_ecs_capacity_provider" "opensips" {
 }
 
 # Security Group
-resource "aws_security_group" "opensips" {
-  name   = "${var.app_identifier}-opensips"
+resource "aws_security_group" "public_gateway" {
+  name   = var.public_gateway_identifier
   vpc_id = var.vpc_id
 }
 
-resource "aws_security_group_rule" "opensips_healthcheck" {
+resource "aws_security_group_rule" "public_gateway_healthcheck" {
   type              = "ingress"
   to_port           = var.sip_port
   protocol          = "tcp"
   from_port         = var.sip_port
-  security_group_id = aws_security_group.opensips.id
+  security_group_id = aws_security_group.public_gateway.id
   cidr_blocks = [var.vpc_cidr_block]
 }
 
-resource "aws_security_group_rule" "opensips_sip" {
+resource "aws_security_group_rule" "public_gateway_sip" {
   type              = "ingress"
   to_port           = var.sip_port
   protocol          = "udp"
   from_port         = var.sip_port
-  security_group_id = aws_security_group.opensips.id
+  security_group_id = aws_security_group.public_gateway.id
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-resource "aws_security_group_rule" "opensips_sip_alternative" {
+resource "aws_security_group_rule" "public_gateway_sip_alternative" {
   type              = "ingress"
   to_port           = var.sip_alternative_port
   protocol          = "udp"
   from_port         = var.sip_alternative_port
-  security_group_id = aws_security_group.opensips.id
+  security_group_id = aws_security_group.public_gateway.id
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-resource "aws_security_group_rule" "opensips_egress" {
+resource "aws_security_group_rule" "public_gateway_egress" {
   type              = "egress"
   to_port           = 0
   protocol          = "-1"
   from_port         = 0
-  security_group_id = aws_security_group.opensips.id
+  security_group_id = aws_security_group.public_gateway.id
   cidr_blocks = ["0.0.0.0/0"]
 }
 
 # IAM
-resource "aws_iam_role" "opensips_task_role" {
-  name = "${var.app_identifier}-ecs-OpenSIPSTaskRole"
+resource "aws_iam_role" "public_gateway_task_role" {
+  name = "${var.public_gateway_identifier}-ecsTaskRole"
 
   assume_role_policy = <<EOF
 {
@@ -87,8 +87,8 @@ resource "aws_iam_role" "opensips_task_role" {
 EOF
 }
 
-resource "aws_iam_role" "opensips_task_execution_role" {
-  name = "${var.app_identifier}-ecs-OpenSIPSTaskExecutionRole"
+resource "aws_iam_role" "public_gateway_task_execution_role" {
+  name = "${var.public_gateway_identifier}-ecsTaskExecutionRole"
 
   assume_role_policy = <<EOF
 {
@@ -106,8 +106,8 @@ resource "aws_iam_role" "opensips_task_execution_role" {
 EOF
 }
 
-resource "aws_iam_policy" "opensips_task_execution_custom_policy" {
-  name = "${var.app_identifier}-opensips-task-execution-custom-policy"
+resource "aws_iam_policy" "public_gateway_task_execution_custom_policy" {
+  name = "${var.public_gateway_identifier}-task-execution-custom-policy"
 
   policy = <<EOF
 {
@@ -119,8 +119,7 @@ resource "aws_iam_policy" "opensips_task_execution_custom_policy" {
         "ssm:GetParameters"
       ],
       "Resource": [
-        "${var.db_password_parameter_arn}",
-        "${aws_ssm_parameter.freeswitch_event_socket_password.arn}"
+        "${var.db_password_parameter_arn}"
       ]
     }
   ]
@@ -128,37 +127,31 @@ resource "aws_iam_policy" "opensips_task_execution_custom_policy" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "opensips_task_execution_custom_policy" {
-  role = aws_iam_role.opensips_task_execution_role.id
-  policy_arn = aws_iam_policy.opensips_task_execution_custom_policy.arn
+resource "aws_iam_role_policy_attachment" "public_gateway_task_execution_custom_policy" {
+  role = aws_iam_role.public_gateway_task_execution_role.id
+  policy_arn = aws_iam_policy.public_gateway_task_execution_custom_policy.arn
 }
 
-resource "aws_iam_role_policy_attachment" "opensips_task_execution_role_amazon_ecs_task_execution_role_policy" {
-  role = aws_iam_role.opensips_task_execution_role.id
+resource "aws_iam_role_policy_attachment" "public_gateway_task_execution_role_amazon_ecs_task_execution_role_policy" {
+  role = aws_iam_role.public_gateway_task_execution_role.id
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 # Log Groups
-resource "aws_cloudwatch_log_group" "opensips" {
-  name = "${var.app_identifier}-opensips"
-  retention_in_days = 7
-}
-
-resource "aws_cloudwatch_log_group" "opensips_scheduler" {
-  name = "${var.app_identifier}-opensips-scheduler"
+resource "aws_cloudwatch_log_group" "public_gateway" {
+  name = var.public_gateway_identifier
   retention_in_days = 7
 }
 
 # ECS
-data "template_file" "opensips" {
-  template = file("${path.module}/templates/opensips.json.tpl")
+data "template_file" "public_gateway" {
+  template = file("${path.module}/templates/public_gateway.json.tpl")
 
   vars = {
-    opensips_image = var.opensips_image
+    public_gateway_image = var.public_gateway_image
     opensips_scheduler_image = var.opensips_scheduler_image
 
-    opensips_logs_group = aws_cloudwatch_log_group.opensips.name
-    opensips_scheduler_logs_group = aws_cloudwatch_log_group.opensips_scheduler.name
+    logs_group = aws_cloudwatch_log_group.public_gateway.name
     logs_group_region = var.aws_region
     app_environment = var.app_environment
 
@@ -166,7 +159,6 @@ data "template_file" "opensips" {
     sip_alternative_port = var.sip_alternative_port
     sip_advertised_ip = var.external_sip_ip
 
-    freeswitch_event_socket_password_parameter_arn = aws_ssm_parameter.freeswitch_event_socket_password.arn
     database_password_parameter_arn = var.db_password_parameter_arn
     database_name = var.public_gateway_db_name
     database_username = var.db_username
@@ -175,53 +167,53 @@ data "template_file" "opensips" {
   }
 }
 
-resource "aws_ecs_task_definition" "opensips" {
-  family                   = "${var.app_identifier}-opensips"
+resource "aws_ecs_task_definition" "public_gateway" {
+  family                   = var.public_gateway_identifier
   network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
-  task_role_arn = aws_iam_role.opensips_task_role.arn
-  execution_role_arn = aws_iam_role.opensips_task_execution_role.arn
-  container_definitions = data.template_file.opensips.rendered
-  memory = module.opensips_container_instances.ec2_instance_type.memory_size - 256
+  task_role_arn = aws_iam_role.public_gateway_task_role.arn
+  execution_role_arn = aws_iam_role.public_gateway_task_execution_role.arn
+  container_definitions = data.template_file.public_gateway.rendered
+  memory = module.public_gateway_container_instances.ec2_instance_type.memory_size - 256
 
   volume {
     name = "opensips"
   }
 }
 
-resource "aws_ecs_service" "opensips" {
-  name            = aws_ecs_task_definition.opensips.family
+resource "aws_ecs_service" "public_gateway" {
+  name            = aws_ecs_task_definition.public_gateway.family
   cluster         = aws_ecs_cluster.cluster.id
-  task_definition = aws_ecs_task_definition.opensips.arn
-  desired_count   = var.opensips_min_tasks
+  task_definition = aws_ecs_task_definition.public_gateway.arn
+  desired_count   = var.public_gateway_min_tasks
 
   network_configuration {
     subnets = var.container_instance_subnets
     security_groups = [
-      aws_security_group.opensips.id,
+      aws_security_group.public_gateway.id,
       var.db_security_group
     ]
   }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.sip.arn
-    container_name   = "opensips"
+    container_name   = "public_gateway"
     container_port   = var.sip_port
   }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.sip_alternative.arn
-    container_name   = "opensips"
+    container_name   = "public_gateway"
     container_port   = var.sip_alternative_port
   }
 
   capacity_provider_strategy {
-    capacity_provider = aws_ecs_capacity_provider.opensips.name
+    capacity_provider = aws_ecs_capacity_provider.public_gateway.name
     weight = 1
   }
 
   depends_on = [
-    aws_iam_role.opensips_task_role
+    aws_iam_role.public_gateway_task_role
   ]
 
   lifecycle {
@@ -287,11 +279,11 @@ resource "aws_lb_listener" "sip_alternative" {
 }
 
 # Autoscaling
-resource "aws_appautoscaling_policy" "opensips_policy" {
-  name               = "opensips-scale"
-  service_namespace  = aws_appautoscaling_target.opensips_scale_target.service_namespace
-  resource_id        = aws_appautoscaling_target.opensips_scale_target.resource_id
-  scalable_dimension = aws_appautoscaling_target.opensips_scale_target.scalable_dimension
+resource "aws_appautoscaling_policy" "public_gateway_policy" {
+  name               = var.public_gateway_identifier
+  service_namespace  = aws_appautoscaling_target.public_gateway_scale_target.service_namespace
+  resource_id        = aws_appautoscaling_target.public_gateway_scale_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.public_gateway_scale_target.scalable_dimension
   policy_type        = "TargetTrackingScaling"
 
   target_tracking_scaling_policy_configuration {
@@ -305,10 +297,10 @@ resource "aws_appautoscaling_policy" "opensips_policy" {
   }
 }
 
-resource "aws_appautoscaling_target" "opensips_scale_target" {
+resource "aws_appautoscaling_target" "public_gateway_scale_target" {
   service_namespace  = "ecs"
-  resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.opensips.name}"
+  resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.public_gateway.name}"
   scalable_dimension = "ecs:service:DesiredCount"
-  min_capacity       = var.opensips_min_tasks
-  max_capacity       = var.opensips_max_tasks
+  min_capacity       = var.public_gateway_min_tasks
+  max_capacity       = var.public_gateway_max_tasks
 }

@@ -177,7 +177,7 @@ data "template_file" "client_gateway" {
     client_gateway_image = var.client_gateway_image
     opensips_scheduler_image = var.opensips_scheduler_image
 
-    client_gateway_logs_group = aws_cloudwatch_log_group.client_gateway.name
+    logs_group = aws_cloudwatch_log_group.client_gateway.name
     logs_group_region = var.aws_region
     app_environment = var.app_environment
 

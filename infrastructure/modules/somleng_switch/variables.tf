@@ -1,13 +1,14 @@
 
 variable "aws_region" {}
 variable "app_identifier" {}
+variable "public_gateway_identifier" {}
 variable "client_gateway_identifier" {}
 variable "app_environment" {}
 variable "switch_image" {}
 variable "nginx_image" {}
 variable "freeswitch_image" {}
-variable "opensips_image" {}
 variable "opensips_scheduler_image" {}
+variable "public_gateway_image" {}
 variable "client_gateway_image" {}
 variable "freeswitch_event_logger_image" {}
 variable s3_mpeg_ecr_repository_url {}
@@ -38,10 +39,10 @@ variable "switch_max_tasks" {
 variable "switch_min_tasks" {
   default = 1
 }
-variable "opensips_max_tasks" {
+variable "public_gateway_max_tasks" {
   default = 4
 }
-variable "opensips_min_tasks" {
+variable "public_gateway_min_tasks" {
   default = 1
 }
 

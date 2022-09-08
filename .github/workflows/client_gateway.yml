@@ -55,7 +55,8 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ap-southeast-1
       ECR_PUBLIC_REGISTRY: public.ecr.aws
-      CLIENT_GATEWAY_ECR_REPOSITORY: public.ecr.aws/somleng/client-gateway
+      ECR_REPOSITORY: public.ecr.aws/somleng/client-gateway
+      OPENSIPS_SCHEDULER_ECR_REPOSITORY: public.ecr.aws/somleng/opensips-scheduler
       IMAGE_TAG: ${{ github.sha }}
 
     strategy:
@@ -92,21 +93,21 @@ jobs:
       - name: Build and push Client Gateway
         uses: docker/build-push-action@v3
         with:
-          context: "docker/gateway"
-          target: "client_gateway"
+          context: docker/gateway
+          target: client_gateway
           push: true
           platforms: linux/amd64
           cache-from: type=gha,scope=${{ matrix.identifier }}
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
           tags: |
-            ${{ env.CLIENT_GATEWAY_ECR_REPOSITORY }}:${{ matrix.image_tag }}
-            ${{ env.CLIENT_GATEWAY_ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+            ${{ env.ECR_REPOSITORY }}:${{ matrix.image_tag }}
+            ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
       - name: Get current task definition
         run: |
           aws ecs describe-task-definition --task-definition "${{ matrix.identifier }}" --query 'taskDefinition' > task-definition.json
 
-      - name: Prepare OpenSIPS Scheduler task definition
+      - name: Prepare task definition with OpenSIPS scheduler
         id: render-opensips-scheduler-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
@@ -120,14 +121,7 @@ jobs:
         with:
           task-definition: ${{ steps.render-opensips-scheduler-task-def.outputs.task-definition }}
           container-name: client_gateway
-          image: ${{ env.CLIENT_GATEWAY_ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-
-      - name: Wait for Gateway Commons
-        uses: lewagon/wait-on-check-action@v1.0.0
-        with:
-          ref: ${{ github.ref }}
-          check-regexp: Deploy Gateway Commons.
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          image: ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
       - name: Deploy
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1

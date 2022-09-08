@@ -1,11 +1,11 @@
 [
   {
-    "name": "opensips",
-    "image": "${opensips_image}:latest",
+    "name": "public_gateway",
+    "image": "${public_gateway_image}:latest",
     "logConfiguration": {
       "logDriver": "awslogs",
        "options": {
-         "awslogs-group": "${opensips_logs_group}",
+         "awslogs-group": "${logs_group}",
          "awslogs-region": "${logs_group_region}",
          "awslogs-stream-prefix": "${app_environment}"
        }
@@ -31,10 +31,6 @@
       {
         "name": "DATABASE_PASSWORD",
         "valueFrom": "${database_password_parameter_arn}"
-      },
-      {
-        "name": "EVENT_SOCKET_PASSWORD",
-        "valueFrom": "${freeswitch_event_socket_password_parameter_arn}"
       }
     ],
     "environment": [
@@ -79,14 +75,6 @@
   {
     "name": "opensips_scheduler",
     "image": "${opensips_scheduler_image}:latest",
-    "logConfiguration": {
-      "logDriver": "awslogs",
-       "options": {
-         "awslogs-group": "${opensips_scheduler_logs_group}",
-         "awslogs-region": "${logs_group_region}",
-         "awslogs-stream-prefix": "${app_environment}"
-       }
-    },
     "mountPoints": [
       {
         "sourceVolume": "opensips",

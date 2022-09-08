@@ -14,8 +14,8 @@ output "freeswitch_event_logger_ecr_repository" {
   value = aws_ecrpublic_repository.freeswitch_event_logger
 }
 
-output "opensips_ecr_repository" {
-  value = aws_ecrpublic_repository.opensips
+output "public_gateway_ecr_repository" {
+  value = aws_ecrpublic_repository.public_gateway
 }
 
 output "client_gateway_ecr_repository" {

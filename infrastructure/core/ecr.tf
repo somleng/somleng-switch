@@ -40,6 +40,7 @@ resource "aws_ecrpublic_repository" "freeswitch_event_logger" {
   }
 }
 
+# TODO Delete this after deploy
 resource "aws_ecrpublic_repository" "opensips" {
   repository_name = "somleng-switch-opensips"
   provider = aws.us-east-1
@@ -50,12 +51,43 @@ resource "aws_ecrpublic_repository" "opensips" {
   }
 }
 
+# Delete this after deploy
+resource "aws_ecrpublic_repository" "opensips_scheduler_old" {
+  repository_name = "somleng-switch-opensips-scheduler"
+  provider = aws.us-east-1
+
+  catalog_data {
+    about_text        = "Somleng Switch OpenSIPS Scheduler"
+    architectures     = ["Linux"]
+  }
+}
+
+resource "aws_ecrpublic_repository" "public_gateway" {
+  repository_name = "public-gateway"
+  provider = aws.us-east-1
+
+  catalog_data {
+    about_text        = "Somleng Public Gateway"
+    architectures     = ["Linux"]
+  }
+}
+
 resource "aws_ecrpublic_repository" "client_gateway" {
   repository_name = "client-gateway"
   provider = aws.us-east-1
 
   catalog_data {
     about_text        = "Somleng Client Gateway"
+    architectures     = ["Linux"]
+  }
+}
+
+resource "aws_ecrpublic_repository" "opensips_scheduler" {
+  repository_name = "opensips-scheduler"
+  provider = aws.us-east-1
+
+  catalog_data {
+    about_text        = "Somleng OpenSIPS Scheduler"
     architectures     = ["Linux"]
   }
 }
@@ -85,16 +117,6 @@ resource "aws_ecrpublic_repository" "gateway" {
   $ docker run --rm -e DATABASE_HOST="host.docker.internal" -e DATABASE_USERNAME="postgres" -e DATABASE_PASSWORD="password" -e DATABASE_PORT=5432 -e DATABASE_NAME="opensips" -e DATABASE_MODULES="rtpproxy" public.ecr.aws/somleng/gateway:bootstrap add_module
   ```
   EOF
-  }
-}
-
-resource "aws_ecrpublic_repository" "opensips_scheduler" {
-  repository_name = "somleng-switch-opensips-scheduler"
-  provider = aws.us-east-1
-
-  catalog_data {
-    about_text        = "Somleng Switch OpenSIPS Scheduler"
-    architectures     = ["Linux"]
   }
 }
 

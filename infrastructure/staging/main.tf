@@ -7,15 +7,16 @@ module "somleng_switch_staging" {
 
   aws_region = var.aws_region
   app_identifier = "somleng-switch-staging"
+  public_gateway_identifier = "public-gateway-staging"
   client_gateway_identifier = "client-gateway-staging"
   app_environment = "staging"
   switch_image = data.terraform_remote_state.core.outputs.switch_ecr_repository.repository_uri
   nginx_image = data.terraform_remote_state.core.outputs.nginx_ecr_repository.repository_uri
   freeswitch_image = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository.repository_uri
   freeswitch_event_logger_image = data.terraform_remote_state.core.outputs.freeswitch_event_logger_ecr_repository.repository_uri
-  opensips_image = data.terraform_remote_state.core.outputs.opensips_ecr_repository.repository_uri
-  opensips_scheduler_image = data.terraform_remote_state.core.outputs.opensips_scheduler_ecr_repository.repository_uri
+  public_gateway_image = data.terraform_remote_state.core.outputs.public_gateway_ecr_repository.repository_uri
   client_gateway_image = data.terraform_remote_state.core.outputs.client_gateway_ecr_repository.repository_uri
+  opensips_scheduler_image = data.terraform_remote_state.core.outputs.opensips_scheduler_ecr_repository.repository_uri
 
   s3_mpeg_ecr_repository_url = data.terraform_remote_state.core.outputs.s3_mpeg_ecr_repository.repository_url
   services_ecr_repository_url = data.terraform_remote_state.core.outputs.services_ecr_repository.repository_url
@@ -57,7 +58,9 @@ module "somleng_switch_staging" {
   sip_port = 6060
   sip_alternative_port = 6080
   switch_min_tasks = 0
-  opensips_min_tasks = 0
+  switch_max_tasks = 2
+  public_gateway_min_tasks = 0
+  public_gateway_max_tasks = 2
   client_gateway_min_tasks = 0
   client_gateway_max_tasks = 2
 }
