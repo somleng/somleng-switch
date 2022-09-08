@@ -10,7 +10,14 @@ ADMIN_DATABASE_URL="postgres://$DATABASE_USERNAME:$DATABASE_PASSWORD@$DATABASE_H
 DATABASE_URL="postgres://$DATABASE_USERNAME:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT"
 
 if [ "$1" = 'create_db' ]; then
-  DATABASE_MODULES="${DATABASE_MODULES:="dialog load_balancer permissions auth_db alias_db usrloc domain rtpengine"}"
+  if [ "$2" = 'public_gateway' ]; then
+    DATABASE_MODULES="${DATABASE_MODULES:="dialog load_balancer permissions"}"
+  fi
+
+  if [ "$2" = 'client_gateway' ]; then
+    DATABASE_MODULES="${DATABASE_MODULES:="dialog load_balancer auth_db usrloc domain rtpengine"}"
+  fi
+
   PGPASSWORD=$DATABASE_PASSWORD
 
   cat <<-EOT > /etc/opensips-cli.cfg

@@ -1,13 +1,3 @@
-# Bootstrap image used to bootstrap OpenSIPS database
-#
-# Usage:
-#
-# Initialize a new database:
-# docker run --rm -e DATABASE_HOST="host.docker.internal" -e DATABASE_USER="postgres" -e DATABASE_PASSWORD="password" -e DATABASE_PORT=5432 -e DATABASE_NAME="opensips" -e DATABASE_MODULES="dialog load_balancer" opensips:bootstrap create_db
-#
-# Add a database module:
-# docker run --rm -e DATABASE_HOST="host.docker.internal" -e DATABASE_USER="postgres" -e DATABASE_PASSWORD="password" -e DATABASE_PORT=5432 -e DATABASE_NAME="opensips" -e DATABASE_MODULES="rtpproxy" opensips:bootstrap add_module
-
 FROM debian:bullseye-slim AS bootstrap
 
 USER root
