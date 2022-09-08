@@ -1,9 +1,11 @@
 name: Integration Tests
 on:
   workflow_call:
-    secrets:
-      signalwire_token:
+    inputs:
+      context:
         required: true
+        type: string
+    secrets: inherit
 
 jobs:
   build:
@@ -115,10 +117,6 @@ jobs:
           docker-compose up -d client_gateway public_gateway media_proxy freeswitch somleng-switch testing
           sleep 30
 
-      - name: Run Public Gateway Tests
+      - name: Run ${{ inputs.context }} Tests
         run: |
-          docker-compose run testing /tests.sh public_gateway
-
-      - name: Run Client Gateway Tests
-        run: |
-          docker-compose run -e testing /tests.sh client_gateway
+          docker-compose run testing /tests.sh ${{ inputs.context }}

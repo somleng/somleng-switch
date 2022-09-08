@@ -7,8 +7,8 @@ env:
 jobs:
   integration_tests:
     uses: ./.github/workflows/integration_tests.yml
-    secrets:
-      signalwire_token: ${{ secrets.SIGNALWIRE_TOKEN }}
+    with:
+      context: public_gateway
 
   build:
     name: Build
