@@ -5,7 +5,9 @@ on:
       context:
         required: true
         type: string
-    secrets: inherit
+    secrets:
+      signalwire_token:
+        required: true
 
 jobs:
   build:

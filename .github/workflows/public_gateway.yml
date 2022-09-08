@@ -9,6 +9,7 @@ jobs:
     uses: ./.github/workflows/integration_tests.yml
     with:
       context: public_gateway
+    secrets: inherit
 
   build:
     name: Build
