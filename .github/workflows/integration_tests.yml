@@ -46,26 +46,38 @@ jobs:
           cache-from: type=gha,scope=integration-tests-freeswitch
           cache-to: type=gha,mode=max,scope=integration-tests-freeswitch
 
-      - name: Build OpenSIPS
+      - name: Build Public Gateway
         uses: docker/build-push-action@v3
         with:
           push: false
           load: true
-          context: docker/opensips
-          tags: opensips:latest
-          cache-from: type=gha,scope=integration-tests-opensips
-          cache-to: type=gha,mode=max,scope=integration-tests-opensips
+          context: docker/gateway
+          target: public_gateway
+          tags: public_gateway:latest
+          cache-from: type=gha,scope=integration-tests-public-gateway
+          cache-to: type=gha,mode=max,scope=integration-tests-public-gateway
 
-      - name: Build OpenSIPS Bootstrap
+      - name: Build Client Gateway
         uses: docker/build-push-action@v3
         with:
           push: false
           load: true
-          context: docker/opensips
+          context: docker/gateway
+          target: client_gateway
+          tags: client_gateway:latest
+          cache-from: type=gha,scope=integration-tests-client-gateway
+          cache-to: type=gha,mode=max,scope=integration-tests-client-gateway
+
+      - name: Build Gateway Bootstrap
+        uses: docker/build-push-action@v3
+        with:
+          push: false
+          load: true
+          context: docker/gateway
           target: bootstrap
-          tags: opensips:bootstrap
-          cache-from: type=gha,scope=integration-tests-opensips-bootstrap
-          cache-to: type=gha,mode=max,scope=integration-tests-opensips-bootstrap
+          tags: gateway:bootstrap
+          cache-from: type=gha,scope=integration-tests-gateway-bootstrap
+          cache-to: type=gha,mode=max,scope=integration-tests-gateway-bootstrap
 
       - name: Build SomlengSWITCH
         uses: docker/build-push-action@v3
@@ -83,13 +95,14 @@ jobs:
           load: true
           context: docker/testing
           tags: testing:latest
-          cache-from: type=gha,scope=integration-tests-sipp
-          cache-to: type=gha,mode=max,scope=integration-tests-sipp
+          cache-from: type=gha,scope=integration-tests-testing
+          cache-to: type=gha,mode=max,scope=integration-tests-testing
 
       - name: Run docker-compose
         run: |
-          docker-compose run opensips-bootstrap-db
-          docker-compose up -d opensips freeswitch somleng-switch testing
+          docker-compose run -e DATABASE_NAME=opensips_public_gateway_test gateway-bootstrap create_db public_gateway
+          docker-compose run -e DATABASE_NAME=opensips_client_gateway_test gateway-bootstrap create_db client_gateway
+          docker-compose up -d client_gateway public_gateway media_proxy freeswitch somleng-switch testing
           sleep 30
 
       - name: Run Integration Tests

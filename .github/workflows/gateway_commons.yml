@@ -87,8 +87,8 @@ jobs:
           context: docker/opensips_scheduler
           push: true
           platforms: linux/amd64
-          cache-from: type=gha,scope=${{ matrix.identifier }}-scheduler
-          cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-scheduler
+          cache-from: type=gha,scope=${{ matrix.identifier }}-opensips-scheduler
+          cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-opensips-scheduler
           tags: |
             ${{ env.OPENSIPS_SCHEDULER_ECR_REPOSITORY }}:${{ matrix.image_tag }}
             ${{ env.OPENSIPS_SCHEDULER_ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}

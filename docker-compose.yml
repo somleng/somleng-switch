@@ -17,17 +17,17 @@ volumes:
   opensips_fifo:
 
 services:
-  opensips-bootstrap-db:
+  gateway-bootstrap:
     build:
       context: docker/gateway
       target: bootstrap
-    image: opensips:bootstrap
+    image: gateway:bootstrap
     environment:
       DATABASE_USERNAME: "postgres"
       DATABASE_PASSWORD:
+      DATABASE_NAME:
       DATABASE_HOST: "host.docker.internal"
       DATABASE_PORT: 5432
-      DATABASE_NAME: "opensips"
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
