@@ -37,7 +37,7 @@ services:
       target: public_gateway
     image: public_gateway:latest
     environment:
-      DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
+      DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips_public_gateway_test"
       FIFO_NAME: /opensips/fifo/public_gateway_fifo
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -58,7 +58,7 @@ services:
       target: client_gateway
     image: client_gateway:latest
     environment:
-      DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
+      DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips_client_gateway_test"
       FIFO_NAME: /opensips/fifo/client_gateway_fifo
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -131,9 +131,8 @@ services:
     image: testing:latest
     command: sipp -sf /scenarios/uas.xml -trace_msg
     environment:
-      PUBLIC_GATEWAY_FIFO_NAME: /opensips/fifo/public_gateway_fifo
-      CLIENT_GATEWAY_FIFO_NAME: /opensips/fifo/client_gateway_fifo
-      DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
+      FIFO_NAME:
+      DATABASE_URL:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:

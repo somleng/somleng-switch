@@ -3,8 +3,9 @@
 set -e
 
 current_dir=$(dirname "$(readlink -f "$0")")
-scenario=$current_dir/../scenarios/zamtel_sip_options.xml
+scenario=$current_dir/../../scenarios/zamtel_sip_options.xml
 source $current_dir/support/test_helpers.sh
+source $current_dir/../support/test_helpers.sh
 
 reset_db
 create_address_entry $(hostname -i)

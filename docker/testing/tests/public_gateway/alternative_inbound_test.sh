@@ -3,8 +3,9 @@
 set -e
 
 current_dir=$(dirname "$(readlink -f "$0")")
-scenario=$current_dir/../scenarios/zamtel_inbound.xml
+scenario=$current_dir/../../scenarios/zamtel_inbound.xml
 source $current_dir/support/test_helpers.sh
+source $current_dir/../support/test_helpers.sh
 
 reset_db
 create_load_balancer_entry "gwalt" "5080"

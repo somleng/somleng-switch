@@ -4,6 +4,7 @@ set -e
 
 current_dir=$(dirname "$(readlink -f "$0")")
 source $current_dir/support/test_helpers.sh
+source $current_dir/../support/test_helpers.sh
 
 log_file=$(find . -type f -iname "uas_*_messages.log")
 cat /dev/null > $log_file
@@ -23,18 +24,13 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://somleng-switch:8080/
   "api_version": "2010-04-01",
   "routing_instructions": {
     "dial_string": "85512334667@testing",
-    "nat_supported": true
+    "nat_supported": false
   }
 }
 EOF
 
 sleep 10
 
-if ! assert_in_file $log_file "c=IN IP4 13.250.230.15"; then
-	exit 1
-fi
-
-# Checks that FreeSWITCH sets an empty rport
-if ! assert_in_file $log_file "rport;"; then
+if ! assert_in_file $log_file "c=IN IP4 18.141.245.230"; then
 	exit 1
 fi
