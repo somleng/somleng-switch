@@ -1,6 +1,6 @@
 require_relative "../spec_helper"
 
-RSpec.describe "Handles SQS Message", :opensips do
+RSpec.describe "Handles SQS Message" do
   it "adds an address record" do
     payload = build_sqs_message_event_payload(
       event_source_arn: "arn:aws:sqs:us-east-2:123456789012:somleng-switch-permissions",

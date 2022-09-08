@@ -117,8 +117,8 @@ jobs:
 
       - name: Run Public Gateway Tests
         run: |
-          docker-compose run -e DATABASE_URL="postgres://postgres:@host.docker.internal:5432/opensips_public_gateway_test" -e FIFO_NAME="/opensips/fifo/public_gateway_fifo" testing /tests.sh public_gateway
+          docker-compose run testing /tests.sh public_gateway
 
       - name: Run Client Gateway Tests
         run: |
-          docker-compose run -e DATABASE_URL="postgres://postgres:@host.docker.internal:5432/opensips_clients_gateway_test" -e FIFO_NAME="/opensips/fifo/client_gateway_fifo" testing /tests.sh client_gateway
+          docker-compose run -e testing /tests.sh client_gateway
