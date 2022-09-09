@@ -28,7 +28,9 @@ module EventHelpers
       eni_private_ip: "10.0.0.1",
       eni_status: "ATTACHED",
       last_status: "RUNNING",
-      group: "service:somleng-switch"
+      group: "service:somleng-switch",
+      cluster_arn: "arn:aws:ecs:us-west-2:111122223333:cluster/Cluster",
+      container_instance_arn: "arn:aws:ecs:us-west-2:111122223333:container-instance/service/container-instance-id"
     }.merge(data)
 
     data[:attachment_details] ||= [
@@ -52,7 +54,9 @@ module EventHelpers
       "detail" => {
         "attachments" => data.fetch(:attachments),
         "lastStatus" => data.fetch(:last_status),
-        "group" => data.fetch(:group)
+        "group" => data.fetch(:group),
+        "clusterArn" => data.fetch(:cluster_arn),
+        "containerInstanceArn" => data.fetch(:container_instance_arn)
       }
     }
 

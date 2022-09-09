@@ -17,7 +17,7 @@ class HandleMediaProxyEvent < ApplicationWorkflow
 
   def opensips_rtpengine_target
     OpenSIPSRTPEngineTarget.new(
-      target_ip: event.eni_private_ip, database_connection: DatabaseConnections.find(:client_gateway)
+      target_ip: event.private_ip, database_connection: DatabaseConnections.find(:client_gateway)
     )
   end
 end

@@ -68,6 +68,16 @@ resource "aws_iam_policy" "services_custom_policy" {
       "Resource": [
         "${aws_sqs_queue.services.arn}"
       ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecs:DescribeContainerInstances",
+        "ec2:DescribeInstances"
+      ],
+      "Resource": [
+        "*"
+      ]
     }
   ]
 }
