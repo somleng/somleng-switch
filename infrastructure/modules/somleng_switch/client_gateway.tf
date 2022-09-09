@@ -13,16 +13,15 @@ module client_gateway_container_instances {
   security_groups = [var.db_security_group]
   user_data = [
     {
-      path = "/opt/bootstrap_client_gateway.sh",
+      path = "/opt/assign_eip.sh",
       content = templatefile(
-        "${path.module}/templates/bootstrap_client_gateway.sh",
+        "${path.module}/templates/assign_eip.sh",
         {
           eip_tag = local.client_gateway_eip_tag
         }
       ),
       permissions = "755"
     }
-
   ]
 }
 

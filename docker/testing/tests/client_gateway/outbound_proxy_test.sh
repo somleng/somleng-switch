@@ -4,6 +4,7 @@ set -e
 
 current_dir=$(dirname "$(readlink -f "$0")")
 source $current_dir/support/test_helpers.sh
+source $current_dir/../support/test_helpers.sh
 
 log_file=$(find . -type f -iname "uas_*_messages.log")
 cat /dev/null > $log_file

@@ -3,9 +3,10 @@
 set -e
 
 current_dir=$(dirname "$(readlink -f "$0")")
-scenario=$current_dir/../../scenarios/inbound_nat.xml
 source $current_dir/support/test_helpers.sh
 source $current_dir/../support/test_helpers.sh
+
+scenario=$current_dir/../../scenarios/inbound_nat.xml
 
 reset_db
 create_load_balancer_entry "gw" "5060"

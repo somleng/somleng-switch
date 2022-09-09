@@ -2,6 +2,10 @@
 
 set -e
 
+export CONTEXT="${CONTEXT:="public_gateway"}"
+export DATABASE_URL="${DATABASE_URL:="postgres://$DATABASE_USERNAME:@$DATABASE_HOST:$DATABASE_PORT/opensips_${CONTEXT}_test"}"
+export FIFO_NAME="${FIFO_NAME:="$FIFO_DIR/$CONTEXT"}"
+
 reset_db () {
   psql -q $DATABASE_URL \
     -c "DELETE FROM load_balancer;" \

@@ -3,8 +3,10 @@
 set -e
 
 current_dir=$(dirname "$(readlink -f "$0")")
-scenario=$current_dir/../scenarios/proxy_authentication.xml
 source $current_dir/support/test_helpers.sh
+source $current_dir/../support/test_helpers.sh
+
+scenario=$current_dir/../../scenarios/proxy_authentication.xml
 
 reset_db
 
