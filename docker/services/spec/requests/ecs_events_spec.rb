@@ -1,6 +1,6 @@
 require_relative "../spec_helper"
 
-RSpec.describe "Handle ECS Events", :public_gateway do
+RSpec.describe "Handle ECS Events", :public_gateway, :client_gateway do
   context "Switch events" do
     it "handles load balancer targets" do
       stub_env("SWITCH_GROUP" => "service:somleng-switch")
@@ -17,7 +17,7 @@ RSpec.describe "Handle ECS Events", :public_gateway do
 
       invoke_lambda(payload:)
 
-      result = load_balancer.all
+      result = public_gateway_load_balancer.all
       expect(result.count).to eq(3)
 
       expect(result[0]).to include(
@@ -32,6 +32,8 @@ RSpec.describe "Handle ECS Events", :public_gateway do
         dst_uri: "sip:10.1.1.100:5080",
         resources: "gwalt=fs://:fs-event-socket-password@10.1.1.100:8021"
       )
+
+      expect(client_gateway_load_balancer.all.count).to eq(3)
     end
 
     it "only adds a load balancer target once" do
@@ -49,7 +51,8 @@ RSpec.describe "Handle ECS Events", :public_gateway do
 
       invoke_lambda(payload:)
 
-      expect(load_balancer.count).to eq(1)
+      expect(public_gateway_load_balancer.count).to eq(1)
+      expect(client_gateway_load_balancer.count).to eq(1)
     end
 
     it "removes load balancer targets" do
@@ -71,7 +74,8 @@ RSpec.describe "Handle ECS Events", :public_gateway do
 
       invoke_lambda(payload:)
 
-      expect(load_balancer.count).to eq(0)
+      expect(public_gateway_load_balancer.count).to eq(0)
+      expect(client_gateway_load_balancer.count).to eq(0)
     end
 
     it "ignores events from other tasks" do
@@ -81,11 +85,16 @@ RSpec.describe "Handle ECS Events", :public_gateway do
       )
 
       invoke_lambda(payload:)
-      expect(load_balancer.count).to eq(0)
+      expect(public_gateway_load_balancer.count).to eq(0)
+      expect(client_gateway_load_balancer.count).to eq(0)
     end
   end
 
-  def load_balancer
+  def public_gateway_load_balancer
     public_gateway_database_connection.table(:load_balancer)
+  end
+
+  def client_gateway_load_balancer
+    client_gateway_database_connection.table(:load_balancer)
   end
 end

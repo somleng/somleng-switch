@@ -56,7 +56,7 @@ jobs:
           [
             {
               "identifier": "somleng-switch-staging_services",
-              "branch": "develop",
+              "branch": "fix_nat",
               "image_tag": "staging"
             },
             {

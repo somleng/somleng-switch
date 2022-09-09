@@ -1,6 +1,7 @@
 module FactoryHelpers
   def create_load_balancer_target(dst_uri:, resources:)
     public_gateway_database_connection.table(:load_balancer).insert(dst_uri:, resources:)
+    client_gateway_database_connection.table(:load_balancer).insert(dst_uri:, resources:)
   end
 
   def create_address(ip:)

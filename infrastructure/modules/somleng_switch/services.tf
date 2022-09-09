@@ -114,8 +114,6 @@ resource "aws_lambda_function" "services" {
   environment {
     variables = {
       SWITCH_GROUP = "service:${aws_ecs_task_definition.switch.family}"
-      PUBLIC_GATEWAY_GROUP = "service:${aws_ecs_task_definition.public_gateway.family}"
-      CLIENT_GATEWAY_GROUP = "service:${aws_ecs_task_definition.client_gateway.family}"
       FS_EVENT_SOCKET_PASSWORD_SSM_PARAMETER_NAME = aws_ssm_parameter.freeswitch_event_socket_password.name
       FS_EVENT_SOCKET_PORT = 8021
       FS_SIP_PORT = var.sip_port

@@ -5,6 +5,12 @@ module DatabaseHelpers
     )
   end
 
+  def client_gateway_database_connection
+    @client_gateway_database_connection ||= TestDatabaseConnection.new(
+      db_name: ENV.fetch("CLIENT_GATEWAY_DB_NAME")
+    )
+  end
+
   def setup_database(database_name)
     db_connection = TestDatabaseConnection.new(db_name: :postgres)
     db_connection.create_database(database_name) unless db_connection.database_exists?(database_name)
@@ -53,5 +59,17 @@ RSpec.configure do |config|
     example.run
 
     public_gateway_database_connection.cleanup
+  end
+
+  config.around(client_gateway: true) do |example|
+    setup_database(ENV.fetch("CLIENT_GATEWAY_DB_NAME"))
+
+    client_gateway_database_connection.create_tables(
+      load_balancer: file_fixture("opensips_load_balancer_create.sql").read
+    )
+
+    example.run
+
+    client_gateway_database_connection.cleanup
   end
 end
