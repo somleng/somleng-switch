@@ -13,6 +13,7 @@ resource "aws_ecs_cluster_capacity_providers" "cluster" {
   capacity_providers = [
     aws_ecs_capacity_provider.switch.name,
     aws_ecs_capacity_provider.public_gateway.name,
-    aws_ecs_capacity_provider.client_gateway.name
+    aws_ecs_capacity_provider.client_gateway.name,
+    aws_ecs_capacity_provider.media_proxy.name
   ]
 }

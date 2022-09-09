@@ -55,6 +55,15 @@ resource "aws_ecs_capacity_provider" "media_proxy" {
 
 # Security Group
 
+resource "aws_security_group_rule" "media_proxy_control" {
+  type              = "ingress"
+  to_port           = var.media_proxy_ng_port
+  protocol          = "udp"
+  from_port         = var.media_proxy_ng_port
+  security_group_id = module.media_proxy_container_instances.security_group.id
+  cidr_blocks = [var.vpc_cidr_block]
+}
+
 resource "aws_security_group_rule" "media_proxy_media" {
   type              = "ingress"
   to_port           = var.media_proxy_media_port_max
