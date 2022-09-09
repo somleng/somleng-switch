@@ -41,10 +41,6 @@
         "value": "/var/opensips/opensips_fifo"
       },
       {
-        "name": "MI_COMMANDS",
-        "value": "domain_reload,rtpengine_reload"
-      },
-      {
         "name": "DATABASE_NAME",
         "value": "${database_name}"
       },
@@ -79,6 +75,10 @@
       {
         "name": "FIFO_NAME",
         "value": "/var/opensips/opensips_fifo"
+      },
+      {
+        "name": "MI_COMMANDS",
+        "value": "domain_reload,rtpengine_reload"
       }
     ],
     "essential": true
