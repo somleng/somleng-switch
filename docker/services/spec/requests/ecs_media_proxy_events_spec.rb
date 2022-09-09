@@ -60,7 +60,7 @@ RSpec.describe "Handle ECS Media Proxy Events", :client_gateway do
   it "ignores events from other tasks" do
     stub_env("MEDIA_PROXY_GROUP" => "service:media-proxy")
     payload = build_ecs_event_payload(
-      group: "service:somleng-switch"
+      group: "service:other-service"
     )
 
     invoke_lambda(payload:)
