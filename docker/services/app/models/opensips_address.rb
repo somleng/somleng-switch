@@ -1,7 +1,8 @@
 class OpenSIPSAddress < ApplicationRecord
   attr_reader :ip
 
-  def initialize(ip:)
+  def initialize(ip:, **options)
+    super(**options)
     @ip = ip
   end
 

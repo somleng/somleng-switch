@@ -1,6 +1,0 @@
-ENV["SWITCH_GROUP"] = "service:somleng-switch"
-ENV["SIP_PROXY_GROUP"] = "service:opensips"
-ENV["REGISTRAR_GROUP"] = "service:registrar"
-ENV["FS_EVENT_SOCKET_PASSWORD_SSM_PARAMETER_NAME"] = "ssm-parameter-name-fs-event-socket-password"
-ENV["FS_EVENT_SOCKET_PORT"] = "8021"
-ENV["OPENSIPS_DB_NAME"] = "opensips_test"

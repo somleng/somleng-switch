@@ -7,15 +7,31 @@ class HandleSwitchEvent < ApplicationWorkflow
 
   def call
     if event.task_running? && event.eni_attached?
-      opensips_load_balancer_target.save!
+      create_opensips_load_balancer_targets
     elsif event.task_stopped? && event.eni_deleted?
-      opensips_load_balancer_target.delete!
+      delete_opensips_load_balancer_targets
     end
   end
 
   private
 
-  def opensips_load_balancer_target
-    OpenSIPSLoadBalancerTarget.new(target_ip: event.eni_private_ip)
+  def create_opensips_load_balancer_targets
+    gateway_databases.each do |database_connection|
+      opensips_load_balancer_target(database_connection).save!
+    end
+  end
+
+  def delete_opensips_load_balancer_targets
+    gateway_databases.each do |database_connection|
+      opensips_load_balancer_target(database_connection).delete!
+    end
+  end
+
+  def gateway_databases
+    @gateway_databases ||= DatabaseConnections.gateways
+  end
+
+  def opensips_load_balancer_target(database_connection)
+    OpenSIPSLoadBalancerTarget.new(target_ip: event.eni_private_ip, database_connection:)
   end
 end

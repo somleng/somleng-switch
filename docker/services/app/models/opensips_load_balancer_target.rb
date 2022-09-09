@@ -1,7 +1,8 @@
 class OpenSIPSLoadBalancerTarget < ApplicationRecord
   attr_reader :target_ip
 
-  def initialize(target_ip:)
+  def initialize(target_ip:, **options)
+    super(**options)
     @target_ip = target_ip
   end
 
@@ -32,10 +33,6 @@ class OpenSIPSLoadBalancerTarget < ApplicationRecord
 
   def load_balancer
     @load_balancer ||= database_connection.table(:load_balancer)
-  end
-
-  def database_connection
-    @database_connection ||= DatabaseConnection.new(db_name: ENV.fetch("OPENSIPS_DB_NAME"))
   end
 
   def dst_uri

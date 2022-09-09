@@ -1,6 +1,6 @@
 require_relative "../spec_helper"
 
-RSpec.describe "Handle ECS Events", :opensips do
+RSpec.describe "Handle ECS Events", :public_gateway do
   context "Switch events" do
     it "handles load balancer targets" do
       stub_env("SWITCH_GROUP" => "service:somleng-switch")
@@ -19,6 +19,7 @@ RSpec.describe "Handle ECS Events", :opensips do
 
       result = load_balancer.all
       expect(result.count).to eq(3)
+
       expect(result[0]).to include(
         dst_uri: "sip:10.1.1.1:5060",
         resources: "gw=fs://:fs-event-socket-password@10.1.1.1:8021"
@@ -84,20 +85,7 @@ RSpec.describe "Handle ECS Events", :opensips do
     end
   end
 
-  context "Registrar events" do
-    xit "adds domains" do
-      stub_env("REGISTRAR_GROUP" => "service:somleng-switch-registrar")
-      create_domain(domain: "10.1.1.1")
-      payload = build_ecs_event_payload(
-        group: "service:somleng-switch-registrar",
-        eni_private_ip: "10.1.1.100",
-        eni_status: "ATTACHED",
-        last_status: "RUNNING"
-      )
-    end
-  end
-
   def load_balancer
-    opensips_database_connection.table(:load_balancer)
+    public_gateway_database_connection.table(:load_balancer)
   end
 end

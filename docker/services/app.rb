@@ -33,23 +33,9 @@ module App
 
     def handle_ecs_event(event)
       case event.group
-      when switch_group
+      when ENV.fetch("SWITCH_GROUP")
         HandleSwitchEvent.call(event:)
-      when sip_proxy_group || registrar_group
-        HandleSIPProxyEvent.call(event:)
       end
-    end
-
-    def switch_group
-      ENV.fetch("SWITCH_GROUP")
-    end
-
-    def sip_proxy_group
-      ENV.fetch("SIP_PROXY_GROUP")
-    end
-
-    def registrar_group
-      ENV.fetch("REGISTRAR_GROUP")
     end
   end
 end

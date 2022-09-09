@@ -1,5 +1,7 @@
 class ApplicationRecord
-  def database_connection
-    @database_connection ||= DatabaseConnection.new(db_name: ENV.fetch("OPENSIPS_DB_NAME"))
+  attr_reader :database_connection
+
+  def initialize(database_connection:)
+    @database_connection = database_connection
   end
 end

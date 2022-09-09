@@ -6,6 +6,12 @@ class DeleteOpenSIPSPermissionJob
   end
 
   def call
-    OpenSIPSAddress.new(ip: source_ip).delete!
+    OpenSIPSAddress.new(ip: source_ip, database_connection:).delete!
+  end
+
+  private
+
+  def database_connection
+    DatabaseConnections.find(:public_gateway)
   end
 end

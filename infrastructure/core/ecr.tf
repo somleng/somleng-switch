@@ -105,16 +105,17 @@ resource "aws_ecrpublic_repository" "gateway" {
 
   ## Boostrap the Database
 
-  ### Create a new OpenSIPS database and configures the desired modules
+  ### Create a new OpenSIPS database for the specified gatewaay
 
   ```
-  $ docker run --rm -e DATABASE_HOST="host.docker.internal" -e DATABASE_USERNAME="postgres" -e DATABASE_PASSWORD="password" -e DATABASE_PORT=5432 -e DATABASE_NAME="opensips" -e DATABASE_MODULES="dialog load_balancer" public.ecr.aws/somleng/gateway:bootstrap create_db
+  $ docker run --rm -e PGPASSWORD="password" -e DATABASE_HOST="host.docker.internal" -e DATABASE_USERNAME="postgres" -e DATABASE_PASSWORD="password" -e DATABASE_PORT=5432 -e DATABASE_NAME="opensips_public_gateway" public.ecr.aws/somleng/gateway:bootstrap create_db public_gateway
+  $ docker run --rm -e PGPASSWORD="password" -e DATABASE_HOST="host.docker.internal" -e DATABASE_USERNAME="postgres" -e DATABASE_PASSWORD="password" -e DATABASE_PORT=5432 -e DATABASE_NAME="opensips_client_gateway" public.ecr.aws/somleng/gateway:bootstrap create_db client_gateway
   ```
 
   ### Add a new module
 
   ```
-  $ docker run --rm -e DATABASE_HOST="host.docker.internal" -e DATABASE_USERNAME="postgres" -e DATABASE_PASSWORD="password" -e DATABASE_PORT=5432 -e DATABASE_NAME="opensips" -e DATABASE_MODULES="rtpproxy" public.ecr.aws/somleng/gateway:bootstrap add_module
+  $ docker run --rm -e PGPASSWORD="password" -e DATABASE_HOST="host.docker.internal" -e DATABASE_USERNAME="postgres" -e DATABASE_PASSWORD="password" -e DATABASE_PORT=5432 -e DATABASE_NAME="opensips" -e DATABASE_MODULES="rtpproxy" public.ecr.aws/somleng/gateway:bootstrap add_module
   ```
   EOF
   }

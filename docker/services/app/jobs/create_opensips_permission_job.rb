@@ -6,6 +6,12 @@ class CreateOpenSIPSPermissionJob
   end
 
   def call
-    OpenSIPSAddress.new(ip: source_ip).save!
+    OpenSIPSAddress.new(ip: source_ip, database_connection:).save!
+  end
+
+  private
+
+  def database_connection
+    DatabaseConnections.find(:public_gateway)
   end
 end

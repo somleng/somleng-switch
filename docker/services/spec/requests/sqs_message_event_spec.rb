@@ -40,6 +40,6 @@ RSpec.describe "Handles SQS Message" do
   end
 
   def address
-    opensips_database_connection.table(:address)
+    public_gateway_database_connection.table(:address)
   end
 end

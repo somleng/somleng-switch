@@ -1,7 +1,7 @@
 module DatabaseHelpers
-  def opensips_database_connection
-    @opensips_database_connection ||= TestDatabaseConnection.new(
-      db_name: ENV.fetch("OPENSIPS_DB_NAME")
+  def public_gateway_database_connection
+    @public_gateway_database_connection ||= TestDatabaseConnection.new(
+      db_name: ENV.fetch("PUBLIC_GATEWAY_DB_NAME")
     )
   end
 
@@ -42,17 +42,16 @@ end
 RSpec.configure do |config|
   config.include(DatabaseHelpers)
 
-  config.around(opensips: true) do |example|
-    setup_database(ENV.fetch("OPENSIPS_DB_NAME"))
+  config.around(public_gateway: true) do |example|
+    setup_database(ENV.fetch("PUBLIC_GATEWAY_DB_NAME"))
 
-    opensips_database_connection.create_tables(
+    public_gateway_database_connection.create_tables(
       load_balancer: file_fixture("opensips_load_balancer_create.sql").read,
-      address: file_fixture("opensips_permissions_create.sql").read,
-      domain: file_fixture("opensips_domain_create.sql").read
+      address: file_fixture("opensips_permissions_create.sql").read
     )
 
     example.run
 
-    opensips_database_connection.cleanup
+    public_gateway_database_connection.cleanup
   end
 end
