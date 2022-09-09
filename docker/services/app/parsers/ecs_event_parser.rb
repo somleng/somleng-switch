@@ -70,7 +70,8 @@ class ECSEventParser
   end
 
   def private_ip
-    eni_private_ip || ec2_instance_private_ip
+    return eni_private_ip if eni_private_ip.present?
+    return ec2_instance_private_ip if container_instance_arn.present?
   end
 
   def eni_details
