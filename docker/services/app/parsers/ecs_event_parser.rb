@@ -1,3 +1,6 @@
+require "aws-sdk-ecs"
+require "aws-sdk-ec2"
+
 class ECSEventParser
   Event = Struct.new(
     :task_running?,
