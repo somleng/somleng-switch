@@ -7,6 +7,10 @@ module FactoryHelpers
   def create_address(ip:)
     public_gateway_database_connection.table(:address).insert(ip:)
   end
+
+  def create_rtpengine_target(socket:)
+    client_gateway_database_connection.table(:rtpengine).insert(socket:, set_id: 0)
+  end
 end
 
 RSpec.configure do |config|

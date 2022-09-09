@@ -114,12 +114,14 @@ resource "aws_lambda_function" "services" {
   environment {
     variables = {
       SWITCH_GROUP = "service:${aws_ecs_task_definition.switch.family}"
+      MEDIA_PROXY_GROUP = "service:${aws_ecs_task_definition.media_proxy.family}"
       FS_EVENT_SOCKET_PASSWORD_SSM_PARAMETER_NAME = aws_ssm_parameter.freeswitch_event_socket_password.name
       FS_EVENT_SOCKET_PORT = 8021
       FS_SIP_PORT = var.sip_port
       FS_SIP_ALTERNATIVE_PORT = var.sip_alternative_port
       PUBLIC_GATEWAY_DB_NAME = var.public_gateway_db_name
       CLIENT_GATEWAY_DB_NAME = var.client_gateway_db_name
+      MEDIA_PROXY_NG_PORT = var.media_proxy_ng_port
       DB_PASSWORD_SSM_PARAMETER_NAME = data.aws_ssm_parameter.db_password.name
       DB_HOST = var.db_host
       DB_PORT = var.db_port

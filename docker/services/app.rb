@@ -35,6 +35,8 @@ module App
       case event.group
       when ENV.fetch("SWITCH_GROUP")
         HandleSwitchEvent.call(event:)
+      when ENV.fetch("MEDIA_PROXY_GROUP")
+        HandleMediaProxyEvent.call(event:)
       end
     end
   end

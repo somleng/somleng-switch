@@ -17,10 +17,12 @@
 Bundler.require(:default, :test)
 
 ENV["SWITCH_GROUP"] = "service:somleng-switch"
+ENV["MEDIA_PROXY_GROUP"] = "service:media-proxy"
 ENV["FS_EVENT_SOCKET_PASSWORD_SSM_PARAMETER_NAME"] = "ssm-parameter-name-fs-event-socket-password"
 ENV["FS_EVENT_SOCKET_PORT"] = "8021"
 ENV["PUBLIC_GATEWAY_DB_NAME"] = "opensips_public_gateway_test"
 ENV["CLIENT_GATEWAY_DB_NAME"] = "opensips_client_gateway_test"
+ENV["MEDIA_PROXY_NG_PORT"] = "2223"
 
 require_relative "../app"
 
