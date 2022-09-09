@@ -8,7 +8,7 @@ data "aws_ec2_instance_type" "this" {
 }
 
 locals {
-  user_data = concat([
+  user_data = concat(var.user_data, [
     {
       path = "/opt/setup.sh"
       content = templatefile(
@@ -19,7 +19,7 @@ locals {
       )
       permissions = "755"
     }
-  ], var.user_data)
+  ])
 }
 
 # IAM
