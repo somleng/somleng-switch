@@ -31,7 +31,8 @@ Aws.config[:ec2] = {
       {
         reservations: [
           instances: [
-            private_ip_address: "10.0.0.1"
+            private_ip_address: "10.0.0.1",
+            public_ip_address: "54.251.92.249"
           ]
         ]
       }

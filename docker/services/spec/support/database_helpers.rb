@@ -66,7 +66,8 @@ RSpec.configure do |config|
 
     client_gateway_database_connection.create_tables(
       load_balancer: file_fixture("opensips_load_balancer_create.sql").read,
-      rtpengine: file_fixture("opensips_rtpengine_create.sql").read
+      rtpengine: file_fixture("opensips_rtpengine_create.sql").read,
+      domain: file_fixture("opensips_domain_create.sql").read
     )
 
     example.run

@@ -11,6 +11,10 @@ module FactoryHelpers
   def create_rtpengine_target(socket:)
     client_gateway_database_connection.table(:rtpengine).insert(socket:, set_id: 0)
   end
+
+  def create_domain(domain:)
+    client_gateway_database_connection.table(:domain).insert(domain:)
+  end
 end
 
 RSpec.configure do |config|

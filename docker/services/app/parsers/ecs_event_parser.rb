@@ -9,6 +9,7 @@ class ECSEventParser
     :eni_deleted?,
     :eni_private_ip,
     :private_ip,
+    :public_ip,
     :group,
     :event_type,
     keyword_init: true
@@ -31,6 +32,7 @@ class ECSEventParser
       eni_deleted?: eni_deleted?,
       eni_private_ip:,
       private_ip:,
+      public_ip:,
       group:
     )
   end
@@ -72,6 +74,10 @@ class ECSEventParser
   def private_ip
     return eni_private_ip unless eni_private_ip.nil?
     return ec2_instance_private_ip unless container_instance_arn.nil?
+  end
+
+  def public_ip
+    ec2_instance_public_ip unless container_instance_arn.nil?
   end
 
   def eni_details
@@ -119,5 +125,9 @@ class ECSEventParser
 
   def ec2_instance_private_ip
     ec2_instance_details.dig(:reservations, 0, :instances, 0).fetch(:private_ip_address)
+  end
+
+  def ec2_instance_public_ip
+    ec2_instance_details.dig(:reservations, 0, :instances, 0).fetch(:public_ip_address)
   end
 end

@@ -37,6 +37,8 @@ module App
         HandleSwitchEvent.call(event:)
       when ENV.fetch("MEDIA_PROXY_GROUP")
         HandleMediaProxyEvent.call(event:)
+      when ENV.fetch("CLIENT_GATEWAY_GROUP")
+        HandleClientGatewayEvent.call(event:)
       end
     end
   end
