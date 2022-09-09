@@ -70,8 +70,8 @@ class ECSEventParser
   end
 
   def private_ip
-    return eni_private_ip if eni_private_ip.present?
-    return ec2_instance_private_ip if container_instance_arn.present?
+    return eni_private_ip unless eni_private_ip.nil?
+    return ec2_instance_private_ip unless container_instance_arn.nil?
   end
 
   def eni_details
@@ -91,7 +91,7 @@ class ECSEventParser
   end
 
   def container_instance_arn
-    detail.fetch("containerInstanceArn")
+    detail["containerInstanceArn"]
   end
 
   def cluster_arn
