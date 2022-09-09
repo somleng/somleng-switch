@@ -85,7 +85,7 @@ resource "aws_security_group_rule" "client_gateway_icmp" {
 
 # IAM
 
-resource "aws_iam_policy" "container_instance_custom_policy" {
+resource "aws_iam_policy" "client_gateway_container_instance_custom_policy" {
   name = "${var.client_gateway_identifier}-container-instance-custom_policy"
 
   policy = <<EOF
@@ -107,9 +107,9 @@ resource "aws_iam_policy" "container_instance_custom_policy" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "container_instance_custom_policy" {
+resource "aws_iam_role_policy_attachment" "client_gateway_container_instance_custom_policy" {
   role = module.client_gateway_container_instances.iam_role.id
-  policy_arn = aws_iam_policy.container_instance_custom_policy.arn
+  policy_arn = aws_iam_policy.client_gateway_container_instance_custom_policy.arn
 }
 
 resource "aws_iam_role" "client_gateway_task_execution_role" {

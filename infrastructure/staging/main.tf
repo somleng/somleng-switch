@@ -9,6 +9,7 @@ module "somleng_switch_staging" {
   app_identifier = "somleng-switch-staging"
   public_gateway_identifier = "public-gateway-staging"
   client_gateway_identifier = "client-gateway-staging"
+  media_proxy_identifier = "media-proxy-staging"
   app_environment = "staging"
   switch_image = data.terraform_remote_state.core.outputs.switch_ecr_repository.repository_uri
   nginx_image = data.terraform_remote_state.core.outputs.nginx_ecr_repository.repository_uri
@@ -16,6 +17,8 @@ module "somleng_switch_staging" {
   freeswitch_event_logger_image = data.terraform_remote_state.core.outputs.freeswitch_event_logger_ecr_repository.repository_uri
   public_gateway_image = data.terraform_remote_state.core.outputs.public_gateway_ecr_repository.repository_uri
   client_gateway_image = data.terraform_remote_state.core.outputs.client_gateway_ecr_repository.repository_uri
+  media_proxy_image = data.terraform_remote_state.core.outputs.media_proxy_ecr_repository.repository_uri
+
   opensips_scheduler_image = data.terraform_remote_state.core.outputs.opensips_scheduler_ecr_repository.repository_uri
 
   s3_mpeg_ecr_repository_url = data.terraform_remote_state.core.outputs.s3_mpeg_ecr_repository.repository_url

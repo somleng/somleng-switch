@@ -22,6 +22,10 @@ output "client_gateway_ecr_repository" {
   value = aws_ecrpublic_repository.client_gateway
 }
 
+output "media_proxy_ecr_repository" {
+  value = aws_ecrpublic_repository.media_proxy
+}
+
 output "opensips_scheduler_ecr_repository" {
   value = aws_ecrpublic_repository.opensips_scheduler
 }

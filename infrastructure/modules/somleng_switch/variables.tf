@@ -3,6 +3,7 @@ variable "aws_region" {}
 variable "app_identifier" {}
 variable "public_gateway_identifier" {}
 variable "client_gateway_identifier" {}
+variable "media_proxy_identifier" {}
 variable "app_environment" {}
 variable "switch_image" {}
 variable "nginx_image" {}
@@ -10,6 +11,7 @@ variable "freeswitch_image" {}
 variable "opensips_scheduler_image" {}
 variable "public_gateway_image" {}
 variable "client_gateway_image" {}
+variable "media_proxy_image" {}
 variable "freeswitch_event_logger_image" {}
 variable s3_mpeg_ecr_repository_url {}
 variable services_ecr_repository_url {}
@@ -45,14 +47,32 @@ variable "public_gateway_max_tasks" {
 variable "public_gateway_min_tasks" {
   default = 1
 }
-
 variable "client_gateway_min_tasks" {
   default = 1
 }
-
 variable "client_gateway_max_tasks" {
   default = 4
 }
+variable "media_proxy_min_tasks" {
+  default = 1
+}
+variable "media_proxy_max_tasks" {
+  default = 4
+}
+
+variable "media_proxy_media_port_min" {
+  default = 30000
+}
+
+variable "media_proxy_media_port_max" {
+  default = 40000
+}
+
+variable "media_proxy_ng_port" {
+  default = 2223
+}
+
+
 
 # If the average CPU utilization over a minute drops to this threshold,
 # the number of containers will be reduced (but not below ecs_autoscale_min_instances).

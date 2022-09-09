@@ -82,6 +82,16 @@ resource "aws_ecrpublic_repository" "client_gateway" {
   }
 }
 
+resource "aws_ecrpublic_repository" "media_proxy" {
+  repository_name = "media-proxy"
+  provider = aws.us-east-1
+
+  catalog_data {
+    about_text        = "Somleng Media Proxy"
+    architectures     = ["Linux"]
+  }
+}
+
 resource "aws_ecrpublic_repository" "opensips_scheduler" {
   repository_name = "opensips-scheduler"
   provider = aws.us-east-1
