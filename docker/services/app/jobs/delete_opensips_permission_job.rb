@@ -6,7 +6,7 @@ class DeleteOpenSIPSPermissionJob
   end
 
   def call
-    OpenSIPSAddress.new(ip: source_ip, database_connection:).delete!
+    OpenSIPSAddress.where(ip: source_ip, database_connection:).delete
   end
 
   private

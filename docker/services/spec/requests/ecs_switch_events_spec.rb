@@ -41,6 +41,10 @@ RSpec.describe "Handle ECS Switch Events", :public_gateway, :client_gateway do
       dst_uri: "sip:10.1.1.1:5060",
       resources: "gw=fs://:fs-event-socket-password@10.1.1.1:8021"
     )
+    create_load_balancer_target(
+      dst_uri: "sip:10.1.1.1:5080",
+      resources: "gwalt=fs://:fs-event-socket-password@10.1.1.1:8021"
+    )
     payload = build_ecs_event_payload(
       group: "service:somleng-switch",
       eni_private_ip: "10.1.1.1",
@@ -50,8 +54,8 @@ RSpec.describe "Handle ECS Switch Events", :public_gateway, :client_gateway do
 
     invoke_lambda(payload:)
 
-    expect(public_gateway_load_balancer.count).to eq(1)
-    expect(client_gateway_load_balancer.count).to eq(1)
+    expect(public_gateway_load_balancer.count).to eq(2)
+    expect(client_gateway_load_balancer.count).to eq(2)
   end
 
   it "removes load balancer targets" do

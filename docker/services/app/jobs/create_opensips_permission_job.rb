@@ -6,12 +6,14 @@ class CreateOpenSIPSPermissionJob
   end
 
   def call
+    return if OpenSIPSAddress.exists?(ip: source_ip, database_connection:)
+
     OpenSIPSAddress.new(ip: source_ip, database_connection:).save!
   end
 
   private
 
   def database_connection
-    DatabaseConnections.find(:public_gateway)
+    @database_connection ||= DatabaseConnections.find(:public_gateway)
   end
 end
