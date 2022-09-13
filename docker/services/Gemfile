@@ -9,7 +9,12 @@ gem "aws-sdk-ecs"
 gem "aws-sdk-ssm"
 gem "ox" # XML parser. required by aws-sdk-s3
 gem "pg"
+gem "sentry-ruby"
 gem "sequel"
+
+group :development do
+  gem "rake"
+end
 
 group :test do
   gem "pry"

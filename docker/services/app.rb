@@ -1,6 +1,6 @@
 require "logger"
 
-Dir["#{File.dirname(__FILE__)}/app/**/*.rb"].sort.each { |f| require f }
+require_relative "config/application"
 
 module App
   class Handler
@@ -12,6 +12,9 @@ module App
       logger.info(event)
 
       new(event:, context:).process
+    rescue Exception => e
+      Sentry.capture_exception(e)
+      raise(e)
     end
 
     def initialize(event:, context:)
@@ -20,7 +23,6 @@ module App
     end
 
     def process
-      DecryptEnvironmentVariables.call
       case event.event_type
       when :ecs
         handle_ecs_event(event)

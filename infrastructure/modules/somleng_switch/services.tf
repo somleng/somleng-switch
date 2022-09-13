@@ -18,6 +18,17 @@ resource "docker_registry_image" "services" {
   }
 }
 
+# SSM Parameters
+resource "aws_ssm_parameter" "services_application_master_key" {
+  name  = "somleng-switch-services.${var.app_environment}.application_master_key"
+  type  = "SecureString"
+  value = "change-me"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
 # IAM
 resource "aws_iam_role" "services" {
   name = local.services_function_name
@@ -55,6 +66,7 @@ resource "aws_iam_policy" "services_custom_policy" {
       "Action": "ssm:GetParameters",
       "Resource": [
         "${aws_ssm_parameter.freeswitch_event_socket_password.arn}",
+        "${aws_ssm_parameter.services_application_master_key.arn}",
         "${var.db_password_parameter_arn}"
       ]
     },
@@ -88,6 +100,8 @@ resource "aws_iam_role_policy_attachment" "services_custom_policy" {
   role       = aws_iam_role.services.name
   policy_arn = aws_iam_policy.services_custom_policy.arn
 }
+
+# Security Group
 
 resource "aws_security_group" "services" {
   name   = local.services_function_name
@@ -134,6 +148,8 @@ resource "aws_lambda_function" "services" {
       CLIENT_GATEWAY_DB_NAME = var.client_gateway_db_name
       MEDIA_PROXY_NG_PORT = var.media_proxy_ng_port
       DB_PASSWORD_SSM_PARAMETER_NAME = data.aws_ssm_parameter.db_password.name
+      APP_MASTER_KEY_SSM_PARAMETER_NAME = aws_ssm_parameter.services_application_master_key.name
+      APP_ENV = var.app_environment
       DB_HOST = var.db_host
       DB_PORT = var.db_port
       DB_USER = var.db_username

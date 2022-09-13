@@ -1,6 +1,6 @@
 require "aws-sdk-ssm"
 
-class DecryptEnvironmentVariables < ApplicationWorkflow
+class EncryptedEnvironmentVariables
   attr_reader :ssm_client, :environment
 
   SSM_PARAMETER_NAME_PATTERN = "_SSM_PARAMETER_NAME".freeze
@@ -10,7 +10,7 @@ class DecryptEnvironmentVariables < ApplicationWorkflow
     @environment = environment
   end
 
-  def call
+  def decrypt
     return if ssm_parameter_names.empty?
 
     decryption_result = decrypt_parameters(ssm_parameter_names.values)
