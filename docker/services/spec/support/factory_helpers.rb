@@ -15,6 +15,13 @@ module FactoryHelpers
   def create_domain(domain:)
     client_gateway_database_connection.table(:domain).insert(domain:)
   end
+
+  def create_location(params)
+    params = {
+      expires: (Time.now + 300).to_i
+    }.merge(params)
+    client_gateway_database_connection.table(:location).insert(params)
+  end
 end
 
 RSpec.configure do |config|

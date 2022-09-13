@@ -10,6 +10,8 @@ class EventParser
                ECSEventParser
              elsif sqs_message_event?
                SQSMessageEventParser
+             elsif service_action?
+               ServiceActionParser
              end
 
     parser.new(event).parse_event
@@ -23,5 +25,9 @@ class EventParser
 
   def ecs_event?
     event["detail-type"] == "ECS Task State Change"
+  end
+
+  def service_action?
+    event.key?("serviceAction")
   end
 end

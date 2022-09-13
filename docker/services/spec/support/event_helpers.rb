@@ -62,6 +62,21 @@ module EventHelpers
 
     payload.merge(overrides)
   end
+
+  def build_service_action_payload(data = {})
+    data = {
+      service_action: "BuildClientGatewayDialString",
+      parameters: {
+        client_identifier: "user1",
+        destination: "016701722"
+      }
+    }.merge(data)
+
+    {
+      "serviceAction" => data.fetch(:service_action),
+      "parameters" => data.fetch(:parameters).to_json
+    }
+  end
 end
 
 RSpec.configure do |config|
