@@ -74,7 +74,7 @@ module EventHelpers
 
     {
       "serviceAction" => data.fetch(:service_action),
-      "parameters" => data.fetch(:parameters).to_json
+      "parameters" => data.fetch(:parameters)
     }
   end
 end
