@@ -25,6 +25,8 @@ RUN rm -rf vendor/bundle/ruby/*/cache/ && find vendor/ -name "*.o" -delete && fi
 
 COPY app.rb ${FUNCTION_DIR}
 COPY app/ ${FUNCTION_DIR}/app/
+COPY config/ ${FUNCTION_DIR}/config/
+COPY lib/ ${FUNCTION_DIR}/lib/
 
 #############################
 
