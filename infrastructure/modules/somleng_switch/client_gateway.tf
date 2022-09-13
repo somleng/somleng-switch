@@ -192,7 +192,7 @@ data "template_file" "client_gateway" {
 
 resource "aws_ecs_task_definition" "client_gateway" {
   family                   = var.client_gateway_identifier
-  network_mode             = "bridge"
+  network_mode             = "host"
   requires_compatibilities = ["EC2"]
   execution_role_arn = aws_iam_role.client_gateway_task_execution_role.arn
   container_definitions = data.template_file.client_gateway.rendered
