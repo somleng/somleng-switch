@@ -29,8 +29,7 @@ module App
       when :sqs_message
         HandleSQSMessageEvent.call(event:)
       when :service_action
-        result = event.service_action.call(**event.parameters)
-        ServiceActionResultSerializer.new(result:).as_json
+        event.service_action.call(**event.parameters)
       end
     end
 
