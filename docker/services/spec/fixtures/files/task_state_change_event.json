@@ -37,7 +37,6 @@
     ],
     "availabilityZone": "us-west-2c",
     "clusterArn": "arn:aws:ecs:us-west-2:111122223333:cluster/Cluster",
-    "containerInstanceArn": "arn:aws:ecs:us-west-2:111122223333:container-instance/service/container-instance-id",
     "containers": [
       {
         "containerArn": "arn:aws:ecs:us-west-2:111122223333:container/cf159fd6-3e3f-4a9e-84f9-66cbe726af01",

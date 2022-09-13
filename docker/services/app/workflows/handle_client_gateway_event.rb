@@ -6,27 +6,16 @@ class HandleClientGatewayEvent < ApplicationWorkflow
   end
 
   def call
-    domains = [event.private_ip, event.public_ip]
     if event.task_running?
-      database_connection.transaction do
-        domains.each { |domain| create_domain!(domain:) }
-      end
+      domain_manager.create_domains
     elsif event.task_stopped?
-      database_connection.transaction do
-        domains.each { |domain| OpenSIPSDomain.where(domain:, database_connection:).delete }
-      end
+      domain_manager.delete_domains
     end
   end
 
   private
 
-  def create_domain!(domain:)
-    return if OpenSIPSDomain.exists?(domain:, database_connection:)
-
-    OpenSIPSDomain.new(domain:, last_modified: Time.now, database_connection:).save!
-  end
-
-  def database_connection
-    @database_connection ||= DatabaseConnections.find(:client_gateway)
+  def domain_manager
+    @domain_manager ||= ManageDomains.new(domains: [event.private_ip, event.public_ip])
   end
 end
