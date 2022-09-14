@@ -340,6 +340,8 @@ data "template_file" "switch" {
     recordings_bucket_access_key_id_parameter_arn = aws_ssm_parameter.recordings_bucket_access_key_id.arn
     recordings_bucket_secret_access_key_parameter_arn = aws_ssm_parameter.recordings_bucket_secret_access_key.arn
     recordings_bucket_region = aws_s3_bucket.recordings.region
+
+    call_platform_stub_responses = var.call_platform_stub_responses
   }
 }
 

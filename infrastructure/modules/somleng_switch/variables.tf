@@ -120,3 +120,7 @@ variable "inbound_sip_trunks_security_group_name" {}
 variable "inbound_sip_trunks_security_group_description" {
   default = "Somleng Inbound SIP Trunks"
 }
+
+variable "call_platform_stub_responses" {
+  default = false
+}

@@ -15,21 +15,21 @@ class AppSettings
       settings[key.to_s]
     end
 
+    def env
+      ENV.fetch("APP_ENV", "development")
+    end
+
     def credentials
-      @credentials ||= EncryptedCredentials::EncryptedFile.new.credentials.fetch(app_env)
+      @credentials ||= EncryptedCredentials::EncryptedFile.new.credentials.fetch(env)
     end
 
     private
 
     def settings
       @settings ||= begin
-        data = YAML.load(DEFAULT_SETTINGS_PATH.read).fetch(app_env)
+        data = YAML.load(DEFAULT_SETTINGS_PATH.read).fetch(env)
         YAML.load(ERB.new(data.to_yaml).result)
       end
-    end
-
-    def app_env
-      ENV.fetch("APP_ENV", "development")
     end
   end
 end

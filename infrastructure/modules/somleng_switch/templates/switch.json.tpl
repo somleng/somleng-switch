@@ -81,6 +81,10 @@
       {
         "name": "AHN_CORE_PORT",
         "value": "${rayo_port}"
+      },
+      {
+        "name": "CALL_PLATFORM_STUB_RESPONSES",
+        "value": "${call_platform_stub_responses}"
       }
     ]
   },
