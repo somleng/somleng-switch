@@ -2,6 +2,12 @@ name: Client Gateway
 on: push
 
 jobs:
+  integration_tests:
+    uses: ./.github/workflows/integration_tests.yml
+    with:
+      context: client_gateway
+    secrets: inherit
+
   build:
     name: Build
     runs-on: ubuntu-latest
