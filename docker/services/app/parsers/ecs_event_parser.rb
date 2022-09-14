@@ -124,10 +124,10 @@ class ECSEventParser
   end
 
   def ec2_instance_private_ip
-    ec2_instance_details.dig(:reservations, 0, :instances, 0).fetch(:private_ip_address)
+    ec2_instance_details.dig(:reservations, 0, :instances, 0, :private_ip_address)
   end
 
   def ec2_instance_public_ip
-    ec2_instance_details.dig(:reservations, 0, :instances, 0).fetch(:public_ip_address)
+    ec2_instance_details.dig(:reservations, 0, :instances, 0, :public_ip_address)
   end
 end
