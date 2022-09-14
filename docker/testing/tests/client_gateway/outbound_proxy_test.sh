@@ -13,7 +13,7 @@ reset_db
 create_rtpengine_entry "udp:media_proxy:2223"
 reload_opensips_tables
 
-sip_proxy="$(dig +short client_gateway)"
+client_gateway="$(dig +short client_gateway)"
 media_proxy="$(dig +short media_proxy)"
 
 curl -s -o /dev/null -XPOST -u "adhearsion:password" http://somleng-switch:8080/calls \
@@ -31,7 +31,7 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://somleng-switch:8080/
   "direction": "outbound-api",
   "api_version": "2010-04-01",
   "routing_instructions": {
-    "dial_string": "85512334667@testing;fs_path=sip:$sip_proxy:5060"
+    "dial_string": "85512334667@testing;fs_path=sip:$client_gateway:5060"
   }
 }
 EOF
@@ -40,10 +40,10 @@ sleep 10
 
 reset_db
 
-if ! assert_in_file $log_file "Record-Route: <sip:$sip_proxy:5060;lr;r2=on>"; then
-	exit 1
+if ! assert_in_file $log_file "Record-Route: <sip:$client_gateway:5060;lr;r2=on>"; then
+  exit 1
 fi
 
 if ! assert_in_file $log_file "c=IN IP4 $media_proxy"; then
-	exit 1
+  exit 1
 fi

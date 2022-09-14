@@ -25,4 +25,21 @@ RSpec.describe "Handle Service Actions", :client_gateway do
       }
     )
   end
+
+  it "creates domains" do
+    payload = build_service_action_payload(
+      service_action: "CreateDomain",
+      parameters: {
+        "domain" => "client-gateway-staging.somleng.org"
+      }
+    )
+
+    result = invoke_lambda(payload:)
+
+    expect(result).to eq(
+      {
+        domain: "client-gateway-staging.somleng.org"
+      }
+    )
+  end
 end

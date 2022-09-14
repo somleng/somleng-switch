@@ -1,7 +1,3 @@
-locals {
-  client_gateway_eip_tag = "ClientGateway"
-}
-
 # Container Instances
 module client_gateway_container_instances {
   source = "../container_instances"
@@ -17,7 +13,7 @@ module client_gateway_container_instances {
       content = templatefile(
         "${path.module}/templates/assign_eip.sh",
         {
-          eip_tag = local.client_gateway_eip_tag
+          eip_tag = var.client_gateway_identifier
         }
       ),
       permissions = "755"
@@ -30,8 +26,8 @@ resource "aws_eip" "client_gateway" {
   vpc      = true
 
   tags = {
-    Name = "Client Gateway ${count.index + 1}"
-    (local.client_gateway_eip_tag) = "true"
+    Name = "${client_gateway_identifier} ${count.index + 1}"
+    (var.client_gateway_identifier) = "true"
     Priority = count.index + 1
   }
 }
@@ -279,12 +275,3 @@ resource "aws_route53_record" "client_gateway_a" {
   set_identifier = "${var.client_gateway_identifier}-${each.key + 1}"
   health_check_id = each.value.id
 }
-
-resource "aws_route53_record" "client_gateway_srv" {
-  zone_id = var.route53_zone.zone_id
-  name    = "_sip._udp.${var.client_gateway_subdomain}"
-  type    = "SRV"
-  ttl     = 300
-  records = [for record in values(aws_route53_record.client_gateway_a) :  "1 1 ${var.sip_port} ${record.fqdn}"]
-}
-

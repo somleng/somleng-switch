@@ -27,7 +27,7 @@ create_domain_entry () {
   domain="$1"
   timestamp="$(date +'%F %T')"
 
-  psql -q $DATABASE_URL -c "INSERT INTO domains (domain,last_modified) VALUES('$domain', '$timestamp');"
+  psql -q $DATABASE_URL -c "INSERT INTO domain (domain,last_modified) VALUES('$domain', '$timestamp');"
 }
 
 create_subscriber_entry () {
