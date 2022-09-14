@@ -1,7 +1,3 @@
-locals {
-  media_proxy_eip_tag = "MediaProxy"
-}
-
 # Container Instances
 module media_proxy_container_instances {
   source = "../container_instances"
@@ -10,14 +6,13 @@ module media_proxy_container_instances {
   vpc_id = var.vpc_id
   instance_subnets = var.public_subnets
   cluster_name = aws_ecs_cluster.cluster.name
-  security_groups = [var.db_security_group]
   user_data = [
     {
       path = "/opt/assign_eip.sh",
       content = templatefile(
         "${path.module}/templates/assign_eip.sh",
         {
-          eip_tag = local.media_proxy_eip_tag
+          eip_tag = var.media_proxy_identifier
         }
       ),
       permissions = "755"
@@ -31,7 +26,7 @@ resource "aws_eip" "media_proxy" {
 
   tags = {
     Name = "Media Proxy ${count.index + 1}"
-    (local.media_proxy_eip_tag) = "true"
+    (var.media_proxy_identifier) = "true"
     Priority = count.index + 1
   }
 }
