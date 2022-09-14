@@ -9,7 +9,3 @@ ECS_CLUSTER=${cluster_name}
 ECS_RESERVED_MEMORY=128
 ECS_ENABLE_CONTAINER_METADATA=true
 EOF
-
-start ecs
-
-echo "Done"

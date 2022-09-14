@@ -26,7 +26,7 @@ resource "aws_eip" "client_gateway" {
   vpc      = true
 
   tags = {
-    Name = "${client_gateway_identifier} ${count.index + 1}"
+    Name = "${var.client_gateway_identifier} ${count.index + 1}"
     (var.client_gateway_identifier) = "true"
     Priority = count.index + 1
   }
@@ -274,4 +274,15 @@ resource "aws_route53_record" "client_gateway_a" {
   multivalue_answer_routing_policy = true
   set_identifier = "${var.client_gateway_identifier}-${each.key + 1}"
   health_check_id = each.value.id
+}
+
+resource "aws_lambda_invocation" "create_domain" {
+  function_name = aws_lambda_function.services.function_name
+
+  input = jsonencode({
+    serviceAction = "CreateDomain",
+    parameters = {
+      domain = aws_route53_record.client_gateway_a[0].fqdn
+    }
+  })
 }
