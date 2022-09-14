@@ -204,7 +204,7 @@ resource "aws_ecs_service" "client_gateway" {
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.client_gateway.arn
   desired_count   = var.client_gateway_min_tasks
-  deployment_minimum_healthy_percent = var.client_gateway_min_tasks / 2
+  deployment_minimum_healthy_percent = 50
 
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.client_gateway.name

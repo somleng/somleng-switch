@@ -167,7 +167,7 @@ resource "aws_ecs_service" "media_proxy" {
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.media_proxy.arn
   desired_count   = var.media_proxy_min_tasks
-  deployment_minimum_healthy_percent = (var.media_proxy_min_tasks / 2) * 100
+  deployment_minimum_healthy_percent = 50
 
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.media_proxy.name
