@@ -78,7 +78,7 @@
       },
       {
         "name": "MI_COMMANDS",
-        "value": "domain_reload,rtpengine_reload"
+        "value": "lb_reload,domain_reload,rtpengine_reload"
       }
     ],
     "essential": true
