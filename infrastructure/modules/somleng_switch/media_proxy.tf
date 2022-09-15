@@ -4,7 +4,7 @@ module media_proxy_container_instances {
 
   app_identifier = var.media_proxy_identifier
   vpc = var.vpc
-  instance_subnets = var.public_subnets
+  instance_subnets = var.vpc.public_subnets
   cluster_name = aws_ecs_cluster.cluster.name
   user_data = [
     {

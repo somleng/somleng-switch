@@ -25,7 +25,6 @@ module "somleng_switch_staging" {
   services_ecr_repository_url = data.terraform_remote_state.core.outputs.services_ecr_repository.repository_url
 
   vpc = data.terraform_remote_state.core_infrastructure.outputs.vpc
-  public_subnets = data.terraform_remote_state.core_infrastructure.outputs.vpc.public_subnets
   global_accelerator = data.terraform_remote_state.core_infrastructure.outputs.global_accelerator
 
   json_cdr_password_parameter_arn = data.aws_ssm_parameter.somleng_services_password.arn

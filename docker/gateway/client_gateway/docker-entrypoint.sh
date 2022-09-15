@@ -15,7 +15,7 @@ if [ "$1" = 'opensips' ]; then
 
   if [ -n "$ECS_CONTAINER_METADATA_FILE" ]; then
     LOCAL_IP="$(cat $ECS_CONTAINER_METADATA_FILE | jq -r '.HostPrivateIPv4Address')"
-    SIP_ADVERTISED_IP="$(cat $ECS_CONTAINER_METADATA_FILE | jq -r '.HostPublicIPv4Address')"
+    SIP_ADVERTISED_IP="${SIP_ADVERTISED_IP:="$(cat $ECS_CONTAINER_METADATA_FILE | jq -r '.HostPublicIPv4Address')"}"
   else
     LOCAL_IP="$(hostname -i)"
     SIP_ADVERTISED_IP="${SIP_ADVERTISED_IP:="$(hostname -i)"}"

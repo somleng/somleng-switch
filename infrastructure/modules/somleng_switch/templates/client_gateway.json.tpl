@@ -59,6 +59,10 @@
       {
         "name": "SIP_PORT",
         "value": "${sip_port}"
+      },
+      {
+        "name": "SIP_ADVERTISED_IP",
+        "value": "${sip_advertised_ip}"
       }
     ]
   },
