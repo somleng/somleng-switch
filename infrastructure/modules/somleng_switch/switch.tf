@@ -3,8 +3,8 @@ module switch_container_instances {
   source = "../container_instances"
 
   app_identifier = var.app_identifier
-  vpc_id = var.vpc_id
-  instance_subnets = var.container_instance_subnets
+  vpc = var.vpc
+  instance_subnets = var.vpc.private_subnets
   cluster_name = aws_ecs_cluster.cluster.name
 }
 
@@ -48,7 +48,7 @@ resource "aws_cloudwatch_log_group" "freeswitch_event_logger" {
 # Security Group
 resource "aws_security_group" "switch" {
   name   = "${var.app_identifier}-appserver"
-  vpc_id = var.vpc_id
+  vpc_id = var.vpc.vpc_id
 
   tags = {
     "Name" = "${var.app_identifier}-switch"
@@ -70,7 +70,7 @@ resource "aws_security_group_rule" "switch_ingress_freeswitch_event_socket" {
   protocol          = "TCP"
   from_port         = 8021
   security_group_id = aws_security_group.switch.id
-  cidr_blocks = [var.vpc_cidr_block]
+  cidr_blocks = [var.vpc.vpc_cidr_block]
 }
 
 resource "aws_security_group_rule" "switch_ingress_sip" {
@@ -79,7 +79,7 @@ resource "aws_security_group_rule" "switch_ingress_sip" {
   protocol          = "UDP"
   from_port         = var.sip_port
   security_group_id = aws_security_group.switch.id
-  cidr_blocks = [var.vpc_cidr_block]
+  cidr_blocks = [var.vpc.vpc_cidr_block]
 }
 
 resource "aws_security_group_rule" "switch_ingress_sip_alternative" {
@@ -88,7 +88,7 @@ resource "aws_security_group_rule" "switch_ingress_sip_alternative" {
   protocol          = "UDP"
   from_port         = var.sip_alternative_port
   security_group_id = aws_security_group.switch.id
-  cidr_blocks = [var.vpc_cidr_block]
+  cidr_blocks = [var.vpc.vpc_cidr_block]
 }
 
 resource "aws_security_group_rule" "switch_egress" {
@@ -371,7 +371,7 @@ resource "aws_ecs_service" "switch" {
   desired_count   = var.switch_min_tasks
 
   network_configuration {
-    subnets = var.container_instance_subnets
+    subnets = var.vpc.private_subnets
     security_groups = [
       aws_security_group.switch.id
     ]
@@ -402,7 +402,7 @@ resource "aws_lb_target_group" "switch_http" {
   name = var.app_identifier
   port = 80
   protocol = "HTTP"
-  vpc_id = var.vpc_id
+  vpc_id = var.vpc.vpc_id
   target_type = "ip"
   deregistration_delay = 60
 

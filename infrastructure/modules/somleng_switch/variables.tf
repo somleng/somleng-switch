@@ -1,5 +1,6 @@
 
 variable "aws_region" {}
+variable "vpc" {}
 variable "app_identifier" {}
 variable "public_gateway_identifier" {}
 variable "client_gateway_identifier" {}
@@ -15,13 +16,10 @@ variable "media_proxy_image" {}
 variable "freeswitch_event_logger_image" {}
 variable s3_mpeg_ecr_repository_url {}
 variable services_ecr_repository_url {}
-variable "container_instance_subnets" {}
-variable "intra_subnets" {}
 variable "public_subnets" {}
-variable "vpc_id" {}
-variable "vpc_cidr_block" {}
 variable "load_balancer" {}
 variable "network_load_balancer" {}
+variable "global_accelerator" {}
 variable "listener_arn" {}
 variable "sip_subdomain" {}
 variable "switch_subdomain" {}

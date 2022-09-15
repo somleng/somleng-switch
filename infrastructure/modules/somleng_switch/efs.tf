@@ -28,7 +28,7 @@ resource "aws_efs_backup_policy" "cache" {
 }
 
 resource "aws_efs_mount_target" "cache" {
-  for_each = toset(var.intra_subnets)
+  for_each = toset(var.vpc.intra_subnets)
 
   file_system_id = aws_efs_file_system.cache.id
   subnet_id      = each.value
@@ -37,7 +37,7 @@ resource "aws_efs_mount_target" "cache" {
 
 resource "aws_security_group" "efs_cache" {
   name   = "${var.app_identifier}-efs-cache"
-  vpc_id = var.vpc_id
+  vpc_id = var.vpc.vpc_id
 
   tags = {
     Name = "${var.app_identifier}-cache"
@@ -48,7 +48,7 @@ resource "aws_security_group_rule" "efs_cache_ingress" {
   type              = "ingress"
   protocol          = "TCP"
   security_group_id = aws_security_group.efs_cache.id
-  cidr_blocks = [var.vpc_cidr_block]
+  cidr_blocks = [var.vpc.vpc_cidr_block]
   from_port = 2049
   to_port = 2049
 }

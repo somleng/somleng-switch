@@ -105,7 +105,7 @@ resource "aws_iam_role_policy_attachment" "services_custom_policy" {
 
 resource "aws_security_group" "services" {
   name   = local.services_function_name
-  vpc_id = var.vpc_id
+  vpc_id = var.vpc.vpc_id
 
   tags = {
     "Name" = local.services_function_name
@@ -132,7 +132,7 @@ resource "aws_lambda_function" "services" {
 
   vpc_config {
     security_group_ids = [aws_security_group.services.id, var.db_security_group]
-    subnet_ids = var.container_instance_subnets
+    subnet_ids = var.vpc.private_subnets
   }
 
   environment {

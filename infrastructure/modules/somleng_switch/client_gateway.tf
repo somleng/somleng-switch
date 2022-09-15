@@ -3,7 +3,7 @@ module client_gateway_container_instances {
   source = "../container_instances"
 
   app_identifier = var.client_gateway_identifier
-  vpc_id = var.vpc_id
+  vpc = var.vpc
   instance_subnets = var.public_subnets
   cluster_name = aws_ecs_cluster.cluster.name
   security_groups = [var.db_security_group]
@@ -245,6 +245,23 @@ resource "aws_appautoscaling_target" "client_gateway_scale_target" {
   scalable_dimension = "ecs:service:DesiredCount"
   min_capacity       = var.client_gateway_min_tasks
   max_capacity       = var.client_gateway_max_tasks
+}
+
+# Global Accelerator
+
+resource "aws_globalaccelerator_listener" "client_gateway" {
+  accelerator_arn = var.global_accelerator.id
+  client_affinity = "SOURCE_IP"
+  protocol        = "UDP"
+
+  port_range {
+    from_port = var.sip_port
+    to_port   = var.sip_port
+  }
+}
+
+resource "aws_globalaccelerator_endpoint_group" "client_gateway" {
+  listener_arn = aws_globalaccelerator_listener.client_gateway.id
 }
 
 # Route 53

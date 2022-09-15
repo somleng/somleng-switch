@@ -92,7 +92,7 @@ resource "aws_launch_template" "this" {
 
 resource "aws_security_group" "this" {
   name   = "${var.app_identifier}-container-instance"
-  vpc_id = var.vpc_id
+  vpc_id = var.vpc.vpc_id
 }
 
 resource "aws_security_group_rule" "egress" {

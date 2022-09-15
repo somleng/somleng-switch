@@ -3,7 +3,7 @@ module media_proxy_container_instances {
   source = "../container_instances"
 
   app_identifier = var.media_proxy_identifier
-  vpc_id = var.vpc_id
+  vpc = var.vpc
   instance_subnets = var.public_subnets
   cluster_name = aws_ecs_cluster.cluster.name
   user_data = [
@@ -56,7 +56,7 @@ resource "aws_security_group_rule" "media_proxy_control" {
   protocol          = "udp"
   from_port         = var.media_proxy_ng_port
   security_group_id = module.media_proxy_container_instances.security_group.id
-  cidr_blocks = [var.vpc_cidr_block]
+  cidr_blocks = [var.vpc.vpc_cidr_block]
 }
 
 resource "aws_security_group_rule" "media_proxy_media" {

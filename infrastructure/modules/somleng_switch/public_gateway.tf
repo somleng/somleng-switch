@@ -3,8 +3,8 @@ module public_gateway_container_instances {
   source = "../container_instances"
 
   app_identifier = var.public_gateway_identifier
-  vpc_id = var.vpc_id
-  instance_subnets = var.container_instance_subnets
+  vpc = var.vpc
+  instance_subnets = var.vpc.private_subnets
   cluster_name = aws_ecs_cluster.cluster.name
 }
 
@@ -28,7 +28,7 @@ resource "aws_ecs_capacity_provider" "public_gateway" {
 # Security Group
 resource "aws_security_group" "public_gateway" {
   name   = var.public_gateway_identifier
-  vpc_id = var.vpc_id
+  vpc_id = var.vpc.vpc_id
 }
 
 resource "aws_security_group_rule" "public_gateway_healthcheck" {
@@ -37,7 +37,7 @@ resource "aws_security_group_rule" "public_gateway_healthcheck" {
   protocol          = "tcp"
   from_port         = var.sip_port
   security_group_id = aws_security_group.public_gateway.id
-  cidr_blocks = [var.vpc_cidr_block]
+  cidr_blocks = [var.vpc.vpc_cidr_block]
 }
 
 resource "aws_security_group_rule" "public_gateway_sip" {
@@ -188,7 +188,7 @@ resource "aws_ecs_service" "public_gateway" {
   desired_count   = var.public_gateway_min_tasks
 
   network_configuration {
-    subnets = var.container_instance_subnets
+    subnets = var.vpc.private_subnets
     security_groups = [
       aws_security_group.public_gateway.id,
       var.db_security_group
@@ -227,7 +227,7 @@ resource "aws_lb_target_group" "sip" {
   port        = var.sip_port
   protocol    = "UDP"
   target_type = "ip"
-  vpc_id      = var.vpc_id
+  vpc_id      = var.vpc.vpc_id
 
   connection_termination = true
 
@@ -255,7 +255,7 @@ resource "aws_lb_target_group" "sip_alternative" {
   port        = var.sip_alternative_port
   protocol    = "UDP"
   target_type = "ip"
-  vpc_id      = var.vpc_id
+  vpc_id      = var.vpc.vpc_id
 
   connection_termination = true
 
