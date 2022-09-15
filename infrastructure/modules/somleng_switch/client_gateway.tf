@@ -4,9 +4,33 @@ module client_gateway_container_instances {
 
   app_identifier = var.client_gateway_identifier
   vpc = var.vpc
-  instance_subnets = var.vpc.private_subnets
+  instance_subnets = var.vpc.public_subnets
   cluster_name = aws_ecs_cluster.cluster.name
   security_groups = [var.db_security_group]
+  user_data = [
+    {
+      path = "/opt/assign_eip.sh",
+      content = templatefile(
+        "${path.module}/templates/assign_eip.sh",
+        {
+          eip_tag = var.client_gateway_identifier
+        }
+      ),
+      permissions = "755"
+    }
+  ]
+}
+
+# EIP
+resource "aws_eip" "client_gateway" {
+  count = var.client_gateway_max_tasks
+  vpc      = true
+
+  tags = {
+    Name = "${var.client_gateway_identifier} ${count.index + 1}"
+    (var.client_gateway_identifier) = "true"
+    Priority = count.index + 1
+  }
 }
 
 # Capacity Provider
@@ -152,7 +176,6 @@ data "template_file" "client_gateway" {
     logs_group_region = var.aws_region
     app_environment = var.app_environment
 
-    sip_advertised_ip = var.global_accelerator.ip_sets[0].ip_addresses[0]
     sip_port = var.sip_port
 
     database_password_parameter_arn = var.db_password_parameter_arn
@@ -224,39 +247,33 @@ resource "aws_appautoscaling_target" "client_gateway_scale_target" {
   max_capacity       = var.client_gateway_max_tasks
 }
 
-# Global Accelerator
-
-resource "aws_globalaccelerator_listener" "client_gateway" {
-  accelerator_arn = var.global_accelerator.id
-  client_affinity = "SOURCE_IP"
-  protocol        = "UDP"
-
-  port_range {
-    from_port = var.sip_port
-    to_port   = var.sip_port
-  }
-}
-
-resource "aws_globalaccelerator_endpoint_group" "client_gateway" {
-  listener_arn = aws_globalaccelerator_listener.client_gateway.id
-
-  lifecycle {
-    ignore_changes = [endpoint_configuration]
-  }
-}
-
 # Route 53
 
+resource "aws_route53_health_check" "client_gateway" {
+  for_each = { for index, eip in aws_eip.client_gateway : index => eip }
+
+  reference_name    = "${var.client_gateway_subdomain}-${each.key + 1}"
+  ip_address        = each.value.public_ip
+  port              = var.sip_port
+  type              = "TCP"
+  request_interval = 30
+
+  tags = {
+    Name = "${var.client_gateway_subdomain}-${each.key + 1}"
+  }
+}
+
 resource "aws_route53_record" "client_gateway" {
+  for_each = aws_route53_health_check.client_gateway
   zone_id = var.route53_zone.zone_id
   name    = var.client_gateway_subdomain
   type    = "A"
+  ttl     = 300
+  records = [each.value.ip_address]
 
-  alias {
-    name                   = var.global_accelerator.dns_name
-    zone_id                = var.global_accelerator.hosted_zone_id
-    evaluate_target_health = true
-  }
+  multivalue_answer_routing_policy = true
+  set_identifier = "${var.client_gateway_identifier}-${each.key + 1}"
+  health_check_id = each.value.id
 }
 
 resource "aws_lambda_invocation" "create_domain" {
@@ -265,7 +282,7 @@ resource "aws_lambda_invocation" "create_domain" {
   input = jsonencode({
     serviceAction = "CreateDomain",
     parameters = {
-      domain = aws_route53_record.client_gateway.fqdn
+      domain = aws_route53_record.client_gateway[0].fqdn
     }
   })
 }
