@@ -7,7 +7,7 @@ module client_gateway_container_instances {
   instance_subnets = var.vpc.public_subnets
   cluster_name = aws_ecs_cluster.cluster.name
   security_groups = [var.db_security_group]
-  user_data = [
+  user_data = var.assign_client_gateway_eips ? [
     {
       path = "/opt/assign_eip.sh",
       content = templatefile(
@@ -18,12 +18,12 @@ module client_gateway_container_instances {
       ),
       permissions = "755"
     }
-  ]
+  ] : []
 }
 
 # EIP
 resource "aws_eip" "client_gateway" {
-  count = var.client_gateway_max_tasks
+  count = var.assign_client_gateway_eips ? var.client_gateway_max_tasks : 0
   vpc      = true
 
   tags = {
@@ -277,12 +277,13 @@ resource "aws_route53_record" "client_gateway" {
 }
 
 resource "aws_lambda_invocation" "create_domain" {
+  for_each = aws_route53_record.client_gateway
   function_name = aws_lambda_function.services.function_name
 
   input = jsonencode({
     serviceAction = "CreateDomain",
     parameters = {
-      domain = aws_route53_record.client_gateway[0].fqdn
+      domain = each.value.fqdn
     }
   })
 }

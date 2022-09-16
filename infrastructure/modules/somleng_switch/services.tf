@@ -141,7 +141,7 @@ resource "aws_lambda_function" "services" {
       MEDIA_PROXY_GROUP = "service:${aws_ecs_task_definition.media_proxy.family}"
       CLIENT_GATEWAY_GROUP = "service:${aws_ecs_task_definition.client_gateway.family}"
       FS_EVENT_SOCKET_PASSWORD_SSM_PARAMETER_NAME = aws_ssm_parameter.freeswitch_event_socket_password.name
-      FS_EVENT_SOCKET_PORT = 8021
+      FS_EVENT_SOCKET_PORT = var.freeswitch_event_socket_port
       FS_SIP_PORT = var.sip_port
       FS_SIP_ALTERNATIVE_PORT = var.sip_alternative_port
       PUBLIC_GATEWAY_DB_NAME = var.public_gateway_db_name

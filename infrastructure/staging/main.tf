@@ -46,8 +46,6 @@ module "somleng_switch_staging" {
   network_load_balancer = data.terraform_remote_state.core_infrastructure.outputs.network_load_balancer
   route53_zone = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_somleng_org
   listener_arn = data.terraform_remote_state.core_infrastructure.outputs.https_listener.arn
-  inbound_sip_trunks_security_group_name = "somleng-inbound-sip-trunks-staging"
-  inbound_sip_trunks_security_group_description = "Somleng Staging Inbound SIP Trunks"
   sip_subdomain = "sip-staging"
   switch_subdomain = "switch-staging"
   client_gateway_subdomain = "client-gateway-staging"
@@ -65,4 +63,6 @@ module "somleng_switch_staging" {
   media_proxy_min_tasks = 0
   media_proxy_max_tasks = 2
   call_platform_stub_responses = true
+  assign_client_gateway_eips = false
+  assign_media_proxy_eips = false
 }

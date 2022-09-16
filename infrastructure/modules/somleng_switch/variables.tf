@@ -27,7 +27,11 @@ variable "recordings_bucket_name" {}
 variable "container_insights_enabled" {
   default = false
 }
-variable client_gateway_health_checks {
+variable "assign_client_gateway_eips" {
+  default = true
+}
+
+variable "assign_media_proxy_eips" {
   default = true
 }
 
@@ -82,10 +86,6 @@ variable "ecs_as_cpu_high_threshold_per" {
   default = "70"
 }
 
-variable "rayo_port" {
-  default = 5222
-}
-
 variable "freeswitch_event_socket_port" {
   default = 8021
 }
@@ -112,11 +112,6 @@ variable "external_rtp_ip" {}
 variable "alternative_sip_outbound_ip" {}
 variable "alternative_rtp_ip" {}
 variable "json_cdr_url" {}
-variable "inbound_sip_trunks_security_group_name" {}
-variable "inbound_sip_trunks_security_group_description" {
-  default = "Somleng Inbound SIP Trunks"
-}
-
 variable "call_platform_stub_responses" {
   default = false
 }

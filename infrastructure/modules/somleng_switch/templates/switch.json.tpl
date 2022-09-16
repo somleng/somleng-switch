@@ -80,7 +80,7 @@
       },
       {
         "name": "AHN_CORE_PORT",
-        "value": "${rayo_port}"
+        "value": "5222"
       },
       {
         "name": "CALL_PLATFORM_STUB_RESPONSES",
@@ -137,7 +137,7 @@
     ],
     "portMappings": [
       {
-        "containerPort": ${rayo_port},
+        "containerPort": 5222,
         "protocol": "tcp"
       },
       {
@@ -188,7 +188,7 @@
       },
       {
         "name": "FS_MOD_RAYO_PORT",
-        "value": "${rayo_port}"
+        "value": "5222"
       },
       {
         "name": "FS_MOD_JSON_CDR_URL",
