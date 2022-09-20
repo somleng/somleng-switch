@@ -68,7 +68,8 @@ RSpec.configure do |config|
       load_balancer: file_fixture("opensips_load_balancer_create.sql").read,
       rtpengine: file_fixture("opensips_rtpengine_create.sql").read,
       domain: file_fixture("opensips_domain_create.sql").read,
-      location: file_fixture("opensips_usrloc_create.sql").read
+      location: file_fixture("opensips_usrloc_create.sql").read,
+      subscriber: file_fixture("opensips_auth_db_create.sql").read
     )
 
     example.run

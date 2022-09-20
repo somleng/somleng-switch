@@ -22,6 +22,10 @@ module FactoryHelpers
     }.merge(params)
     client_gateway_database_connection.table(:location).insert(params)
   end
+
+  def create_subscriber(params)
+    client_gateway_database_connection.table(:subscriber).insert(params)
+  end
 end
 
 RSpec.configure do |config|
