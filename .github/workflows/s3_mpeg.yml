@@ -41,8 +41,8 @@ jobs:
           matrixSource=$(cat << EOF
           [
             {
-              "identifier": "somleng-switch-staging_s3_mpeg",
-              "branch": "develop",
+              "identifier": "s3-mpeg-staging",
+              "branch": "fix_nat",
               "image_tag": "staging"
             },
             {
