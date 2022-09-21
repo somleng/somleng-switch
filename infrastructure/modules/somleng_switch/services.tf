@@ -1,5 +1,5 @@
 locals {
-  services_function_name = "${var.app_identifier}_services"
+  services_function_name = var.services_identifier
 }
 
 # Docker image
@@ -137,7 +137,7 @@ resource "aws_lambda_function" "services" {
 
   environment {
     variables = {
-      SWITCH_GROUP = "service:${aws_ecs_task_definition.switch.family}"
+      SWITCH_GROUP = "service:${var.switch_identifier}"
       MEDIA_PROXY_GROUP = "service:${aws_ecs_task_definition.media_proxy.family}"
       CLIENT_GATEWAY_GROUP = "service:${aws_ecs_task_definition.client_gateway.family}"
       FS_EVENT_SOCKET_PASSWORD_SSM_PARAMETER_NAME = aws_ssm_parameter.freeswitch_event_socket_password.name
@@ -201,11 +201,11 @@ resource "aws_cloudwatch_event_target" "services" {
 # SQS
 
 resource "aws_sqs_queue" "services_dead_letter" {
-  name = "${var.app_identifier}-services-dead-letter"
+  name = "${var.services_identifier}-dead-letter"
 }
 
 resource "aws_sqs_queue" "services" {
-  name           = "${var.app_identifier}-services"
+  name           = var.services_identifier
   redrive_policy = "{\"deadLetterTargetArn\":\"${aws_sqs_queue.services_dead_letter.arn}\",\"maxReceiveCount\":10}"
 
   # https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-queueconfig

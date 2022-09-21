@@ -6,7 +6,10 @@ module "somleng_switch_staging" {
   source = "../modules/somleng_switch"
 
   aws_region = var.aws_region
-  app_identifier = "somleng-switch-staging"
+  cluster_name = "somleng-switch-staging"
+  switch_identifier = "switch-staging"
+  services_identifier = "switch-services-staging"
+  s3_mpeg_identifier = "s3-mpeg-staging"
   public_gateway_identifier = "public-gateway-staging"
   client_gateway_identifier = "client-gateway-staging"
   media_proxy_identifier = "media-proxy-staging"

@@ -55,7 +55,7 @@ jobs:
           matrixSource=$(cat << EOF
           [
             {
-              "identifier": "somleng-switch-staging_services",
+              "identifier": "switch-staging-services",
               "branch": "fix_nat",
               "image_tag": "staging"
             },

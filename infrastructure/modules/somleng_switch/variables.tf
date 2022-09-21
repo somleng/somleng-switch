@@ -1,7 +1,10 @@
 
 variable "aws_region" {}
 variable "vpc" {}
-variable "app_identifier" {}
+variable "cluster_name" {}
+variable "switch_identifier" {}
+variable "services_identifier" {}
+variable "s3_mpeg_identifier" {}
 variable "public_gateway_identifier" {}
 variable "client_gateway_identifier" {}
 variable "media_proxy_identifier" {}

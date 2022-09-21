@@ -3,7 +3,7 @@
 # IAM Roles
 # https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/deploy-container-insights-ECS-instancelevel.html#deploy-container-insights-ECS-instancelevel-IAMRoles
 resource "aws_iam_role" "ecs_cwagent_daemon_service_task_role" {
-  name = "${var.app_identifier}-CWAgentECSTaskRole"
+  name = "${var.switch_identifier}-CWAgentECSTaskRole"
 
   assume_role_policy = <<EOF
 {
@@ -28,7 +28,7 @@ resource "aws_iam_role_policy_attachment" "ecs_cwagent_daemon_service_task_role_
 }
 
 resource "aws_iam_role" "ecs_cwagent_daemon_service_task_execution_role" {
-  name = "${var.app_identifier}-CWAgentECSExecutionRole"
+  name = "${var.switch_identifier}-CWAgentECSExecutionRole"
 
   assume_role_policy = <<EOF
 {
@@ -59,7 +59,7 @@ resource "aws_iam_role_policy_attachment" "ecs_cwagent_daemon_service_task_execu
 
 # Log Group
 resource "aws_cloudwatch_log_group" "ecs_cwagent_daemon_service" {
-  name = "/ecs/ecs-cwagent-daemon-service/${var.app_identifier}"
+  name = "/ecs/ecs-cwagent-daemon-service/${var.switch_identifier}"
   retention_in_days = 7
 }
 
@@ -67,7 +67,7 @@ resource "aws_cloudwatch_log_group" "ecs_cwagent_daemon_service" {
 # https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/deploy-container-insights-ECS-instancelevel.html#deploy-container-insights-ECS-instancelevel-taskdefinition
 # https://github.com/aws-samples/amazon-cloudwatch-container-insights/blob/master/ecs-task-definition-templates/deployment-mode/daemon-service/cwagent-ecs-instance-metric/cwagent-ecs-instance-metric.json
 resource "aws_ecs_task_definition" "ecs_cwagent_daemon_service" {
-  family                   = "ecs-cwagent-daemon-service-${var.app_identifier}"
+  family                   = "ecs-cwagent-daemon-service-${var.switch_identifier}"
   network_mode             = "bridge"
   requires_compatibilities = ["EC2"]
   task_role_arn = aws_iam_role.ecs_cwagent_daemon_service_task_role.arn

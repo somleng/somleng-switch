@@ -5,7 +5,7 @@ data "aws_ssm_parameter" "somleng_services_password" {
 module "somleng_switch" {
   source = "../modules/somleng_switch"
 
-  app_identifier = "somleng-switch"
+  switch_identifier = "somleng-switch"
   app_environment = "production"
   aws_region = var.aws_region
 

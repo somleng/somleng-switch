@@ -1,5 +1,5 @@
 locals {
-  s3_mpeg_function_name = "${var.app_identifier}_s3_mpeg"
+  s3_mpeg_function_name = "${var.s3_mpeg_identifier}"
   s3_filter_suffix = ".wav"
 }
 

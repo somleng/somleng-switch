@@ -223,7 +223,7 @@ resource "aws_ecs_service" "public_gateway" {
 
 # Load Balancer
 resource "aws_lb_target_group" "sip" {
-  name        = "${var.app_identifier}-sip"
+  name        = "${var.public_gateway_identifier}-sip"
   port        = var.sip_port
   protocol    = "UDP"
   target_type = "ip"
@@ -251,7 +251,7 @@ resource "aws_lb_listener" "sip" {
 }
 
 resource "aws_lb_target_group" "sip_alternative" {
-  name        = "${var.app_identifier}-sip-alt"
+  name        = "${var.public_gateway_identifier}-sip-alt"
   port        = var.sip_alternative_port
   protocol    = "UDP"
   target_type = "ip"
