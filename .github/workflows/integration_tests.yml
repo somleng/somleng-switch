@@ -38,14 +38,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build SomlengSWITCH
+      - name: Build Switch
         uses: docker/build-push-action@v3
         with:
           push: false
           load: true
-          tags: somleng-switch:latest
-          cache-from: type=gha,scope=integration-tests-somleng-switch
-          cache-to: type=gha,mode=max,scope=integration-tests-somleng-switch
+          tags: switch:latest
+          cache-from: type=gha,scope=integration-tests-switch
+          cache-to: type=gha,mode=max,scope=integration-tests-switch
 
       - name: Build FreeSWITCH
         uses: docker/build-push-action@v3
@@ -115,7 +115,7 @@ jobs:
       - name: Run docker-compose
         run: |
           docker-compose run -e DATABASE_NAME=opensips_${{ inputs.context }}_test gateway-bootstrap create_db ${{ inputs.context }}
-          docker-compose up -d client_gateway public_gateway media_proxy freeswitch somleng-switch testing
+          docker-compose up -d client_gateway public_gateway media_proxy freeswitch switch testing
           sleep 30
 
       - name: Run ${{ inputs.context }} Tests
