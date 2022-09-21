@@ -30,8 +30,15 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://somleng-switch:8080/
   "account_auth_token": "sample-auth-token",
   "direction": "outbound-api",
   "api_version": "2010-04-01",
-  "routing_instructions": {
-    "dial_string": "85512334667@testing;fs_path=sip:$client_gateway:5060"
+  "routing_parameters": {
+    "destination": "85512334667",
+    "dial_string_prefix": null,
+    "plus_prefix": true,
+    "trunk_prefix": false,
+    "host": null,
+    "username": "user1",
+    "symmetric_latching": true,
+    "address": "+85512334667@testing;fs_path=sip:$client_gateway:5060"
   }
 }
 EOF

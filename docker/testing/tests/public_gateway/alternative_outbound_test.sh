@@ -22,9 +22,14 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://somleng-switch:8080/
   "account_auth_token": "sample-auth-token",
   "direction": "outbound-api",
   "api_version": "2010-04-01",
-  "routing_instructions": {
-    "dial_string": "85512334667@testing",
-    "nat_supported": false
+  "routing_parameters": {
+    "destination": "85512334667",
+    "dial_string_prefix": null,
+    "plus_prefix": false,
+    "trunk_prefix": false,
+    "host": "testing",
+    "username": null,
+    "symmetric_latching": false
   }
 }
 EOF
