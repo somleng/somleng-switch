@@ -8,6 +8,7 @@ end
 
 ENV["AHN_ENV"] ||= "test"
 ENV["APP_ENV"] ||= "test"
+ENV["AWS_DEFAULT_REGION"] ||= "us-east-1"
 
 require File.expand_path("../config/environment", __dir__)
 
