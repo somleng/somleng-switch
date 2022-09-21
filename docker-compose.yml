@@ -1,11 +1,5 @@
 # This docker-compose configuration is intended to be used for integration testing only.
 #
-# Usage:
-#
-# $ docker-compose run opensips-bootstrap-db
-# $ docker-compose run opensips-bootstrap-db-data
-# $ docker-compose up opensips freeswitch somleng-switch
-#
 # Note:
 # Assumes postgres is running on the host machine.
 # Postgres is not included in this docker-compose configuration
@@ -105,14 +99,15 @@ services:
       timeout: 5s
       retries: 10
 
-  somleng-switch:
+  switch:
     build:
       context: .
-    image: somleng-switch:latest
+    image: switch:latest
     environment:
       AHN_CORE_HOST: freeswitch
       CALL_PLATFORM_STUB_RESPONSES: "true"
       AHN_CORE_HTTP_PORT: "8080"
+      AWS_DEFAULT_REGION: "ap-southeast-1"
     healthcheck:
       test:
         [

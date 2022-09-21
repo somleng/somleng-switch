@@ -9,7 +9,7 @@ source $current_dir/../support/test_helpers.sh
 log_file=$(find . -type f -iname "uas_*_messages.log")
 cat /dev/null > $log_file
 
-curl -s -o /dev/null -XPOST -u "adhearsion:password" http://somleng-switch:8080/calls \
+curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch:8080/calls \
 -H 'Content-Type: application/json; charset=utf-8' \
 --data-binary @- << EOF
 {

@@ -4,10 +4,10 @@ class DialString
 
   attr_reader :address, :symmetric_latching
 
-  def initialize(routing_parameters)
-    routing_parameters.symbolize_keys!
-    @symmetric_latching = routing_parameters.fetch(:symmetric_latching, true).to_s.casecmp("false").nonzero?
-    @address = routing_parameters.fetch(:address) { RoutingParameters.new(routing_parameters).address }
+  def initialize(options)
+    options.symbolize_keys!
+    @symmetric_latching = options.fetch(:symmetric_latching, true)
+    @address = options.fetch(:address) { RoutingParameters.new(options).address }
   end
 
   def to_s
