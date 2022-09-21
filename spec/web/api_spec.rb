@@ -22,7 +22,7 @@ module SomlengAdhearsion
           post(
             "/calls",
             {
-              "to" => "+85512334667",
+              "to" => "+85516701721",
               "from" => "2442",
               "voice_url" => "https://rapidpro.ngrok.com/handle/33/",
               "voice_method" => "GET",
@@ -33,9 +33,14 @@ module SomlengAdhearsion
               "account_auth_token" => "sample-auth-token",
               "direction" => "outbound-api",
               "api_version" => "2010-04-01",
-              "routing_instructions" => {
-                "dial_string" => "85512334667@127.0.0.1",
-                "nat_supported" => true
+              "routing_parameters" => {
+                "destination" => "85516701721",
+                "dial_string_prefix" => nil,
+                "plus_prefix" => false,
+                "trunk_prefix" => false,
+                "host" => "27.109.112.141",
+                "username" => nil,
+                "symmetric_latching" => true
               }
             }.to_json,
             {

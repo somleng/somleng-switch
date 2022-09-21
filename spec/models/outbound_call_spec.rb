@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.describe OutboundCall do
   it "originates an outbound call" do
     call_params = build_call_params(
-      "to" => "+85512334667",
+      "to" => "+85516701721",
       "from" => "2442",
       "voice_url" => "https://rapidpro.ngrok.com/handle/33/",
       "voice_method" => "GET",
@@ -15,8 +15,14 @@ RSpec.describe OutboundCall do
       "account_auth_token" => "sample-auth-token",
       "direction" => "outbound-api",
       "api_version" => "2010-04-01",
-      "routing_instructions" => {
-        "dial_string" => "85512334667@127.0.0.1"
+      "routing_parameters" => {
+        "destination" => "85516701721",
+        "dial_string_prefix" => nil,
+        "plus_prefix" => false,
+        "trunk_prefix" => false,
+        "host" => "27.109.112.141",
+        "username" => nil,
+        "symmetric_latching" => true
       }
     )
 
@@ -27,7 +33,7 @@ RSpec.describe OutboundCall do
 
     expect(result).to eq(outbound_call)
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      "sofia/external/85512334667@127.0.0.1",
+      "sofia/external/85516701721@27.109.112.141",
       from: "2442",
       controller: CallController,
       controller_metadata: {
@@ -40,7 +46,7 @@ RSpec.describe OutboundCall do
           call_sid: "sample-call-sid",
           direction: "outbound-api",
           api_version: "2010-04-01",
-          to: "+85512334667",
+          to: "+85516701721",
           from: "2442",
           sip_headers: SIPHeaders.new(
             call_sid: "sample-call-sid",
@@ -57,9 +63,14 @@ RSpec.describe OutboundCall do
 
   it "originates an outbound call without NAT support" do
     call_params = build_call_params(
-      "routing_instructions" => {
-        "dial_string" => "85512334667@127.0.0.1",
-        "nat_supported" => false
+      "routing_parameters" => {
+        "destination" => "85516701721",
+        "dial_string_prefix" => nil,
+        "plus_prefix" => false,
+        "trunk_prefix" => false,
+        "host" => "27.109.112.141",
+        "username" => nil,
+        "symmetric_latching" => false
       }
     )
     allow(Adhearsion::OutboundCall).to receive(:originate)
@@ -67,7 +78,7 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      "sofia/alternative-outbound/85512334667@127.0.0.1", any_args
+      "sofia/alternative-outbound/85516701721@27.109.112.141", any_args
     )
   end
 
@@ -85,9 +96,14 @@ RSpec.describe OutboundCall do
       "account_auth_token" => "sample-auth-token",
       "direction" => "outbound-api",
       "api_version" => "2010-04-01",
-      "routing_instructions" => {
-        "dial_string" => "85512334667@127.0.0.1",
-        "nat_supported" => false
+      "routing_parameters" => {
+        "destination" => "85516701721",
+        "dial_string_prefix" => nil,
+        "plus_prefix" => false,
+        "trunk_prefix" => false,
+        "host" => "27.109.112.141",
+        "username" => nil,
+        "symmetric_latching" => true
       }
     )
   end

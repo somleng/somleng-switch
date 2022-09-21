@@ -175,11 +175,14 @@ class ExecuteTwiML
       dial_content = nested_noun.content.strip
 
       if nested_noun.text? || nested_noun.name == "Number"
-        target = build_dial_number_target(dial_content)
-        dial_string = DialString.new(target.dial_string, nat_supported: target.nat_supported).to_s
+        routing_parameters = build_routing_parameters(dial_content)
       elsif nested_noun.name == "Sip"
-        dial_string = DialString.new(dial_content.delete_prefix("sip:")).to_s
+        routing_parameters = {
+          address: dial_content.delete_prefix("sip:")
+        }
       end
+
+      dial_string = DialString.new(routing_parameters).to_s
 
       break dial_string if nested_noun.text?
 
@@ -290,8 +293,8 @@ class ExecuteTwiML
     end
   end
 
-  def build_dial_number_target(number)
-    call_platform_client.build_dial_string(
+  def build_routing_parameters(number)
+    call_platform_client.build_routing_parameters(
       phone_number: number,
       account_sid: call_properties.account_sid
     )

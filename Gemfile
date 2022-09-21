@@ -1,8 +1,10 @@
 source "https://rubygems.org"
 
 gem "adhearsion", github: "adhearsion/adhearsion", branch: "develop"
+gem "aws-sdk-lambda"
 gem "http"
 gem "okcomputer"
+gem "phony"
 gem "sentry-raven"
 gem "sinatra"
 gem "sinatra-contrib", require: false

@@ -39,6 +39,18 @@ GEM
       public_suffix (>= 2.0.2, < 5.0)
     adhearsion-loquacious (1.9.3)
     ast (2.4.2)
+    aws-eventstream (1.2.0)
+    aws-partitions (1.633.0)
+    aws-sdk-core (3.151.0)
+      aws-eventstream (~> 1, >= 1.0.2)
+      aws-partitions (~> 1, >= 1.525.0)
+      aws-sigv4 (~> 1.1)
+      jmespath (~> 1, >= 1.6.1)
+    aws-sdk-lambda (1.85.0)
+      aws-sdk-core (~> 3, >= 3.127.0)
+      aws-sigv4 (~> 1.1)
+    aws-sigv4 (1.5.1)
+      aws-eventstream (~> 1, >= 1.0.2)
     axiom-types (0.1.1)
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
@@ -100,6 +112,7 @@ GEM
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
+    jmespath (1.6.1)
     jwt (2.2.2)
     little-plugger (1.1.4)
     llhttp-ffi (0.0.1)
@@ -128,6 +141,7 @@ GEM
     parallel (1.20.1)
     parser (3.0.1.0)
       ast (~> 2.4.1)
+    phony (2.20.0)
     pry (0.14.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -250,10 +264,12 @@ PLATFORMS
 
 DEPENDENCIES
   adhearsion!
+  aws-sdk-lambda
   bigdecimal (~> 1.4.0)
   http
   mail
   okcomputer
+  phony
   rack-test
   rspec
   rubocop

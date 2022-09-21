@@ -2,12 +2,6 @@ module CallPlatform
   class Client
     class InvalidRequestError < StandardError; end
 
-    DialStringResponse = Struct.new(
-      :dial_string,
-      :nat_supported,
-      keyword_init: true
-    )
-
     InboundPhoneCallResponse = Struct.new(
       :voice_url,
       :voice_method,
@@ -36,12 +30,8 @@ module CallPlatform
       end
     end
 
-    def build_dial_string(params)
-      json_response = make_request("/services/dial_string", params: params)
-      DialStringResponse.new(
-        dial_string: json_response.fetch("dial_string"),
-        nat_supported: json_response.fetch("nat_supported", true)
-      )
+    def build_routing_parameters(params)
+      make_request("/services/routing_parameters", params: params)
     end
 
     def create_call(params)

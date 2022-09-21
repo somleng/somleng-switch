@@ -10,6 +10,7 @@ I18n.load_path << Dir[File.expand_path("locales/*.yml")]
 $LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
 require "encrypted_credentials"
 require "call_platform"
+require "services"
 
 require_relative "app_settings"
 Dir[__dir__ + "/../app/**/*.rb"].sort.each { |f| require f }

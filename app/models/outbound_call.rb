@@ -10,15 +10,9 @@ class OutboundCall
       call_sid: call_params.fetch("sid"),
       account_sid: call_params.fetch("account_sid")
     )
-    nat_supported = routing_instructions.fetch("nat_supported", true)
-    proxy = routing_instructions.fetch("proxy", false)
 
     Adhearsion::OutboundCall.originate(
-      DialString.new(
-        routing_instructions.fetch("dial_string"),
-        nat_supported: nat_supported,
-        proxy: proxy
-      ).to_s,
+      DialString.new(call_params.fetch("routing_parameters")).to_s,
       from: call_params.fetch("from"),
       controller: CallController,
       controller_metadata: {
@@ -38,11 +32,5 @@ class OutboundCall
       },
       headers: sip_headers.to_h
     )
-  end
-
-  private
-
-  def routing_instructions
-    call_params.fetch("routing_instructions", {})
   end
 end
