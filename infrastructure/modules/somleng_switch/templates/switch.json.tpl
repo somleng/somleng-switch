@@ -59,10 +59,6 @@
     ],
     "environment": [
       {
-        "name": "AWS_DEFAULT_REGION",
-        "value": "${region}"
-      },
-      {
         "name": "AHN_ENV",
         "value": "${app_environment}"
       },
