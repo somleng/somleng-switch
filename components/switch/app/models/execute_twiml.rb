@@ -82,14 +82,10 @@ class ExecuteTwiML
     context.call
   end
 
-  def normalized_call
-    @normalized_call ||= NormalizedCall.new(phone_call)
-  end
-
   def answered?
     return if phone_call.blank?
 
-    normalized_call.answer_time.present?
+    phone_call.answer_time.present?
   end
 
   def execute_reject(verb)

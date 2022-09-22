@@ -41,8 +41,8 @@ class CallController < Adhearsion::CallController
     return metadata[:call_properties] if metadata[:call_properties].present?
 
     response = call_platform_client.create_call(
-      to: normalized_call.to,
-      from: normalized_call.from,
+      to: call.variables.fetch("variable_sip_h_x_somleng_callee_identity"),
+      from: call.variables.fetch("variable_sip_h_x_somleng_caller_identity"),
       external_id: call.id,
       source_ip: call.variables["variable_sip_h_x_src_ip"] || call.variables["variable_sip_via_host"],
       client_identifier: call.variables["variable_sip_h_x_somleng_client_identifier"],
@@ -66,10 +66,6 @@ class CallController < Adhearsion::CallController
       from: response.from,
       sip_headers: SIPHeaders.new(call_sid: response.call_sid, account_sid: response.account_sid)
     )
-  end
-
-  def normalized_call
-    @normalized_call ||= NormalizedCall.new(call)
   end
 
   def twiml_endpoint

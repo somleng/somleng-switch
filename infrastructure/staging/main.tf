@@ -65,7 +65,7 @@ module "somleng_switch_staging" {
   client_gateway_max_tasks = 2
   media_proxy_min_tasks = 0
   media_proxy_max_tasks = 2
-  call_platform_stub_responses = true
+  call_platform_stub_responses = false
   assign_client_gateway_eips = false
   assign_media_proxy_eips = false
 }

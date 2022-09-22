@@ -3,6 +3,8 @@ module CallPlatform
     def notify_call_event(_params); end
 
     def create_call(params)
+      validate_gateway_headers(params)
+
       twiml = case params.fetch(:to)
               when "1111" then "<Response><Say>Hello World!</Say><Hangup /></Response>"
               else
@@ -21,6 +23,20 @@ module CallPlatform
         from: params.fetch(:from),
         api_version: "2010-04-01"
       )
+    end
+
+    private
+
+    def validate_gateway_headers(params)
+      validate_gateway_header(params, :from)
+      validate_gateway_header(params, :to)
+    end
+
+    def validate_gateway_header(params, key)
+      value = params.fetch(key)
+      return if value.match?(/\A\+?\d+\z/)
+
+      raise "Invalid parameter #{key}: #{value}. Expected phone number."
     end
   end
 end
