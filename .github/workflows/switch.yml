@@ -162,7 +162,7 @@ jobs:
       - name: Build and push somleng-switch
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: components/switch
           push: true
           platforms: linux/amd64
           cache-from: type=gha,scope=${{ matrix.identifier }}
