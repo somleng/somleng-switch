@@ -52,7 +52,7 @@ jobs:
         with:
           push: false
           load: true
-          context: docker/freeswitch
+          context: components/freeswitch
           build-args:
             signalwire_token=${{ secrets.signalwire_token }}
           tags: freeswitch:latest
@@ -64,7 +64,7 @@ jobs:
         with:
           push: false
           load: true
-          context: docker/gateway
+          context: components/gateway
           target: public_gateway
           tags: public_gateway:latest
           cache-from: type=gha,scope=integration-tests-public-gateway
@@ -75,7 +75,7 @@ jobs:
         with:
           push: false
           load: true
-          context: docker/gateway
+          context: components/gateway
           target: client_gateway
           tags: client_gateway:latest
           cache-from: type=gha,scope=integration-tests-client-gateway
@@ -86,7 +86,7 @@ jobs:
         with:
           push: false
           load: true
-          context: docker/media_proxy
+          context: components/media_proxy
           tags: media_proxy:latest
           cache-from: type=gha,scope=integration-tests-media-proxy
           cache-to: type=gha,mode=max,scope=integration-tests-media-proxy
@@ -96,7 +96,7 @@ jobs:
         with:
           push: false
           load: true
-          context: docker/gateway
+          context: components/gateway
           target: bootstrap
           tags: gateway:bootstrap
           cache-from: type=gha,scope=integration-tests-gateway-bootstrap
@@ -107,7 +107,7 @@ jobs:
         with:
           push: false
           load: true
-          context: docker/testing
+          context: components/testing
           tags: testing:latest
           cache-from: type=gha,scope=integration-tests-testing
           cache-to: type=gha,mode=max,scope=integration-tests-testing

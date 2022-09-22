@@ -84,7 +84,7 @@ jobs:
       - name: Build and push OpenSIPS Scheduler
         uses: docker/build-push-action@v3
         with:
-          context: docker/opensips_scheduler
+          context: components/opensips_scheduler
           push: true
           platforms: linux/amd64
           cache-from: type=gha,scope=${{ matrix.identifier }}-opensips-scheduler
@@ -96,7 +96,7 @@ jobs:
       - name: Build and push OpenSIPS Bootstrap
         uses: docker/build-push-action@v3
         with:
-          context: docker/gateway
+          context: components/gateway
           target: bootstrap
           push: true
           platforms: linux/amd64

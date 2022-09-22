@@ -7,7 +7,7 @@ resource "docker_registry_image" "s3_mpeg" {
   name = "${var.s3_mpeg_ecr_repository_url}:latest"
 
   build {
-    context = abspath("${path.module}/../../../docker/s3_mpeg")
+    context = abspath("${path.module}/../../../components/s3_mpeg")
   }
 
   lifecycle {

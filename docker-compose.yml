@@ -13,7 +13,7 @@ volumes:
 services:
   gateway-bootstrap:
     build:
-      context: docker/gateway
+      context: components/gateway
       target: bootstrap
     image: gateway:bootstrap
     environment:
@@ -27,7 +27,7 @@ services:
 
   public_gateway:
     build:
-      context: docker/gateway
+      context: components/gateway
       target: public_gateway
     image: public_gateway:latest
     environment:
@@ -48,7 +48,7 @@ services:
 
   client_gateway:
     build:
-      context: docker/gateway
+      context: components/gateway
       target: client_gateway
     image: client_gateway:latest
     environment:
@@ -68,7 +68,7 @@ services:
 
   media_proxy:
     build:
-      context: docker/media_proxy
+      context: components/media_proxy
     image: media_proxy:latest
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -82,7 +82,7 @@ services:
 
   freeswitch:
     build:
-      context: docker/freeswitch
+      context: components/freeswitch
     image: freeswitch:latest
     environment:
       FS_EXTERNAL_RTP_IP: "13.250.230.15"
@@ -101,7 +101,7 @@ services:
 
   switch:
     build:
-      context: .
+      context: components/switch
     image: switch:latest
     environment:
       AHN_CORE_HOST: freeswitch
@@ -122,7 +122,7 @@ services:
 
   testing:
     build:
-      context: docker/testing
+      context: components/testing
     image: testing:latest
     command: sipp -sf /scenarios/uas.xml -trace_msg
     environment:

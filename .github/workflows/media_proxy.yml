@@ -48,7 +48,7 @@ jobs:
     if: needs.build.outputs.matrixLength > 0
     defaults:
       run:
-        working-directory: docker/media_proxy
+        working-directory: components/media_proxy
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -92,7 +92,7 @@ jobs:
       - name: Build and push Media Proxy
         uses: docker/build-push-action@v3
         with:
-          context: docker/media_proxy
+          context: components/media_proxy
           push: true
           platforms: linux/amd64
           cache-from: type=gha,scope=${{ matrix.identifier }}
@@ -109,7 +109,7 @@ jobs:
         id: render-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: docker/media_proxy/task-definition.json
+          task-definition: components/media_proxy/task-definition.json
           container-name: media_proxy
           image: ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 

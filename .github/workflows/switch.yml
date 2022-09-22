@@ -8,6 +8,9 @@ jobs:
     outputs:
       matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
       matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
+    defaults:
+      run:
+        working-directory: components/switch
 
     env:
       AHN_ENV: test
@@ -16,6 +19,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          working-directory: components/switch
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -29,7 +34,7 @@ jobs:
 
       - name: Run FreeSWITCH tests
         run: |
-          ./docker/freeswitch/tests/tests.sh
+          ../freeswitch/tests/tests.sh
 
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1
@@ -108,7 +113,7 @@ jobs:
 
       - name: Export Polly Voices
         run: |
-          ./docker/freeswitch/bin/export_aws_polly_voices "docker/freeswitch/conf/autoload_configs/polly_voices.xml"
+          ../freeswitch/bin/export_aws_polly_voices "../freeswitch/conf/autoload_configs/polly_voices.xml"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -119,7 +124,7 @@ jobs:
       - name: Build and push nginx
         uses: docker/build-push-action@v3
         with:
-          context: "docker/nginx"
+          context: components/nginx
           push: true
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha,scope=${{ matrix.identifier }}-nginx
@@ -131,7 +136,7 @@ jobs:
       - name: Build and push FreeSWITCH
         uses: docker/build-push-action@v3
         with:
-          context: "docker/freeswitch"
+          context: components/freeswitch
           build-args:
             signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
           push: true
@@ -145,7 +150,7 @@ jobs:
       - name: Build and push FreeSWITCH Event Logger
         uses: docker/build-push-action@v3
         with:
-          context: "docker/freeswitch_event_logger"
+          context: components/freeswitch_event_logger
           push: true
           platforms: linux/amd64
           cache-from: type=gha,scope=${{ matrix.identifier }}-freeswitch-event-logger
