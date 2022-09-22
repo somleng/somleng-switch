@@ -112,7 +112,7 @@ jobs:
 
       - name: Export Polly Voices
         run: |
-          components/freeswitch/bin/export_aws_polly_voices components/freeswitch/conf/autoload_configs/polly_voices.xml"
+          components/freeswitch/bin/export_aws_polly_voices components/freeswitch/conf/autoload_configs/polly_voices.xml
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
