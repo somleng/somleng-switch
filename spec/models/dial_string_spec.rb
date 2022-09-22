@@ -2,16 +2,16 @@ require "spec_helper"
 
 RSpec.describe DialString do
   describe "#to_s" do
-    it "handles supported NAT trunks" do
-      expect(
-        DialString.new(symmetric_latching: true, address: "1234@192.168.1.1").to_s
-      ).to eq("sofia/external/1234@192.168.1.1")
+    it "handles trunks with symmetric latching support" do
+      dial_string = DialString.new(symmetric_latching: true, address: "1234@192.168.1.1")
+
+      expect(dial_string.to_s).to eq("sofia/external/1234@192.168.1.1")
     end
 
-    it "handles unsupported NAT trunks" do
-      expect(
-        DialString.new(symmetric_latching: false, address: "1234@192.168.1.1").to_s
-      ).to eq("sofia/alternative-outbound/1234@192.168.1.1")
+    it "handles trunks without symmetric latching support" do
+      dial_string = DialString.new(symmetric_latching: false, address: "1234@192.168.1.1")
+
+      expect(dial_string.to_s).to eq("sofia/alternative-outbound/1234@192.168.1.1")
     end
 
     it "builds a public gateway dial string" do

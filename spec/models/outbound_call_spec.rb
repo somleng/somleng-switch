@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe OutboundCall do
-  it "originates an outbound call" do
+  it "originates an outbound call through the public gateway" do
     call_params = build_call_params(
       "to" => "+85516701721",
       "from" => "2442",
@@ -61,7 +61,7 @@ RSpec.describe OutboundCall do
     )
   end
 
-  it "originates an outbound call without NAT support" do
+  it "originates an outbound call through the public gateway without symmetric latching support" do
     call_params = build_call_params(
       "routing_parameters" => {
         "destination" => "85516701721",
@@ -79,6 +79,27 @@ RSpec.describe OutboundCall do
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
       "sofia/alternative-outbound/85516701721@27.109.112.141", any_args
+    )
+  end
+
+  it "originates an outbound call through the client gateway" do
+    call_params = build_call_params(
+      "routing_parameters" => {
+        "destination" => "85516701721",
+        "dial_string_prefix" => nil,
+        "plus_prefix" => true,
+        "trunk_prefix" => false,
+        "host" => nil,
+        "username" => "user1",
+        "symmetric_latching" => true
+      }
+    )
+    allow(Adhearsion::OutboundCall).to receive(:originate)
+
+    OutboundCall.new(call_params).initiate
+
+    expect(Adhearsion::OutboundCall).to have_received(:originate).with(
+      %r{sofia/external/\+85516701721@.+}, any_args
     )
   end
 

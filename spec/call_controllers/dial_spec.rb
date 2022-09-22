@@ -50,7 +50,7 @@ RSpec.describe CallController, type: :call_controller do
       expect(controller).to have_received(:play_audio).with("foo.mp3")
     end
 
-    it "handles numbers without NAT support", :vcr, cassette: :build_routing_parameters_without_symmetric_latching do
+    it "handles numbers without symmetric latching support", :vcr, cassette: :build_routing_parameters_without_symmetric_latching do
       controller = build_controller(
         stub_voice_commands: [{ dial: build_dial_status }],
         call_properties: {
