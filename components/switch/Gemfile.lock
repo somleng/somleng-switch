@@ -121,10 +121,7 @@ GEM
     logging (2.3.0)
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
-    mail (2.7.1)
-      mini_mime (>= 0.1.1)
     method_source (1.0.0)
-    mini_mime (1.1.0)
     mini_portile2 (2.5.1)
     minitest (5.14.4)
     multi_json (1.15.0)
@@ -267,7 +264,6 @@ DEPENDENCIES
   aws-sdk-lambda
   bigdecimal (~> 1.4.0)
   http
-  mail
   okcomputer
   phony
   rack-test
