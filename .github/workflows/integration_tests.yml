@@ -43,6 +43,7 @@ jobs:
         with:
           push: false
           load: true
+          context: components/switch
           tags: switch:latest
           cache-from: type=gha,scope=integration-tests-switch
           cache-to: type=gha,mode=max,scope=integration-tests-switch
