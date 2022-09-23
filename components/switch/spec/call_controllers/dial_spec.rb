@@ -29,7 +29,7 @@ RSpec.describe CallController, type: :call_controller do
       controller = build_controller(
         stub_voice_commands: [:play_audio, { dial: build_dial_status }],
         call_properties: {
-          account_sid: "4d481e74-5383-497d-88ef-6fa193fcda4c"
+          account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34"
         }
       )
 
@@ -54,7 +54,7 @@ RSpec.describe CallController, type: :call_controller do
       controller = build_controller(
         stub_voice_commands: [{ dial: build_dial_status }],
         call_properties: {
-          account_sid: "4d481e74-5383-497d-88ef-6fa193fcda4c"
+          account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34"
         }
       )
 
@@ -77,7 +77,7 @@ RSpec.describe CallController, type: :call_controller do
       controller = build_controller(
         stub_voice_commands: { dial: build_dial_status },
         call_properties: {
-          account_sid: "4d481e74-5383-497d-88ef-6fa193fcda4c"
+          account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34"
         }
       )
 
@@ -108,7 +108,7 @@ RSpec.describe CallController, type: :call_controller do
       controller = build_controller(
         stub_voice_commands: { dial: build_dial_status },
         call_properties: {
-          account_sid: "4d481e74-5383-497d-88ef-6fa193fcda4c"
+          account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34"
         }
       )
 

@@ -34,7 +34,7 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch:8080/calls \
     "destination": "85512334667",
     "dial_string_prefix": null,
     "plus_prefix": true,
-    "trunk_prefix": false,
+    "national_dialing": false,
     "host": null,
     "username": "user1",
     "symmetric_latching": true,

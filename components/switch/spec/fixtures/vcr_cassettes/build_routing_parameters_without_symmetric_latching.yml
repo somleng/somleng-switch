@@ -5,7 +5,7 @@ http_interactions:
     uri: http://api.lvh.me:3000/services/routing_parameters
     body:
       encoding: UTF-8
-      string: '{"phone_number":"85516701721","account_sid":"4d481e74-5383-497d-88ef-6fa193fcda4c"}'
+      string: '{"phone_number":"85516701721","account_sid":"ea471a9f-d4b3-4035-966e-f507b8da6d34"}'
     headers:
       Accept:
       - application/json
@@ -37,20 +37,20 @@ http_interactions:
       Content-Type:
       - application/vnd.api+json; charset=utf-8
       Etag:
-      - W/"f59a1ee27f8a1abc021fc494dd660cd6"
+      - W/"21103aaeb76a9e3ee988d8273a166fc7"
       Cache-Control:
       - max-age=0, private, must-revalidate
       X-Request-Id:
-      - 026a3326-5b16-4e0a-b93b-a21f1ddb9e44
+      - 8efc63c7-a871-4ecd-80ac-ae87b1539748
       X-Runtime:
-      - '0.018355'
+      - '0.019747'
       Server-Timing:
-      - start_processing.action_controller;dur=0.166748046875, sql.active_record;dur=2.65625,
-        instantiation.active_record;dur=0.2470703125, process_action.action_controller;dur=5.18896484375
+      - start_processing.action_controller;dur=0.177001953125, sql.active_record;dur=2.358154296875,
+        instantiation.active_record;dur=0.3193359375, process_action.action_controller;dur=5.7978515625
       Transfer-Encoding:
       - chunked
     body:
       encoding: UTF-8
-      string: '{"destination":"85516701721","dial_string_prefix":null,"plus_prefix":false,"trunk_prefix":true,"host":"host.docker.internal:5061","username":null,"symmetric_latching":false}'
-  recorded_at: Wed, 21 Sep 2022 11:31:46 GMT
+      string: '{"destination":"85516701721","dial_string_prefix":null,"plus_prefix":false,"national_dialing":true,"host":"host.docker.internal:5061","username":null,"symmetric_latching":false}'
+  recorded_at: Fri, 23 Sep 2022 06:26:42 GMT
 recorded_with: VCR 6.0.0

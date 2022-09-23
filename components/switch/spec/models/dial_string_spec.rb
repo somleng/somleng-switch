@@ -20,7 +20,7 @@ RSpec.describe DialString do
           destination: "855716100987",
           dial_string_prefix: nil,
           plus_prefix: false,
-          trunk_prefix: false,
+          national_dialing: false,
           host: "sip.example.com"
         )
       )
@@ -34,7 +34,7 @@ RSpec.describe DialString do
           destination: "855716100987",
           dial_string_prefix: "1234",
           plus_prefix: true,
-          trunk_prefix: false,
+          national_dialing: false,
           host: "sip.example.com"
         )
       )
@@ -42,18 +42,32 @@ RSpec.describe DialString do
       expect(dial_string.to_s).to eq("sofia/external/+1234855716100987@sip.example.com")
     end
 
-    it "builds a dial string with trunk prefix" do
+    it "builds a dial string for national dialing for countries with a trunk prefix" do
       dial_string = DialString.new(
         build_routing_parameters(
           destination: "855716100987",
           dial_string_prefix: nil,
           plus_prefix: false,
-          trunk_prefix: true,
+          national_dialing: true,
           host: "sip.example.com"
         )
       )
 
       expect(dial_string.to_s).to eq("sofia/external/0716100987@sip.example.com")
+    end
+
+    it "builds a dial string for national dialing for countries without a trunk prefix" do
+      dial_string = DialString.new(
+        build_routing_parameters(
+          destination: "16505130514",
+          dial_string_prefix: nil,
+          plus_prefix: false,
+          national_dialing: true,
+          host: "sip.example.com"
+        )
+      )
+
+      expect(dial_string.to_s).to eq("sofia/external/6505130514@sip.example.com")
     end
 
     it "build a client gateway dial string" do
@@ -80,7 +94,7 @@ RSpec.describe DialString do
       destination: "855716100987",
       dial_string_prefix: nil,
       plus_prefix: false,
-      trunk_prefix: false,
+      national_dialing: false,
       host: "sip.example.com",
       username: nil
     )
