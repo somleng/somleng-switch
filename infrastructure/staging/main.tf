@@ -5,7 +5,6 @@ data "aws_ssm_parameter" "somleng_services_password" {
 module "somleng_switch_staging" {
   source = "../modules/somleng_switch"
 
-  aws_region = var.aws_region
   cluster_name = "somleng-switch-staging"
   switch_identifier = "switch-staging"
   services_identifier = "switch-services-staging"
@@ -13,7 +12,10 @@ module "somleng_switch_staging" {
   public_gateway_identifier = "public-gateway-staging"
   client_gateway_identifier = "client-gateway-staging"
   media_proxy_identifier = "media-proxy-staging"
+
+  aws_region = var.aws_region
   app_environment = "staging"
+
   switch_image = data.terraform_remote_state.core.outputs.switch_ecr_repository.repository_uri
   nginx_image = data.terraform_remote_state.core.outputs.nginx_ecr_repository.repository_uri
   freeswitch_image = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository.repository_uri
@@ -21,7 +23,6 @@ module "somleng_switch_staging" {
   public_gateway_image = data.terraform_remote_state.core.outputs.public_gateway_ecr_repository.repository_uri
   client_gateway_image = data.terraform_remote_state.core.outputs.client_gateway_ecr_repository.repository_uri
   media_proxy_image = data.terraform_remote_state.core.outputs.media_proxy_ecr_repository.repository_uri
-
   opensips_scheduler_image = data.terraform_remote_state.core.outputs.opensips_scheduler_ecr_repository.repository_uri
 
   s3_mpeg_ecr_repository_url = data.terraform_remote_state.core.outputs.s3_mpeg_ecr_repository.repository_url
