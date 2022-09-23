@@ -49,9 +49,8 @@ module "somleng_switch" {
   network_load_balancer = data.terraform_remote_state.core_infrastructure.outputs.network_load_balancer
   route53_zone = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_somleng_org
   listener_arn = data.terraform_remote_state.core_infrastructure.outputs.https_listener.arn
-  sip_subdomain = "sip"
   switch_subdomain = "ahn"
-  client_gateway_subdomain = "client-gateway"
+  client_gateway_subdomain = "sip"
 
   recordings_bucket_name = "raw-recordings.somleng.org"
   switch_max_tasks = 10

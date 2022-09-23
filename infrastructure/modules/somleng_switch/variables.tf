@@ -22,7 +22,6 @@ variable services_ecr_repository_url {}
 variable "load_balancer" {}
 variable "network_load_balancer" {}
 variable "listener_arn" {}
-variable "sip_subdomain" {}
 variable "switch_subdomain" {}
 variable "client_gateway_subdomain" {}
 variable "route53_zone" {}
