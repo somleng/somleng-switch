@@ -25,11 +25,11 @@
   },
   {
     "name": "switch",
-    "image": "${switch_image}:latest",
+    "image": "${app_image}:latest",
     "logConfiguration": {
       "logDriver": "awslogs",
        "options": {
-         "awslogs-group": "${switch_logs_group}",
+         "awslogs-group": "${app_logs_group}",
          "awslogs-region": "${logs_group_region}",
          "awslogs-stream-prefix": "${app_environment}"
        }

@@ -51,7 +51,7 @@ resource "aws_ecrpublic_repository" "opensips" {
   }
 }
 
-# Delete this after deploy
+# TODO Delete this after deploy
 resource "aws_ecrpublic_repository" "opensips_scheduler_old" {
   repository_name = "somleng-switch-opensips-scheduler"
   provider = aws.us-east-1

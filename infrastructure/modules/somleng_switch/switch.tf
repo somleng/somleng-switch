@@ -29,8 +29,8 @@ resource "aws_ecs_capacity_provider" "switch" {
 }
 
 # Log Groups
-resource "aws_cloudwatch_log_group" "switch" {
-  name = "${var.switch_identifier}-switch"
+resource "aws_cloudwatch_log_group" "switch_app" {
+  name = "${var.switch_identifier}-app"
   retention_in_days = 7
 }
 
@@ -51,11 +51,11 @@ resource "aws_cloudwatch_log_group" "freeswitch_event_logger" {
 
 # Security Group
 resource "aws_security_group" "switch" {
-  name   = "${var.switch_identifier}-appserver"
+  name   = var.switch_identifier
   vpc_id = var.vpc.vpc_id
 
   tags = {
-    "Name" = "${var.switch_identifier}-switch"
+    "Name" = var.switch_identifier
   }
 }
 
@@ -369,7 +369,7 @@ data "template_file" "switch" {
 
   vars = {
     name = var.switch_identifier
-    switch_image      = var.switch_image
+    app_image      = var.switch_app_image
     nginx_image      = var.nginx_image
     freeswitch_image = var.freeswitch_image
     freeswitch_event_logger_image = var.freeswitch_event_logger_image
@@ -385,7 +385,7 @@ data "template_file" "switch" {
     nginx_logs_group = aws_cloudwatch_log_group.nginx.name
     freeswitch_logs_group = aws_cloudwatch_log_group.freeswitch.name
     freeswitch_event_logger_logs_group = aws_cloudwatch_log_group.freeswitch_event_logger.name
-    switch_logs_group = aws_cloudwatch_log_group.switch.name
+    app_logs_group = aws_cloudwatch_log_group.switch_app.name
     logs_group_region = var.aws_region
     app_environment = var.app_environment
 

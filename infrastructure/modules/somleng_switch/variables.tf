@@ -9,7 +9,7 @@ variable "public_gateway_identifier" {}
 variable "client_gateway_identifier" {}
 variable "media_proxy_identifier" {}
 variable "app_environment" {}
-variable "switch_image" {}
+variable "switch_app_image" {}
 variable "nginx_image" {}
 variable "freeswitch_image" {}
 variable "opensips_scheduler_image" {}

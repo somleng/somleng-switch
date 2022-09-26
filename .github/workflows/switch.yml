@@ -10,7 +10,7 @@ jobs:
       matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
     defaults:
       run:
-        working-directory: components/switch
+        working-directory: components/app
 
     env:
       AHN_ENV: test
@@ -23,7 +23,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          working-directory: components/switch
+          working-directory: components/app
           ruby-version: '2.7'
           bundler-cache: true
 
@@ -39,7 +39,7 @@ jobs:
         uses: codacy/codacy-coverage-reporter-action@v1
         with:
           api-token: ${{ secrets.CODACY_API_TOKEN }}
-          coverage-reports: components/switch/coverage/lcov/*
+          coverage-reports: components/app/coverage/lcov/*
           language: Ruby
 
       # Adapted from
@@ -158,10 +158,10 @@ jobs:
             ${{ env.FREESWITCH_EVENT_LOGGER_ECR_REPOSITORY_URI }}:${{ matrix.image_tag }}
             ${{ env.FREESWITCH_EVENT_LOGGER_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
 
-      - name: Build and push somleng-switch
+      - name: Build and push App
         uses: docker/build-push-action@v3
         with:
-          context: components/switch
+          context: components/app
           push: true
           platforms: linux/amd64
           cache-from: type=gha,scope=${{ matrix.identifier }}
@@ -198,18 +198,18 @@ jobs:
           container-name: freeswitch-event-logger
           image: ${{ env.FREESWITCH_EVENT_LOGGER_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
 
-      - name: Prepare SomlengSWITCH task definition
-        id: render-switch-task-def
+      - name: Prepare App task definition
+        id: render-app-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ steps.render-freeswitch-event-logger-task-def.outputs.task-definition }}
-          container-name: switch
+          container-name: app
           image: ${{ env.APP_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
 
       - name: Deploy App Server
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.render-switch-task-def.outputs.task-definition }}
+          task-definition: ${{ steps.render-app-task-def.outputs.task-definition }}
           service: ${{ matrix.ecs_service }}
           cluster: ${{ matrix.ecs_cluster }}
           wait-for-service-stability: true
