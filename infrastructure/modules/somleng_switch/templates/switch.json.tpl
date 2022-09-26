@@ -18,13 +18,13 @@
     ],
     "dependsOn": [
       {
-        "containerName": "switch",
+        "containerName": "app",
         "condition": "HEALTHY"
       }
     ]
   },
   {
-    "name": "switch",
+    "name": "app",
     "image": "${app_image}:latest",
     "logConfiguration": {
       "logDriver": "awslogs",
