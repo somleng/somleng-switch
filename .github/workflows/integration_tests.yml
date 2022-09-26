@@ -44,7 +44,7 @@ jobs:
           push: false
           load: true
           context: components/app
-          tags: switch_app:latest
+          tags: switch-app:latest
           cache-from: type=gha,scope=integration-tests-switch-app
           cache-to: type=gha,mode=max,scope=integration-tests-switch-app
 
