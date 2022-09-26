@@ -99,10 +99,10 @@ services:
       timeout: 5s
       retries: 10
 
-  switch_app:
+  switch-app:
     build:
       context: components/app
-    image: switch_app:latest
+    image: switch-app:latest
     environment:
       AHN_CORE_HOST: freeswitch
       CALL_PLATFORM_STUB_RESPONSES: "true"
