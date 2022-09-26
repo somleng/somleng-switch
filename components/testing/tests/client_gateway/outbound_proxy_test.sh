@@ -16,7 +16,7 @@ reload_opensips_tables
 client_gateway="$(dig +short client_gateway)"
 media_proxy="$(dig +short media_proxy)"
 
-curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch_app:8080/calls \
+curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/calls \
 -H 'Content-Type: application/json; charset=utf-8' \
 --data-binary @- << EOF
 {
