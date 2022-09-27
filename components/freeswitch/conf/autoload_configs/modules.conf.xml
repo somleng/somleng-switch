@@ -8,6 +8,8 @@
     <load module="mod_ssml"/>
     <load module="mod_event_socket"/>
 
+    <load module="mod_spandsp"/>
+
     <!-- Endpoints -->
     <load module="mod_sofia"/>
 

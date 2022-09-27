@@ -35,6 +35,7 @@ RUN apt-get update && apt-get install -y \
     freeswitch-mod-tone-stream \
     freeswitch-mod-tts-commandline \
     freeswitch-mod-pgsql \
+    freeswitch-mod-spandsp \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
