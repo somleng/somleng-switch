@@ -85,10 +85,6 @@
       {
         "name": "SERVICES_FUNCTION_ARN",
         "value": "${services_function_arn}"
-      },
-      {
-        "name": "CALL_PLATFORM_STUB_RESPONSES",
-        "value": "${call_platform_stub_responses}"
       }
     ]
   },
