@@ -40,28 +40,6 @@ resource "aws_ecrpublic_repository" "freeswitch_event_logger" {
   }
 }
 
-# TODO Delete this after deploy
-resource "aws_ecrpublic_repository" "opensips" {
-  repository_name = "somleng-switch-opensips"
-  provider = aws.us-east-1
-
-  catalog_data {
-    about_text        = "Somleng Switch OpenSIPS"
-    architectures     = ["Linux"]
-  }
-}
-
-# TODO Delete this after deploy
-resource "aws_ecrpublic_repository" "opensips_scheduler_old" {
-  repository_name = "somleng-switch-opensips-scheduler"
-  provider = aws.us-east-1
-
-  catalog_data {
-    about_text        = "Somleng Switch OpenSIPS Scheduler"
-    architectures     = ["Linux"]
-  }
-}
-
 resource "aws_ecrpublic_repository" "public_gateway" {
   repository_name = "public-gateway"
   provider = aws.us-east-1

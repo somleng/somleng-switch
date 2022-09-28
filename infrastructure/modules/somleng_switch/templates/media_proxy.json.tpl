@@ -11,6 +11,12 @@
        }
     },
     "essential": true,
+    "healthCheck": {
+      "command": ["CMD-SHELL", "nc -z -w 5 $$(hostname -i) ${healthcheck_port}"],
+      "interval": 10,
+      "retries": 10,
+      "timeout": 5
+    },
     "environment": [
       {
         "name": "NG_PORT",
@@ -23,6 +29,10 @@
       {
         "name": "MEDIA_PORT_MAX",
         "value": "${media_port_max}"
+      },
+      {
+        "name": "HEALTHCHECK_PORT",
+        "value": "${healthcheck_port}"
       }
     ]
   }

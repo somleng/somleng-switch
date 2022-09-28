@@ -50,14 +50,18 @@ variable "public_gateway_max_tasks" {
 variable "public_gateway_min_tasks" {
   default = 1
 }
+# This should be at least 2 to avoid tasks shutting down with
+# clients still registered
 variable "client_gateway_min_tasks" {
-  default = 1
+  default = 2
 }
 variable "client_gateway_max_tasks" {
   default = 2
 }
+# This should be at least 2 to avoid tasks shutting down with
+# clients still registered
 variable "media_proxy_min_tasks" {
-  default = 1
+  default = 2
 }
 variable "media_proxy_max_tasks" {
   default = 2
@@ -73,6 +77,9 @@ variable "media_proxy_media_port_max" {
 
 variable "media_proxy_ng_port" {
   default = 2223
+}
+variable "media_proxy_healthcheck_port" {
+  default = 2224
 }
 
 # If the average CPU utilization over a minute drops to this threshold,
@@ -113,6 +120,3 @@ variable "external_rtp_ip" {}
 variable "alternative_sip_outbound_ip" {}
 variable "alternative_rtp_ip" {}
 variable "json_cdr_url" {}
-variable "call_platform_stub_responses" {
-  default = false
-}

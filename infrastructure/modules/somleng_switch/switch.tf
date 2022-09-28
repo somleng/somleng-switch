@@ -406,8 +406,6 @@ data "template_file" "switch" {
     recordings_bucket_region = aws_s3_bucket.recordings.region
 
     services_function_arn = aws_lambda_function.services.arn
-
-    call_platform_stub_responses = var.call_platform_stub_responses
   }
 }
 
