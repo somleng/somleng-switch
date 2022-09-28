@@ -60,7 +60,7 @@ jobs:
               "image_tag": "staging"
             },
             {
-              "identifier": "somleng-switch_services",
+              "identifier": "switch-services",
               "branch": "master",
               "image_tag": "latest"
             }

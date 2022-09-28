@@ -61,7 +61,7 @@ jobs:
               "identifier": "somleng-switch",
               "branch": "master",
               "image_tag": "latest",
-              "ecs_service": "somleng-switch",
+              "ecs_service": "switch",
               "ecs_cluster": "somleng-switch"
             }
           ]

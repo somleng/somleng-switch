@@ -46,7 +46,7 @@ jobs:
               "image_tag": "staging"
             },
             {
-              "identifier": "somleng-switch_s3_mpeg",
+              "identifier": "s3-mpeg",
               "branch": "master",
               "image_tag": "latest"
             }
