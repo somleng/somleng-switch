@@ -150,6 +150,7 @@ data "template_file" "media_proxy" {
     app_environment = var.app_environment
 
     ng_port = var.media_proxy_ng_port
+    healthcheck_port = var.media_proxy_healthcheck_port
     media_port_min = var.media_proxy_media_port_min
     media_port_max = var.media_proxy_media_port_max
   }
