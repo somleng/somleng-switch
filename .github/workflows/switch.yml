@@ -58,7 +58,7 @@ jobs:
               "ecs_cluster": "somleng-switch-staging"
             },
             {
-              "identifier": "somleng-switch",
+              "identifier": "switch",
               "branch": "master",
               "image_tag": "latest",
               "ecs_service": "switch",
