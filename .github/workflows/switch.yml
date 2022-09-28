@@ -52,7 +52,7 @@ jobs:
           [
             {
               "identifier": "switch-staging",
-              "branch": "fix_nat",
+              "branch": "develop",
               "image_tag": "staging",
               "ecs_service": "switch-staging",
               "ecs_cluster": "somleng-switch-staging"

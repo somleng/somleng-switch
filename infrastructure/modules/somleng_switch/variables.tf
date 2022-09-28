@@ -26,6 +26,7 @@ variable "switch_subdomain" {}
 variable "client_gateway_subdomain" {}
 variable "route53_zone" {}
 variable "recordings_bucket_name" {}
+variable "efs_cache_name" {}
 variable "container_insights_enabled" {
   default = false
 }
@@ -53,13 +54,13 @@ variable "client_gateway_min_tasks" {
   default = 1
 }
 variable "client_gateway_max_tasks" {
-  default = 4
+  default = 2
 }
 variable "media_proxy_min_tasks" {
   default = 1
 }
 variable "media_proxy_max_tasks" {
-  default = 4
+  default = 2
 }
 
 variable "media_proxy_media_port_min" {
@@ -73,8 +74,6 @@ variable "media_proxy_media_port_max" {
 variable "media_proxy_ng_port" {
   default = 2223
 }
-
-
 
 # If the average CPU utilization over a minute drops to this threshold,
 # the number of containers will be reduced (but not below ecs_autoscale_min_instances).

@@ -56,7 +56,7 @@ jobs:
           [
             {
               "identifier": "switch-services-staging",
-              "branch": "fix_nat",
+              "branch": "develop",
               "image_tag": "staging"
             },
             {

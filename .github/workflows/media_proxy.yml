@@ -20,7 +20,7 @@ jobs:
           [
             {
               "identifier": "media-proxy-staging",
-              "branch": "fix_nat",
+              "branch": "develop",
               "image_tag": "staging",
               "ecs_service": "media-proxy-staging",
               "ecs_cluster": "somleng-switch-staging"

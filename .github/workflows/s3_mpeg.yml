@@ -42,7 +42,7 @@ jobs:
           [
             {
               "identifier": "s3-mpeg-staging",
-              "branch": "fix_nat",
+              "branch": "develop",
               "image_tag": "staging"
             },
             {

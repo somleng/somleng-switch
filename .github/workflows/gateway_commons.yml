@@ -18,7 +18,7 @@ jobs:
           [
             {
               "identifier": "gateway-commons-staging",
-              "branch": "fix_nat",
+              "branch": "develop",
               "image_tag": "staging"
             },
             {

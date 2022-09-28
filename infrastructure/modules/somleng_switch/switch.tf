@@ -313,11 +313,11 @@ resource "aws_iam_role_policy_attachment" "task_execution_role_policy" {
 
 # EFS
 resource "aws_efs_file_system" "cache" {
-  creation_token = "${var.switch_identifier}-cache"
+  creation_token = var.efs_cache_name
   encrypted = true
 
   tags = {
-    Name = "${var.switch_identifier}-cache"
+    Name = var.efs_cache_name
   }
 
   lifecycle_policy {

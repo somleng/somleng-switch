@@ -26,7 +26,7 @@ jobs:
           [
             {
               "identifier": "client-gateway-staging",
-              "branch": "fix_nat",
+              "branch": "develop",
               "image_tag": "staging",
               "ecs_service": "client-gateway-staging",
               "ecs_cluster": "somleng-switch-staging"

@@ -13,7 +13,7 @@ module "somleng_switch" {
   client_gateway_identifier = "client-gateway"
   media_proxy_identifier = "media-proxy"
 
-  switch_image = data.terraform_remote_state.core.outputs.switch_ecr_repository.repository_uri
+  switch_app_image = data.terraform_remote_state.core.outputs.switch_ecr_repository.repository_uri
   nginx_image = data.terraform_remote_state.core.outputs.nginx_ecr_repository.repository_uri
   freeswitch_image = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository.repository_uri
   freeswitch_event_logger_image = data.terraform_remote_state.core.outputs.freeswitch_event_logger_ecr_repository.repository_uri
@@ -37,6 +37,7 @@ module "somleng_switch" {
   alternative_sip_outbound_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
   alternative_rtp_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
 
+  efs_cache_name = "somleng-switch-cache"
   public_gateway_db_name = "opensips_public_gateway"
   client_gateway_db_name = "opensips_client_gateway"
   db_username = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.master_username
