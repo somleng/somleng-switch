@@ -50,14 +50,18 @@ variable "public_gateway_max_tasks" {
 variable "public_gateway_min_tasks" {
   default = 1
 }
+# This should be at least 2 to avoid tasks shutting down with
+# clients still registered
 variable "client_gateway_min_tasks" {
-  default = 1
+  default = 2
 }
 variable "client_gateway_max_tasks" {
   default = 2
 }
+# This should be at least 2 to avoid tasks shutting down with
+# clients still registered
 variable "media_proxy_min_tasks" {
-  default = 1
+  default = 2
 }
 variable "media_proxy_max_tasks" {
   default = 2
