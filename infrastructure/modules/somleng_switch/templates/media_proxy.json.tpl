@@ -12,7 +12,7 @@
     },
     "essential": true,
     "healthCheck": {
-      "command": ["CMD-SHELL", "nc -z -w 5 $$(hostname -i) ${healthcheck_port}"],
+      "command": ["CMD-SHELL", "nc -z -w 5 $(hostname -i) ${healthcheck_port}"],
       "interval": 10,
       "retries": 10,
       "timeout": 5

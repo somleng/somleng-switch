@@ -18,7 +18,7 @@
     ],
     "essential": true,
     "healthCheck": {
-      "command": ["CMD-SHELL", "nc -z -w 5 $$(hostname -i) ${sip_port}"],
+      "command": ["CMD-SHELL", "nc -z -w 5 $(hostname -i) ${sip_port}"],
       "interval": 10,
       "retries": 10,
       "timeout": 5
