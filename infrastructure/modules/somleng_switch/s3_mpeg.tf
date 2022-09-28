@@ -1,5 +1,5 @@
 locals {
-  s3_mpeg_function_name = "${var.app_identifier}_s3_mpeg"
+  s3_mpeg_function_name = "${var.s3_mpeg_identifier}"
   s3_filter_suffix = ".wav"
 }
 
@@ -7,7 +7,7 @@ resource "docker_registry_image" "s3_mpeg" {
   name = "${var.s3_mpeg_ecr_repository_url}:latest"
 
   build {
-    context = abspath("${path.module}/../../../docker/s3_mpeg")
+    context = abspath("${path.module}/../../../components/s3_mpeg")
   }
 
   lifecycle {

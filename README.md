@@ -9,7 +9,7 @@ SomlengSWITCH (part of [The Somleng Project](https://github.com/somleng/somleng-
 This repository includes the following core features:
 
 * [Open Source TwiML parser](https://github.com/somleng/somleng-switch/blob/develop/app/models/execute_twiml.rb)
-* [FreeSWITCH configuration files](https://github.com/somleng/somleng-switch/tree/develop/docker/freeswitch)
+* [FreeSWITCH configuration files](https://github.com/somleng/somleng-switch/tree/develop/components/freeswitch)
 * [Terraform infrastructure as code](https://github.com/somleng/somleng-switch/tree/develop/infrastructure) for deployment to AWS
 
 ## Usage
@@ -24,7 +24,7 @@ The [infrastructure directory](https://github.com/somleng/somleng-switch/tree/de
 
 The infrastructure in this repository depends on some shared core infrastructure. This core infrastructure can be found in the [Somleng Project](https://github.com/somleng/somleng-project/tree/master/infrastructure) repository.
 
-The current infrastructure deploys SomlengSWITCH to AWS behind an Network Load Balancer (NLB) to Elastic Container Service (ECS). There is one task, which runs three containers. An [NGINX container](https://github.com/somleng/somleng-switch/blob/develop/docker/nginx/Dockerfile) which runs as a reverse proxy to the [Adhearsion container](https://github.com/somleng/somleng-switch/blob/develop/Dockerfile) which accepts API requests from Somleng. There's also a [FreeSWITCH container](https://github.com/somleng/somleng-switch/blob/develop/docker/freeswitch/Dockerfile) which handles SIP connections to operators.
+The current infrastructure deploys SomlengSWITCH to AWS behind a Network Load Balancer (NLB) to Elastic Container Service (ECS). There is one task, which runs three containers. An [NGINX container](https://github.com/somleng/somleng-switch/blob/develop/components/nginx/Dockerfile) which runs as a reverse proxy to the [Adhearsion container](https://github.com/somleng/somleng-switch/blob/develop/Dockerfile) which accepts API requests from Somleng. There's also a [FreeSWITCH container](https://github.com/somleng/somleng-switch/blob/develop/components/freeswitch/Dockerfile) which handles SIP connections to operators.
 
 ## License
 

@@ -1,11 +1,5 @@
 # This docker-compose configuration is intended to be used for integration testing only.
 #
-# Usage:
-#
-# $ docker-compose run opensips-bootstrap-db
-# $ docker-compose run opensips-bootstrap-db-data
-# $ docker-compose up opensips freeswitch somleng-switch
-#
 # Note:
 # Assumes postgres is running on the host machine.
 # Postgres is not included in this docker-compose configuration
@@ -17,44 +11,87 @@ volumes:
   opensips_fifo:
 
 services:
-  opensips-bootstrap-db:
+  gateway-bootstrap:
     build:
-      context: docker/opensips
+      context: components/gateway
       target: bootstrap
-    image: opensips:bootstrap
+    image: gateway:bootstrap
     environment:
       DATABASE_USERNAME: "postgres"
       DATABASE_PASSWORD:
+      DATABASE_NAME:
       DATABASE_HOST: "host.docker.internal"
       DATABASE_PORT: 5432
-      DATABASE_NAME: "opensips"
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  opensips:
+  public_gateway:
     build:
-      context: docker/opensips
-    image: opensips:latest
+      context: components/gateway
+      target: public_gateway
+    image: public_gateway:latest
     environment:
-      DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
-      FIFO_NAME: /opensips/fifo/opensips_fifo
+      DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips_public_gateway_test"
+      FIFO_NAME: /opensips/fifo/public_gateway
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
-      test: ["CMD-SHELL", "nc -z -w 5 localhost 5060"]
+      test: ["CMD-SHELL", "nc -z -w 5 $$(hostname -i) 5060"]
       interval: 10s
       timeout: 5s
       retries: 10
+    expose:
+      - "5060/udp"
+      - "5080/udp"
     volumes:
       - opensips_fifo:/opensips/fifo
 
+  client_gateway:
+    build:
+      context: components/gateway
+      target: client_gateway
+    image: client_gateway:latest
+    environment:
+      DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips_client_gateway_test"
+      FIFO_NAME: /opensips/fifo/client_gateway
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z -w 5 $$(hostname -i) 5060"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    expose:
+      - "5060/udp"
+    volumes:
+      - opensips_fifo:/opensips/fifo
+
+  media_proxy:
+    build:
+      context: components/media_proxy
+    image: media_proxy:latest
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z -w 5 $$(hostname -i) 25060"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    expose:
+      - "2223/udp"
+
   freeswitch:
     build:
-      context: docker/freeswitch
+      context: components/freeswitch
     image: freeswitch:latest
     environment:
       FS_EXTERNAL_RTP_IP: "13.250.230.15"
       FS_ALTERNATIVE_RTP_IP: "18.141.245.230"
+    expose:
+      - "5060/udp"
+      - "5222/tcp"
+      - "5080/udp"
+      - "8021/tcp"
     healthcheck:
       test:
         ["CMD-SHELL", "fs_cli -p secret -x 'rayo status' | rayo_status_parser"]
@@ -62,14 +99,15 @@ services:
       timeout: 5s
       retries: 10
 
-  somleng-switch:
+  switch-app:
     build:
-      context: .
-    image: somleng-switch:latest
+      context: components/app
+    image: switch-app:latest
     environment:
       AHN_CORE_HOST: freeswitch
       CALL_PLATFORM_STUB_RESPONSES: "true"
       AHN_CORE_HTTP_PORT: "8080"
+      AWS_DEFAULT_REGION: "ap-southeast-1"
     healthcheck:
       test:
         [
@@ -79,15 +117,19 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    expose:
+      - "8080/tcp"
 
   testing:
     build:
-      context: docker/testing
+      context: components/testing
     image: testing:latest
-    command: sipp -sn uas -trace_msg
+    command: sipp -sf /scenarios/uas.xml -trace_msg
     environment:
-      OPENSIPS_FIFO_NAME: /opensips/fifo/opensips_fifo
-      DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips"
+      DATABASE_HOST: host.docker.internal
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: postgres
+      FIFO_DIR: /opensips/fifo
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:

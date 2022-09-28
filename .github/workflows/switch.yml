@@ -8,6 +8,9 @@ jobs:
     outputs:
       matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
       matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
+    defaults:
+      run:
+        working-directory: components/app
 
     env:
       AHN_ENV: test
@@ -20,6 +23,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
+          working-directory: components/app
           ruby-version: '2.7'
           bundler-cache: true
 
@@ -29,13 +33,13 @@ jobs:
 
       - name: Run FreeSWITCH tests
         run: |
-          ./docker/freeswitch/tests/tests.sh
+          ../freeswitch/tests/tests.sh
 
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1
         with:
           api-token: ${{ secrets.CODACY_API_TOKEN }}
-          coverage-reports: coverage/lcov/*
+          coverage-reports: components/app/coverage/lcov/*
           language: Ruby
 
       # Adapted from
@@ -47,10 +51,10 @@ jobs:
           matrixSource=$(cat << EOF
           [
             {
-              "identifier": "somleng-switch-staging",
+              "identifier": "switch-staging",
               "branch": "develop",
               "image_tag": "staging",
-              "ecs_service": "somleng-switch-staging",
+              "ecs_service": "switch-staging",
               "ecs_cluster": "somleng-switch-staging"
             },
             {
@@ -67,17 +71,11 @@ jobs:
           echo ::set-output name=matrix::{\"include\":$(echo $matrix)}\"
           echo ::set-output name=matrixLength::$(echo $matrix | jq length)
 
-  integration_tests:
-    uses: ./.github/workflows/integration_tests.yml
-    secrets:
-      signalwire_token: ${{ secrets.SIGNALWIRE_TOKEN }}
-
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
     needs:
       - build
-      - integration_tests
     if: needs.build.outputs.matrixLength > 0
     env:
       IMAGE_TAG: ${{ github.sha }}
@@ -114,7 +112,7 @@ jobs:
 
       - name: Export Polly Voices
         run: |
-          ./docker/freeswitch/bin/export_aws_polly_voices "docker/freeswitch/conf/autoload_configs/polly_voices.xml"
+          components/freeswitch/bin/export_aws_polly_voices components/freeswitch/conf/autoload_configs/polly_voices.xml
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -125,7 +123,7 @@ jobs:
       - name: Build and push nginx
         uses: docker/build-push-action@v3
         with:
-          context: "docker/nginx"
+          context: components/nginx
           push: true
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha,scope=${{ matrix.identifier }}-nginx
@@ -137,7 +135,7 @@ jobs:
       - name: Build and push FreeSWITCH
         uses: docker/build-push-action@v3
         with:
-          context: "docker/freeswitch"
+          context: components/freeswitch
           build-args:
             signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
           push: true
@@ -151,7 +149,7 @@ jobs:
       - name: Build and push FreeSWITCH Event Logger
         uses: docker/build-push-action@v3
         with:
-          context: "docker/freeswitch_event_logger"
+          context: components/freeswitch_event_logger
           push: true
           platforms: linux/amd64
           cache-from: type=gha,scope=${{ matrix.identifier }}-freeswitch-event-logger
@@ -160,10 +158,10 @@ jobs:
             ${{ env.FREESWITCH_EVENT_LOGGER_ECR_REPOSITORY_URI }}:${{ matrix.image_tag }}
             ${{ env.FREESWITCH_EVENT_LOGGER_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
 
-      - name: Build and push somleng-switch
+      - name: Build and push App
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: components/app
           push: true
           platforms: linux/amd64
           cache-from: type=gha,scope=${{ matrix.identifier }}
@@ -200,18 +198,18 @@ jobs:
           container-name: freeswitch-event-logger
           image: ${{ env.FREESWITCH_EVENT_LOGGER_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
 
-      - name: Prepare SomlengSWITCH task definition
-        id: render-switch-task-def
+      - name: Prepare App task definition
+        id: render-app-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ steps.render-freeswitch-event-logger-task-def.outputs.task-definition }}
-          container-name: switch
+          container-name: app
           image: ${{ env.APP_ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
 
       - name: Deploy App Server
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.render-switch-task-def.outputs.task-definition }}
+          task-definition: ${{ steps.render-app-task-def.outputs.task-definition }}
           service: ${{ matrix.ecs_service }}
           cluster: ${{ matrix.ecs_cluster }}
           wait-for-service-stability: true

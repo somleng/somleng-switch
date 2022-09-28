@@ -7,6 +7,23 @@ data "aws_ec2_instance_type" "this" {
   instance_type = var.instance_type
 }
 
+locals {
+  user_data = concat(var.user_data, [
+    {
+      path = "/opt/setup.sh"
+      content = templatefile(
+        "${path.module}/templates/setup.sh",
+        {
+          cluster_name = var.cluster_name
+        }
+      )
+      permissions = "755"
+    }
+  ])
+}
+
+# IAM
+
 resource "aws_iam_role" "this" {
   name = "${var.app_identifier}_ecs_container_instance_role"
 
@@ -46,6 +63,7 @@ resource "aws_iam_role_policy_attachment" "ssm" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+# Launch Template
 resource "aws_launch_template" "this" {
   name_prefix                 = var.app_identifier
   image_id                    = jsondecode(data.aws_ssm_parameter.this_ami.value).image_id
@@ -55,22 +73,13 @@ resource "aws_launch_template" "this" {
     name = aws_iam_instance_profile.this.name
   }
 
-  vpc_security_group_ids = [aws_security_group.this.id]
-
+  vpc_security_group_ids = concat([aws_security_group.this.id], var.security_groups)
   user_data = base64encode(join("\n", [
     "#cloud-config",
     yamlencode({
       # https://cloudinit.readthedocs.io/en/latest/topics/modules.html
-      write_files : [
-        {
-          path : "/opt/setup.sh",
-          content : templatefile("${path.module}/templates/setup.sh", { cluster_name = var.cluster_name }),
-          permissions : "0755",
-        },
-      ],
-      runcmd : [
-        ["/opt/setup.sh"]
-      ],
+      write_files: local.user_data,
+      runcmd: [for i, v in local.user_data : v.path]
     })
   ]))
 
@@ -79,9 +88,11 @@ resource "aws_launch_template" "this" {
   }
 }
 
+# Security Group
+
 resource "aws_security_group" "this" {
   name   = "${var.app_identifier}-container-instance"
-  vpc_id = var.vpc_id
+  vpc_id = var.vpc.vpc_id
 }
 
 resource "aws_security_group_rule" "egress" {
@@ -92,6 +103,8 @@ resource "aws_security_group_rule" "egress" {
   security_group_id = aws_security_group.this.id
   cidr_blocks = ["0.0.0.0/0"]
 }
+
+# Autoscaling Group
 
 resource "aws_autoscaling_group" "this" {
   name                 = var.app_identifier

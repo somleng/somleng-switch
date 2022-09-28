@@ -1,0 +1,56 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://api.lvh.me:3000/services/routing_parameters
+    body:
+      encoding: UTF-8
+      string: '{"phone_number":"85516701721","account_sid":"ea471a9f-d4b3-4035-966e-f507b8da6d34"}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      Authorization:
+      - Basic c2VydmljZXM6cGFzc3dvcmQ=
+      User-Agent:
+      - Faraday v1.4.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/vnd.api+json; charset=utf-8
+      Etag:
+      - W/"21103aaeb76a9e3ee988d8273a166fc7"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      X-Request-Id:
+      - 8efc63c7-a871-4ecd-80ac-ae87b1539748
+      X-Runtime:
+      - '0.019747'
+      Server-Timing:
+      - start_processing.action_controller;dur=0.177001953125, sql.active_record;dur=2.358154296875,
+        instantiation.active_record;dur=0.3193359375, process_action.action_controller;dur=5.7978515625
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: '{"destination":"85516701721","dial_string_prefix":null,"plus_prefix":false,"national_dialing":true,"host":"host.docker.internal:5061","username":null,"symmetric_latching":false}'
+  recorded_at: Fri, 23 Sep 2022 06:26:42 GMT
+recorded_with: VCR 6.0.0

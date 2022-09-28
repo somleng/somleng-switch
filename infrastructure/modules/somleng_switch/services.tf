@@ -1,5 +1,5 @@
 locals {
-  services_function_name = "${var.app_identifier}_services"
+  services_function_name = var.services_identifier
 }
 
 # Docker image
@@ -8,13 +8,24 @@ resource "docker_registry_image" "services" {
   name = "${var.services_ecr_repository_url}:latest"
 
   build {
-    context = abspath("${path.module}/../../../docker/services")
+    context = abspath("${path.module}/../../../components/services")
   }
 
   lifecycle {
     ignore_changes = [
       build[0].context
     ]
+  }
+}
+
+# SSM Parameters
+resource "aws_ssm_parameter" "services_application_master_key" {
+  name  = "somleng-switch-services.${var.app_environment}.application_master_key"
+  type  = "SecureString"
+  value = "change-me"
+
+  lifecycle {
+    ignore_changes = [value]
   }
 }
 
@@ -55,6 +66,7 @@ resource "aws_iam_policy" "services_custom_policy" {
       "Action": "ssm:GetParameters",
       "Resource": [
         "${aws_ssm_parameter.freeswitch_event_socket_password.arn}",
+        "${aws_ssm_parameter.services_application_master_key.arn}",
         "${var.db_password_parameter_arn}"
       ]
     },
@@ -68,6 +80,16 @@ resource "aws_iam_policy" "services_custom_policy" {
       "Resource": [
         "${aws_sqs_queue.services.arn}"
       ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecs:DescribeContainerInstances",
+        "ec2:DescribeInstances"
+      ],
+      "Resource": [
+        "*"
+      ]
     }
   ]
 }
@@ -79,9 +101,11 @@ resource "aws_iam_role_policy_attachment" "services_custom_policy" {
   policy_arn = aws_iam_policy.services_custom_policy.arn
 }
 
+# Security Group
+
 resource "aws_security_group" "services" {
   name   = local.services_function_name
-  vpc_id = var.vpc_id
+  vpc_id = var.vpc.vpc_id
 
   tags = {
     "Name" = local.services_function_name
@@ -108,18 +132,24 @@ resource "aws_lambda_function" "services" {
 
   vpc_config {
     security_group_ids = [aws_security_group.services.id, var.db_security_group]
-    subnet_ids = var.container_instance_subnets
+    subnet_ids = var.vpc.private_subnets
   }
 
   environment {
     variables = {
-      SWITCH_GROUP = "service:${aws_ecs_task_definition.switch.family}"
+      SWITCH_GROUP = "service:${var.switch_identifier}"
+      MEDIA_PROXY_GROUP = "service:${aws_ecs_task_definition.media_proxy.family}"
+      CLIENT_GATEWAY_GROUP = "service:${aws_ecs_task_definition.client_gateway.family}"
       FS_EVENT_SOCKET_PASSWORD_SSM_PARAMETER_NAME = aws_ssm_parameter.freeswitch_event_socket_password.name
-      FS_EVENT_SOCKET_PORT = 8021
+      FS_EVENT_SOCKET_PORT = var.freeswitch_event_socket_port
       FS_SIP_PORT = var.sip_port
       FS_SIP_ALTERNATIVE_PORT = var.sip_alternative_port
-      OPENSIPS_DB_NAME = var.db_name
+      PUBLIC_GATEWAY_DB_NAME = var.public_gateway_db_name
+      CLIENT_GATEWAY_DB_NAME = var.client_gateway_db_name
+      MEDIA_PROXY_NG_PORT = var.media_proxy_ng_port
       DB_PASSWORD_SSM_PARAMETER_NAME = data.aws_ssm_parameter.db_password.name
+      APP_MASTER_KEY_SSM_PARAMETER_NAME = aws_ssm_parameter.services_application_master_key.name
+      APP_ENV = var.app_environment
       DB_HOST = var.db_host
       DB_PORT = var.db_port
       DB_USER = var.db_username
@@ -157,8 +187,7 @@ resource "aws_cloudwatch_event_rule" "services" {
   "source": ["aws.ecs"],
   "detail-type": ["ECS Task State Change"],
   "detail": {
-    "clusterArn": ["${aws_ecs_cluster.cluster.arn}"],
-    "group": ["service:${aws_ecs_task_definition.switch.family}"]
+    "clusterArn": ["${aws_ecs_cluster.cluster.arn}"]
   }
 }
 EOF
@@ -172,11 +201,11 @@ resource "aws_cloudwatch_event_target" "services" {
 # SQS
 
 resource "aws_sqs_queue" "services_dead_letter" {
-  name = "${var.app_identifier}-services-dead-letter"
+  name = "${var.services_identifier}-dead-letter"
 }
 
 resource "aws_sqs_queue" "services" {
-  name           = "${var.app_identifier}-services"
+  name           = var.services_identifier
   redrive_policy = "{\"deadLetterTargetArn\":\"${aws_sqs_queue.services_dead_letter.arn}\",\"maxReceiveCount\":10}"
 
   # https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-queueconfig

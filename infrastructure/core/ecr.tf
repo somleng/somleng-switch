@@ -40,6 +40,7 @@ resource "aws_ecrpublic_repository" "freeswitch_event_logger" {
   }
 }
 
+# TODO Delete this after deploy
 resource "aws_ecrpublic_repository" "opensips" {
   repository_name = "somleng-switch-opensips"
   provider = aws.us-east-1
@@ -47,59 +48,86 @@ resource "aws_ecrpublic_repository" "opensips" {
   catalog_data {
     about_text        = "Somleng Switch OpenSIPS"
     architectures     = ["Linux"]
-
-    usage_text = <<EOF
-# How to use this image
-
-## Boostrap the Database
-
-### Create a new OpenSIPS database and configures the desired modules
-
-```
-  $ docker run --rm -e DATABASE_URL="postgres://postgres:@host.docker.internal:5432/opensips" -e DATABASE_MODULES="dialog load_balancer" public.ecr.aws/somleng/somleng-switch-opensips:bootstrap create_db
-```
-
-Replace `DATABASE_URL` with the url of the database you want to use.
-Replace `DATABASE_MODULES` with a list of modules you want to use.
-
-### Add a new module
-
-```
-  $ docker run --rm -e DATABASE_URL="postgres://postgres:@host.docker.internal:5432/opensips" -e DATABASE_MODULES="dialog load_balancer" public.ecr.aws/somleng/somleng-switch-opensips:bootstrap add_module
-```
-
-Replace `DATABASE_URL` with the url of the database you want to use.
-Replace `DATABASE_MODULES` with a list of modules you want to add.
-
-## Run OpenSIPS
-
-```
-  $ docker run --rm -e DATABASE_URL="postgres://postgres:@host.docker.internal:5432/opensips" public.ecr.aws/somleng/somleng-switch-opensips
-```
-
-Replace `DATABASE_URL` with the url of the database you want to use.
-Alternatively you set the following environment variables individually:
-
-```
-  DATABASE_USERNAME
-  DATABASE_PASSWORD
-  DATABASE_HOST
-  DATABASE_PORT
-  DATABASE_NAME
-```
-
-You can also set `FIFO_NAME` to override the FIFO location for OpenSIPS. This is useful when using the [scheduler](https://gallery.ecr.aws/somleng/somleng-switch-opensips-scheduler)
-EOF
   }
 }
 
-resource "aws_ecrpublic_repository" "opensips_scheduler" {
+# TODO Delete this after deploy
+resource "aws_ecrpublic_repository" "opensips_scheduler_old" {
   repository_name = "somleng-switch-opensips-scheduler"
   provider = aws.us-east-1
 
   catalog_data {
     about_text        = "Somleng Switch OpenSIPS Scheduler"
     architectures     = ["Linux"]
+  }
+}
+
+resource "aws_ecrpublic_repository" "public_gateway" {
+  repository_name = "public-gateway"
+  provider = aws.us-east-1
+
+  catalog_data {
+    about_text        = "Somleng Public Gateway"
+    architectures     = ["Linux"]
+  }
+}
+
+resource "aws_ecrpublic_repository" "client_gateway" {
+  repository_name = "client-gateway"
+  provider = aws.us-east-1
+
+  catalog_data {
+    about_text        = "Somleng Client Gateway"
+    architectures     = ["Linux"]
+  }
+}
+
+resource "aws_ecrpublic_repository" "media_proxy" {
+  repository_name = "media-proxy"
+  provider = aws.us-east-1
+
+  catalog_data {
+    about_text        = "Somleng Media Proxy"
+    architectures     = ["Linux"]
+  }
+}
+
+resource "aws_ecrpublic_repository" "opensips_scheduler" {
+  repository_name = "opensips-scheduler"
+  provider = aws.us-east-1
+
+  catalog_data {
+    about_text        = "Somleng OpenSIPS Scheduler"
+    architectures     = ["Linux"]
+  }
+}
+
+resource "aws_ecrpublic_repository" "gateway" {
+  repository_name = "gateway"
+  provider = aws.us-east-1
+
+  catalog_data {
+    about_text        = "Somleng Gateway"
+    architectures     = ["Linux"]
+
+    usage_text = <<EOF
+  # How to use this image
+
+  ## Boostrap the Database
+
+  ### Create a new OpenSIPS database for the specified gatewaay
+
+  ```
+  $ docker run --rm -e PGPASSWORD="password" -e DATABASE_HOST="host.docker.internal" -e DATABASE_USERNAME="postgres" -e DATABASE_PASSWORD="password" -e DATABASE_PORT=5432 -e DATABASE_NAME="opensips_public_gateway" public.ecr.aws/somleng/gateway:bootstrap create_db public_gateway
+  $ docker run --rm -e PGPASSWORD="password" -e DATABASE_HOST="host.docker.internal" -e DATABASE_USERNAME="postgres" -e DATABASE_PASSWORD="password" -e DATABASE_PORT=5432 -e DATABASE_NAME="opensips_client_gateway" public.ecr.aws/somleng/gateway:bootstrap create_db client_gateway
+  ```
+
+  ### Add a new module
+
+  ```
+  $ docker run --rm -e PGPASSWORD="password" -e DATABASE_HOST="host.docker.internal" -e DATABASE_USERNAME="postgres" -e DATABASE_PASSWORD="password" -e DATABASE_PORT=5432 -e DATABASE_NAME="opensips" -e DATABASE_MODULES="rtpproxy" public.ecr.aws/somleng/gateway:bootstrap add_module
+  ```
+  EOF
   }
 }
 
@@ -118,13 +146,3 @@ resource "aws_ecr_repository" "services" {
     scan_on_push = true
   }
 }
-
-# Delete this after production is deployed
-resource "aws_ecr_repository" "ecs_event_runner" {
-  name = "ecs-event-runner"
-
-  image_scanning_configuration {
-    scan_on_push = true
-  }
-}
-

@@ -18,18 +18,18 @@
     ],
     "dependsOn": [
       {
-        "containerName": "switch",
+        "containerName": "app",
         "condition": "HEALTHY"
       }
     ]
   },
   {
-    "name": "switch",
-    "image": "${switch_image}:latest",
+    "name": "app",
+    "image": "${app_image}:latest",
     "logConfiguration": {
       "logDriver": "awslogs",
        "options": {
-         "awslogs-group": "${switch_logs_group}",
+         "awslogs-group": "${app_logs_group}",
          "awslogs-region": "${logs_group_region}",
          "awslogs-stream-prefix": "${app_environment}"
        }
@@ -80,7 +80,15 @@
       },
       {
         "name": "AHN_CORE_PORT",
-        "value": "${rayo_port}"
+        "value": "5222"
+      },
+      {
+        "name": "SERVICES_FUNCTION_ARN",
+        "value": "${services_function_arn}"
+      },
+      {
+        "name": "CALL_PLATFORM_STUB_RESPONSES",
+        "value": "${call_platform_stub_responses}"
       }
     ]
   },
@@ -133,7 +141,7 @@
     ],
     "portMappings": [
       {
-        "containerPort": ${rayo_port},
+        "containerPort": 5222,
         "protocol": "tcp"
       },
       {
@@ -184,7 +192,7 @@
       },
       {
         "name": "FS_MOD_RAYO_PORT",
-        "value": "${rayo_port}"
+        "value": "5222"
       },
       {
         "name": "FS_MOD_JSON_CDR_URL",

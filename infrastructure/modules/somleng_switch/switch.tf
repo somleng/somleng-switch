@@ -1,15 +1,19 @@
+locals {
+  efs_volume_name = "cache"
+}
+
 # Container Instances
 module switch_container_instances {
   source = "../container_instances"
 
-  app_identifier = var.app_identifier
-  vpc_id = var.vpc_id
-  instance_subnets = var.container_instance_subnets
+  app_identifier = var.switch_identifier
+  vpc = var.vpc
+  instance_subnets = var.vpc.private_subnets
   cluster_name = aws_ecs_cluster.cluster.name
 }
 
 resource "aws_ecs_capacity_provider" "switch" {
-  name = var.app_identifier
+  name = var.switch_identifier
 
   auto_scaling_group_provider {
     auto_scaling_group_arn         = module.switch_container_instances.autoscaling_group.arn
@@ -25,33 +29,33 @@ resource "aws_ecs_capacity_provider" "switch" {
 }
 
 # Log Groups
-resource "aws_cloudwatch_log_group" "switch" {
-  name = "${var.app_identifier}-switch"
+resource "aws_cloudwatch_log_group" "switch_app" {
+  name = "${var.switch_identifier}-app"
   retention_in_days = 7
 }
 
 resource "aws_cloudwatch_log_group" "nginx" {
-  name = "${var.app_identifier}-nginx"
+  name = "${var.switch_identifier}-nginx"
   retention_in_days = 7
 }
 
 resource "aws_cloudwatch_log_group" "freeswitch" {
-  name = "${var.app_identifier}-freeswitch"
+  name = "${var.switch_identifier}-freeswitch"
   retention_in_days = 7
 }
 
 resource "aws_cloudwatch_log_group" "freeswitch_event_logger" {
-  name = "${var.app_identifier}-freeswitch-event-logger"
+  name = "${var.switch_identifier}-freeswitch-event-logger"
   retention_in_days = 7
 }
 
 # Security Group
 resource "aws_security_group" "switch" {
-  name   = "${var.app_identifier}-appserver"
-  vpc_id = var.vpc_id
+  name   = var.switch_identifier
+  vpc_id = var.vpc.vpc_id
 
   tags = {
-    "Name" = "${var.app_identifier}-switch"
+    "Name" = var.switch_identifier
   }
 }
 
@@ -70,7 +74,7 @@ resource "aws_security_group_rule" "switch_ingress_freeswitch_event_socket" {
   protocol          = "TCP"
   from_port         = 8021
   security_group_id = aws_security_group.switch.id
-  cidr_blocks = [var.vpc_cidr_block]
+  cidr_blocks = [var.vpc.vpc_cidr_block]
 }
 
 resource "aws_security_group_rule" "switch_ingress_sip" {
@@ -79,7 +83,7 @@ resource "aws_security_group_rule" "switch_ingress_sip" {
   protocol          = "UDP"
   from_port         = var.sip_port
   security_group_id = aws_security_group.switch.id
-  cidr_blocks = [var.vpc_cidr_block]
+  cidr_blocks = [var.vpc.vpc_cidr_block]
 }
 
 resource "aws_security_group_rule" "switch_ingress_sip_alternative" {
@@ -88,7 +92,7 @@ resource "aws_security_group_rule" "switch_ingress_sip_alternative" {
   protocol          = "UDP"
   from_port         = var.sip_alternative_port
   security_group_id = aws_security_group.switch.id
-  cidr_blocks = [var.vpc_cidr_block]
+  cidr_blocks = [var.vpc.vpc_cidr_block]
 }
 
 resource "aws_security_group_rule" "switch_egress" {
@@ -172,7 +176,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "recordings" {
 }
 
 resource "aws_iam_user" "recordings" {
-  name = "${var.app_identifier}_recordings"
+  name = "${var.switch_identifier}_recordings"
 }
 
 resource "aws_iam_access_key" "recordings" {
@@ -215,12 +219,12 @@ data "aws_iam_policy_document" "ecs_task_assume_role_policy" {
 }
 
 resource "aws_iam_role" "ecs_task_role" {
-  name               = "${var.app_identifier}-ecs-task-role"
+  name               = "${var.switch_identifier}-ecs-task-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role_policy.json
 }
 
 resource "aws_iam_role" "task_execution_role" {
-  name = "${var.app_identifier}-ecsTaskExecutionRole"
+  name = "${var.switch_identifier}-ecsTaskExecutionRole"
 
   assume_role_policy = <<EOF
 {
@@ -239,7 +243,7 @@ EOF
 }
 
 resource "aws_iam_policy" "task_execution_custom_policy" {
-  name = "${var.app_identifier}-task-execution-custom-policy"
+  name = "${var.switch_identifier}-task-execution-custom-policy"
 
   policy = <<EOF
 {
@@ -265,7 +269,7 @@ EOF
 }
 
 resource "aws_iam_policy" "ecs_task_policy" {
-  name = "${var.app_identifier}-ecs-task-policy"
+  name = "${var.switch_identifier}-ecs-task-policy"
 
   policy = <<EOF
 {
@@ -277,6 +281,15 @@ resource "aws_iam_policy" "ecs_task_policy" {
         "polly:SynthesizeSpeech"
       ],
       "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "lambda:InvokeFunction"
+      ],
+      "Resource": [
+        "${aws_lambda_function.services.arn}"
+      ]
     }
   ]
 }
@@ -298,13 +311,65 @@ resource "aws_iam_role_policy_attachment" "task_execution_role_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+# EFS
+resource "aws_efs_file_system" "cache" {
+  creation_token = var.efs_cache_name
+  encrypted = true
+
+  tags = {
+    Name = var.efs_cache_name
+  }
+
+  lifecycle_policy {
+    transition_to_ia = "AFTER_30_DAYS"
+  }
+
+  lifecycle_policy {
+    transition_to_primary_storage_class = "AFTER_1_ACCESS"
+  }
+}
+
+resource "aws_efs_backup_policy" "cache" {
+  file_system_id = aws_efs_file_system.cache.id
+
+  backup_policy {
+    status = "DISABLED"
+  }
+}
+
+resource "aws_efs_mount_target" "cache" {
+  for_each = toset(var.vpc.intra_subnets)
+
+  file_system_id = aws_efs_file_system.cache.id
+  subnet_id      = each.value
+  security_groups = [aws_security_group.efs_cache.id]
+}
+
+resource "aws_security_group" "efs_cache" {
+  name   = "${var.switch_identifier}-efs-cache"
+  vpc_id = var.vpc.vpc_id
+
+  tags = {
+    Name = "${var.switch_identifier}-cache"
+  }
+}
+
+resource "aws_security_group_rule" "efs_cache_ingress" {
+  type              = "ingress"
+  protocol          = "TCP"
+  security_group_id = aws_security_group.efs_cache.id
+  cidr_blocks = [var.vpc.vpc_cidr_block]
+  from_port = 2049
+  to_port = 2049
+}
+
 # ECS
 data "template_file" "switch" {
   template = file("${path.module}/templates/switch.json.tpl")
 
   vars = {
-    name = var.app_identifier
-    switch_image      = var.switch_image
+    name = var.switch_identifier
+    app_image      = var.switch_app_image
     nginx_image      = var.nginx_image
     freeswitch_image = var.freeswitch_image
     freeswitch_event_logger_image = var.freeswitch_event_logger_image
@@ -320,12 +385,11 @@ data "template_file" "switch" {
     nginx_logs_group = aws_cloudwatch_log_group.nginx.name
     freeswitch_logs_group = aws_cloudwatch_log_group.freeswitch.name
     freeswitch_event_logger_logs_group = aws_cloudwatch_log_group.freeswitch_event_logger.name
-    switch_logs_group = aws_cloudwatch_log_group.switch.name
+    app_logs_group = aws_cloudwatch_log_group.switch_app.name
     logs_group_region = var.aws_region
     app_environment = var.app_environment
 
     rayo_password_parameter_arn = aws_ssm_parameter.rayo_password.arn
-    rayo_port = var.rayo_port
     json_cdr_url = var.json_cdr_url
     json_cdr_password_parameter_arn = var.json_cdr_password_parameter_arn
     external_rtp_ip = var.external_rtp_ip
@@ -340,11 +404,15 @@ data "template_file" "switch" {
     recordings_bucket_access_key_id_parameter_arn = aws_ssm_parameter.recordings_bucket_access_key_id.arn
     recordings_bucket_secret_access_key_parameter_arn = aws_ssm_parameter.recordings_bucket_secret_access_key.arn
     recordings_bucket_region = aws_s3_bucket.recordings.region
+
+    services_function_arn = aws_lambda_function.services.arn
+
+    call_platform_stub_responses = var.call_platform_stub_responses
   }
 }
 
 resource "aws_ecs_task_definition" "switch" {
-  family                   = var.app_identifier
+  family                   = var.switch_identifier
   network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
   container_definitions = data.template_file.switch.rendered
@@ -363,13 +431,13 @@ resource "aws_ecs_task_definition" "switch" {
 }
 
 resource "aws_ecs_service" "switch" {
-  name            = var.app_identifier
+  name            = var.switch_identifier
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.switch.arn
   desired_count   = var.switch_min_tasks
 
   network_configuration {
-    subnets = var.container_instance_subnets
+    subnets = var.vpc.private_subnets
     security_groups = [
       aws_security_group.switch.id
     ]
@@ -397,10 +465,10 @@ resource "aws_ecs_service" "switch" {
 
 # Load Balancer
 resource "aws_lb_target_group" "switch_http" {
-  name = var.app_identifier
+  name = var.switch_identifier
   port = 80
   protocol = "HTTP"
-  vpc_id = var.vpc_id
+  vpc_id = var.vpc.vpc_id
   target_type = "ip"
   deregistration_delay = 60
 
@@ -482,12 +550,12 @@ resource "aws_appautoscaling_policy" "freeswitch_session_count" {
 }
 
 resource "aws_cloudwatch_log_metric_filter" "freeswitch_session_count" {
-  name           = "${var.app_identifier}-SessionCount"
+  name           = "${var.switch_identifier}-SessionCount"
   pattern        = "{ $.Session-Count = * }"
   log_group_name = aws_cloudwatch_log_group.freeswitch_event_logger.name
 
   metric_transformation {
-    name      = "${var.app_identifier}-SessionCount"
+    name      = "${var.switch_identifier}-SessionCount"
     namespace = "SomlengSWITCH"
     value     = "$.Session-Count"
     unit = "Count"
@@ -503,18 +571,6 @@ resource "aws_route53_record" "switch" {
   alias {
     name                   = var.load_balancer.dns_name
     zone_id                = var.load_balancer.zone_id
-    evaluate_target_health = true
-  }
-}
-
-resource "aws_route53_record" "sip" {
-  zone_id = var.route53_zone.zone_id
-  name    = var.sip_subdomain
-  type    = "A"
-
-  alias {
-    name                   = var.network_load_balancer.dns_name
-    zone_id                = var.network_load_balancer.zone_id
     evaluate_target_health = true
   }
 }

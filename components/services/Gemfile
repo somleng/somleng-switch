@@ -1,0 +1,22 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+
+gem "aws-sdk-ec2"
+gem "aws-sdk-ecs"
+gem "aws-sdk-ssm"
+gem "ox" # XML parser. required by aws-sdk-s3
+gem "pg"
+gem "sentry-ruby"
+gem "sequel"
+
+group :development do
+  gem "rake"
+end
+
+group :test do
+  gem "pry"
+  gem "rspec"
+end
