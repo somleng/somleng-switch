@@ -10,11 +10,11 @@ if [ "$1" = 'rtpengine' ]; then
 
   LOG_LEVEL="${LOG_LEVEL:="6"}"
 
+  LOCAL_IP="$(hostname -i)"
+
   if [ -n "$ECS_CONTAINER_METADATA_FILE" ]; then
-    LOCAL_IP="$(cat $ECS_CONTAINER_METADATA_FILE | jq -r '.HostPrivateIPv4Address')"
-    ADVERTISED_IP="$(cat $ECS_CONTAINER_METADATA_FILE | jq -r '.HostPublicIPv4Address')"
+    SIP_ADVERTISED_IP="${SIP_ADVERTISED_IP:="$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)"}"
   else
-    LOCAL_IP="$(hostname -i)"
     ADVERTISED_IP="${ADVERTISED_IP:="$(hostname -i)"}"
   fi
 
