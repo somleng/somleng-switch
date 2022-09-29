@@ -13,6 +13,7 @@ rm -f $log_file
 
 reset_db
 
+uac=$(hostname -i)
 client_gateway="$(dig +short client_gateway)"
 media_proxy="$(dig +short media_proxy)"
 
@@ -22,7 +23,7 @@ create_subscriber_entry "user1" "password" "somleng.org"
 create_rtpengine_entry "udp:media_proxy:2223"
 reload_opensips_tables
 
-sipp -sf $scenario client_gateway:5060 -s "1234" -key username "user1" -au "user1" -ap "password" -m 1 -trace_msg > /dev/null
+sipp -sf $scenario client_gateway:5060 -s "1234" -key username "user1" -key contact_ip "$uac" -au "user1" -ap "password" -m 1 -trace_msg > /dev/null
 
 reset_db
 

@@ -22,6 +22,6 @@ create_subscriber_entry "user1" "password" "somleng.org"
 create_rtpengine_entry "udp:media_proxy:2223"
 reload_opensips_tables
 
-sipp -sf $scenario client_gateway:5060 -s "1111" -key username "user1" -au "user1" -ap "password" -m 1 -trace_msg > /dev/null
+sipp -sf $scenario client_gateway:5060 -s "1111" -key username "user1" -key contact_ip "100.65.107.153" -au "user1" -ap "password" -m 1 -trace_msg > /dev/null
 
 reset_db

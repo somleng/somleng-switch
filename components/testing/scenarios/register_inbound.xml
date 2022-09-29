@@ -33,7 +33,7 @@
       To: [username] <sip:[username]@[remote_ip]:[remote_port]>
       Call-ID: [call_id]
       CSeq: 1 REGISTER
-      Contact: sip:[username]@[local_ip]:[local_port]
+      Contact: sip:[username]@[contact_ip]:[local_port]
       Max-Forwards: 70
       Subject: Performance Test
       Content-Type: application/sdp
@@ -54,7 +54,7 @@
       To: [username] <sip:[username]@[remote_ip]:[remote_port]>
       Call-ID: [call_id]
       CSeq: 1 REGISTER
-      Contact: sip:[username]@[local_ip]:[local_port]
+      Contact: sip:[username]@[contact_ip]:[local_port]
       Max-Forwards: 70
       [authentication]
       Subject: Performance Test
@@ -75,7 +75,7 @@
       To: "[service]"<sip:[service]@[remote_ip];transport=udp;user=phone>
       CSeq: 1 INVITE
       Max-Forwards: 29
-      Contact: <sip:[username]:[local_port];transport=udp>
+      Contact: <sip:[username]@[contact_ip]:[local_port];transport=udp>
       Allow: INVITE,ACK,OPTIONS,BYE,CANCEL,INFO,PRACK,NOTIFY,MESSAGE,UPDATE
       Remote-Party-ID: "0714672953" <sip:0714672953@[remote_ip]>;party=calling;screen=no;privacy=off
       P-Early-Media: supported
@@ -107,7 +107,7 @@
       To: "[service]"<sip:[service]@[remote_ip];transport=udp;user=phone>
       CSeq: 1 INVITE
       Max-Forwards: 29
-      Contact: <sip:[username]:[local_port];transport=udp>
+      Contact: <sip:[username]@[contact_ip]:[local_port];transport=udp>
       Allow: INVITE,ACK,OPTIONS,BYE,CANCEL,INFO,PRACK,NOTIFY,MESSAGE,UPDATE
       Remote-Party-ID: "0714672953" <sip:0714672953@[remote_ip]>;party=calling;screen=no;privacy=off
       P-Early-Media: supported
@@ -173,7 +173,7 @@
       To: "[service]"<sip:[service]@[remote_ip]:[remote_port]>[peer_tag_param]
       Call-ID: [call_id]
       CSeq: 2 BYE
-      Contact: <sip:[username]@[local_ip]:[local_port];transport=udp>
+      Contact: <sip:[username]@[contact_ip]:[local_port];transport=udp>
       Max-Forwards: 70
       Subject: Performance Test
       Content-Length: 0
