@@ -15,7 +15,6 @@ reload_opensips_tables
 
 uas="$(dig +short testing)"
 client_gateway="$(dig +short client_gateway)"
-media_proxy="$(dig +short media_proxy)"
 
 curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/calls \
 -H 'Content-Type: application/json; charset=utf-8' \
@@ -42,7 +41,7 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
     "address": "+85512334667@testing;fs_path=sip:$client_gateway:5060"
   },
   "test_headers": {
-    "X-UAS-Contact-Ip": "$uas"
+    "X-UAS-Contact-Ip": "100.65.107.153"
   }
 }
 EOF
@@ -56,13 +55,5 @@ if ! assert_in_file $log_file "ACK sip:$uas"; then
 fi
 
 if ! assert_in_file $log_file "BYE sip:$uas"; then
-  exit 1
-fi
-
-if ! assert_in_file $log_file "Record-Route: <sip:$client_gateway:5060;lr;r2=on>"; then
-  exit 1
-fi
-
-if ! assert_in_file $log_file "c=IN IP4 $media_proxy"; then
   exit 1
 fi

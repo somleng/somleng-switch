@@ -27,6 +27,9 @@
   <!-- can be useful if you want to reject reINVITEs and keep the       -->
   <!-- media stream flowing.                                            -->
   <recv request="INVITE" crlf="true" rrs="true">
+    <action>
+      <ereg regexp=".*" search_in="hdr" header="X-UAS-Contact-Ip: " check_it="true" assign_to="contact_ip" />
+    </action>
   </recv>
 
   <!-- The '[last_*]' keyword is replaced automatically by the          -->
@@ -49,7 +52,7 @@
       [last_To:];tag=[pid]SIPpTag01[call_number]
       [last_Call-ID:]
       [last_CSeq:]
-      Contact: <sip:[local_ip]:[local_port];transport=[transport]>
+      Contact: <sip:[$contact_ip]:[local_port];transport=[transport]>
       Content-Length: 0
 
     ]]>
@@ -65,7 +68,7 @@
       [last_Call-ID:]
       [last_CSeq:]
       [last_Record-Route:]
-      Contact: <sip:[local_ip]:[local_port];transport=[transport]>
+      Contact: <sip:[$contact_ip]:[local_port];transport=[transport]>
       Content-Type: application/sdp
       Content-Length: [len]
 
@@ -98,7 +101,7 @@
       [last_To:]
       [last_Call-ID:]
       [last_CSeq:]
-      Contact: <sip:[local_ip]:[local_port];transport=[transport]>
+      Contact: <sip:[$contact_ip]:[local_port];transport=[transport]>
       Content-Length: 0
 
     ]]>

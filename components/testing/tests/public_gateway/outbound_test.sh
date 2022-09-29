@@ -9,6 +9,8 @@ source $current_dir/../support/test_helpers.sh
 log_file=$(find . -type f -iname "uas_*_messages.log")
 cat /dev/null > $log_file
 
+uas="$(dig +short testing)"
+
 curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/calls \
 -H 'Content-Type: application/json; charset=utf-8' \
 --data-binary @- << EOF
@@ -30,6 +32,9 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
     "host": "testing",
     "username": null,
     "symmetric_latching": true
+  },
+  "test_headers": {
+    "X-UAS-Contact-Ip": "$uas"
   }
 }
 EOF
