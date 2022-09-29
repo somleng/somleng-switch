@@ -30,7 +30,15 @@ class OutboundCall
           sip_headers: sip_headers
         )
       },
-      headers: sip_headers.to_h
+      headers: build_call_headers(sip_headers)
     )
+  end
+
+  private
+
+  def build_call_headers(sip_headers)
+    return sip_headers.to_h unless CallPlatform.configuration.stub_responses
+
+    sip_headers.to_h.merge(call_params.fetch("test_headers", {}))
   end
 end
