@@ -35,7 +35,7 @@ variable "assign_client_gateway_eips" {
 }
 
 variable "assign_media_proxy_eips" {
-  default = true
+  default = false
 }
 
 variable "switch_max_tasks" {
@@ -58,13 +58,12 @@ variable "client_gateway_min_tasks" {
 variable "client_gateway_max_tasks" {
   default = 2
 }
-# This should be at least 2 to avoid tasks shutting down with
-# clients still registered
+
 variable "media_proxy_min_tasks" {
-  default = 2
+  default = 1
 }
 variable "media_proxy_max_tasks" {
-  default = 2
+  default = 4
 }
 
 variable "media_proxy_media_port_min" {
