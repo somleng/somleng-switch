@@ -21,6 +21,10 @@ WORKDIR /tmp
 RUN apt-get -y update -qq && apt-get -y install libmariadb-dev-compat
 RUN ln -s /usr/lib/x86_64-linux-gnu/libmariadb.so.3 /usr/lib/x86_64-linux-gnu/libmysqlclient.so.18
 
+RUN apt-get -y install procps # for ps command. Remove this later
+
+RUN rm -rf /var/lib/apt/lists/*
+
 COPY goipcron_x64 /usr/local/bin/goipcron
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
