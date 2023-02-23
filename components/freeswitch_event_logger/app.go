@@ -45,9 +45,11 @@ func main() {
 	// Filters
 	evFilters := make(map[string][]string)
 	evFilters["Event-Name"] = append(evFilters["Event-Name"], "HEARTBEAT")
+	evFilters["Event-Name"] = append(evFilters["Event-Name"], "CUSTOM")
 
 	evHandlers := map[string][]func(string, int){
 		"HEARTBEAT": {logHeartbeat},
+		"CUSTOM":    {logHeartbeat},
 	}
 
 	event_socket_host := os.Getenv("EVENT_SOCKET_HOST")

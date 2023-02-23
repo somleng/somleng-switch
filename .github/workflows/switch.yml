@@ -52,7 +52,7 @@ jobs:
           [
             {
               "identifier": "switch-staging",
-              "branch": "develop",
+              "branch": "speech_to_text",
               "image_tag": "staging",
               "ecs_service": "switch-staging",
               "ecs_cluster": "somleng-switch-staging"
