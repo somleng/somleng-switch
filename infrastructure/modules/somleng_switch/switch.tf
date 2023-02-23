@@ -452,7 +452,7 @@ data "template_file" "switch" {
 
     fs_modules_access_key_id_parameter_arn = aws_ssm_parameter.fs_modules_access_key_id.arn
     fs_modules_secret_access_key_parameter_arn = aws_ssm_parameter.fs_modules_secret_access_key.arn
-    aws_transcribe_region = aws_s3_bucket.recordings.region
+    aws_transcribe_region = "us-east-1"
 
     services_function_arn = aws_lambda_function.services.arn
   }
