@@ -133,6 +133,14 @@
       {
         "name": "FS_EVENT_SOCKET_PASSWORD",
         "valueFrom": "${freeswitch_event_socket_password_parameter_arn}"
+      },
+      {
+        "name": "AWS_ACCESS_KEY_ID",
+        "valueFrom": "${fs_modules_access_key_id_parameter_arn}"
+      },
+      {
+        "name": "AWS_SECRET_ACCESS_KEY",
+        "valueFrom": "${fs_modules_secret_access_key_parameter_arn}"
       }
     ],
     "portMappings": [
@@ -157,6 +165,14 @@
       {
         "name": "AWS_DEFAULT_REGION",
         "value": "${region}"
+      },
+      {
+        "name": "AWS_TRANSCRIBE_REGION",
+        "value": "${aws_transcribe_region}"
+      },
+      {
+        "name": "AWS_REGION",
+        "value": "${aws_transcribe_region}"
       },
       {
         "name": "FS_CACHE_DIRECTORY",

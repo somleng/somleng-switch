@@ -203,6 +203,49 @@ resource "aws_iam_user_policy" "recordings" {
 EOF
 }
 
+# Custom FreeSWITCH modules user
+resource "aws_iam_user" "fs_modules" {
+  name = "${var.switch_identifier}_fs_modules"
+}
+
+resource "aws_iam_access_key" "fs_modules" {
+  user = aws_iam_user.fs_modules.name
+}
+
+
+resource "aws_iam_user_policy" "fs_modules" {
+  name = aws_iam_user.fs_modules.name
+  user = aws_iam_user.fs_modules.name
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "transcribe:StartStreamTranscription",
+        "transcribe:StartStreamTranscriptionWebSocket"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_ssm_parameter" "fs_modules_access_key_id" {
+  name  = "somleng-switch.${var.app_environment}.fs_modules_access_key_id"
+  type  = "SecureString"
+  value = aws_iam_access_key.fs_modules.id
+}
+
+resource "aws_ssm_parameter" "fs_modules_secret_access_key" {
+  name  = "somleng-switch.${var.app_environment}.fs_modules_secret_access_key"
+  type  = "SecureString"
+  value = aws_iam_access_key.fs_modules.secret
+}
+
 # IAM
 data "aws_iam_policy_document" "ecs_task_assume_role_policy" {
   version = "2012-10-17"
@@ -260,7 +303,9 @@ resource "aws_iam_policy" "task_execution_custom_policy" {
         "${aws_ssm_parameter.freeswitch_event_socket_password.arn}",
         "${var.json_cdr_password_parameter_arn}",
         "${aws_ssm_parameter.recordings_bucket_access_key_id.arn}",
-        "${aws_ssm_parameter.recordings_bucket_secret_access_key.arn}"
+        "${aws_ssm_parameter.recordings_bucket_secret_access_key.arn}",
+        "${aws_ssm_parameter.fs_modules_access_key_id.arn}",
+        "${aws_ssm_parameter.fs_modules_secret_access_key.arn}"
       ]
     }
   ]
@@ -279,14 +324,6 @@ resource "aws_iam_policy" "ecs_task_policy" {
       "Effect": "Allow",
       "Action": [
         "polly:SynthesizeSpeech"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "transcribe:StartStreamTranscription",
-        "transcribe:StartStreamTranscriptionWebSocket"
       ],
       "Resource": "*"
     },
@@ -412,6 +449,10 @@ data "template_file" "switch" {
     recordings_bucket_access_key_id_parameter_arn = aws_ssm_parameter.recordings_bucket_access_key_id.arn
     recordings_bucket_secret_access_key_parameter_arn = aws_ssm_parameter.recordings_bucket_secret_access_key.arn
     recordings_bucket_region = aws_s3_bucket.recordings.region
+
+    fs_modules_access_key_id_parameter_arn = aws_ssm_parameter.fs_modules_access_key_id.arn
+    fs_modules_secret_access_key_parameter_arn = aws_ssm_parameter.fs_modules_secret_access_key.arn
+    aws_transcribe_region = aws_s3_bucket.recordings.region
 
     services_function_arn = aws_lambda_function.services.arn
   }
