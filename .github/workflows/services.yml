@@ -86,6 +86,7 @@ jobs:
       AWS_DEFAULT_REGION: ap-southeast-1
       ECR_REGISTRY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com
       ECR_REPOSITORY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com/somleng-switch-services
+      GHCR_REPOSITORY: ghcr.io/somleng/switch-services
       IMAGE_TAG: ${{ github.sha }}
 
     strategy:
@@ -118,7 +119,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           push: true
           platforms: linux/arm64
@@ -128,6 +129,7 @@ jobs:
           tags: |
             ${{ env.ECR_REPOSITORY }}:${{ matrix.image_tag }}
             ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+            ${{ env.GHCR_REPOSITORY }}:${{ matrix.image_tag }}
 
       - name: Deploy Lambda
         run: |

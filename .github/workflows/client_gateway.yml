@@ -64,6 +64,7 @@ jobs:
       ECR_PUBLIC_REGISTRY: public.ecr.aws
       ECR_REPOSITORY: public.ecr.aws/somleng/client-gateway
       OPENSIPS_SCHEDULER_ECR_REPOSITORY: public.ecr.aws/somleng/opensips-scheduler
+      GHCR_REPOSITORY: ghcr.io/somleng/client-gateway
       IMAGE_TAG: ${{ github.sha }}
 
     strategy:
@@ -91,6 +92,13 @@ jobs:
         env:
           AWS_REGION: us-east-1
 
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
@@ -98,7 +106,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build and push Client Gateway
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: components/gateway
           target: client_gateway
@@ -109,6 +117,7 @@ jobs:
           tags: |
             ${{ env.ECR_REPOSITORY }}:${{ matrix.image_tag }}
             ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+            ${{ env.GHCR_REPOSITORY }}:${{ matrix.image_tag }}
 
       - name: Get current task definition
         run: |
