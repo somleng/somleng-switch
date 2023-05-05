@@ -116,6 +116,7 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.identifier }}
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
           context: components/s3_mpeg
+          provenance: false
           tags: |
             ${{ env.ECR_REPOSITORY }}:${{ matrix.image_tag }}
             ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
