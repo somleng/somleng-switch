@@ -41,7 +41,6 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           working-directory: components/services
-          ruby-version: '3.1'
           bundler-cache: true
 
       - name: Run Specs
