@@ -24,7 +24,6 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           working-directory: components/app
-          ruby-version: '2.7'
           bundler-cache: true
 
       - name: Run Specs
@@ -42,8 +41,6 @@ jobs:
           coverage-reports: components/app/coverage/lcov/*
           language: Ruby
 
-      # Adapted from
-      # https://stackoverflow.com/a/65434401
       - name: Set Deployment Matrix
         id: set-deployment-matrix
         run: |
@@ -85,9 +82,9 @@ jobs:
       NGINX_ECR_REPOSITORY_URI: public.ecr.aws/somleng/somleng-switch-nginx
       NGINX_GHCR_REPOSITORY_URI: ghcr.io/somleng/somleng-switch-nginx
       FREESWITCH_ECR_REPOSITORY_URI: public.ecr.aws/somleng/somleng-switch-freeswitch
-      FREESWITCH_GHCR_REPOSITORY_URI: ghcr.io/somleng/somleng-switch-freeswitch
+      FREESWITCH_GHCR_REPOSITORY_URI: ghcr.io/somleng/freeswitch
       FREESWITCH_EVENT_LOGGER_ECR_REPOSITORY_URI: public.ecr.aws/somleng/somleng-switch-freeswitch-event-logger
-      FREESWITCH_EVENT_LOGGER_GHCR_REPOSITORY_URI: ghcr.io/somleng/somleng-switch-freeswitch-event-logger
+      FREESWITCH_EVENT_LOGGER_GHCR_REPOSITORY_URI: ghcr.io/somleng/freeswitch-event-logger
 
     strategy:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}

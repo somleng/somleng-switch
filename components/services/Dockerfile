@@ -1,6 +1,6 @@
 ARG FUNCTION_DIR="/function"
 
-FROM ruby:3.1-alpine as build-image
+FROM ruby:3.2-alpine as build-image
 
 RUN apk update && \
     apk upgrade && \
@@ -30,7 +30,7 @@ COPY lib/ ${FUNCTION_DIR}/lib/
 
 #############################
 
-FROM ruby:3.1-alpine
+FROM ruby:3.2-alpine
 
 ARG FUNCTION_DIR
 WORKDIR ${FUNCTION_DIR}
