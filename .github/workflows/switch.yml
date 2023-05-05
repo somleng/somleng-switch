@@ -49,7 +49,7 @@ jobs:
           [
             {
               "identifier": "switch-staging",
-              "branch": "setup_ghcr",
+              "branch": "develop",
               "image_tag": "staging",
               "ecs_service": "switch-staging",
               "ecs_cluster": "somleng-switch-staging"

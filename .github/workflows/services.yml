@@ -55,7 +55,7 @@ jobs:
           [
             {
               "identifier": "switch-services-staging",
-              "branch": "setup_ghcr",
+              "branch": "develop",
               "image_tag": "staging"
             },
             {

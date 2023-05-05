@@ -39,7 +39,7 @@ jobs:
           [
             {
               "identifier": "s3-mpeg-staging",
-              "branch": "setup_ghcr",
+              "branch": "develop",
               "image_tag": "staging"
             },
             {
