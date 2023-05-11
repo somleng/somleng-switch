@@ -5,7 +5,7 @@ gem "aws-sdk-lambda"
 gem "http"
 gem "okcomputer"
 gem "phony"
-gem "sentry-raven"
+gem "sentry-ruby"
 gem "sinatra"
 gem "sinatra-contrib", require: false
 gem "skylight"
