@@ -34,12 +34,8 @@ jobs:
         run: |
           ../freeswitch/tests/tests.sh
 
-      - name: Run codacy-coverage-reporter
-        uses: codacy/codacy-coverage-reporter-action@v1
-        with:
-          api-token: ${{ secrets.CODACY_API_TOKEN }}
-          coverage-reports: components/app/coverage/lcov/*
-          language: Ruby
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
 
       - name: Set Deployment Matrix
         id: set-deployment-matrix
