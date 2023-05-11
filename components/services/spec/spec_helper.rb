@@ -16,6 +16,11 @@
 
 Bundler.require(:default, :test)
 
+if ENV.key?("CI")
+  require "simplecov"
+  SimpleCov.start
+end
+
 ENV["SWITCH_GROUP"] = "service:somleng-switch"
 ENV["MEDIA_PROXY_GROUP"] = "service:media-proxy"
 ENV["CLIENT_GATEWAY_GROUP"] = "service:client-gateway"
