@@ -18,6 +18,14 @@ Bundler.require(:default, :test)
 
 require_relative "../app"
 
+if ENV.key?("CI")
+  require "simplecov"
+  SimpleCov.start
+
+  require "simplecov-cobertura"
+  SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
+end
+
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
