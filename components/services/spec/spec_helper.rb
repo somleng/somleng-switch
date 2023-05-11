@@ -19,6 +19,9 @@ Bundler.require(:default, :test)
 if ENV.key?("CI")
   require "simplecov"
   SimpleCov.start
+
+  require "simplecov-cobertura"
+  SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
 end
 
 ENV["SWITCH_GROUP"] = "service:somleng-switch"

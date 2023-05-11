@@ -1,6 +1,9 @@
 if ENV.key?("CI")
   require "simplecov"
   SimpleCov.start
+
+  require "simplecov-cobertura"
+  SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
 end
 
 ENV["AHN_ENV"] ||= "test"
