@@ -1,6 +1,6 @@
 GIT
-  remote: https://github.com/adhearsion/adhearsion.git
-  revision: c7f6aae63bef50b3349f03df27867a0312a50986
+  remote: https://github.com/somleng/adhearsion.git
+  revision: e80c176f245e7af948e8c3d10e9788f3dd74eff0
   branch: develop
   specs:
     adhearsion (3.0.0.rc1)
@@ -14,9 +14,9 @@ GIT
       future-resource (~> 1.0)
       has-guarded-handlers (~> 1.6, >= 1.6.3)
       http_parser.rb (~> 0.6.0)
-      i18n (>= 0.6)
-      logging (~> 2.0, < 2.3)
-      nokogiri (~> 1.8, >= 1.8.3, < 1.11)
+      i18n
+      logging (~> 2.0)
+      nokogiri
       pry
       rake
       reel (~> 0.6.0)
@@ -25,7 +25,7 @@ GIT
       ruby_jid (~> 1.0)
       ruby_speech (~> 3.0)
       state_machine (~> 1.0)
-      thor (~> 0.18.0)
+      thor
       virtus (~> 1.0)
 
 GEM
@@ -41,8 +41,8 @@ GEM
     adhearsion-loquacious (1.9.3)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.762.0)
-    aws-sdk-core (3.172.0)
+    aws-partitions (1.767.0)
+    aws-sdk-core (3.173.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
       aws-sigv4 (~> 1.5)
@@ -56,7 +56,6 @@ GEM
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
-    bigdecimal (1.4.4)
     blather (2.0.0)
       activesupport (>= 2.3.11)
       eventmachine (~> 1.2, >= 1.2.6)
@@ -115,11 +114,11 @@ GEM
     llhttp-ffi (0.4.0)
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
-    logging (2.2.2)
+    logging (2.3.1)
       little-plugger (~> 1.1)
-      multi_json (~> 1.10)
+      multi_json (~> 1.14)
     method_source (1.0.0)
-    mini_portile2 (2.4.0)
+    mini_portile2 (2.8.2)
     minitest (5.18.0)
     multi_json (1.15.0)
     mustermann (3.0.0)
@@ -127,8 +126,9 @@ GEM
     niceogiri (1.1.2)
       nokogiri (~> 1.5)
     nio4r (2.5.9)
-    nokogiri (1.10.10)
-      mini_portile2 (~> 2.4.0)
+    nokogiri (1.15.1)
+      mini_portile2 (~> 2.8.2)
+      racc (~> 1.4)
     okcomputer (1.18.4)
     parallel (1.23.0)
     parser (3.2.2.1)
@@ -138,6 +138,7 @@ GEM
       coderay (~> 1.1)
       method_source (~> 1.0)
     public_suffix (5.0.1)
+    racc (1.6.2)
     rack (2.2.7)
     rack-protection (3.0.6)
       rack
@@ -169,7 +170,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.12.0)
     rspec-support (3.12.0)
-    rubocop (1.50.2)
+    rubocop (1.51.0)
       json (~> 2.3)
       parallel (~> 1.10)
       parser (>= 3.2.0.0)
@@ -183,9 +184,9 @@ GEM
       parser (>= 3.2.1.0)
     rubocop-capybara (2.18.0)
       rubocop (~> 1.41)
-    rubocop-factory_bot (2.22.0)
+    rubocop-factory_bot (2.23.1)
       rubocop (~> 1.33)
-    rubocop-performance (1.17.1)
+    rubocop-performance (1.18.0)
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
     rubocop-rspec (2.22.0)
@@ -227,12 +228,12 @@ GEM
     state_machine (1.2.0)
     sucker_punch (2.1.2)
       concurrent-ruby (~> 1.0)
-    thor (0.18.1)
+    thor (1.2.2)
     thread_safe (0.3.6)
     tilt (2.1.0)
     timers (4.0.4)
       hitimes
-    twilio-ruby (6.0.0)
+    twilio-ruby (6.0.1)
       faraday (>= 0.9, < 3.0)
       jwt (>= 1.5, < 3.0)
       nokogiri (>= 1.6, < 2.0)
@@ -262,7 +263,6 @@ PLATFORMS
 DEPENDENCIES
   adhearsion!
   aws-sdk-lambda
-  bigdecimal (~> 1.4.0)
   http
   okcomputer
   phony
