@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "adhearsion", github: "somleng/adhearsion", branch: "develop"
+gem "adhearsion", github: "somleng/adhearsion", branch: "upgrade_celluloid"
 gem "aws-sdk-lambda"
 gem "faraday"
 gem "http"
