@@ -1,4 +1,7 @@
 require "yaml"
+require "tempfile"
+require "openssl"
+require "base64"
 
 module EncryptedCredentials
   class EncryptedFile
@@ -15,7 +18,7 @@ module EncryptedCredentials
 
     def credentials
       content = read_credentials
-      YAML.load(content)
+      YAML.load(content, aliases: true)
     end
 
     def edit
