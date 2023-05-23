@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/somleng/adhearsion.git
-  revision: aafc104d2e44f48e005e13525c74e74a9c5422c6
+  revision: 46fb0c8b424412c025b19ac3704e94bc6a98b4f7
   branch: upgrade_celluloid
   specs:
     adhearsion (3.0.0.rc1)
