@@ -102,7 +102,7 @@ class CallController < Adhearsion::CallController
   end
 
   def execute_twiml(twiml)
-    ExecuteTwiML.call(context: self, twiml: twiml)
+    ExecuteTwiML.call(context: self, twiml:)
   end
 
   def output_formatter
