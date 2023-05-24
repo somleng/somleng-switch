@@ -1,11 +1,12 @@
 source "https://rubygems.org"
 
-gem "adhearsion", github: "somleng/adhearsion", branch: "upgrade_celluloid"
+gem "adhearsion", github: "somleng/adhearsion"
 gem "aws-sdk-lambda"
 gem "faraday"
 gem "http"
 gem "okcomputer"
 gem "phony"
+gem "reel-rack", github: "samnang/reel-rack", branch: "switch_to_use_integer"
 gem "sentry-ruby"
 gem "sinatra"
 gem "sinatra-contrib", require: false
