@@ -1,16 +1,16 @@
 source "https://rubygems.org"
 
-gem "adhearsion", github: "adhearsion/adhearsion", branch: "develop"
+gem "adhearsion", github: "somleng/adhearsion"
 gem "aws-sdk-lambda"
+gem "faraday"
 gem "http"
 gem "okcomputer"
 gem "phony"
-gem "sentry-raven"
+gem "reel-rack", github: "samnang/reel-rack", branch: "switch_to_use_integer"
+gem "sentry-ruby"
 gem "sinatra"
 gem "sinatra-contrib", require: false
 gem "skylight"
-
-gem "bigdecimal", "~> 1.4.0" # To support Ruby 2.7 with ActiveSupport 4.2
 
 group :development, :test do
   gem "rubocop"
@@ -22,7 +22,7 @@ group :test do
   gem "rack-test"
   gem "rspec"
   gem "simplecov", require: false
-  gem "simplecov-lcov", require: false
+  gem "simplecov-cobertura", require: false
   gem "twilio-ruby"
   gem "vcr"
   gem "webmock"

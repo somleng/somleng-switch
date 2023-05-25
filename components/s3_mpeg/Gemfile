@@ -9,4 +9,6 @@ gem "ox" # XML parser. required by aws-sdk-s3
 
 group :test do
   gem "rspec"
+  gem "simplecov", require: false
+  gem "simplecov-cobertura", require: false
 end

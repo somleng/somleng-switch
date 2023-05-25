@@ -1,9 +1,9 @@
 if ENV.key?("CI")
   require "simplecov"
-  require "simplecov-lcov"
-  SimpleCov.formatter = SimpleCov::Formatter::LcovFormatter
-  SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
   SimpleCov.start
+
+  require "simplecov-cobertura"
+  SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
 end
 
 ENV["AHN_ENV"] ||= "test"

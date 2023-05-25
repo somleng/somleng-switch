@@ -1,5 +1,5 @@
-Raven.configure do |config|
+Sentry.init do |config|
   config.dsn = AppSettings[:sentry_dsn]
-  config.current_environment = Adhearsion.environment
-  config.environments = %w[production]
+  config.environment = Adhearsion.environment
+  config.enabled_environments = %w[production]
 end

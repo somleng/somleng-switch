@@ -1,3 +1,5 @@
+require "faraday"
+
 module CallPlatform
   class Client
     class InvalidRequestError < StandardError; end
@@ -26,7 +28,7 @@ module CallPlatform
       response = http_client.post("/services/phone_call_events", params.to_json)
 
       unless response.success?
-        Raven.capture_message("Invalid phone call event", extra: { response_body: response.body })
+        Sentry.capture_message("Invalid phone call event", extra: { response_body: response.body })
       end
     end
 
@@ -76,17 +78,19 @@ module CallPlatform
     end
 
     def http_client
-      @http_client ||= Faraday.new(url: configuration.host) do |conn|
+      @http_client ||= Faraday.new(url: CallPlatform.configuration.host) do |conn|
         conn.headers["Accept"] = "application/json"
         conn.headers["Content-Type"] = "application/json"
 
         conn.adapter Faraday.default_adapter
-        conn.basic_auth(configuration.username, configuration.password)
-      end
-    end
 
-    def configuration
-      CallPlatform.configuration
+        conn.request(
+          :authorization,
+          :basic,
+          CallPlatform.configuration.username,
+          CallPlatform.configuration.password
+        )
+      end
     end
   end
 end

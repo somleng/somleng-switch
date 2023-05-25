@@ -27,7 +27,7 @@ class AppSettings
 
     def settings
       @settings ||= begin
-        data = YAML.load(DEFAULT_SETTINGS_PATH.read).fetch(env)
+        data = YAML.load(DEFAULT_SETTINGS_PATH.read, aliases: true).fetch(env)
         YAML.load(ERB.new(data.to_yaml).result)
       end
     end
