@@ -39,7 +39,7 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.0.4.3)
+    activesupport (7.0.5)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
@@ -49,8 +49,8 @@ GEM
     adhearsion-loquacious (1.9.3)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.767.0)
-    aws-sdk-core (3.173.0)
+    aws-partitions (1.769.0)
+    aws-sdk-core (3.173.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
       aws-sigv4 (~> 1.5)
@@ -91,7 +91,7 @@ GEM
       unf (>= 0.0.5, < 1.0.0)
     equalizer (0.0.11)
     eventmachine (1.2.7)
-    faraday (2.7.4)
+    faraday (2.7.5)
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
     faraday-net_http (3.0.2)
@@ -134,7 +134,7 @@ GEM
     niceogiri (1.1.2)
       nokogiri (~> 1.5)
     nio4r (2.5.9)
-    nokogiri (1.15.1)
+    nokogiri (1.15.2)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     okcomputer (1.18.4)
