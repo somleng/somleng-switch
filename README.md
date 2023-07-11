@@ -92,11 +92,7 @@ See [build script](https://github.com/somleng/somleng-switch/blob/develop/.githu
 
 The [infrastructure directory](https://github.com/somleng/somleng-switch/tree/develop/infrastructure) contains [Terraform](https://www.terraform.io/) configuration files in order to deploy SomlengSWITCH to AWS.
 
-:warning: The current infrastructure of Somleng is rapidly changing as we continue to improve and experiment with new features. We often make breaking changes to the current infrastructure which usually requires some manual migration. We don't recommend that you try to deploy and run your own Somleng stack for production purposes at this stage.
-
 The infrastructure in this repository depends on some shared core infrastructure. This core infrastructure can be found in the [Somleng Project](https://github.com/somleng/somleng-project/tree/master/infrastructure) repository.
-
-The current infrastructure deploys SomlengSWITCH to AWS behind a Network Load Balancer (NLB) to Elastic Container Service (ECS). There is one task, which runs three containers. An [NGINX container](https://github.com/somleng/somleng-switch/blob/develop/components/nginx/Dockerfile) which runs as a reverse proxy to the [Adhearsion container](https://github.com/somleng/somleng-switch/blob/develop/Dockerfile) which accepts API requests from Somleng. There's also a [FreeSWITCH container](https://github.com/somleng/somleng-switch/blob/develop/components/freeswitch/Dockerfile) which handles SIP connections to operators.
 
 ## License
 
