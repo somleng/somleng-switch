@@ -6,6 +6,10 @@ variable "app_identifier" {}
 variable "vpc" {}
 variable "instance_subnets" {}
 variable "cluster_name" {}
+
+variable "max_capacity" {
+  default = 10
+}
 variable "security_groups" {
   default = []
 }

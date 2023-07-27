@@ -6,6 +6,7 @@ module media_proxy_container_instances {
   vpc = var.vpc
   instance_subnets = var.vpc.public_subnets
   cluster_name = aws_ecs_cluster.cluster.name
+  max_capacity = var.media_proxy_max_tasks * 2
   user_data = var.assign_media_proxy_eips ? [
     {
       path = "/opt/assign_eip.sh",
