@@ -65,15 +65,19 @@ resource "aws_iam_role_policy_attachment" "ssm" {
 
 # Launch Template
 resource "aws_launch_template" "this" {
-  name_prefix                 = var.app_identifier
-  image_id                    = jsondecode(data.aws_ssm_parameter.this_ami.value).image_id
-  instance_type               = data.aws_ec2_instance_type.this.instance_type
+  name_prefix                  = var.app_identifier
+  image_id                     = jsondecode(data.aws_ssm_parameter.this_ami.value).image_id
+  instance_type                = data.aws_ec2_instance_type.this.instance_type
 
   iam_instance_profile {
     name = aws_iam_instance_profile.this.name
   }
 
-  vpc_security_group_ids = concat([aws_security_group.this.id], var.security_groups)
+  network_interfaces {
+    associate_public_ip_address  = var.associate_public_ip_address
+    security_groups = concat([aws_security_group.this.id], var.security_groups)
+  }
+
   user_data = base64encode(join("\n", [
     "#cloud-config",
     yamlencode({
@@ -115,7 +119,7 @@ resource "aws_autoscaling_group" "this" {
   }
 
   vpc_zone_identifier  = var.instance_subnets
-  max_size             = 10
+  max_size             = var.max_capacity
   min_size             = 0
   desired_capacity     = 0
   wait_for_capacity_timeout = 0

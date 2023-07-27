@@ -14,6 +14,10 @@ variable "security_groups" {
   default = []
 }
 
+variable associate_public_ip_address {
+  default = false
+}
+
 variable "user_data" {
   type = list(
     object(

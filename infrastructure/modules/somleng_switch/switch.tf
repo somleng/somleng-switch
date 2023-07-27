@@ -10,6 +10,7 @@ module switch_container_instances {
   vpc = var.vpc
   instance_subnets = var.vpc.private_subnets
   cluster_name = aws_ecs_cluster.cluster.name
+  max_capacity = var.switch_max_tasks * 2
 }
 
 resource "aws_ecs_capacity_provider" "switch" {
