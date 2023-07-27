@@ -5,6 +5,8 @@ module client_gateway_container_instances {
   app_identifier = var.client_gateway_identifier
   vpc = var.vpc
   instance_subnets = var.vpc.public_subnets
+  associate_public_ip_address = true
+  max_capacity = var.client_gateway_max_tasks * 2
   cluster_name = aws_ecs_cluster.cluster.name
   security_groups = [var.db_security_group]
   user_data = var.assign_client_gateway_eips ? [

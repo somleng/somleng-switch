@@ -5,6 +5,7 @@ module public_gateway_container_instances {
   app_identifier = var.public_gateway_identifier
   vpc = var.vpc
   instance_subnets = var.vpc.private_subnets
+  max_capacity = var.public_gateway_max_tasks * 2
   cluster_name = aws_ecs_cluster.cluster.name
 }
 
