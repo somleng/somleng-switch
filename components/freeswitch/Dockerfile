@@ -12,7 +12,7 @@ RUN echo "deb-src [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg]
 RUN apt-get purge -y --auto-remove gnupg2 lsb-release
 
 RUN apt-get update --allow-releaseinfo-change
-RUN apt-get -y install libpq-dev libc-dev groff less netcat ffmpeg
+RUN apt-get -y install libpq-dev libc-dev groff less netcat-traditional ffmpeg
 
 # Install FreeSWITCH and required modules
 RUN apt-get update && apt-get install -y \
