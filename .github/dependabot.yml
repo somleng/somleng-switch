@@ -1,6 +1,17 @@
 version: 2
 updates:
-  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: 'bundler'
+    directory: 'components/app'
+    schedule:
+      interval: 'daily'
+  - package-ecosystem: 'bundler'
+    directory: 'components/s3_mpeg'
+    schedule:
+      interval: 'daily'
+  - package-ecosystem: 'bundler'
+    directory: 'components/services'
+    schedule:
+      interval: 'daily'
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
