@@ -17,6 +17,7 @@ class RoutingParameters
     result = national_dialing ? Phony.format(destination, format: :national, spaces: "") : destination
     result.gsub!(/\D/, "")
     result = username.present? ? client_gateway_address(result) : public_gateway_address(result)
+    result.prepend(dial_string_prefix) if dial_string_prefix.present?
     result.prepend("+") if plus_prefix
     result
   end
@@ -25,12 +26,12 @@ class RoutingParameters
 
   def client_gateway_address(destination)
     services_client.build_client_gateway_dial_string(
-      destination: destination,
-      username: username
+      destination:,
+      username:,
     )
   end
 
   def public_gateway_address(destination)
-    "#{dial_string_prefix}#{destination}@#{host}"
+    "#{destination}@#{host}"
   end
 end

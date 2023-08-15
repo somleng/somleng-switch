@@ -73,19 +73,26 @@ RSpec.describe DialString do
     it "build a client gateway dial string" do
       fake_services_client = instance_double(
         Services::Client,
-        build_client_gateway_dial_string: "855716100987@45.118.77.153:1619;fs_path=sip:10.10.0.20:6060"
+        build_client_gateway_dial_string: "02092960310@45.118.77.153:1619;fs_path=sip:10.10.0.20:6060"
       )
 
       result = DialString.new(
         build_routing_parameters(
-          destination: "855716100987",
+          destination: "8562092960310",
           username: "user1",
-          plus_prefix: true,
+          plus_prefix: false,
+          dial_string_prefix: "1",
+          national_dialing: true,
           services_client: fake_services_client
         )
       ).to_s
 
-      expect(result).to eq("sofia/external/+855716100987@45.118.77.153:1619;fs_path=sip:10.10.0.20:6060")
+      expect(
+        fake_services_client
+      ).to have_received(
+        :build_client_gateway_dial_string).with(username: "user1", destination: "02092960310"
+      )
+      expect(result).to eq("sofia/external/102092960310@45.118.77.153:1619;fs_path=sip:10.10.0.20:6060")
     end
   end
 
