@@ -1,5 +1,7 @@
 <configuration name="modules.conf" description="Modules">
   <modules>
+    <load module="mod_aws_transcribe"/>
+
     <!-- Loggers -->
     <load module="mod_console"/>
 

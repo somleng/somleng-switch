@@ -1,3 +1,5 @@
+FROM drachtio/drachtio-freeswitch-base as build
+
 FROM debian:bullseye-slim
 
 ARG signalwire_token
@@ -60,6 +62,8 @@ RUN chown -R freeswitch:daemon /etc/freeswitch
 
 RUN touch /var/log/freeswitch/freeswitch.log
 RUN chown freeswitch:freeswitch /var/log/freeswitch/freeswitch.log
+
+COPY --from=build /usr/local/freeswitch/mod/mod_aws_transcribe.* /usr/lib/freeswitch/mod/
 
 # Install the entrypoint script
 COPY docker-entrypoint.sh /docker-entrypoint.sh
