@@ -51,6 +51,6 @@ http_interactions:
       - chunked
     body:
       encoding: UTF-8
-      string: '{"destination":"85516701721","dial_string_prefix":null,"plus_prefix":false,"national_dialing":false,"host":"host.docker.internal:5061","username":null,"symmetric_latching":true}'
+      string: '{"destination":"85516701721","dial_string_prefix":null,"plus_prefix":false,"national_dialing":true,"host":"host.docker.internal:5061","username":null,"symmetric_latching":true}'
   recorded_at: Fri, 23 Sep 2022 06:27:36 GMT
 recorded_with: VCR 6.0.0

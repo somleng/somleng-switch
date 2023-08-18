@@ -61,6 +61,28 @@ RSpec.describe OutboundCall do
     )
   end
 
+  it "originates an outbound call with national dialing" do
+    call_params = build_call_params(
+      "from" => "85523238265",
+      "routing_parameters" => {
+        "destination" => "85516701721",
+        "dial_string_prefix" => nil,
+        "plus_prefix" => false,
+        "national_dialing" => true,
+        "host" => "27.109.112.141",
+        "username" => nil,
+        "symmetric_latching" => true
+      }
+    )
+    allow(Adhearsion::OutboundCall).to receive(:originate)
+
+    OutboundCall.new(call_params).initiate
+
+    expect(Adhearsion::OutboundCall).to have_received(:originate).with(
+      "sofia/external/016701721@27.109.112.141", hash_including(from: "023238265")
+    )
+  end
+
   it "originates an outbound call through the public gateway without symmetric latching support" do
     call_params = build_call_params(
       "routing_parameters" => {

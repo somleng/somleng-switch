@@ -29,7 +29,9 @@ RSpec.describe CallController, type: :call_controller do
       controller = build_controller(
         stub_voice_commands: [:play_audio, { dial: build_dial_status }],
         call_properties: {
-          account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34"
+          account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34",
+          from: "855715100860",
+          direction: "inbound"
         }
       )
 
@@ -44,10 +46,37 @@ RSpec.describe CallController, type: :call_controller do
       controller.run
 
       expect(controller).to have_received(:dial).with(
-        dial_string("016701721"),
-        for: 30.seconds
+        include(
+          dial_string("85516701721") => { for: 30.seconds, from: "855715100860" }
+        )
       )
       expect(controller).to have_received(:play_audio).with("foo.mp3")
+    end
+
+    it "handles national dialing", :vcr, cassette: :build_routing_parameters_with_national_dialing do
+      controller = build_controller(
+        stub_voice_commands: [:play_audio, { dial: build_dial_status }],
+        call_properties: {
+          account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34",
+          to: "855715100860",
+          direction: "outbound-api"
+        }
+      )
+
+      stub_twiml_request(controller, response: <<~TWIML)
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <Response>
+          <Dial>85516701721</Dial>
+        </Response>
+      TWIML
+
+      controller.run
+
+      expect(controller).to have_received(:dial).with(
+        include(
+          dial_string("016701721") => hash_including(from: "0715100860")
+        )
+      )
     end
 
     it "handles numbers without symmetric latching support", :vcr, cassette: :build_routing_parameters_without_symmetric_latching do
@@ -68,8 +97,9 @@ RSpec.describe CallController, type: :call_controller do
       controller.run
 
       expect(controller).to have_received(:dial).with(
-        dial_string("016701721", profile: "alternative-outbound"),
-        any_args
+        include(
+          dial_string("016701721", profile: "alternative-outbound") => be_a_kind_of(Hash)
+        )
       )
     end
 
@@ -77,7 +107,9 @@ RSpec.describe CallController, type: :call_controller do
       controller = build_controller(
         stub_voice_commands: { dial: build_dial_status },
         call_properties: {
-          account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34"
+          account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34",
+          from: "855715200860",
+          direction: "inbound"
         }
       )
 
@@ -96,9 +128,9 @@ RSpec.describe CallController, type: :call_controller do
 
       expect(controller).to have_received(:dial).with(
         include(
-          dial_string("016701721") => {},
-          dial_string("0715100860") => {},
-          dial_string("010555777") => {}
+          dial_string("85516701721") => hash_including(from: "855715200860"),
+          dial_string("0715100860", profile: "alternative-outbound") => hash_including(from: "0715200860"),
+          dial_string("85510555777") => hash_including(from: "855715200860")
         ),
         any_args
       )
@@ -125,9 +157,8 @@ RSpec.describe CallController, type: :call_controller do
 
       expect(controller).to have_received(:dial).with(
         include(
-          "sofia/external/alice@sip.example.com" => {}
-        ),
-        any_args
+          "sofia/external/alice@sip.example.com" => { for: 30.seconds }
+        )
       )
     end
 
@@ -139,9 +170,9 @@ RSpec.describe CallController, type: :call_controller do
       stub_twiml_request(controller, response: <<~TWIML)
         <?xml version="1.0" encoding="UTF-8" ?>
         <Response>
-          <Dial>
-            <Number callerId="2442">85516701721</Number>
-            <Number callerId="2443">855715100860</Number>
+          <Dial callerId="85523238265">
+            <Number>85516701721</Number>
+            <Number>855715100860</Number>
             <Number>85510555777</Number>
           </Dial>
         </Response>
@@ -151,11 +182,10 @@ RSpec.describe CallController, type: :call_controller do
 
       expect(controller).to have_received(:dial).with(
         include(
-          dial_string("016701721") => { from: "2442" },
-          dial_string("0715100860") => { from: "2443" },
-          dial_string("010555777") => {}
-        ),
-        any_args
+          dial_string("85516701721") => hash_including(from: "85523238265"),
+          dial_string("0715100860", profile: "alternative-outbound") => hash_including(from: "023238265"),
+          dial_string("85510555777") => hash_including(from: "85523238265")
+        )
       )
     end
 
@@ -373,8 +403,9 @@ RSpec.describe CallController, type: :call_controller do
         controller.run
 
         expect(controller).to have_received(:dial).with(
-          dial_string("016701721"),
-          hash_including(from: "2442")
+          include(
+            dial_string("85516701721") => hash_including(from: "2442")
+          )
         )
       end
     end
@@ -395,32 +426,9 @@ RSpec.describe CallController, type: :call_controller do
         controller.run
 
         expect(controller).to have_received(:dial).with(
-          dial_string("016701721"),
-          hash_including(for: 10.seconds)
-        )
-      end
-    end
-
-    describe "ringToneUrl" do
-      # Not supported by Twilio
-
-      it "handles a ringToneUrl", :vcr, cassette: :build_routing_parameters do
-        controller = build_controller(
-          stub_voice_commands: { dial: build_dial_status }
-        )
-
-        stub_twiml_request(controller, response: <<~TWIML)
-          <?xml version="1.0" encoding="UTF-8" ?>
-          <Response>
-            <Dial ringToneUrl="http://api.twilio.com/cowbell.mp3">+85516701721</Dial>
-          </Response>
-        TWIML
-
-        controller.run
-
-        expect(controller).to have_received(:dial).with(
-          dial_string("016701721"),
-          hash_including(ringback: "http://api.twilio.com/cowbell.mp3")
+          include(
+            dial_string("85516701721") => hash_including(for: 10.seconds)
+          )
         )
       end
     end

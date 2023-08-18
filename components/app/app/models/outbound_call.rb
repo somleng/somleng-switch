@@ -11,9 +11,11 @@ class OutboundCall
       account_sid: call_params.fetch("account_sid")
     )
 
+    dial_string = DialString.new(call_params.fetch("routing_parameters"))
+
     Adhearsion::OutboundCall.originate(
-      DialString.new(call_params.fetch("routing_parameters")).to_s,
-      from: call_params.fetch("from"),
+      dial_string.to_s,
+      from: dial_string.format_number(call_params.fetch("from")),
       controller: CallController,
       controller_metadata: {
         call_properties: CallProperties.new(
@@ -27,7 +29,7 @@ class OutboundCall
           api_version: call_params.fetch("api_version"),
           from: call_params.fetch("from"),
           to: call_params.fetch("to"),
-          sip_headers: sip_headers
+          sip_headers:
         )
       },
       headers: build_call_headers(sip_headers)

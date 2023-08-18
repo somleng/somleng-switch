@@ -171,36 +171,23 @@ class ExecuteTwiML
       dial_content = nested_noun.content.strip
 
       if nested_noun.text? || nested_noun.name == "Number"
-        routing_parameters = build_routing_parameters(dial_content)
+        dial_string = DialString.new(build_routing_parameters(dial_content))
+        caller_id = dial_string.format_number(
+          attributes.fetch("callerId") { call_properties.inbound? ? call_properties.from : call_properties.to }
+        )
       elsif nested_noun.name == "Sip"
-        routing_parameters = {
-          address: dial_content.delete_prefix("sip:")
-        }
-      end
-
-      dial_string = DialString.new(routing_parameters).to_s
-
-      break dial_string if nested_noun.text?
-
-      unless ["Number", "Sip"].include?(nested_noun.name)
+        dial_string = DialString.new(address: dial_content.delete_prefix("sip:"))
+      else
         raise Errors::TwiMLError, "Nested noun <#{nested_noun.name}> not allowed within <Dial>"
       end
 
-      nested_noun_attributes = twiml_attributes(nested_noun)
-      result[dial_string] = {
-        from: nested_noun_attributes["callerId"],
-        ringback: nested_noun_attributes["ringToneUrl"]
+      result[dial_string.to_s] = {
+        from: caller_id,
+        for: attributes.fetch("timeout", 30).to_i.seconds
       }.compact
     end
 
-    dial_status = dial(
-      to,
-      {
-        from: attributes["callerId"],
-        ringback: attributes["ringToneUrl"],
-        for: attributes.fetch("timeout", 30).to_i.seconds
-      }.compact
-    )
+    dial_status = dial(to)
 
     return if attributes["action"].blank?
 

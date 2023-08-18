@@ -14,12 +14,17 @@ class RoutingParameters
   end
 
   def address
-    result = national_dialing ? Phony.format(destination, format: :national, spaces: "") : destination
-    result.gsub!(/\D/, "")
+    result = format_number(destination)
     result = username.present? ? client_gateway_address(result) : public_gateway_address(result)
     result.prepend(dial_string_prefix) if dial_string_prefix.present?
     result.prepend("+") if plus_prefix
     result
+  end
+
+  def format_number(value)
+    result = value.gsub(/\D/, "")
+    result = national_dialing && Phony.plausible?(result) ? Phony.format(result, format: :national, spaces: "") : result
+    result.gsub(/\D/, "")
   end
 
   private
