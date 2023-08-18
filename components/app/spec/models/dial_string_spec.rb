@@ -28,7 +28,7 @@ RSpec.describe DialString do
       expect(dial_string.to_s).to eq("sofia/external/855716100987@sip.example.com")
     end
 
-    it "builds a dial string with dial string prefix" do
+    it "builds a dial string with a plus prefix" do
       dial_string = DialString.new(
         build_routing_parameters(
           destination: "855716100987",
@@ -93,6 +93,46 @@ RSpec.describe DialString do
         :build_client_gateway_dial_string).with(username: "user1", destination: "02092960310"
       )
       expect(result).to eq("sofia/external/102092960310@45.118.77.153:1619;fs_path=sip:10.10.0.20:6060")
+    end
+  end
+
+  describe "#format_number" do
+    it "formats a number in national format" do
+      dial_string = DialString.new(
+        build_routing_parameters(
+          national_dialing: true
+        )
+      )
+
+      result = dial_string.format_number("+855 (716)-100-987")
+
+      expect(result).to eq("0716100987")
+    end
+
+
+    it "formats a number in national format for countries without a trunk prefix" do
+      dial_string = DialString.new(
+        build_routing_parameters(
+          national_dialing: true
+        )
+      )
+
+      result = dial_string.format_number("+16505130514")
+
+      expect(result).to eq("6505130514")
+    end
+
+
+    it "formats a number in E.164 format" do
+      dial_string = DialString.new(
+        build_routing_parameters(
+          national_dialing: false
+        )
+      )
+
+      result = dial_string.format_number("+855 (716)-100-987")
+
+      expect(result).to eq("855716100987")
     end
   end
 

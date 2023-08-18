@@ -11,4 +11,8 @@ CallProperties = Struct.new(
   :from,
   :sip_headers,
   keyword_init: true
-)
+) do
+  def inbound?
+    direction == "inbound"
+  end
+end
