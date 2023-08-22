@@ -4,7 +4,7 @@ USER root
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ARG REL=10.5
+ARG REL=latest
 ARG DIST=bookworm
 
 WORKDIR /tmp
