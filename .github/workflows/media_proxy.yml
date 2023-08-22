@@ -169,7 +169,7 @@ jobs:
 
     needs:
       - build
-      - build-packages
+      - build-manifest
 
     if: needs.build.outputs.matrixLength > 0
 
