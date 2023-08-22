@@ -1,6 +1,11 @@
 # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
-data "aws_ssm_parameter" "this_ami" {
-  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended"
+# https://docs.aws.amazon.com/AmazonECS/latest/developerguide/retrieve-ecs-optimized_AMI.html
+data "aws_ssm_parameter" "amd64_ami" {
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended"
+}
+
+data "aws_ssm_parameter" "arm64_ami" {
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2023/arm64/recommended"
 }
 
 data "aws_ec2_instance_type" "this" {
@@ -66,7 +71,7 @@ resource "aws_iam_role_policy_attachment" "ssm" {
 # Launch Template
 resource "aws_launch_template" "this" {
   name_prefix                  = var.app_identifier
-  image_id                     = jsondecode(data.aws_ssm_parameter.this_ami.value).image_id
+  image_id                     = jsondecode((var.architecture == "arm64" ? data.aws_ssm_parameter.arm64_ami : data.aws_ssm_parameter.amd64_ami).value).image_id
   instance_type                = data.aws_ec2_instance_type.this.instance_type
 
   iam_instance_profile {

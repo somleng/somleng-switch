@@ -7,6 +7,8 @@ module media_proxy_container_instances {
   instance_subnets = var.vpc.public_subnets
   associate_public_ip_address = true
   cluster_name = aws_ecs_cluster.cluster.name
+  instance_type = "t4g.small"
+  architecture = "arm64"
   max_capacity = var.media_proxy_max_tasks * 2
   user_data = var.assign_media_proxy_eips ? [
     {

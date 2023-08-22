@@ -2,6 +2,15 @@ variable "instance_type" {
   default = "t3.small"
 }
 
+variable "architecture" {
+  default = "amd64"
+
+  validation {
+    condition     = contains(["amd64", "arm64"], var.architecture)
+    error_message = "Valid values for var: architecture are (amd64, arm64)."
+  }
+}
+
 variable "app_identifier" {}
 variable "vpc" {}
 variable "instance_subnets" {}

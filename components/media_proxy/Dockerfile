@@ -1,11 +1,11 @@
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 USER root
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ARG REL=10.5
-ARG DIST=bullseye
+ARG REL=latest
+ARG DIST=bookworm
 
 WORKDIR /tmp
 
