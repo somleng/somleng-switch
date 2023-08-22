@@ -52,8 +52,8 @@ jobs:
             },
             {
               "identifier": "switch",
-              "branch": "master",
-              "image_tag": "fix_memory_usage_for_tasks",
+              "branch": "fix_memory_usage_for_tasks",
+              "image_tag": "latest",
               "ecs_service": "switch",
               "ecs_cluster": "somleng-switch"
             }
