@@ -90,9 +90,9 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.identifier }}
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
           tags: |
-            ${{ env.ECR_REPOSITORY }}/media-proxy:${{ matrix.image_tag }}
-            ${{ env.ECR_REPOSITORY }}/media-proxy:${{ env.IMAGE_TAG }}
-            ${{ env.GHCR_REPOSITORY }}/media-proxy:${{ matrix.image_tag }}
+            ${{ env.ECR_REGISTRY }}/media-proxy:${{ matrix.image_tag }}
+            ${{ env.ECR_REGISTRY }}/media-proxy:${{ env.IMAGE_TAG }}
+            ${{ env.GHCR_REGISTRY }}/media-proxy:${{ matrix.image_tag }}
 
   deploy:
     name: Deploy
