@@ -105,9 +105,6 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     if: needs.build.outputs.matrixLength > 0
-    defaults:
-      run:
-        working-directory: components/media_proxy
 
     needs:
       - build
@@ -136,7 +133,7 @@ jobs:
         id: render-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: components/media_proxy/task-definition.json
+          task-definition: task-definition.json
           container-name: media_proxy
           image: ${{ env.ECR_REGISTRY }}/media-proxy:${{ env.IMAGE_TAG }}
 
