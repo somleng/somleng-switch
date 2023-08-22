@@ -23,7 +23,7 @@ jobs:
             },
             {
               "identifier": "gateway-commons",
-              "branch": "master",
+              "branch": "fix_memory_usage_for_tasks",
               "image_tag": "latest"
             }
           ]
