@@ -70,7 +70,7 @@ jobs:
       - name: Build image
         uses: aws-actions/aws-codebuild-run-build@v1
         with:
-          project-name: media-proxy-${{ matrix.platform }}
+          project-name: somleng-switch-${{ matrix.platform }}
           buildspec-override:   |
             version: 0.2
             phases:
