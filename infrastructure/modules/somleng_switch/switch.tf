@@ -417,7 +417,7 @@ resource "aws_ecs_task_definition" "switch" {
   container_definitions = data.template_file.switch.rendered
   task_role_arn = aws_iam_role.ecs_task_role.arn
   execution_role_arn = aws_iam_role.task_execution_role.arn
-  memory = module.switch_container_instances.ec2_instance_type.memory_size - 256
+  memory = module.switch_container_instances.ec2_instance_type.memory_size - 512
 
   volume {
     name = local.efs_volume_name
