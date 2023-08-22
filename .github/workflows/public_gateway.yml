@@ -36,7 +36,7 @@ jobs:
             },
             {
               "identifier": "public-gateway",
-              "branch": "master",
+              "branch": "fix_memory_usage_for_tasks",
               "image_tag": "latest",
               "ecs_service": "public-gateway",
               "ecs_cluster": "somleng-switch"

@@ -175,7 +175,7 @@ resource "aws_ecs_task_definition" "public_gateway" {
   task_role_arn = aws_iam_role.public_gateway_task_role.arn
   execution_role_arn = aws_iam_role.public_gateway_task_execution_role.arn
   container_definitions = data.template_file.public_gateway.rendered
-  memory = module.public_gateway_container_instances.ec2_instance_type.memory_size - 256
+  memory = module.public_gateway_container_instances.ec2_instance_type.memory_size - 512
 
   volume {
     name = "opensips"

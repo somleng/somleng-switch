@@ -194,7 +194,7 @@ resource "aws_ecs_task_definition" "client_gateway" {
   requires_compatibilities = ["EC2"]
   execution_role_arn = aws_iam_role.client_gateway_task_execution_role.arn
   container_definitions = data.template_file.client_gateway.rendered
-  memory = module.client_gateway_container_instances.ec2_instance_type.memory_size - 256
+  memory = module.client_gateway_container_instances.ec2_instance_type.memory_size - 512
 
   volume {
     name = "opensips"
