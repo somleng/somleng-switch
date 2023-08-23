@@ -178,6 +178,10 @@ resource "aws_ecs_service" "media_proxy" {
     weight = 1
   }
 
+  placement_constraints {
+    type       = "distinctInstance"
+  }
+
   depends_on = [
     aws_iam_role.media_proxy_task_execution_role
   ]
