@@ -33,7 +33,7 @@ jobs:
             },
             {
               "identifier": "client-gateway",
-              "branch": "fix_memory_usage_for_tasks",
+              "branch": "master",
               "image_tag": "latest",
               "ecs_service": "client-gateway",
               "ecs_cluster": "somleng-switch"

@@ -30,7 +30,7 @@ jobs:
             },
             {
               "identifier": "media-proxy",
-              "branch": "fix_memory_usage_for_tasks",
+              "branch": "master",
               "image_tag": "latest",
               "ecs_service": "media-proxy",
               "ecs_cluster": "somleng-switch"
