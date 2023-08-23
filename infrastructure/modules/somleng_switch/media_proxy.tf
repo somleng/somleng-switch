@@ -164,7 +164,7 @@ resource "aws_ecs_task_definition" "media_proxy" {
   requires_compatibilities = ["EC2"]
   execution_role_arn = aws_iam_role.media_proxy_task_execution_role.arn
   container_definitions = data.template_file.media_proxy.rendered
-  memory = module.media_proxy_container_instances.ec2_instance_type.memory_size - 256
+  memory = module.media_proxy_container_instances.ec2_instance_type.memory_size - 512
 }
 
 resource "aws_ecs_service" "media_proxy" {

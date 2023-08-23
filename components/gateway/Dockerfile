@@ -37,7 +37,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ARG OPENSIPS_VERSION=3.3
 ARG OPENSIPS_BUILD=releases
 
-RUN apt-get -y update -qq && apt-get -y install gnupg2 ca-certificates
+RUN apt-get -y update -qq && apt-get -y install gnupg2 ca-certificates iproute2
 RUN apt-key adv --fetch-keys https://apt.opensips.org/pubkey.gpg
 RUN echo "deb https://apt.opensips.org bullseye ${OPENSIPS_VERSION}-${OPENSIPS_BUILD}" >/etc/apt/sources.list.d/opensips.list
 RUN apt-get -y update -qq && apt-get -y install opensips opensips-postgres-module opensips-auth-modules netcat jq curl

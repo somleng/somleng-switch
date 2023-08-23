@@ -8,6 +8,7 @@ if [ "$1" = 'opensips' ]; then
   FIFO_NAME="${FIFO_NAME:="/tmp/opensips_fifo"}"
   DATABASE_URL="${DATABASE_URL:="postgres://postgres:@localhost:5432/opensips"}"
   SIP_PORT="${SIP_PORT:="5060"}"
+  INTERFACE_NAME="$(ip route list | grep default | grep -E  'dev (\w+)' -o | awk '{print $2}')"
 
   if [ -n "$DATABASE_HOST" ]; then
     DATABASE_URL="postgres://$DATABASE_USERNAME:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME"
@@ -16,7 +17,9 @@ if [ "$1" = 'opensips' ]; then
   LOCAL_IP="$(hostname -i)"
 
   if [ -n "$ECS_CONTAINER_METADATA_FILE" ]; then
-    SIP_ADVERTISED_IP="${SIP_ADVERTISED_IP:="$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)"}"
+    TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+    AWS_PUBLIC_IP=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)
+    SIP_ADVERTISED_IP="${SIP_ADVERTISED_IP:="$AWS_PUBLIC_IP"}"
   else
     SIP_ADVERTISED_IP="${SIP_ADVERTISED_IP:="$(hostname -i)"}"
   fi
@@ -26,6 +29,7 @@ if [ "$1" = 'opensips' ]; then
   sed -i "s|SIP_PORT|$SIP_PORT|g" /etc/opensips/opensips.cfg
   sed -i "s|SIP_ADVERTISED_IP|$SIP_ADVERTISED_IP|g" /etc/opensips/opensips.cfg
   sed -i "s|LOCAL_IP|$LOCAL_IP|g" /etc/opensips/opensips.cfg
+  sed -i "s|INTERFACE_NAME|$INTERFACE_NAME|g" /etc/opensips/opensips.cfg
 
   exec "$OPENSIPS_CONTAINER_BINARY" -FE
 fi
