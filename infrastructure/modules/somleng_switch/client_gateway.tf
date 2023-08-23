@@ -214,6 +214,10 @@ resource "aws_ecs_service" "client_gateway" {
     weight = 1
   }
 
+  placement_constraints {
+    type       = "distinctInstance"
+  }
+
   depends_on = [
     aws_iam_role.client_gateway_task_execution_role
   ]
