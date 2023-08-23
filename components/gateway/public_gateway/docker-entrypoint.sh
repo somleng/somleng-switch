@@ -11,6 +11,7 @@ if [ "$1" = 'opensips' ]; then
   DATABASE_URL="${DATABASE_URL:="postgres://postgres:@localhost:5432/opensips"}"
   SIP_ADVERTISED_IP="${SIP_ADVERTISED_IP:="$(hostname -i)"}"
   LOCAL_IP="$(hostname -i)"
+  INTERFACE_NAME="$(ip route list | grep default | grep -E  'dev (\w+)' -o | awk '{print $2}')"
 
   if [ -n "$DATABASE_HOST" ]; then
     DATABASE_URL="postgres://$DATABASE_USERNAME:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME"
@@ -22,6 +23,7 @@ if [ "$1" = 'opensips' ]; then
   sed -i "s|SIP_ALTERNATIVE_PORT|$SIP_ALTERNATIVE_PORT|g" /etc/opensips/opensips.cfg
   sed -i "s|SIP_ADVERTISED_IP|$SIP_ADVERTISED_IP|g" /etc/opensips/opensips.cfg
   sed -i "s|LOCAL_IP|$LOCAL_IP|g" /etc/opensips/opensips.cfg
+  sed -i "s|INTERFACE_NAME|$INTERFACE_NAME|g" /etc/opensips/opensips.cfg
 
   exec "$OPENSIPS_CONTAINER_BINARY" -FE
 fi
