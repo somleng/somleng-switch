@@ -109,7 +109,6 @@ RSpec.describe DialString do
       expect(result).to eq("0716100987")
     end
 
-
     it "formats a number in national format for countries without a trunk prefix" do
       dial_string = DialString.new(
         build_routing_parameters(
@@ -122,17 +121,17 @@ RSpec.describe DialString do
       expect(result).to eq("6505130514")
     end
 
-
     it "formats a number in E.164 format" do
       dial_string = DialString.new(
         build_routing_parameters(
-          national_dialing: false
+          national_dialing: false,
+          plus_prefix: true
         )
       )
 
       result = dial_string.format_number("+855 (716)-100-987")
 
-      expect(result).to eq("855716100987")
+      expect(result).to eq("+855716100987")
     end
   end
 
