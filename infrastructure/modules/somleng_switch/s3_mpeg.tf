@@ -3,18 +3,16 @@ locals {
   s3_filter_suffix = ".wav"
 }
 
-resource "docker_registry_image" "s3_mpeg" {
+resource "docker_image" "s3_mpeg" {
   name = "${var.s3_mpeg_ecr_repository_url}:latest"
-
   build {
     context = abspath("${path.module}/../../../components/s3_mpeg")
   }
+}
 
-  lifecycle {
-    ignore_changes = [
-      build[0].context
-    ]
-  }
+resource "docker_registry_image" "s3_mpeg" {
+  name = docker_image.s3_mpeg.name
+  keep_remotely = true
 }
 
 resource "aws_iam_role" "s3_mpeg" {

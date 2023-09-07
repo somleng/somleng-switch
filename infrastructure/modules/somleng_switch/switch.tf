@@ -447,6 +447,10 @@ resource "aws_ecs_service" "switch" {
     weight = 1
   }
 
+  placement_constraints {
+    type       = "distinctInstance"
+  }
+
   load_balancer {
     target_group_arn = aws_lb_target_group.switch_http.arn
     container_name   = "nginx"
