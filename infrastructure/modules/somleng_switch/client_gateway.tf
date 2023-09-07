@@ -26,7 +26,7 @@ module client_gateway_container_instances {
 # EIP
 resource "aws_eip" "client_gateway" {
   count = var.assign_client_gateway_eips ? var.client_gateway_max_tasks : 0
-  vpc      = true
+  domain      = "vpc"
 
   tags = {
     Name = "${var.client_gateway_identifier} ${count.index + 1}"

@@ -4,18 +4,16 @@ locals {
 
 # Docker image
 
-resource "docker_registry_image" "services" {
+resource "docker_image" "services" {
   name = "${var.services_ecr_repository_url}:latest"
-
   build {
     context = abspath("${path.module}/../../../components/services")
   }
+}
 
-  lifecycle {
-    ignore_changes = [
-      build[0].context
-    ]
-  }
+resource "docker_registry_image" "services" {
+  name = docker_image.services.name
+  keep_remotely = true
 }
 
 # SSM Parameters

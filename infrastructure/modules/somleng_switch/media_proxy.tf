@@ -26,7 +26,7 @@ module media_proxy_container_instances {
 
 resource "aws_eip" "media_proxy" {
   count = var.assign_media_proxy_eips ? var.media_proxy_max_tasks : 0
-  vpc      = true
+  domain      = "vpc"
 
   tags = {
     Name = "Media Proxy ${count.index + 1}"
