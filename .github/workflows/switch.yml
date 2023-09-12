@@ -125,7 +125,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build and push Nginx
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: components/nginx
           push: true
@@ -138,7 +138,7 @@ jobs:
             ${{ env.NGINX_GHCR_REPOSITORY_URI }}:${{ matrix.image_tag }}
 
       - name: Build and push FreeSWITCH
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: components/freeswitch
           build-args:
@@ -153,7 +153,7 @@ jobs:
             ${{ env.FREESWITCH_GHCR_REPOSITORY_URI }}:${{ matrix.image_tag }}
 
       - name: Build and push FreeSWITCH Event Logger
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: components/freeswitch_event_logger
           push: true
@@ -166,7 +166,7 @@ jobs:
             ${{ env.FREESWITCH_EVENT_LOGGER_GHCR_REPOSITORY_URI }}:${{ matrix.image_tag }}
 
       - name: Build and push App
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: components/app
           push: true
