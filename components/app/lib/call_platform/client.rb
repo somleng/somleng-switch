@@ -32,6 +32,14 @@ module CallPlatform
       end
     end
 
+    def notify_tts_event(params)
+      response = http_client.post("/services/tts_events", params.to_json)
+
+      unless response.success?
+        Sentry.capture_message("Invalid phone call event", extra: { response_body: response.body })
+      end
+    end
+
     def build_routing_parameters(params)
       make_request("/services/routing_parameters", params: params)
     end

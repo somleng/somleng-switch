@@ -15,6 +15,7 @@ RSpec.describe OutboundCall do
       "account_auth_token" => "sample-auth-token",
       "direction" => "outbound-api",
       "api_version" => "2010-04-01",
+      "default_tts_provider" => "basic",
       "routing_parameters" => {
         "destination" => "85516701721",
         "dial_string_prefix" => nil,
@@ -46,6 +47,7 @@ RSpec.describe OutboundCall do
           call_sid: "sample-call-sid",
           direction: "outbound-api",
           api_version: "2010-04-01",
+          default_tts_provider: "basic",
           to: "+85516701721",
           from: "2442",
           sip_headers: SIPHeaders.new(
@@ -139,6 +141,7 @@ RSpec.describe OutboundCall do
       "account_auth_token" => "sample-auth-token",
       "direction" => "outbound-api",
       "api_version" => "2010-04-01",
+      "default_tts_provider" => "basic",
       "routing_parameters" => {
         "destination" => "85516701721",
         "dial_string_prefix" => nil,

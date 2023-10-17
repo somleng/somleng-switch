@@ -10,6 +10,7 @@ class ExecuteTwiML
   NESTED_GATHER_VERBS = %w[Say Play].freeze
   MAX_LOOP = 100
   SLEEP_BETWEEN_REDIRECTS = 1
+  DEFAULT_VOICE_PROVIDER = "polly".freeze
   DEFAULT_TWILIO_VOICE = "man".freeze
   DEFAULT_TWILIO_LANGUAGE = "en".freeze
   FINISH_ON_KEY_PATTERN = /\A(?:\d|\*|\#)\z/.freeze
@@ -105,10 +106,17 @@ class ExecuteTwiML
     answer unless answered?
 
     attributes = twiml_attributes(verb)
+    provider = resolve_voice_provider(attributes["voice"])
 
     twiml_loop(attributes).each do
       say(say_options(verb.content, attributes))
     end
+
+    # call_platform_client.notify_tts_event(
+    #   phone_call: call_properties.call_sid,
+    #   provider:,
+    #   num_chars: verb.content.length
+    # )
   end
 
   def execute_redirect(verb)
@@ -301,5 +309,12 @@ class ExecuteTwiML
 
   def normalize_recording_url(raw_recording_url)
     URL_PATTERN.match(raw_recording_url)[0]
+  end
+
+  def resolve_voice_provider(voice)
+    return DEFAULT_VOICE_PROVIDER if voice.in?(["man", "woman"])
+    return DEFAULT_VOICE_PROVIDER if voice.start_with?("Polly.")
+
+    raise Errors::TwiMLError, "Unsupported voice"
   end
 end
