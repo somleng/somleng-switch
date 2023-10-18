@@ -5,7 +5,7 @@
   <tts-voices>
     <voice name="Basic.Kal" language="en-US" gender="Male" prefix="tts://flite|kal|"/>
     <voice name="Basic.Slt" language="en-US" gender="Female" prefix="tts://flite|slt|"/>
-    <X-PRE-PROCESS cmd="include" data="polly_voices.xml"/>
+    <X-PRE-PROCESS cmd="include" data="tts_voices.xml"/>
   </tts-voices>
 
   <!-- maps ISO language to say module -->

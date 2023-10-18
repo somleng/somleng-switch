@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+require "bundler/inline"
+
+gemfile do
+  source "https://rubygems.org"
+
+  gem "tts_voices", github: "somleng/tts_voices"
+  gem "ox"
+  gem "gyoku"
+end
+
+# <voice name="Basic.Kal" language="en-US" gender="Male" prefix="tts://flite|kal|"/>
+# <voice name="Polly.Lotte" language="nl-NL" gender="Female" prefix="tts://tts_commandline|Polly.Lotte|"/>
+
+voices = TTSVoices::Voice.basic.each_with_object([]) do |tts_voice, result|
+  result << {
+    "@name": tts_voice.identifier,
+    "@language": tts_voice.language,
+    "@gender": tts_voice.gender,
+    "@prefix": "tts://flite|kal|"
+  }
+end
+
+puts Gyoku.xml(voice: voices)
