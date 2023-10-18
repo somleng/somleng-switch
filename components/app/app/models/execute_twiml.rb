@@ -10,10 +10,14 @@ class ExecuteTwiML
   NESTED_GATHER_VERBS = %w[Say Play].freeze
   MAX_LOOP = 100
   SLEEP_BETWEEN_REDIRECTS = 1
-  DEFAULT_VOICE_PROVIDER = "polly".freeze
   DEFAULT_TWILIO_VOICE = "man".freeze
   DEFAULT_TWILIO_LANGUAGE = "en".freeze
   FINISH_ON_KEY_PATTERN = /\A(?:\d|\*|\#)\z/.freeze
+  BASIC_TTS_MAPPING = {
+    "man" => "Basic.Kal",
+    "woman" => "Basic.Slt"
+  }.freeze
+
   DIAL_CALL_STATUSES = {
     no_answer: "no-answer",
     answer: "completed",
@@ -106,10 +110,10 @@ class ExecuteTwiML
     answer unless answered?
 
     attributes = twiml_attributes(verb)
-    provider = resolve_voice_provider(attributes["voice"])
+    tts_voice = resolve_tts_voice(attributes)
 
     twiml_loop(attributes).each do
-      say(say_options(verb.content, attributes))
+      say(say_options(verb.content, tts_voice))
     end
 
     # call_platform_client.notify_tts_event(
@@ -141,7 +145,12 @@ class ExecuteTwiML
       end
 
       nested_verb_attributes = twiml_attributes(nested_verb)
-      content = nested_verb.name == "Say" ? say_options(nested_verb.content, nested_verb_attributes) : nested_verb.content
+      content = if nested_verb.name == "Say"
+        tts_voice = resolve_tts_voice(nested_verb_attributes)
+        say_options(nested_verb.content, tts_voice)
+      else
+        nested_verb.content
+      end
       result.concat(Array.new(twiml_loop(nested_verb_attributes).count, content))
     end
 
@@ -255,14 +264,9 @@ class ExecuteTwiML
     )
   end
 
-  def say_options(content, attributes)
-    voice_params = {
-      name: attributes.fetch("voice", DEFAULT_TWILIO_VOICE),
-      language: attributes.fetch("language", DEFAULT_TWILIO_LANGUAGE)
-    }
-
+  def say_options(content, tts_voice)
     ssml = RubySpeech::SSML.draw do
-      voice(voice_params) do
+      voice(name: tts_voice.identifier, language: tts_voice.language) do
         # mod ssml doesn't support non-ascii characters
         # https://github.com/signalwire/freeswitch/issues/1348
         string(content + ".")
@@ -311,10 +315,24 @@ class ExecuteTwiML
     URL_PATTERN.match(raw_recording_url)[0]
   end
 
-  def resolve_voice_provider(voice)
-    return DEFAULT_VOICE_PROVIDER if voice.in?(["man", "woman"])
-    return DEFAULT_VOICE_PROVIDER if voice.start_with?("Polly.")
+  def resolve_tts_voice(attributes)
+    voice_attribute = attributes["voice"]
+    language_attribute = attributes["language"]
 
-    raise Errors::TwiMLError, "Unsupported voice"
+    default_tts_voice = TTSVoices::Voice.find(call_properties.default_tts_voice_identifier)
+    voice_attribute = BASIC_TTS_MAPPING.fetch(voice_attribute) if BASIC_TTS_MAPPING.key?(voice_attribute)
+
+    if voice_attribute.blank? && language_attribute.present?
+      tts_voice = resolve_tts_voice_by_language(default_tts_voice.provider, language_attribute)
+      voice_attribute = tts_voice&.identifier
+    end
+
+    TTSVoices::Voice.find(voice_attribute) || default_tts_voice
+  end
+
+  def resolve_tts_voice_by_language(provider, language_attribute)
+    TTSVoices::Voice.all.find do |voice|
+      voice.provider == provider && voice.language.casecmp(language_attribute).zero?
+    end
   end
 end

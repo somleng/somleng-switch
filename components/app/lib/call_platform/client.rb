@@ -15,6 +15,7 @@ module CallPlatform
       :api_version,
       :to,
       :from,
+      :default_tts_voice_identifier,
       keyword_init: true
     )
 
@@ -56,7 +57,8 @@ module CallPlatform
         direction: json_response.fetch("direction"),
         to: json_response.fetch("to"),
         from: json_response.fetch("from"),
-        api_version: json_response.fetch("api_version")
+        api_version: json_response.fetch("api_version"),
+        default_tts_voice_identifier: json_response.fetch("default_tts_voice_identifier")
       )
     end
 

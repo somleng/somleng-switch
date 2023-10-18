@@ -36,6 +36,13 @@ GIT
       thor
       virtus (~> 1.0)
 
+GIT
+  remote: https://github.com/somleng/tts_voices.git
+  revision: e719a88769a77d08a85dc3aa99ef04ba4630ad18
+  specs:
+    tts_voices (0.1.0)
+      aws-sdk-polly
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -56,6 +63,9 @@ GEM
       aws-sigv4 (~> 1.5)
       jmespath (~> 1, >= 1.6.1)
     aws-sdk-lambda (1.106.0)
+      aws-sdk-core (~> 3, >= 3.184.0)
+      aws-sigv4 (~> 1.1)
+    aws-sdk-polly (1.76.0)
       aws-sdk-core (~> 3, >= 3.184.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.6.0)
@@ -274,6 +284,7 @@ PLATFORMS
 DEPENDENCIES
   adhearsion!
   aws-sdk-lambda
+  aws-sdk-polly
   faraday
   http
   okcomputer
@@ -290,6 +301,7 @@ DEPENDENCIES
   sinatra
   sinatra-contrib
   skylight
+  tts_voices!
   twilio-ruby
   vcr
   webmock

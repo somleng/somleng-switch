@@ -19,7 +19,12 @@ RSpec.describe CallController, type: :call_controller do
       # |             | Limited to 4KB (4,000 ASCII characters)  |
 
       it "outputs SSML" do
-        controller = build_controller(stub_voice_commands: :say)
+        controller = build_controller(
+          stub_voice_commands: :say,
+          call_properties: {
+            default_tts_voice_identifier: "Basic.Slt"
+          }
+        )
         stub_twiml_request(controller, response: <<~TWIML)
             <?xml version="1.0" encoding="UTF-8" ?>
             <!-- Handles whitespace -->
@@ -35,6 +40,8 @@ RSpec.describe CallController, type: :call_controller do
           expect(ssml).to be_a(RubySpeech::SSML::Speak)
           expect(ssml.text).to eq("Hola, buen día.")
           expect(ssml.to_xml).to include("Hola, buen día.")
+          expect(fetch_ssml_attribute(ssml, :name)).to eq("Basic.Slt")
+          expect(fetch_ssml_attribute(ssml, :lang)).to eq("en-US")
         end
       end
     end
@@ -58,22 +65,6 @@ RSpec.describe CallController, type: :call_controller do
         # | Attribute Name | Allowed Values | Default Value |
         # | voice          | man, woman     | man           |
 
-        it "defaults to man" do
-          controller = build_controller(stub_voice_commands: :say)
-          stub_twiml_request(controller, response: <<~TWIML)
-            <?xml version="1.0" encoding="UTF-8" ?>
-            <Response>
-              <Say>Hello World</Say>
-            </Response>
-          TWIML
-
-          controller.run
-
-          expect(controller).to have_received(:say) do |ssml|
-            expect(fetch_ssml_attribute(ssml, :name)).to eq("man")
-          end
-        end
-
         it "sets a custom voice" do
           controller = build_controller(stub_voice_commands: :say)
           stub_twiml_request(controller, response: <<~TWIML)
@@ -86,7 +77,24 @@ RSpec.describe CallController, type: :call_controller do
           controller.run
 
           expect(controller).to have_received(:say) do |ssml|
-            expect(fetch_ssml_attribute(ssml, :name)).to eq("woman")
+            expect(fetch_ssml_attribute(ssml, :name)).to eq("Basic.Slt")
+          end
+        end
+
+        it "supports Polly" do
+          controller = build_controller(stub_voice_commands: :say)
+          stub_twiml_request(controller, response: <<~TWIML)
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <Response>
+              <Say voice="Polly.Lotte">Hello World</Say>
+            </Response>
+          TWIML
+
+          controller.run
+
+          expect(controller).to have_received(:say) do |ssml|
+            expect(fetch_ssml_attribute(ssml, :name)).to eq("Polly.Lotte")
+            expect(fetch_ssml_attribute(ssml, :lang)).to eq("nl-NL")
           end
         end
       end
@@ -106,7 +114,12 @@ RSpec.describe CallController, type: :call_controller do
         # so the option is ignored
 
         it "sets the language to en by default" do
-          controller = build_controller(stub_voice_commands: :say)
+          controller = build_controller(
+            stub_voice_commands: :say,
+            call_properties: {
+              default_tts_voice_identifier: "Basic.Kal"
+            }
+          )
           stub_twiml_request(controller, response: <<~TWIML)
             <?xml version="1.0" encoding="UTF-8" ?>
             <Response>
@@ -117,23 +130,29 @@ RSpec.describe CallController, type: :call_controller do
           controller.run
 
           expect(controller).to have_received(:say) do |ssml|
-            expect(fetch_ssml_attribute(ssml, :lang)).to eq("en")
+            expect(fetch_ssml_attribute(ssml, :lang)).to eq("en-US")
           end
         end
 
         it "sets the language when specifying the language attribute" do
-          controller = build_controller(stub_voice_commands: :say)
+          controller = build_controller(
+            stub_voice_commands: :say,
+            call_properties: {
+              default_tts_voice_identifier: "Polly.Joanna"
+            }
+          )
           stub_twiml_request(controller, response: <<~TWIML)
             <?xml version="1.0" encoding="UTF-8" ?>
             <Response>
-              <Say language="pt-BR">Hello World</Say>
+              <Say language="nl-NL">Hello World</Say>
             </Response>
           TWIML
 
           controller.run
 
           expect(controller).to have_received(:say) do |ssml|
-            expect(fetch_ssml_attribute(ssml, :lang)).to eq("pt-BR")
+            expect(fetch_ssml_attribute(ssml, :name)).to eq("Polly.Lotte")
+            expect(fetch_ssml_attribute(ssml, :lang)).to eq("nl-NL")
           end
         end
       end

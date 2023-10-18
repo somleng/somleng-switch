@@ -28,4 +28,15 @@ if AppSettings.env == "development" || AppSettings.env == "test"
       }
     }
   }
+
+  Aws.config[:polly] ||= {
+    stub_responses: {
+      describe_voices: {
+        voices: [
+          { gender: "Female", id: "Lotte", language_code: "nl-NL" },
+          { gender: "Female", id: "Joanna", language_code: "en-US" }
+        ]
+      }
+    }
+  }
 end
