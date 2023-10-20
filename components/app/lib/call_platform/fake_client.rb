@@ -21,7 +21,8 @@ module CallPlatform
         direction: "inbound",
         to: params.fetch(:to),
         from: params.fetch(:from),
-        api_version: "2010-04-01"
+        api_version: "2010-04-01",
+        default_tts_voice: "Basic.Kal"
       )
     end
 
