@@ -98,14 +98,14 @@ RSpec.describe CallController, type: :call_controller do
           stub_twiml_request(controller, response: <<~TWIML)
             <?xml version="1.0" encoding="UTF-8" ?>
             <Response>
-              <Say voice="Polly.Lotte">Hello World</Say>
+              <Say voice="Polly.Lotte-Neural">Hello World</Say>
             </Response>
           TWIML
 
           controller.run
 
           expect(controller).to have_received(:say) do |ssml|
-            expect(fetch_ssml_attribute(ssml, :name)).to eq("Polly.Lotte")
+            expect(fetch_ssml_attribute(ssml, :name)).to eq("Polly.Lotte-Neural")
             expect(fetch_ssml_attribute(ssml, :lang)).to eq("nl-NL")
           end
         end
@@ -163,7 +163,7 @@ RSpec.describe CallController, type: :call_controller do
           controller.run
 
           expect(controller).to have_received(:say) do |ssml|
-            expect(fetch_ssml_attribute(ssml, :name)).to eq("Polly.Lotte")
+            expect(fetch_ssml_attribute(ssml, :name)).to eq("Polly.Lotte-Neural")
             expect(fetch_ssml_attribute(ssml, :lang)).to eq("nl-NL")
           end
         end
