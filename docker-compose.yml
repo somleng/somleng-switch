@@ -16,6 +16,7 @@ services:
       context: components/gateway
       target: bootstrap
     image: gateway:bootstrap
+    platform: linux/amd64
     environment:
       DATABASE_USERNAME: "postgres"
       DATABASE_PASSWORD:
@@ -30,6 +31,7 @@ services:
       context: components/gateway
       target: public_gateway
     image: public_gateway:latest
+    platform: linux/amd64
     environment:
       DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips_public_gateway_test"
       FIFO_NAME: /opensips/fifo/public_gateway
@@ -51,6 +53,7 @@ services:
       context: components/gateway
       target: client_gateway
     image: client_gateway:latest
+    platform: linux/amd64
     environment:
       DATABASE_URL: "postgres://postgres:@host.docker.internal:5432/opensips_client_gateway_test"
       FIFO_NAME: /opensips/fifo/client_gateway
@@ -70,6 +73,7 @@ services:
     build:
       context: components/media_proxy
     image: media_proxy:latest
+    platform: linux/amd64
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
@@ -84,6 +88,7 @@ services:
     build:
       context: components/freeswitch
     image: freeswitch:latest
+    platform: linux/amd64
     environment:
       FS_EXTERNAL_RTP_IP: "13.250.230.15"
       FS_ALTERNATIVE_RTP_IP: "18.141.245.230"
@@ -103,6 +108,7 @@ services:
     build:
       context: components/app
     image: switch-app:latest
+    platform: linux/amd64
     environment:
       AHN_CORE_HOST: freeswitch
       CALL_PLATFORM_STUB_RESPONSES: "true"

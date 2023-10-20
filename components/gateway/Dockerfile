@@ -1,6 +1,6 @@
 # https://apt.opensips.org/packages.php?os=bookworm
 
-FROM debian:bookworm-slim AS bootstrap
+FROM public.ecr.aws/debian/debian:bookworm-slim AS bootstrap
 
 USER root
 
@@ -30,7 +30,7 @@ CMD ["create_db"]
 
 # Build
 
-FROM debian:bookworm-slim AS build
+FROM public.ecr.aws/debian/debian:bookworm-slim AS build
 
 USER root
 
