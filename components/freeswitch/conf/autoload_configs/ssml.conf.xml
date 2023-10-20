@@ -3,8 +3,6 @@
 <configuration name="ssml.conf" description="SSML parser config">
   <!-- voices in order of preference -->
   <tts-voices>
-    <voice name="Basic.Kal" language="en-US" gender="Male" prefix="tts://flite|kal|"/>
-    <voice name="Basic.Slt" language="en-US" gender="Female" prefix="tts://flite|slt|"/>
     <X-PRE-PROCESS cmd="include" data="tts_voices.xml"/>
   </tts-voices>
 

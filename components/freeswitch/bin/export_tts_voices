@@ -10,9 +10,6 @@ gemfile do
   gem "gyoku"
 end
 
-# <voice name="Basic.Kal" language="en-US" gender="Male" prefix="tts://flite|kal|"/>
-# <voice name="Polly.Lotte" language="nl-NL" gender="Female" prefix="tts://tts_commandline|Polly.Lotte|"/>
-
 class Exporter
   attr_reader :tts_voices
 
