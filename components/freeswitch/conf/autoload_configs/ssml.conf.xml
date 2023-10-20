@@ -3,9 +3,7 @@
 <configuration name="ssml.conf" description="SSML parser config">
   <!-- voices in order of preference -->
   <tts-voices>
-    <voice name="man" language="en-US" gender="male" prefix="tts://flite|kal|"/>
-    <voice name="woman" language="en-US" gender="female" prefix="tts://flite|slt|"/>
-    <X-PRE-PROCESS cmd="include" data="polly_voices.xml"/>
+    <X-PRE-PROCESS cmd="include" data="tts_voices.xml"/>
   </tts-voices>
 
   <!-- maps ISO language to say module -->

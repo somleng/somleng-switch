@@ -8,6 +8,7 @@ module CallControllerHelpers
       account_sid: SecureRandom.uuid,
       api_version: "2010-04-01",
       auth_token: SecureRandom.alphanumeric,
+      default_tts_voice: "Basic.Kal",
       from: "1000",
       to: "85512456869"
     )

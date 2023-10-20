@@ -89,6 +89,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+
       - name: Configure AWS credentials
         id: aws-login
         uses: aws-actions/configure-aws-credentials@v4
@@ -116,7 +119,7 @@ jobs:
 
       - name: Export Polly Voices
         run: |
-          components/freeswitch/bin/export_aws_polly_voices components/freeswitch/conf/autoload_configs/polly_voices.xml
+          components/freeswitch/bin/export_tts_voices > components/freeswitch/conf/autoload_configs/tts_voices.xml
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

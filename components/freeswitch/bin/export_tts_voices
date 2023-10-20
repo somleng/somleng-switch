@@ -1,0 +1,48 @@
+#!/usr/bin/env ruby
+
+require "bundler/inline"
+
+gemfile do
+  source "https://rubygems.org"
+
+  gem "tts_voices", github: "somleng/tts_voices"
+  gem "ox"
+  gem "gyoku"
+end
+
+class Exporter
+  attr_reader :tts_voices
+
+  def initialize(tts_voices)
+    @tts_voices = tts_voices
+  end
+
+  def result
+    Gyoku.xml("voice/" => voice_tags)
+  end
+
+  private
+
+  def voice_tags
+    tts_voices.each_with_object([]) do |tts_voice, result|
+      result << {
+        "@name": tts_voice.identifier,
+        "@language": tts_voice.language,
+        "@gender": tts_voice.gender,
+        "@prefix": prefix(tts_voice)
+      }
+    end
+  end
+
+  def prefix(tts_voice)
+    if tts_voice.provider == "Basic"
+      "tts://flite|#{tts_voice.name.downcase}|"
+    else
+      "tts://tts_commandline|#{tts_voice.identifier}|"
+    end
+  end
+end
+
+tts_voices = ENV["TTS_VOICES"] == "basic" ? TTSVoices::Voice.basic : TTSVoices::Voice.all
+
+puts Exporter.new(tts_voices).result

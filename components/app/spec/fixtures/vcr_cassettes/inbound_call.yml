@@ -5,16 +5,16 @@ http_interactions:
     uri: http://api.lvh.me:3000/services/inbound_phone_calls
     body:
       encoding: UTF-8
-      string: '{"to":"1234","from":"1000","external_id":"30393425-1c1d-4c3b-8910-57b54e68133b","source_ip":"192.168.3.1","variables":{"sip_from_host":"192.168.1.1","sip_to_host":"192.168.2.1","sip_network_ip":"192.168.3.1"}}'
+      string: '{"to":"1294","from":"0715100960","external_id":"06c0c60a-47a2-426a-87e9-95ea85d22bf2","source_ip":"27.109.112.141","client_identifier":null,"variables":{"sip_from_host":"192.168.1.1","sip_to_host":"192.168.2.1","sip_network_ip":"10.0.0.1","sip_via_host":null}}'
     headers:
       Accept:
       - application/json
       Content-Type:
       - application/json
+      User-Agent:
+      - Faraday v2.7.11
       Authorization:
       - Basic c2VydmljZXM6cGFzc3dvcmQ=
-      User-Agent:
-      - Faraday v1.4.1
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
   response:
@@ -25,36 +25,38 @@ http_interactions:
       X-Frame-Options:
       - SAMEORIGIN
       X-Xss-Protection:
-      - 1; mode=block
+      - '0'
       X-Content-Type-Options:
       - nosniff
-      X-Download-Options:
-      - noopen
       X-Permitted-Cross-Domain-Policies:
       - none
       Referrer-Policy:
       - strict-origin-when-cross-origin
       Content-Type:
-      - application/json; charset=utf-8
+      - application/vnd.api+json; charset=utf-8
       Etag:
-      - W/"9e2400d79dcbc837e5921ad5072bf034"
+      - W/"8aa42d1e00281587f058e37db761f7c9"
       Cache-Control:
       - max-age=0, private, must-revalidate
       X-Request-Id:
-      - 750e8f9b-adc3-4836-8786-03631db705d2
+      - daa15cf3-8d31-4958-ad86-2dced50b69d7
       X-Runtime:
-      - '0.043391'
-      Transfer-Encoding:
-      - chunked
+      - '0.052932'
+      Server-Timing:
+      - start_processing.action_controller;dur=0.00, sql.active_record;dur=16.44,
+        instantiation.active_record;dur=0.24, transaction.active_record;dur=26.56,
+        process_action.action_controller;dur=43.11
+      Content-Length:
+      - '498'
     body:
       encoding: UTF-8
-      string: '{"api_version":"2010-04-01","created_at":"2021-06-23T09:02:30Z","updated_at":"2021-06-23T09:02:30Z","voice_url":"https://demo.twilio.com/docs/voice.xml","voice_method":"GET","status_callback_url":null,"status_callback_method":null,"to":"1234","from":"1000","sid":"574f0314-8d52-4a79-a7aa-2ff9898f7b79","account_sid":"0f82ec1a-c776-4669-a0b6-c2b11bef156a","account_auth_token":"pd-eZBeCozOHqtdcwYOpGcPaZNByMFQjryK73K3Pm14","direction":"inbound","twiml":null}'
-  recorded_at: Wed, 23 Jun 2021 09:02:30 GMT
+      string: '{"created_at":"2023-10-20T05:06:28Z","updated_at":"2023-10-20T05:06:28Z","voice_url":"https://demo.twilio.com/docs/voice.xml","voice_method":"GET","status_callback_url":null,"status_callback_method":null,"twiml":null,"to":"1294","from":"+855715100960","sid":"23233573-25be-486d-9631-c33d6f5eb80c","account_sid":"10304d06-de4a-40b5-9453-2ab15ebf5c52","account_auth_token":"LaCY_bLXWZUp9CpFMvBwQiLUn5Kry20lRxOUeERqFPI","direction":"inbound","api_version":"2010-04-01","default_tts_voice":"Basic.Kal"}'
+  recorded_at: Fri, 20 Oct 2023 05:06:28 GMT
 - request:
     method: get
-    uri: https://demo.twilio.com/docs/voice.xml?AccountSid=0f82ec1a-c776-4669-a0b6-c2b11bef156a&ApiVersion=2010-04-01&CallSid=574f0314-8d52-4a79-a7aa-2ff9898f7b79&CallStatus=ringing&Called=1234&Caller=1000&Direction=inbound&From=1000&To=1234
+    uri: https://demo.twilio.com/docs/voice.xml?AccountSid=10304d06-de4a-40b5-9453-2ab15ebf5c52&ApiVersion=2010-04-01&CallSid=23233573-25be-486d-9631-c33d6f5eb80c&CallStatus=ringing&Called=1294&Caller=%2B855715100960&Direction=inbound&From=%2B855715100960&To=1294
     body:
-      encoding: UTF-8
+      encoding: ASCII-8BIT
       string: ''
     headers:
       Content-Type:
@@ -66,7 +68,7 @@ http_interactions:
       Cache-Control:
       - max-age=259200
       X-Twilio-Signature:
-      - YXDSpMZlefngpbgS+wTLaIZ1Ik4=
+      - 1TPqVlvI+EzgGUzcXsHjIF4lAlU=
       Connection:
       - close
       Host:
@@ -77,7 +79,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Wed, 23 Jun 2021 09:02:32 GMT
+      - Fri, 20 Oct 2023 05:06:29 GMT
       Content-Type:
       - text/xml
       Content-Length:
@@ -87,13 +89,12 @@ http_interactions:
       Server:
       - nginx
       Last-Modified:
-      - Mon, 07 Oct 2019 18:46:57 GMT
+      - Tue, 13 Jun 2023 19:18:49 GMT
       Vary:
       - Accept-Encoding
       Etag:
-      - '"5d9b8821-c0"'
+      - '"6488c119-c0"'
       X-Shenanigans:
-      - none
       - none
       Accept-Ranges:
       - bytes
@@ -102,8 +103,57 @@ http_interactions:
       string: |
         <?xml version="1.0" encoding="UTF-8"?>
         <Response>
-            <Say voice="alice">Thanks for trying our documentation. Enjoy!</Say>
+            <Say voice="woman">Thanks for trying our documentation. Enjoy!</Say>
             <Play>http://demo.twilio.com/docs/classic.mp3</Play>
         </Response>
-  recorded_at: Wed, 23 Jun 2021 09:02:32 GMT
-recorded_with: VCR 6.0.0
+  recorded_at: Fri, 20 Oct 2023 05:06:29 GMT
+- request:
+    method: post
+    uri: http://api.lvh.me:3000/services/tts_events
+    body:
+      encoding: UTF-8
+      string: '{"phone_call":"23233573-25be-486d-9631-c33d6f5eb80c","tts_voice":"Basic.Slt","num_chars":43}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.7.11
+      Authorization:
+      - Basic c2VydmljZXM6cGFzc3dvcmQ=
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/vnd.api+json
+      Cache-Control:
+      - no-cache
+      X-Request-Id:
+      - 5ecc33fd-b6fb-4c51-a946-288f2bb3567b
+      X-Runtime:
+      - '0.034691'
+      Server-Timing:
+      - sql.active_record;dur=8.08, start_processing.action_controller;dur=0.00, instantiation.active_record;dur=0.23,
+        transaction.active_record;dur=8.13, process_action.action_controller;dur=18.49
+      Content-Length:
+      - '0'
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Fri, 20 Oct 2023 05:06:29 GMT
+recorded_with: VCR 6.2.0

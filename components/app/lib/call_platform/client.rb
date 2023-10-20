@@ -15,6 +15,7 @@ module CallPlatform
       :api_version,
       :to,
       :from,
+      :default_tts_voice,
       keyword_init: true
     )
 
@@ -29,6 +30,14 @@ module CallPlatform
 
       unless response.success?
         Sentry.capture_message("Invalid phone call event", extra: { response_body: response.body })
+      end
+    end
+
+    def notify_tts_event(params)
+      response = http_client.post("/services/tts_events", params.to_json)
+
+      unless response.success?
+        Sentry.capture_message("Invalid TTS event", extra: { response_body: response.body })
       end
     end
 
@@ -48,7 +57,8 @@ module CallPlatform
         direction: json_response.fetch("direction"),
         to: json_response.fetch("to"),
         from: json_response.fetch("from"),
-        api_version: json_response.fetch("api_version")
+        api_version: json_response.fetch("api_version"),
+        default_tts_voice: json_response.fetch("default_tts_voice")
       )
     end
 

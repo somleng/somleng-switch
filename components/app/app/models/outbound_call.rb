@@ -29,6 +29,7 @@ class OutboundCall
           api_version: call_params.fetch("api_version"),
           from: call_params.fetch("from"),
           to: call_params.fetch("to"),
+          default_tts_voice: call_params.fetch("default_tts_voice"),
           sip_headers:
         )
       },

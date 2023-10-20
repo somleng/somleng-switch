@@ -1,0 +1,3 @@
+<!-- This file is generated automatically. Do not modify. -->
+<voice name="Basic.Kal" language="en-US" gender="Male" prefix="tts://flite|kal|"/>
+<voice name="Polly.Lotte" language="nl-NL" gender="Female" prefix="tts://tts_commandline|Polly.Lotte|"/>

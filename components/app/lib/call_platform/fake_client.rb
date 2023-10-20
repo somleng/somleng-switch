@@ -1,6 +1,7 @@
 module CallPlatform
   class FakeClient < Client
-    def notify_call_event(_params); end
+    def notify_call_event(params); end
+    def notify_tts_event(params); end
 
     def create_call(params)
       validate_gateway_headers(params)
@@ -21,7 +22,8 @@ module CallPlatform
         direction: "inbound",
         to: params.fetch(:to),
         from: params.fetch(:from),
-        api_version: "2010-04-01"
+        api_version: "2010-04-01",
+        default_tts_voice: "Basic.Kal"
       )
     end
 

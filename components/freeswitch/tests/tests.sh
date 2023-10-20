@@ -9,6 +9,6 @@ echo "Running tests..."
 
 current_dir=$(dirname "$(readlink -f "$0")")
 
-for f in $current_dir/bin/*.sh; do
-  sh "$f"
+for f in $current_dir/bin/*; do
+  $f
 done

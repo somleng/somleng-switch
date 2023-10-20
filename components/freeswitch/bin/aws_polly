@@ -3,12 +3,13 @@
 text="$1"
 file="$2"
 voice_id="$3"
-cache_file="$4"
+engine="$4"
+cache_file="$5"
 
 # Output the text to a file before executing polly
 # https://github.com/somleng/somleng-switch/pull/238
 echo "$text" > "$file.txt"
-aws polly synthesize-speech --sample-rate "8000" --output-format mp3 --voice-id "$voice_id" --text "file://$file.txt" "$file.mp3"
+aws polly synthesize-speech --sample-rate "8000" --output-format mp3 --voice-id "$voice_id" --engine "$engine" --text "file://$file.txt" "$file.mp3"
 
 ffmpeg -i "$file.mp3" "$cache_file"
 ln -s "$cache_file" "$file"
