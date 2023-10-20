@@ -13,7 +13,7 @@ RUN apt-get -y update -qq && apt-get -y install gnupg2 ca-certificates curl && \
     curl https://apt.opensips.org/opensips-org.gpg -o /usr/share/keyrings/opensips-org.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bookworm ${OPENSIPS_VERSION}-${OPENSIPS_BUILD}" >/etc/apt/sources.list.d/opensips.list && \
     echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bookworm cli-nightly" >/etc/apt/sources.list.d/opensips-cli.list && \
-    apt-get -y update -qq && apt-get -y install opensips opensips-postgres-module opensips-cli python3-psycopg2 m4 && \
+    apt-get -y update -qq && apt-get -y install opensips opensips-postgres-module opensips-cli python3-psycopg2 python3-sqlalchemy python3-sqlalchemy-utils && \
     apt-get purge -y --auto-remove curl && \
     rm -rf /var/lib/apt/lists/*
 
