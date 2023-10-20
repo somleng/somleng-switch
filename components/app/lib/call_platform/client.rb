@@ -37,7 +37,7 @@ module CallPlatform
       response = http_client.post("/services/tts_events", params.to_json)
 
       unless response.success?
-        Sentry.capture_message("Invalid phone call event", extra: { response_body: response.body })
+        Sentry.capture_message("Invalid TTS event", extra: { response_body: response.body })
       end
     end
 
