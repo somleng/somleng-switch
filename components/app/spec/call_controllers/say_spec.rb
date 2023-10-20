@@ -167,6 +167,27 @@ RSpec.describe CallController, type: :call_controller do
             expect(fetch_ssml_attribute(ssml, :lang)).to eq("nl-NL")
           end
         end
+
+        it "uses the default voice if the language is the same" do
+          controller = build_controller(
+            stub_voice_commands: :say,
+            call_properties: {
+              default_tts_voice: "Polly.Vitoria"
+            }
+          )
+          stub_twiml_request(controller, response: <<~TWIML)
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <Response>
+              <Say language="pt-BR">Hello World</Say>
+            </Response>
+          TWIML
+
+          controller.run
+
+          expect(controller).to have_received(:say) do |ssml|
+            expect(fetch_ssml_attribute(ssml, :name)).to eq("Polly.Vitoria")
+          end
+        end
       end
 
       describe "loop" do

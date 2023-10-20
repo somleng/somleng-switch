@@ -323,17 +323,20 @@ class ExecuteTwiML
     default_tts_voice = TTSVoices::Voice.find(call_properties.default_tts_voice)
     voice_attribute = BASIC_TTS_MAPPING.fetch(voice_attribute) if BASIC_TTS_MAPPING.key?(voice_attribute)
 
-    if voice_attribute.blank? && language_attribute.present?
-      tts_voice = resolve_tts_voice_by_language(default_tts_voice.provider, language_attribute)
+    if voice_attribute.blank?
+      tts_voice = resolve_tts_voice_by_language(default_tts_voice, language_attribute)
       voice_attribute = tts_voice&.identifier
     end
 
     TTSVoices::Voice.find(voice_attribute) || default_tts_voice
   end
 
-  def resolve_tts_voice_by_language(provider, language_attribute)
+  def resolve_tts_voice_by_language(default_tts_voice, language_attribute)
+    return default_tts_voice if language_attribute.blank?
+    return default_tts_voice if default_tts_voice.language.casecmp(language_attribute).zero?
+
     TTSVoices::Voice.all.find do |voice|
-      voice.provider == provider && voice.language.casecmp(language_attribute).zero?
+      voice.provider == default_tts_voice.provider && voice.language.casecmp(language_attribute).zero?
     end
   end
 end
