@@ -33,7 +33,7 @@ module SomlengAdhearsion
               "account_auth_token" => "sample-auth-token",
               "direction" => "outbound-api",
               "api_version" => "2010-04-01",
-              "default_tts_voice_identifier" => "Basic.Kal",
+              "default_tts_voice" => "Basic.Kal",
               "routing_parameters" => {
                 "destination" => "85516701721",
                 "dial_string_prefix" => nil,

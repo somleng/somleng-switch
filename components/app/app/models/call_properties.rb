@@ -10,7 +10,7 @@ CallProperties = Struct.new(
   :to,
   :from,
   :sip_headers,
-  :default_tts_voice_identifier,
+  :default_tts_voice,
   keyword_init: true
 ) do
   def inbound?

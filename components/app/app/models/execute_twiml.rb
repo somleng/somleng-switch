@@ -112,15 +112,16 @@ class ExecuteTwiML
     attributes = twiml_attributes(verb)
     tts_voice = resolve_tts_voice(attributes)
 
+    NotifyTTSEventJob.perform_async(
+      call_platform_client,
+      phone_call: call_properties.call_sid,
+      tts_voice: tts_voice.identifier,
+      num_chars: verb.content.length
+    )
+
     twiml_loop(attributes).each do
       say(say_options(verb.content, tts_voice))
     end
-
-    # call_platform_client.notify_tts_event(
-    #   phone_call: call_properties.call_sid,
-    #   provider:,
-    #   num_chars: verb.content.length
-    # )
   end
 
   def execute_redirect(verb)
@@ -319,7 +320,7 @@ class ExecuteTwiML
     voice_attribute = attributes["voice"]
     language_attribute = attributes["language"]
 
-    default_tts_voice = TTSVoices::Voice.find(call_properties.default_tts_voice_identifier)
+    default_tts_voice = TTSVoices::Voice.find(call_properties.default_tts_voice)
     voice_attribute = BASIC_TTS_MAPPING.fetch(voice_attribute) if BASIC_TTS_MAPPING.key?(voice_attribute)
 
     if voice_attribute.blank? && language_attribute.present?

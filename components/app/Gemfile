@@ -3,6 +3,7 @@ source "https://rubygems.org"
 gem "adhearsion", github: "somleng/adhearsion"
 gem "aws-sdk-lambda"
 gem "aws-sdk-polly"
+gem "blather", github: "adhearsion/blather", branch: "develop"
 gem "faraday"
 gem "http"
 gem "okcomputer"
@@ -12,6 +13,7 @@ gem "sentry-ruby"
 gem "sinatra"
 gem "sinatra-contrib", require: false
 gem "skylight"
+gem "sucker_punch"
 gem "tts_voices", github: "somleng/tts_voices"
 
 group :development, :test do

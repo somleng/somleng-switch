@@ -1,4 +1,15 @@
 GIT
+  remote: https://github.com/adhearsion/blather.git
+  revision: 03f9cda14ed3f93a80504c2538cd514d6b025d04
+  branch: develop
+  specs:
+    blather (2.0.0)
+      activesupport (>= 2.3.11)
+      eventmachine (~> 1.2, >= 1.2.6)
+      niceogiri (~> 1.0)
+      nokogiri (~> 1.8, >= 1.8.3)
+
+GIT
   remote: https://github.com/samnang/reel-rack.git
   revision: 615a9c9219aa00675a4290c4f7245684c701ea0e
   branch: switch_to_use_integer
@@ -46,10 +57,15 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.0.8)
+    activesupport (7.1.1)
+      base64
+      bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
+      connection_pool (>= 2.2.5)
+      drb
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
+      mutex_m
       tzinfo (~> 2.0)
     addressable (2.8.5)
       public_suffix (>= 2.0.2, < 6.0)
@@ -75,12 +91,7 @@ GEM
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
     base64 (0.1.1)
-    blather (2.0.0)
-      activesupport (>= 2.3.11)
-      eventmachine (~> 1.2, >= 1.2.6)
-      niceogiri (~> 1.0)
-      nokogiri (~> 1.8, >= 1.8.3)
-      sucker_punch (~> 2.0)
+    bigdecimal (3.1.4)
     celluloid (0.16.0)
       timers (~> 4.0.0)
     celluloid-io (0.16.2)
@@ -90,6 +101,7 @@ GEM
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
     concurrent-ruby (1.2.2)
+    connection_pool (2.4.1)
     countdownlatch (1.0.0)
     crack (0.4.5)
       rexml
@@ -100,6 +112,8 @@ GEM
     docile (1.4.0)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
+    drb (2.1.1)
+      ruby2_keywords
     equalizer (0.0.11)
     eventmachine (1.2.7)
     faraday (2.7.11)
@@ -144,6 +158,7 @@ GEM
     multi_json (1.15.0)
     mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
+    mutex_m (0.1.2)
     niceogiri (1.1.2)
       nokogiri (~> 1.5)
     nio4r (2.5.9)
@@ -247,7 +262,7 @@ GEM
     skylight (6.0.1)
       activesupport (>= 5.2.0)
     state_machine (1.2.0)
-    sucker_punch (2.1.2)
+    sucker_punch (3.1.0)
       concurrent-ruby (~> 1.0)
     thor (1.2.2)
     thread_safe (0.3.6)
@@ -285,6 +300,7 @@ DEPENDENCIES
   adhearsion!
   aws-sdk-lambda
   aws-sdk-polly
+  blather!
   faraday
   http
   okcomputer
@@ -301,6 +317,7 @@ DEPENDENCIES
   sinatra
   sinatra-contrib
   skylight
+  sucker_punch
   tts_voices!
   twilio-ruby
   vcr
