@@ -1,6 +1,7 @@
 module CallPlatform
   class FakeClient < Client
-    def notify_call_event(_params); end
+    def notify_call_event(params); end
+    def notify_tts_event(params); end
 
     def create_call(params)
       validate_gateway_headers(params)
