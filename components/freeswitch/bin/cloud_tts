@@ -6,6 +6,10 @@ voice="$3"
 cache_file="$4"
 
 if [[ "$voice" =~ ^Polly\..+ ]]; then
-  # extract Polly.from voice and execute aws_polly
-  aws_polly "$text" "$file" "${voice#"Polly."}" "$cache_file"
+  # extract 'Polly.' from voice
+  voice_id_with_engine="${voice#"Polly."}"
+  # extract '-Neural' from voice
+  voice_id="${voice_id_with_engine%"-Neural"}"
+  [[ $voice_id_with_engine = $voice_id ]] && engine="standard" || engine="neural"
+  aws_polly "$text" "$file" "$voice_id" "$engine" "$cache_file"
 fi
