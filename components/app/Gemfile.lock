@@ -165,7 +165,7 @@ GEM
     nokogiri (1.15.4)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    okcomputer (1.18.4)
+    okcomputer (1.18.5)
     parallel (1.23.0)
     parser (3.2.2.4)
       ast (~> 2.4.1)
