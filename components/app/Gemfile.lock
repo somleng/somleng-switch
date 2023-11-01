@@ -49,7 +49,7 @@ GIT
 
 GIT
   remote: https://github.com/somleng/tts_voices.git
-  revision: 2928e56b99fd7bc5af23c19fb408d3e0bb985118
+  revision: 37e162a48ac1fbf130530ef92c84dfb09f4b6892
   specs:
     tts_voices (0.1.0)
       aws-sdk-polly
@@ -72,8 +72,8 @@ GEM
     adhearsion-loquacious (1.9.3)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.839.0)
-    aws-sdk-core (3.185.1)
+    aws-partitions (1.843.0)
+    aws-sdk-core (3.185.2)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
       aws-sigv4 (~> 1.5)
@@ -84,7 +84,7 @@ GEM
     aws-sdk-polly (1.76.0)
       aws-sdk-core (~> 3, >= 3.184.0)
       aws-sigv4 (~> 1.1)
-    aws-sigv4 (1.6.0)
+    aws-sigv4 (1.6.1)
       aws-eventstream (~> 1, >= 1.0.2)
     axiom-types (0.1.1)
       descendants_tracker (~> 0.0.4)
