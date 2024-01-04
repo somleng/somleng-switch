@@ -16,7 +16,7 @@ jobs:
         working-directory: components/s3_mpeg
 
     steps:
-      - uses: FedericoCarboni/setup-ffmpeg@v2
+      - uses: FedericoCarboni/setup-ffmpeg@v3
 
       - name: Checkout
         uses: actions/checkout@v4
