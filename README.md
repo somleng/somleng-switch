@@ -80,7 +80,7 @@ A sidecar container which runs along-side FreeSWITCH providing event logs.
 
 ## Getting Started
 
-Please follow the [Getting Started](https://www.somleng.org/docs#getting-started) Guide to get up and running. 🏃🏾
+Please follow the [Getting Started](https://www.somleng.org/docs.html#getting-started) Guide to get up and running. 🏃🏾
 
 ## Testing
 
