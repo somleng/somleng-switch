@@ -1,68 +1,74 @@
+FROM drachtio/drachtio-freeswitch-base as freeswitch-build
+
+FROM debian:bookworm-slim as deps-build
+
+RUN apt-get update && apt-get -y --quiet --allow-remove-essential upgrade && \
+    apt-get install -y --quiet --no-install-recommends \
+    lsof gcc g++ make cmake build-essential git autoconf automake \
+    libssl-dev pkg-config ca-certificates
+
+RUN export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib && \
+    cd /usr/local/src && \
+    git clone https://github.com/warmcat/libwebsockets.git -b v4.3.2 && \
+    cd libwebsockets && \
+    mkdir -p /usr/local/src/libwebsockets/install/ && \
+    mkdir -p build && cd build && cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo && make && make install
+
 FROM debian:bookworm-slim
 
 ARG signalwire_token
 
-RUN apt-get update && apt-get install -yq gnupg2 wget lsb-release
-RUN wget --http-user=signalwire --http-password=${signalwire_token} -O /usr/share/keyrings/signalwire-freeswitch-repo.gpg https://freeswitch.signalwire.com/repo/deb/debian-release/signalwire-freeswitch-repo.gpg
-
-RUN echo "machine freeswitch.signalwire.com login signalwire password ${signalwire_token}" > /etc/apt/auth.conf
-RUN echo "deb [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" > /etc/apt/sources.list.d/freeswitch.list
-RUN echo "deb-src [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" >> /etc/apt/sources.list.d/freeswitch.list
-
-RUN apt-get purge -y --auto-remove gnupg2 lsb-release
-
-RUN apt-get update --allow-releaseinfo-change
-RUN apt-get -y install libpq-dev libc-dev groff less netcat-traditional ffmpeg
-
-# Install FreeSWITCH and required modules
-RUN apt-get update && apt-get install -y \
-    freeswitch \
-    freeswitch-mod-console \
-    freeswitch-mod-event-socket \
-    freeswitch-mod-logfile \
-    freeswitch-mod-rayo \
-    freeswitch-mod-sofia \
-    freeswitch-mod-dialplan-xml \
-    freeswitch-mod-commands \
-    freeswitch-mod-dptools \
-    freeswitch-mod-http-cache \
-    freeswitch-mod-httapi \
-    freeswitch-mod-sndfile \
-    freeswitch-mod-native-file \
-    freeswitch-mod-shout \
-    freeswitch-mod-json-cdr \
-    freeswitch-mod-flite \
-    freeswitch-mod-tone-stream \
-    freeswitch-mod-tts-commandline \
-    freeswitch-mod-pgsql \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install the AWS CLI
-RUN apt-get update && apt-get install -y curl unzip && \
-    mkdir -p /tmp/aws/ && cd /tmp/aws/ && \
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
-    unzip awscliv2.zip && \
-    ./aws/install && \
-    cd / && \
-    rm -rf /tmp/aws && \
-    apt-get purge -y --auto-remove curl unzip \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install --no-install-recommends -yq gnupg2 wget ca-certificates lsb-release curl unzip && \
+    wget --http-user=signalwire --http-password=${signalwire_token} -O /usr/share/keyrings/signalwire-freeswitch-repo.gpg https://freeswitch.signalwire.com/repo/deb/debian-release/signalwire-freeswitch-repo.gpg && \
+    echo "machine freeswitch.signalwire.com login signalwire password ${signalwire_token}" > /etc/apt/auth.conf && \
+    echo "deb [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" > /etc/apt/sources.list.d/freeswitch.list && \
+    echo "deb-src [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" >> /etc/apt/sources.list.d/freeswitch.list && \
+    apt-get update --allow-releaseinfo-change && \
+    apt-get -y install --no-install-recommends libc-dev groff pkg-config less netcat-traditional ffmpeg \
+            freeswitch \
+            freeswitch-mod-console \
+            freeswitch-mod-event-socket \
+            freeswitch-mod-logfile \
+            freeswitch-mod-rayo \
+            freeswitch-mod-sofia \
+            freeswitch-mod-dialplan-xml \
+            freeswitch-mod-commands \
+            freeswitch-mod-dptools \
+            freeswitch-mod-http-cache \
+            freeswitch-mod-httapi \
+            freeswitch-mod-sndfile \
+            freeswitch-mod-native-file \
+            freeswitch-mod-shout \
+            freeswitch-mod-json-cdr \
+            freeswitch-mod-flite \
+            freeswitch-mod-tone-stream \
+            freeswitch-mod-tts-commandline && \
+            mkdir -p /tmp/aws/ && cd /tmp/aws/ && \
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+            unzip awscliv2.zip && \
+            ./aws/install && \
+            cd / && \
+            rm -rf /tmp/aws && \
+            apt-get purge -y --auto-remove wget gnupg2 lsb-release curl unzip \
+            && apt-get clean \
+            && rm -rf /var/lib/apt/lists/*
 
 # Copy the Freeswitch configuration
-COPY conf /etc/freeswitch
+COPY --link conf/ /etc/freeswitch
 
 # Copy Bin Files
-COPY bin/ /usr/local/bin/
+COPY --link bin/ /usr/local/bin/
 
-RUN chown -R freeswitch:daemon /etc/freeswitch
+RUN chown -R freeswitch:daemon /etc/freeswitch && \
+    touch /var/log/freeswitch/freeswitch.log && \
+    chown freeswitch:freeswitch /var/log/freeswitch/freeswitch.log
 
-RUN touch /var/log/freeswitch/freeswitch.log
-RUN chown freeswitch:freeswitch /var/log/freeswitch/freeswitch.log
+COPY --link --from=freeswitch-build /usr/local/freeswitch/mod/mod_audio_fork.* /usr/lib/freeswitch/mod/
+COPY --link --from=deps-build /usr/local/lib/ /usr/local/lib/
+RUN ldconfig
 
 # Install the entrypoint script
-COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY --link docker-entrypoint.sh /docker-entrypoint.sh
 
 EXPOSE 5060/udp
 EXPOSE 5080/udp
