@@ -20,26 +20,28 @@ GIT
 
 GIT
   remote: https://github.com/somleng/adhearsion.git
-  revision: e80c176f245e7af948e8c3d10e9788f3dd74eff0
+  revision: 462d4ef09e6809636eb78732edd50cc053aa3059
   specs:
     adhearsion (3.0.0.rc1)
       activesupport (>= 3.0.0)
       adhearsion-loquacious (~> 1.9)
       blather (~> 2.0)
-      celluloid (~> 0.16.0)
+      celluloid
+      celluloid-pool
+      celluloid-supervision
       countdownlatch
       deep_merge
       ffi (~> 1.0)
       future-resource (~> 1.0)
       has-guarded-handlers (~> 1.6, >= 1.6.3)
-      http_parser.rb (~> 0.6.0)
+      http_parser.rb
       i18n
       logging (~> 2.0)
       nokogiri
       pry
       rake
-      reel (~> 0.6.0)
-      reel-rack (~> 0.2.0)
+      reel
+      reel-rack
       ruby_ami (~> 2.2)
       ruby_jid (~> 1.0)
       ruby_speech (~> 3.0)
@@ -67,7 +69,7 @@ GEM
       minitest (>= 5.1)
       mutex_m
       tzinfo (~> 2.0)
-    addressable (2.8.5)
+    addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
     adhearsion-loquacious (1.9.3)
     ast (2.4.2)
@@ -92,11 +94,16 @@ GEM
       thread_safe (~> 0.3, >= 0.3.1)
     base64 (0.2.0)
     bigdecimal (3.1.6)
-    celluloid (0.16.0)
-      timers (~> 4.0.0)
-    celluloid-io (0.16.2)
-      celluloid (>= 0.16.0)
-      nio4r (>= 1.1.0)
+    celluloid (0.18.0)
+      timers (~> 4)
+    celluloid-io (0.17.3)
+      celluloid (>= 0.17.2)
+      nio4r (>= 1.1)
+      timers (>= 4.1.1)
+    celluloid-pool (0.20.5)
+      timers (>= 4.1.1)
+    celluloid-supervision (0.20.6)
+      timers (>= 4.1.1)
     coderay (1.1.3)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
@@ -110,8 +117,7 @@ GEM
       thread_safe (~> 0.3, >= 0.3.1)
     diff-lcs (1.5.0)
     docile (1.4.0)
-    domain_name (0.5.20190701)
-      unf (>= 0.0.5, < 1.0.0)
+    domain_name (0.6.20240107)
     drb (2.2.0)
       ruby2_keywords
     equalizer (0.0.11)
@@ -120,14 +126,13 @@ GEM
       faraday-net_http (>= 2.0, < 3.2)
     faraday-net_http (3.1.0)
       net-http
-    ffi (1.15.5)
+    ffi (1.16.3)
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
     future-resource (1.1.0)
     has-guarded-handlers (1.6.3)
     hashdiff (1.0.1)
-    hitimes (2.0.0)
     http (5.1.1)
       addressable (~> 2.8)
       http-cookie (~> 1.0)
@@ -136,7 +141,7 @@ GEM
     http-cookie (1.0.5)
       domain_name (~> 0.5)
     http-form_data (2.3.0)
-    http_parser.rb (0.6.0)
+    http_parser.rb (0.8.0)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
@@ -162,7 +167,7 @@ GEM
       uri
     niceogiri (1.1.2)
       nokogiri (~> 1.5)
-    nio4r (2.5.9)
+    nio4r (2.7.0)
     nokogiri (1.16.0)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
@@ -175,9 +180,9 @@ GEM
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    public_suffix (5.0.3)
+    public_suffix (5.0.4)
     racc (1.7.3)
-    rack (3.0.8)
+    rack (3.0.9)
     rack-protection (4.0.0)
       base64 (>= 0.1.0)
       rack (>= 3.0.0, < 4)
@@ -186,7 +191,7 @@ GEM
     rack-test (2.1.0)
       rack (>= 1.3)
     rainbow (3.1.1)
-    rake (13.0.6)
+    rake (13.1.0)
     reel (0.6.1)
       celluloid (>= 0.15.1)
       celluloid-io (>= 0.15.0)
@@ -268,20 +273,16 @@ GEM
     state_machine (1.2.0)
     sucker_punch (3.2.0)
       concurrent-ruby (~> 1.0)
-    thor (1.2.2)
+    thor (1.3.0)
     thread_safe (0.3.6)
     tilt (2.3.0)
-    timers (4.0.4)
-      hitimes
+    timers (4.3.5)
     twilio-ruby (6.9.1)
       faraday (>= 0.9, < 3.0)
       jwt (>= 1.5, < 3.0)
       nokogiri (>= 1.6, < 2.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    unf (0.1.4)
-      unf_ext
-    unf_ext (0.0.8.2)
     unicode-display_width (2.5.0)
     uri (0.13.0)
     vcr (6.2.0)
