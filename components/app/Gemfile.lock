@@ -20,7 +20,7 @@ GIT
 
 GIT
   remote: https://github.com/somleng/adhearsion.git
-  revision: 462d4ef09e6809636eb78732edd50cc053aa3059
+  revision: 68967df0d0812c7e392b13a54670668c8b130c62
   specs:
     adhearsion (3.0.0.rc1)
       activesupport (>= 3.0.0)
