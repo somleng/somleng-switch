@@ -21,7 +21,6 @@ module SomlengAdhearsion
           env: :production
         )
       end
-
     end
   end
 end

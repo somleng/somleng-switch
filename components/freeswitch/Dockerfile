@@ -1,6 +1,6 @@
 FROM drachtio/drachtio-freeswitch-base as freeswitch-build
 
-FROM debian:bookworm-slim as deps-build
+FROM public.ecr.aws/debian/debian:bookworm-slim AS deps-build
 
 RUN apt-get update && apt-get -y --quiet --allow-remove-essential upgrade && \
     apt-get install -y --quiet --no-install-recommends \
@@ -14,11 +14,13 @@ RUN export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib && \
     mkdir -p /usr/local/src/libwebsockets/install/ && \
     mkdir -p build && cd build && cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo && make && make install
 
-FROM debian:bookworm-slim
+FROM public.ecr.aws/aws-cli/aws-cli as aws-cli
+
+FROM public.ecr.aws/debian/debian:bookworm-slim
 
 ARG signalwire_token
 
-RUN apt-get update && apt-get install --no-install-recommends -yq gnupg2 wget ca-certificates lsb-release curl unzip && \
+RUN apt-get update && apt-get install --no-install-recommends -yq gnupg2 wget ca-certificates lsb-release && \
     wget --http-user=signalwire --http-password=${signalwire_token} -O /usr/share/keyrings/signalwire-freeswitch-repo.gpg https://freeswitch.signalwire.com/repo/deb/debian-release/signalwire-freeswitch-repo.gpg && \
     echo "machine freeswitch.signalwire.com login signalwire password ${signalwire_token}" > /etc/apt/auth.conf && \
     echo "deb [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" > /etc/apt/sources.list.d/freeswitch.list && \
@@ -43,13 +45,7 @@ RUN apt-get update && apt-get install --no-install-recommends -yq gnupg2 wget ca
             freeswitch-mod-flite \
             freeswitch-mod-tone-stream \
             freeswitch-mod-tts-commandline && \
-            mkdir -p /tmp/aws/ && cd /tmp/aws/ && \
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
-            unzip awscliv2.zip && \
-            ./aws/install && \
-            cd / && \
-            rm -rf /tmp/aws && \
-            apt-get purge -y --auto-remove wget gnupg2 lsb-release curl unzip \
+            apt-get purge -y --auto-remove wget gnupg2 lsb-release \
             && apt-get clean \
             && rm -rf /var/lib/apt/lists/*
 
@@ -63,6 +59,8 @@ RUN chown -R freeswitch:daemon /etc/freeswitch && \
     touch /var/log/freeswitch/freeswitch.log && \
     chown freeswitch:freeswitch /var/log/freeswitch/freeswitch.log
 
+COPY --link --from=aws-cli /usr/local/aws-cli/ /usr/local/aws-cli/
+COPY --link --from=aws-cli /usr/local/bin/ /usr/local/bin
 COPY --link --from=freeswitch-build /usr/local/freeswitch/mod/mod_audio_fork.* /usr/lib/freeswitch/mod/
 COPY --link --from=deps-build /usr/local/lib/ /usr/local/lib/
 RUN ldconfig
@@ -81,6 +79,7 @@ ENV FS_CACHE_DIRECTORY "/var/cache"
 ENV FS_LOG_DIRECTORY "/var/log/freeswitch"
 ENV FS_STORAGE_DIRECTORY "$FS_CACHE_DIRECTORY/freeswitch/storage"
 ENV FS_TTS_CACHE_DIRECTORY "$FS_CACHE_DIRECTORY/freeswitch/tts_cache"
+ENV MOD_AUDIO_FORK_SUBPROTOCOL_NAME "audio.somleng.org"
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["freeswitch"]
