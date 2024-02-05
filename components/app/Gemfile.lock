@@ -20,7 +20,7 @@ GIT
 
 GIT
   remote: https://github.com/somleng/adhearsion.git
-  revision: 68967df0d0812c7e392b13a54670668c8b130c62
+  revision: 98bff73b03044c444c5ec91a4cf2a2cbceca7406
   specs:
     adhearsion (3.0.0.rc1)
       activesupport (>= 3.0.0)
@@ -168,7 +168,7 @@ GEM
     niceogiri (1.1.2)
       nokogiri (~> 1.5)
     nio4r (2.7.0)
-    nokogiri (1.16.0)
+    nokogiri (1.16.2)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     okcomputer (1.18.5)
