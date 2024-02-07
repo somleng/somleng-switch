@@ -60,7 +60,6 @@ ENV FS_CACHE_DIRECTORY "/var/cache"
 ENV FS_LOG_DIRECTORY "/var/log/freeswitch"
 ENV FS_STORAGE_DIRECTORY "$FS_CACHE_DIRECTORY/freeswitch/storage"
 ENV FS_TTS_CACHE_DIRECTORY "$FS_CACHE_DIRECTORY/freeswitch/tts_cache"
-ENV MOD_AUDIO_FORK_SUBPROTOCOL_NAME "audio.somleng.org"
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["freeswitch"]
