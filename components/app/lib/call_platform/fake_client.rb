@@ -8,7 +8,6 @@ module CallPlatform
 
       twiml = case params.fetch(:to)
               when "1111" then "<Response><Say>Hello World!</Say><Hangup /></Response>"
-              when "2222" then "<Response><Connect><Stream url=\"wss://127.0.0.1/connect_call/\" /></Connect></Response>"
               else
                 "<Response><Play>https://demo.twilio.com/docs/classic.mp3</Play></Response>"
               end

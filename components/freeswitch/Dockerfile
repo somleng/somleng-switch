@@ -1,19 +1,3 @@
-FROM drachtio/drachtio-freeswitch-base as freeswitch-build
-
-FROM public.ecr.aws/debian/debian:bookworm-slim AS deps-build
-
-RUN apt-get update && apt-get -y --quiet --allow-remove-essential upgrade && \
-    apt-get install -y --quiet --no-install-recommends \
-    lsof gcc g++ make cmake build-essential git autoconf automake \
-    libssl-dev pkg-config ca-certificates
-
-RUN export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib && \
-    cd /usr/local/src && \
-    git clone https://github.com/warmcat/libwebsockets.git -b v4.3.2 && \
-    cd libwebsockets && \
-    mkdir -p /usr/local/src/libwebsockets/install/ && \
-    mkdir -p build && cd build && cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo && make && make install
-
 FROM public.ecr.aws/aws-cli/aws-cli as aws-cli
 
 FROM public.ecr.aws/debian/debian:bookworm-slim
@@ -26,7 +10,7 @@ RUN apt-get update && apt-get install --no-install-recommends -yq gnupg2 wget ca
     echo "deb [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" > /etc/apt/sources.list.d/freeswitch.list && \
     echo "deb-src [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" >> /etc/apt/sources.list.d/freeswitch.list && \
     apt-get update --allow-releaseinfo-change && \
-    apt-get -y install --no-install-recommends libc-dev groff pkg-config less netcat-traditional ffmpeg \
+    apt-get -y install --no-install-recommends netcat-traditional ffmpeg \
             freeswitch \
             freeswitch-mod-console \
             freeswitch-mod-event-socket \
@@ -61,9 +45,6 @@ RUN chown -R freeswitch:daemon /etc/freeswitch && \
 
 COPY --link --from=aws-cli /usr/local/aws-cli/ /usr/local/aws-cli/
 COPY --link --from=aws-cli /usr/local/bin/ /usr/local/bin
-COPY --link --from=freeswitch-build /usr/local/freeswitch/mod/mod_audio_fork.* /usr/lib/freeswitch/mod/
-COPY --link --from=deps-build /usr/local/lib/ /usr/local/lib/
-RUN ldconfig
 
 # Install the entrypoint script
 COPY --link docker-entrypoint.sh /docker-entrypoint.sh
