@@ -10,17 +10,9 @@ GIT
       nokogiri (~> 1.8, >= 1.8.3)
 
 GIT
-  remote: https://github.com/samnang/reel-rack.git
-  revision: 615a9c9219aa00675a4290c4f7245684c701ea0e
-  branch: switch_to_use_integer
-  specs:
-    reel-rack (0.2.3)
-      rack (>= 1.4.0)
-      reel (>= 0.5.0)
-
-GIT
   remote: https://github.com/somleng/adhearsion.git
-  revision: 98bff73b03044c444c5ec91a4cf2a2cbceca7406
+  revision: e328adcdd843a45065f0179d16e95e3830700889
+  branch: develop
   specs:
     adhearsion (3.0.0.rc1)
       activesupport (>= 3.0.0)
@@ -50,6 +42,29 @@ GIT
       virtus (~> 1.0)
 
 GIT
+  remote: https://github.com/somleng/reel-rack.git
+  revision: 2cc60ca964efc837ac16616a5a972275b43c270f
+  branch: develop
+  specs:
+    reel-rack (0.2.3)
+      rack (>= 1.4.0)
+      rackup
+      reel (>= 0.5.0)
+
+GIT
+  remote: https://github.com/somleng/reel.git
+  revision: 96a087e3f28e9a9868bf341fbc4f16ca85a918b6
+  branch: develop
+  specs:
+    reel (0.7.0.pre)
+      celluloid (>= 0.15.1)
+      celluloid-fsm
+      celluloid-io (>= 0.15.0)
+      http (>= 0.6.0.pre)
+      http_parser.rb (>= 0.6.0)
+      websocket-driver (>= 0.5.1)
+
+GIT
   remote: https://github.com/somleng/tts_voices.git
   revision: 56abf5a66dd9b2b2f97787eeba516e81c593b645
   specs:
@@ -74,7 +89,7 @@ GEM
     adhearsion-loquacious (1.9.3)
     ast (2.4.2)
     aws-eventstream (1.3.0)
-    aws-partitions (1.883.0)
+    aws-partitions (1.887.0)
     aws-sdk-core (3.191.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.651.0)
@@ -96,6 +111,8 @@ GEM
     bigdecimal (3.1.6)
     celluloid (0.18.0)
       timers (~> 4)
+    celluloid-fsm (0.20.5)
+      timers (>= 4.1.1)
     celluloid-io (0.17.3)
       celluloid (>= 0.17.2)
       nio4r (>= 1.1)
@@ -110,7 +127,8 @@ GEM
     concurrent-ruby (1.2.3)
     connection_pool (2.4.1)
     countdownlatch (1.0.0)
-    crack (0.4.5)
+    crack (0.4.6)
+      bigdecimal
       rexml
     deep_merge (1.2.2)
     descendants_tracker (0.0.4)
@@ -132,7 +150,7 @@ GEM
       rake
     future-resource (1.1.0)
     has-guarded-handlers (1.6.3)
-    hashdiff (1.0.1)
+    hashdiff (1.1.0)
     http (5.2.0)
       addressable (~> 2.8)
       base64 (~> 0.1)
@@ -158,8 +176,7 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
     method_source (1.0.0)
-    mini_portile2 (2.8.5)
-    minitest (5.21.2)
+    minitest (5.22.1)
     multi_json (1.15.0)
     mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
@@ -169,8 +186,11 @@ GEM
     niceogiri (1.1.2)
       nokogiri (~> 1.5)
     nio4r (2.7.0)
-    nokogiri (1.16.2)
-      mini_portile2 (~> 2.8.2)
+    nokogiri (1.16.2-arm-linux)
+      racc (~> 1.4)
+    nokogiri (1.16.2-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.16.2-x86_64-linux)
       racc (~> 1.4)
     okcomputer (1.18.5)
     parallel (1.24.0)
@@ -191,14 +211,11 @@ GEM
       rack (>= 3.0.0)
     rack-test (2.1.0)
       rack (>= 1.3)
+    rackup (2.1.0)
+      rack (>= 3)
+      webrick (~> 1.8)
     rainbow (3.1.1)
     rake (13.1.0)
-    reel (0.6.1)
-      celluloid (>= 0.15.1)
-      celluloid-io (>= 0.15.0)
-      http (>= 0.6.0.pre)
-      http_parser.rb (>= 0.6.0)
-      websocket-driver (>= 0.5.1)
     regexp_parser (2.9.0)
     rexml (3.2.6)
     rspec (3.13.0)
@@ -292,16 +309,20 @@ GEM
       coercible (~> 1.0)
       descendants_tracker (~> 0.0, >= 0.0.3)
       equalizer (~> 0.0, >= 0.0.9)
-    webmock (3.19.1)
+    webmock (3.20.0)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
+    webrick (1.8.1)
     websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
 
 PLATFORMS
-  ruby
+  arm64-darwin-22
+  arm64-linux
+  x86_64-linux
+  x86_64-linux-musl
 
 DEPENDENCIES
   adhearsion!
@@ -313,6 +334,8 @@ DEPENDENCIES
   okcomputer
   phony
   rack-test
+  rackup
+  reel!
   reel-rack!
   rspec
   rubocop
@@ -331,4 +354,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.4.13
+   2.5.6

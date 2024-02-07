@@ -12,7 +12,7 @@ class ExecuteTwiML
   SLEEP_BETWEEN_REDIRECTS = 1
   DEFAULT_TWILIO_VOICE = "man".freeze
   DEFAULT_TWILIO_LANGUAGE = "en".freeze
-  FINISH_ON_KEY_PATTERN = /\A(?:\d|\*|\#)\z/.freeze
+  FINISH_ON_KEY_PATTERN = /\A(?:\d|\*|\#)\z/
   BASIC_TTS_MAPPING = {
     "man" => "Basic.Kal",
     "woman" => "Basic.Slt"
@@ -88,7 +88,7 @@ class ExecuteTwiML
   end
 
   def answered?
-    return if phone_call.blank?
+    return false if phone_call.blank?
 
     phone_call.answer_time.present?
   end
@@ -147,11 +147,11 @@ class ExecuteTwiML
 
       nested_verb_attributes = twiml_attributes(nested_verb)
       content = if nested_verb.name == "Say"
-        tts_voice = resolve_tts_voice(nested_verb_attributes)
-        say_options(nested_verb.content, tts_voice)
-      else
-        nested_verb.content
-      end
+                  tts_voice = resolve_tts_voice(nested_verb_attributes)
+                  say_options(nested_verb.content, tts_voice)
+                else
+                  nested_verb.content
+                end
       result.concat(Array.new(twiml_loop(nested_verb_attributes).count, content))
     end
 
@@ -169,16 +169,16 @@ class ExecuteTwiML
     ask_result = ask(*ask_params, ask_options)
 
     digits = ask_result.utterance
-    if digits.present? || attributes["actionOnEmptyResult"] == "true"
-      throw(
-        :redirect,
-        [
-          attributes["action"],
-          attributes["method"],
-          (digits.present? ? { "Digits" => digits } : {})
-        ]
-      )
-    end
+    return unless digits.present? || attributes["actionOnEmptyResult"] == "true"
+
+    throw(
+      :redirect,
+      [
+        attributes["action"],
+        attributes["method"],
+        (digits.present? ? { "Digits" => digits } : {})
+      ]
+    )
   end
 
   def execute_dial(verb)
@@ -191,7 +191,9 @@ class ExecuteTwiML
       if nested_noun.text? || nested_noun.name == "Number"
         dial_string = DialString.new(build_routing_parameters(dial_content))
         caller_id = dial_string.format_number(
-          attributes.fetch("callerId") { call_properties.inbound? ? call_properties.from : call_properties.to }
+          attributes.fetch("callerId") do
+            call_properties.inbound? ? call_properties.from : call_properties.to
+          end
         )
       elsif nested_noun.name == "Sip"
         dial_string = DialString.new(address: dial_content.delete_prefix("sip:"))
@@ -265,12 +267,17 @@ class ExecuteTwiML
     )
   end
 
+  def execute_command(*)
+    block_until_resumed
+    call.execute_command(*)
+  end
+
   def say_options(content, tts_voice)
     ssml = RubySpeech::SSML.draw do
       voice(name: tts_voice.identifier, language: tts_voice.language) do
         # mod ssml doesn't support non-ascii characters
         # https://github.com/signalwire/freeswitch/issues/1348
-        string(content + ".")
+        string("#{content}.")
       end
     end
     ssml.document.encoding = "UTF-8"
@@ -284,9 +291,7 @@ class ExecuteTwiML
   end
 
   def twiml_attributes(node)
-    node.attributes.each_with_object({}) do |(key, attribute), options|
-      options[key] = attribute.value
-    end
+    node.attributes.transform_values(&:value)
   end
 
   def build_routing_parameters(number)
@@ -301,7 +306,10 @@ class ExecuteTwiML
       config.options = Nokogiri::XML::ParseOptions::NOBLANKS
     end
 
-    raise(Errors::TwiMLError, "The root element must be the '<Response>' element") if doc.root.name != "Response"
+    if doc.root.name != "Response"
+      raise(Errors::TwiMLError,
+            "The root element must be the '<Response>' element")
+    end
 
     doc.root.children
   rescue Nokogiri::XML::SyntaxError => e
@@ -321,7 +329,9 @@ class ExecuteTwiML
     language_attribute = attributes["language"]
 
     default_tts_voice = TTSVoices::Voice.find(call_properties.default_tts_voice)
-    voice_attribute = BASIC_TTS_MAPPING.fetch(voice_attribute) if BASIC_TTS_MAPPING.key?(voice_attribute)
+    if BASIC_TTS_MAPPING.key?(voice_attribute)
+      voice_attribute = BASIC_TTS_MAPPING.fetch(voice_attribute)
+    end
 
     if voice_attribute.blank?
       tts_voice = resolve_tts_voice_by_language(default_tts_voice, language_attribute)

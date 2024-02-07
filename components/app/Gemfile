@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "adhearsion", github: "somleng/adhearsion"
+gem "adhearsion", github: "somleng/adhearsion", branch: "develop"
 gem "aws-sdk-lambda"
 gem "aws-sdk-polly"
 gem "blather", github: "adhearsion/blather", branch: "develop"
@@ -8,7 +8,9 @@ gem "faraday"
 gem "http"
 gem "okcomputer"
 gem "phony"
-gem "reel-rack", github: "samnang/reel-rack", branch: "switch_to_use_integer"
+gem "rackup"
+gem "reel", github: "somleng/reel", branch: "develop"
+gem "reel-rack", github: "somleng/reel-rack", branch: "develop"
 gem "sentry-ruby"
 gem "sinatra"
 gem "sinatra-contrib", require: false
