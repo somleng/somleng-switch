@@ -60,8 +60,6 @@ class ExecuteTwiML
           break
         when "Record"
           execute_record(verb)
-        when "Connect"
-          execute_connect(verb)
         else
           raise Errors::TwiMLError, "Invalid element '#{verb.name}'"
         end
@@ -267,24 +265,6 @@ class ExecuteTwiML
         }
       ]
     )
-  end
-
-  def execute_connect(verb)
-    answer unless answered?
-
-    connect_verb = TwiML::ConnectVerb.new(verb)
-
-    raise connect_verb.errors.full_messages.to_sentence unless connect_verb.valid?
-
-    url = connect_verb.noun_attributes.fetch("url")
-    command = Rayo::Command::AudioFork::Start.new(
-      uuid: phone_call.id,
-      url:,
-      mix_type: "mono",
-      sampling_rate: "16k"
-    )
-
-    context.write_and_await_response(command)
   end
 
   def execute_command(*)
