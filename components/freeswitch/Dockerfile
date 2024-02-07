@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install --no-install-recommends -yq gnupg2 wget ca
     echo "deb [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" > /etc/apt/sources.list.d/freeswitch.list && \
     echo "deb-src [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" >> /etc/apt/sources.list.d/freeswitch.list && \
     apt-get update --allow-releaseinfo-change && \
-    apt-get -y install --no-install-recommends libc-dev groff pkg-config less netcat-traditional ffmpeg \
+    apt-get -y install --no-install-recommends netcat-traditional ffmpeg \
             freeswitch \
             freeswitch-mod-console \
             freeswitch-mod-event-socket \
