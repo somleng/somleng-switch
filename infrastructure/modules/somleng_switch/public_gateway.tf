@@ -16,6 +16,7 @@ resource "aws_ecs_capacity_provider" "public_gateway" {
   auto_scaling_group_provider {
     auto_scaling_group_arn         = module.public_gateway_container_instances.autoscaling_group.arn
     managed_termination_protection = "ENABLED"
+    managed_draining = "ENABLED"
 
     managed_scaling {
       maximum_scaling_step_size = 1000
