@@ -40,9 +40,14 @@ module TwiML
     end
 
     def validate_stream_attributes
-      return if URI(noun_attributes["url"].to_s).scheme == "wss"
+      return if url_scheme(noun_attributes["url"]) == "wss"
+      return if url_scheme(ENV.fetch("CALL_PLATFORM_WS_SERVER_URL", nil)) == "ws"
 
       errors.add("<Stream> must contain a valid wss 'url' attribute")
+    end
+
+    def url_scheme(url)
+      URI(url.to_s).scheme
     end
   end
 end

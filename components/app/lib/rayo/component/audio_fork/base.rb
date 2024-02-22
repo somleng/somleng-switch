@@ -1,7 +1,7 @@
 module Rayo
-  module Command
+  module Component
     module AudioFork
-      class Base < Adhearsion::Rayo::Command::Execute
+      class Base < Rayo::Component::Execute
         attribute :uuid
         attribute :metadata
 

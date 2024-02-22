@@ -121,4 +121,4 @@ jobs:
 
       - name: Run ${{ inputs.context }} Tests
         run: |
-          docker-compose run testing /tests.sh /tests/${{ inputs.context }}
+          docker-compose run testing ./tests.sh ./tests/${{ inputs.context }}

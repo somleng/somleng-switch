@@ -1,0 +1,15 @@
+{
+  "name": "ws_server",
+  "version": "1.0.0",
+  "description": "A simple websockets server",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Somleng",
+  "license": "MIT",
+  "dependencies": {
+    "minimist": "^1.2.8",
+    "ws": "^8.16.0"
+  }
+}

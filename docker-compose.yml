@@ -89,6 +89,8 @@ services:
       context: components/freeswitch
     image: freeswitch:latest
     platform: linux/amd64
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       FS_EXTERNAL_RTP_IP: "13.250.230.15"
       FS_ALTERNATIVE_RTP_IP: "18.141.245.230"
@@ -112,6 +114,7 @@ services:
     environment:
       AHN_CORE_HOST: freeswitch
       CALL_PLATFORM_STUB_RESPONSES: "true"
+      CALL_PLATFORM_WS_SERVER_URL: "ws://host.docker.internal:9292/cable"
       AHN_CORE_HTTP_PORT: "8080"
       AWS_DEFAULT_REGION: "ap-southeast-1"
     healthcheck:
@@ -130,12 +133,12 @@ services:
     build:
       context: components/testing
     image: testing:latest
-    command: sipp -sf /scenarios/uas.xml -trace_msg
     environment:
       DATABASE_HOST: host.docker.internal
       DATABASE_PORT: 5432
       DATABASE_USERNAME: postgres
       FIFO_DIR: /opensips/fifo
+      WS_SERVER_PORT: 3001
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:

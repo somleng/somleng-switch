@@ -277,14 +277,21 @@ class ExecuteTwiML
     raise connect_verb.errors.full_messages.to_sentence unless connect_verb.valid?
 
     url = connect_verb.noun_attributes.fetch("url")
-    command = Rayo::Command::AudioFork::Start.new(
+    component = Rayo::Component::AudioFork::Start.new(
       uuid: phone_call.id,
       url:,
       mix_type: "mono",
-      sampling_rate: "16k"
+      sampling_rate: "16k",
+      metadata: {foo: "bar"}.to_json
     )
 
-    context.write_and_await_response(command)
+    logger.info("-----ABOUT TO EXECUTE AUDIO FORK---------")
+
+    context.execute_component_and_await_completion(component) do
+      logger.info("--------AUDIO FORK EXECUTED IN BLOCK-----------")
+    end
+
+    logger.info("-----AUDIO FORK EXECUTED AND AWAITING FOR RESPONSE IT SHOULD NOT GET HERE----")
   end
 
   def execute_command(*)
