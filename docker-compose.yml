@@ -73,7 +73,6 @@ services:
     build:
       context: components/media_proxy
     image: media_proxy:latest
-    platform: linux/amd64
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:

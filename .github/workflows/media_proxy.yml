@@ -96,6 +96,7 @@ jobs:
           push: true
           cache-from: type=gha,scope=${{ matrix.identifier }}
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.ECR_REGISTRY }}/media-proxy:${{ matrix.image_tag }}
             ${{ env.ECR_REGISTRY }}/media-proxy:${{ env.IMAGE_TAG }}
