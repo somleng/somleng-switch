@@ -11,6 +11,18 @@ volumes:
   opensips_fifo:
 
 services:
+  mariadb:
+    image: mariadb:latest
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "true"
+    ports:
+      - "3306:3306"
+
+  goip:
+    build:
+      context: components/goip
+    image: goip:latest
+
   gateway-bootstrap:
     build:
       context: components/gateway
