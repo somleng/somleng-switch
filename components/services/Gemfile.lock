@@ -48,7 +48,7 @@ GEM
     rspec-support (3.13.0)
     sentry-ruby (5.16.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
-    sequel (5.77.0)
+    sequel (5.78.0)
       bigdecimal
     simplecov (0.22.0)
       docile (~> 1.1)
