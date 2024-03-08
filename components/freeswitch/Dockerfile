@@ -1,4 +1,4 @@
-FROM drachtio/drachtio-freeswitch-base as freeswitch-build
+FROM jstahlbaumfibernetics/jstahlba-freeswitch-base as freeswitch-build
 
 FROM public.ecr.aws/debian/debian:bookworm-slim AS deps-build
 
@@ -61,7 +61,9 @@ RUN chown -R freeswitch:daemon /etc/freeswitch && \
 
 COPY --link --from=aws-cli /usr/local/aws-cli/ /usr/local/aws-cli/
 COPY --link --from=aws-cli /usr/local/bin/ /usr/local/bin
-COPY --link --from=freeswitch-build /usr/local/freeswitch/mod/mod_audio_fork.* /usr/lib/freeswitch/mod/
+COPY --link --from=freeswitch-build /usr/local/src/freeswitch/src/mod/applications/mod_audio_fork/.libs/mod_audio_fork.so /usr/lib/freeswitch/mod/
+#COPY --link --from=freeswitch-build /usr/local/freeswitch/mod/mod_audio_fork_twilio.* /usr/lib/freeswitch/mod/
+COPY --link --from=freeswitch-build /usr/local/src/freeswitch/src/mod/applications/mod_audio_fork_twilio/.libs/mod_audio_fork_twilio.so /usr/lib/freeswitch/mod/
 COPY --link --from=deps-build /usr/local/lib/ /usr/local/lib/
 RUN ldconfig
 
