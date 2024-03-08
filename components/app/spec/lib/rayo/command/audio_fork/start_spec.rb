@@ -13,15 +13,15 @@ module Rayo
             command = Start.new(
               uuid: "call-id",
               url: "wss://mystream.ngrok.io/audiostream",
-              mix_type: "mono",
-              sampling_rate: "16k"
+              accountsid: "asid",
+              callsid: "csid"
             )
 
             xml = Hash.from_xml(command.to_xml)
 
             expect(xml.fetch("exec")).to include(
-              "api" => "uuid_audio_fork",
-              "args" => "call-id start wss://mystream.ngrok.io/audiostream mono 16k"
+              "api" => "uuid_audio_fork_twilio",
+              "args" => "call-id start wss://mystream.ngrok.io/audiostream asid csid"
             )
           end
         end

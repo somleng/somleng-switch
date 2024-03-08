@@ -280,13 +280,14 @@ class ExecuteTwiML
     component = Rayo::Component::AudioFork::Start.new(
       uuid: phone_call.id,
       url:,
-      mix_type: "mono",
-      sampling_rate: "16k",
+      accountsid: "mono",
+      callsid: "8k",
       metadata: {foo: "bar"}.to_json
     )
 
-    logger.info("-----ABOUT TO EXECUTE AUDIO FORK---------")
-
+    logger.info("-----ABOUT TO EXECUTE AUDIO FORK NEW---------")
+    logger.info(url)
+    logger.info("-----ABOUT TO EXECUTE AUDIO FORK NEW---------")
     context.execute_component_and_await_completion(component) do
       logger.info("--------AUDIO FORK EXECUTED IN BLOCK-----------")
     end
