@@ -282,7 +282,7 @@ class ExecuteTwiML
       url:,
       mix_type: "mono",
       sampling_rate: "16k",
-      metadata: {foo: "bar"}.to_json
+      # metadata: {foo: "bar"}.to_json
     )
 
     logger.info("-----ABOUT TO EXECUTE AUDIO FORK---------")

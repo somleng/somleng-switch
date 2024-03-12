@@ -92,7 +92,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-      FS_EXTERNAL_RTP_IP: "13.250.230.15"
       FS_ALTERNATIVE_RTP_IP: "18.141.245.230"
     expose:
       - "5060/udp"
@@ -115,7 +114,7 @@ services:
       AHN_CORE_HOST: freeswitch
       CALL_PLATFORM_STUB_RESPONSES: "true"
       # CALL_PLATFORM_WS_SERVER_URL: "ws://host.docker.internal:9292/cable"
-      CALL_PLATFORM_WS_SERVER_URL: "ws://host.docker.internal:3001"
+      CALL_PLATFORM_WS_SERVER_URL: "ws://testing:3001"
       AHN_CORE_HTTP_PORT: "8080"
       AWS_DEFAULT_REGION: "ap-southeast-1"
     healthcheck:

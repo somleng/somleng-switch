@@ -53,13 +53,13 @@
   <recv response="100" optional="true">
   </recv>
 
-  <recv response="180" optional="true">
+  <recv response="183" optional="true">
   </recv>
 
   <!-- By adding rrs="true" (Record Route Sets), the route sets         -->
   <!-- are saved and used for following messages sent. Useful to test   -->
   <!-- against stateful SIP proxies/B2BUAs.                             -->
-  <recv response="200" rtd="true" crlf="true">
+  <recv response="200" rtd="true" rrs="true">
   </recv>
 
   <!-- Packet lost can be simulated in any send/recv message by         -->
@@ -77,14 +77,14 @@
       Max-Forwards: 70
       Subject: Performance Test
       Content-Length: 0
-
+      [routes]
     ]]>
   </send>
 
   <!-- Play a pre-recorded PCAP file (RTP stream)                       -->
   <nop>
     <action>
-      <exec play_pcap_audio="pcap/g711a.pcap"/>
+      <exec play_pcap_audio="/usr/share/sipp/g711a.pcap"/>
     </action>
   </nop>
 
@@ -95,7 +95,7 @@
   <!-- Play an out of band DTMF '1'                                     -->
   <nop>
     <action>
-      <exec play_pcap_audio="pcap/dtmf_2833_1.pcap"/>
+      <exec play_pcap_audio="/usr/share/sipp/dtmf_2833_1.pcap"/>
     </action>
   </nop>
 
@@ -115,7 +115,7 @@
       Max-Forwards: 70
       Subject: Performance Test
       Content-Length: 0
-
+      [routes]
     ]]>
   </send>
 
