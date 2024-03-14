@@ -11,7 +11,7 @@ module Rayo
         private
 
         def api
-          :uuid_audio_fork_twilio
+          :uuid_audio_fork
         end
 
         def args

@@ -277,11 +277,12 @@ class ExecuteTwiML
     raise connect_verb.errors.full_messages.to_sentence unless connect_verb.valid?
 
     url = connect_verb.noun_attributes.fetch("url")
-    component = Rayo::Component::AudioFork::Start.new(
+
+    component = Rayo::Component::AudioForkTwilio::Start.new(
       uuid: phone_call.id,
       url:,
-      mix_type: "mono",
-      sampling_rate: "16k",
+      accountsid: "aSID",
+      callsid: "cSID",
       # metadata: {foo: "bar"}.to_json
     )
 
@@ -289,6 +290,7 @@ class ExecuteTwiML
     logger.info(url)
     logger.info("-----ABOUT TO EXECUTE AUDIO FORK NEW---------")
     context.execute_component_and_await_completion(component) do
+
       logger.info("--------AUDIO FORK EXECUTED IN BLOCK-----------")
     end
 

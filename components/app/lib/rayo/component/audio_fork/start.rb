@@ -5,8 +5,8 @@ module Rayo
         COMMAND_NAME = "start".freeze
 
         attribute :url
-        attribute :accountsid
-        attribute :callsid
+        attribute :mix_type
+        attribute :sampling_rate
 
         private
 
@@ -15,7 +15,7 @@ module Rayo
         end
 
         def command_args
-          [url, accountsid, callsid]
+          [url, mix_type, sampling_rate]
         end
       end
     end
