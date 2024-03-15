@@ -24,38 +24,67 @@ const wss = new WebSocket.Server({
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 const streamAudio = async (ws) => {
 
-  const chunkMs = 20;
+  const chunkMs = 80;
   const chunkSize = sampleRate * (chunkMs / 1000.0);
 
-  const testWav = new WaveFile(fs.readFileSync("test.wav"));
+  const testWav = new WaveFile(fs.readFileSync("files/taunt.wav"));
   testWav.toSampleRate(sampleRate)
   testWav.toMuLaw();
   const buf = Buffer.from(testWav.data.samples);
   const millis = Date.now();
-  for (let i = 0; i < Math.min(3, buf.length / chunkSize); i++) {
+  for (let i = 0; i < buf.length / chunkSize; i++) {
     const base64Data = buf.subarray(i * chunkSize, (i + 1) * chunkSize).toString('base64');
-    const msg = makeOutboundSample(base64Data, i, millis + i * chunkMs)
-    console.log(msg);
+    const msg = makeOutboundSample(base64Data)
+
     if (ws)
       ws.send(JSON.stringify(msg))
-    await sleep(chunkSize);
+
+    if (i == ((buf.length / chunkSize) / 2)) {
+      if (ws)
+        ws.send(JSON.stringify(makeMark("Play Taunt!")))
+      sleep(20)
+      if (ws)
+        ws.send(JSON.stringify(makeClear()))
+    }
+
+    if (i == Math.floor((buf.length / chunkSize) * 0.75)) {
+      if (ws)
+        ws.send(JSON.stringify(makeMark("Play Taunt!")))
+      sleep(20)
+      if (ws)
+        ws.send(JSON.stringify(makeClear()))
+    }
   }
+
+
 }
 
-const makeOutboundSample = (base64, chunkIndex, timestamp) => {
+const makeOutboundSample = (base64) => {
   return {
     "event": "media",
-    "sequenceNumber": seq++,
     "media": {
-      "track": "outbound",
-      "chunk": chunkIndex + 1,
-      "timestamp": timestamp,
       "payload": base64,
     },
     "streamSid": "MZ18ad3ab5a668481ce02b83e7395059f0"
   }
 }
 
+const makeMark = (name) => {
+  return {
+    "event": "mark",
+    "mark": {
+      "name": name,
+    },
+    "streamSid": "MZ18ad3ab5a668481ce02b83e7395059f0"
+  }
+}
+
+const makeClear = () => {
+  return {
+    "event": "clear",
+    "streamSid": "MZ18ad3ab5a668481ce02b83e7395059f0"
+  }
+}
 
 
 console.log('mod_audio_fork_test server 2 start');
@@ -63,14 +92,13 @@ wss.on("connection", (ws, req) => {
   console.log(`received connection from ${req.connection.remoteAddress}`);
 
   wstream = fs.createWriteStream(recordingPath);
-  //streamAudio(ws);
 
   ws.on("message", (message) => {
     if (typeof message === "string") {
       console.log(`received message <string>: ${message}`);
     } else if (message instanceof Buffer) {
       const strMessage = message.toString();
-     
+
       try {
         const json = JSON.parse(message);
         if (json['event'] === 'media') {
@@ -78,10 +106,18 @@ wss.on("connection", (ws, req) => {
           wstream.write(Buffer.from(b64string, 'base64'))
         } else {
           console.log(`received message: ${strMessage}`);
+
+          const json = JSON.parse(strMessage);
+          if (json.event == "start") {
+            streamAudio(ws);
+          } else if (json.event == "dtmf") {
+
+          }
         }
-      } catch (e) { 
+      } catch (e) {
         console.log(`received message <err>: ${strMessage}`);
-        console.log(e)}
+        console.log(e)
+      }
     }
   });
 
@@ -89,8 +125,4 @@ wss.on("connection", (ws, req) => {
     console.log(`socket closed ${code}:${reason}`);
     wstream.end();
   });
-
-
-
-
 });
