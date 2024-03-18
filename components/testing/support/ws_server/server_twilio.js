@@ -20,10 +20,9 @@ const wss = new WebSocket.Server({
     return "audio.somleng.org";
   },
 });
-
+let streamSid = "";
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 const streamAudio = async (ws) => {
-
   const chunkMs = 80;
   const chunkSize = sampleRate * (chunkMs / 1000.0);
 
@@ -31,7 +30,6 @@ const streamAudio = async (ws) => {
   testWav.toSampleRate(sampleRate)
   testWav.toMuLaw();
   const buf = Buffer.from(testWav.data.samples);
-  const millis = Date.now();
   for (let i = 0; i < buf.length / chunkSize; i++) {
     const base64Data = buf.subarray(i * chunkSize, (i + 1) * chunkSize).toString('base64');
     const msg = makeOutboundSample(base64Data)
@@ -39,6 +37,7 @@ const streamAudio = async (ws) => {
     if (ws)
       ws.send(JSON.stringify(msg))
 
+      /*
     if (i == ((buf.length / chunkSize) / 2)) {
       if (ws)
         ws.send(JSON.stringify(makeMark("Play Taunt!")))
@@ -54,6 +53,7 @@ const streamAudio = async (ws) => {
       if (ws)
         ws.send(JSON.stringify(makeClear()))
     }
+    */
   }
 
 
@@ -65,7 +65,7 @@ const makeOutboundSample = (base64) => {
     "media": {
       "payload": base64,
     },
-    "streamSid": "MZ18ad3ab5a668481ce02b83e7395059f0"
+    "streamSid": streamSid
   }
 }
 
@@ -75,14 +75,14 @@ const makeMark = (name) => {
     "mark": {
       "name": name,
     },
-    "streamSid": "MZ18ad3ab5a668481ce02b83e7395059f0"
+    "streamSid": streamSid
   }
 }
 
 const makeClear = () => {
   return {
     "event": "clear",
-    "streamSid": "MZ18ad3ab5a668481ce02b83e7395059f0"
+    "streamSid": streamSid
   }
 }
 
@@ -109,6 +109,7 @@ wss.on("connection", (ws, req) => {
 
           const json = JSON.parse(strMessage);
           if (json.event == "start") {
+            streamSid = json.streamSid;
             streamAudio(ws);
           } else if (json.event == "dtmf") {
 

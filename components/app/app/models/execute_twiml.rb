@@ -281,9 +281,8 @@ class ExecuteTwiML
     component = Rayo::Component::AudioForkTwilio::Start.new(
       uuid: phone_call.id,
       url:,
-      accountsid: "aSID",
-      callsid: "cSID",
-      # metadata: {foo: "bar"}.to_json
+      accountsid: call_properties.account_sid,
+      callsid: call_properties.call_sid,
     )
 
     logger.info("-----ABOUT TO EXECUTE AUDIO FORK NEW---------")
