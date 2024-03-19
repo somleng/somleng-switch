@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe CallController, type: :call_controller do
-  describe "<Record>", :vcr, cassette: :recording  do
+  describe "<Record>", :vcr, cassette: :recording do
     # From: https://www.twilio.com/docs/api/twiml/record
 
     # The <Record> verb records the caller's voice and returns to you the

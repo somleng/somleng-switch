@@ -25,6 +25,11 @@ module CallPlatform
       keyword_init: true
     )
 
+    AudioStreamResponse = Struct.new(
+      :id,
+      keyword_init: true
+    )
+
     def notify_call_event(params)
       response = http_client.post("/services/phone_call_events", params.to_json)
 
@@ -63,8 +68,15 @@ module CallPlatform
     end
 
     def create_recording(params)
-      json_response = make_request("/services/recordings", params: params)
+      json_response = make_request("/services/recordings", params:)
       RecordingResponse.new(
+        id: json_response.fetch("sid")
+      )
+    end
+
+    def create_audio_stream(params)
+      json_response = make_request("/services/audio_streams", params:)
+      AudioStreamResponse.new(
         id: json_response.fetch("sid")
       )
     end

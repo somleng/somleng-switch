@@ -58,7 +58,7 @@ RSpec.describe CallController, type: :call_controller do
             </Response>
           TWIML
 
-          expect { controller.run }.to raise_error("<Stream> must contain a valid wss 'url' attribute")
+          expect { controller.run }.to raise_error(Errors::TwiMLError, "<Stream> must contain a valid wss 'url' attribute")
         end
       end
 
@@ -74,7 +74,7 @@ RSpec.describe CallController, type: :call_controller do
             </Response>
           TWIML
 
-          expect { controller.run }.to raise_error("<Connect> must contain exactly one of the following nouns: <Stream>")
+          expect { controller.run }.to raise_error(Errors::TwiMLError, "<Connect> must contain exactly one of the following nouns: <Stream>")
         end
       end
     end
