@@ -1,0 +1,2 @@
+Command to build audio:
+gst-launch-1.0 filesrc location=pluck.wav  ! wavparse  ! audioconvert  ! audioresample  ! alawenc  ! audio/x-alaw, rate=8000, channels=1  ! wavenc  ! filesink location=piano2.wav

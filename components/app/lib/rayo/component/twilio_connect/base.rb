@@ -1,6 +1,6 @@
 module Rayo
   module Component
-    module AudioForkTwilio
+    module TwilioConnect
       class Base < Rayo::Component::Execute
         attribute :uuid
         attribute :metadata
@@ -11,7 +11,7 @@ module Rayo
         private
 
         def api
-          :uuid_audio_fork_twilio
+          :uuid_twilio_stream
         end
 
         def args

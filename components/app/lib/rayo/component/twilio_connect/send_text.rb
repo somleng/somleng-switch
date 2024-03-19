@@ -1,6 +1,6 @@
 module Rayo
   module Component
-    module AudioForkTwilio
+    module TwilioConnect
       class SendText < Base
         COMMAND_NAME = "send_text".freeze
 

@@ -20,7 +20,7 @@ module Rayo
             xml = Hash.from_xml(command.to_xml)
 
             expect(xml.fetch("exec")).to include(
-              "api" => "uuid_audio_fork_twilio",
+              "api" => "uuid_twilio_stream",
               "args" => "call-id start wss://mystream.ngrok.io/audiostream asid csid"
             )
           end

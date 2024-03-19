@@ -1,6 +1,6 @@
 module Rayo
   module Command
-    module AudioForkTwilio
+    module TwilioConnect
       class Stop < Base
         COMMAND_NAME = "stop".freeze
 

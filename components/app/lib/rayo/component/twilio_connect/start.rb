@@ -1,12 +1,10 @@
 module Rayo
   module Component
-    module AudioForkTwilio
+    module TwilioConnect
       class Start < Base
         COMMAND_NAME = "start".freeze
 
         attribute :url
-        attribute :accountsid
-        attribute :callsid
 
         private
 
@@ -15,7 +13,7 @@ module Rayo
         end
 
         def command_args
-          [url, accountsid, callsid]
+          [url]
         end
       end
     end

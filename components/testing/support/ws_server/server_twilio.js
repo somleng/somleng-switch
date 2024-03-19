@@ -87,7 +87,6 @@ const makeClear = () => {
 }
 
 
-console.log('mod_audio_fork_test server 2 start');
 wss.on("connection", (ws, req) => {
   console.log(`received connection from ${req.connection.remoteAddress}`);
 
