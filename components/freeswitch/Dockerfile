@@ -11,9 +11,9 @@ RUN apt-get update && apt-get install --no-install-recommends -yq gnupg2 wget ca
     apt-get update --allow-releaseinfo-change && \
     apt-get -y install --no-install-recommends libfreeswitch-dev
 
-COPY mod_twilio_stream /app/mod_twilio_stream
-RUN  mkdir -p /app/mod_twilio_stream/build
-WORKDIR /app/mod_twilio_stream/build
+COPY src/mod/mod_twilio_stream /usr/src/mod_twilio_stream
+RUN  mkdir -p /usr/src/mod_twilio_stream/build
+WORKDIR /usr/src/mod_twilio_stream/build
 RUN cmake ..
 RUN make
 RUN make install
