@@ -34,7 +34,8 @@ add_library(mod_twilio_stream SHARED
         src/audio_pipe.cpp 
         src/lws_glue.cpp
         src/parser.cpp
-        src/twilio_helper.cpp)
+        src/twilio_helper.cpp
+        libs/HtmlCoder/html_coder.cpp)
 
 target_include_directories(
   ${PROJECT_NAME}
@@ -42,6 +43,7 @@ target_include_directories(
   include
   ${FREESWITCH_INCLUDE_DIR}
   libs/lockfree
+  libs/HtmlCoder
 )
 
 target_include_directories(mod_twilio_stream PRIVATE  )
