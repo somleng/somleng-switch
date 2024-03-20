@@ -1,0 +1,3 @@
+[submodule "components/freeswitch/mod_twilio_stream/libs/lockfree"]
+	path = components/freeswitch/mod_twilio_stream/libs/lockfree
+	url = https://github.com/DNedic/lockfree.git

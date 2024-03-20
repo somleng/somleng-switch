@@ -84,7 +84,7 @@
   <!-- Play a pre-recorded PCAP file (RTP stream)                       -->
   <nop>
     <action>
-      <exec play_pcap_audio="/usr/share/sipp/g711a.pcap"/>
+      <exec rtp_stream="/testing/scenarios/files/8kalaw.wav" />
     </action>
   </nop>
 
