@@ -1,4 +1,11 @@
 class ExecuteSay < ExecuteTwiMLVerb
+  attr_reader :tts_event_notifier
+
+  def initialize(verb, **options)
+    super
+    @tts_event_notifier = options.fetch(:tts_event_notifier) { TTSEventNotifier.new }
+  end
+
   def call
     answer!
     notify_tts_event
@@ -19,11 +26,11 @@ class ExecuteSay < ExecuteTwiMLVerb
   end
 
   def notify_tts_event
-    NotifyTTSEventJob.perform_async(
+    tts_event_notifier.notify(
       call_platform_client,
       phone_call: call_properties.call_sid,
       tts_voice: tts_voice.identifier,
-      num_chars: verb.content.length
+      num_chars: verb.content.length * verb.loop.times.size
     )
   end
 end

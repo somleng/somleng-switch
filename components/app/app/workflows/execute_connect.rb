@@ -2,11 +2,9 @@ require_relative "execute_twiml_verb"
 
 class ExecuteConnect < ExecuteTwiMLVerb
   def call
-    raise verb.errors.full_messages.to_sentence unless verb.valid?
-
     answer!
 
-    url = verb.noun_attributes.fetch("url")
+    url = verb.stream_noun.attributes.fetch("url")
     response = create_audio_stream(url:)
 
     component = build_component(response.sid)

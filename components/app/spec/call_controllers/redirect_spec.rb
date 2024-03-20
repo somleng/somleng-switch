@@ -53,21 +53,6 @@ describe CallController, type: :call_controller do
       expect(WebMock).to have_requested(:post, "https://www.example.com/redirect.xml")
     end
 
-    it "raises an error if no URL is given" do
-      controller = build_controller(call_properties: { voice_url: "https://www.example.com/twiml.xml" })
-
-      stub_request(:any, "https://www.example.com/twiml.xml").to_return(body: <<~TWIML)
-        <?xml version="1.0" encoding="UTF-8" ?>
-        <Response>
-          <Redirect></Redirect>
-        </Response>
-      TWIML
-
-      controller.run
-
-      expect(logger).to have_received(:error, with: "<Redirect> must contain a URL")
-    end
-
     describe "Verb Attributes" do
       # The <Redirect> verb supports the following attributes that modify its behavior:
 

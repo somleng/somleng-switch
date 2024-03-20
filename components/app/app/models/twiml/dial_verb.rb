@@ -1,13 +1,52 @@
-require_relative "twiml_verb"
+require_relative "twiml_node"
 
 module TwiML
-  class DialVerb < TwiMLVerb
-    VALID_NOUNS = %w[Number Sip].freeze
+  class DialVerb < TwiMLNode
+    class Parser < TwiML::NodeParser
+      VALID_NOUNS = %w[Number Sip].freeze
 
-    def valid?
-      validate_nested_nouns
+      def parse(node)
+        super.merge(
+          nested_nouns: parse_nested_nouns
+        )
+      end
 
-      errors.empty?
+      private
+
+      def parse_nested_nouns
+        nested_nodes.map do |nested_node|
+          TwiMLNode.parse(nested_node)
+        end
+      end
+
+      def valid?
+        validate_nested_nouns
+        super
+      end
+
+      def validate_nested_nouns
+        return if nested_nodes.all? { |nested_node| VALID_NOUNS.include?(nested_node.name) || nested_node.text? }
+
+        invalid_node = nested_nodes.find { |v| VALID_NOUNS.exclude?(v.name) }
+        errors.add("<#{invalid_node.name}> is not allowed within <Dial>")
+      end
+
+      def nested_nodes
+        node.children
+      end
+    end
+
+    class << self
+      def parse(node)
+        super(node, parser: Parser.new)
+      end
+    end
+
+    attr_reader :nested_nouns
+
+    def initialize(nested_nouns:, **options)
+      super(**options)
+      @nested_nouns = nested_nouns
     end
 
     def action
@@ -22,25 +61,8 @@ module TwiML
       attributes["callerId"]
     end
 
-    def nested_nouns
-      verb.children
-    end
-
     def timeout
       attributes.fetch("timeout", 30).to_i
-    end
-
-    private
-
-    def validate_nested_nouns
-      return if nested_nouns.all? { |nested_noun| VALID_NOUNS.include?(nested_noun.name) || nested_noun.text? }
-
-      invalid_noun = nested_nouns.find { |v| VALID_NOUNS.exclude?(v.name) }
-      errors.add("<#{invalid_noun.name}> is not allowed within <Dial>")
-    end
-
-    def attributes
-      super(verb)
     end
   end
 end

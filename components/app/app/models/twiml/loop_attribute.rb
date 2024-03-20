@@ -1,6 +1,6 @@
 module TwiML
   class LoopAttribute
-    MAX_LOOP = 100
+    MAX_LOOP = 1000
 
     attr_reader :value
 

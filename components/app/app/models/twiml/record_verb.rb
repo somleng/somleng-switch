@@ -1,7 +1,7 @@
-require_relative "twiml_verb"
+require_relative "twiml_node"
 
 module TwiML
-  class RecordVerb < TwiMLVerb
+  class RecordVerb < TwiMLNode
     def action
       attributes["action"]
     end
@@ -32,12 +32,6 @@ module TwiML
 
     def finish_on_key
       attributes.fetch("finishOnKey", "1234567890*#")
-    end
-
-    private
-
-    def attributes
-      super(verb)
     end
   end
 end

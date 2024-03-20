@@ -10,8 +10,6 @@ class ExecuteDial < ExecuteTwiMLVerb
   }.freeze
 
   def call
-    raise verb.errors.full_messages.to_sentence unless verb.valid?
-
     answer!
     dial_status = context.dial(build_dial_strings)
     return if verb.action.blank?

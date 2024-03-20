@@ -1,8 +1,8 @@
-require_relative "twiml_verb"
+require_relative "twiml_node"
 require_relative "loop_attribute"
 
 module TwiML
-  class SayVerb < TwiMLVerb
+  class SayVerb < TwiMLNode
     def loop
       LoopAttribute.new(attributes["loop"])
     end
@@ -13,12 +13,6 @@ module TwiML
 
     def language
       attributes["language"]
-    end
-
-    private
-
-    def attributes
-      super(verb)
     end
   end
 end

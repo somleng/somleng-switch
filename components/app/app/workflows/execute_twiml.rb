@@ -15,24 +15,24 @@ class ExecuteTwiML < ApplicationWorkflow
 
         case verb.name
         when "Reject"
-          ExecuteReject.call(TwiML::RejectVerb.new(verb), **options)
+          ExecuteReject.call(TwiML::RejectVerb.parse(verb), **options)
           break
         when "Play"
-          ExecutePlay.call(TwiML::PlayVerb.new(verb), **options)
+          ExecutePlay.call(TwiML::PlayVerb.parse(verb), **options)
         when "Gather"
-          ExecuteGather.call(TwiML::GatherVerb.new(verb), **options)
+          ExecuteGather.call(TwiML::GatherVerb.parse(verb), **options)
         when "Redirect"
-          ExecuteRedirect.call(TwiML::RedirectVerb.new(verb), **options)
+          ExecuteRedirect.call(TwiML::RedirectVerb.parse(verb), **options)
         when "Say"
-          ExecuteSay.call(TwiML::SayVerb.new(verb), **options)
+          ExecuteSay.call(TwiML::SayVerb.parse(verb), **options)
         when "Dial"
-          ExecuteDial.call(TwiML::DialVerb.new(verb), **options)
+          ExecuteDial.call(TwiML::DialVerb.parse(verb), **options)
         when "Hangup"
           break
         when "Record"
-          ExecuteRecord.call(TwiML::RecordVerb.new(verb), **options)
+          ExecuteRecord.call(TwiML::RecordVerb.parse(verb), **options)
         when "Connect"
-          ExecuteConnect.call(TwiML::ConnectVerb.new(verb), **options)
+          ExecuteConnect.call(TwiML::ConnectVerb.parse(verb), **options)
         else
           raise(Errors::TwiMLError, "Invalid element <#{verb.name}>")
         end

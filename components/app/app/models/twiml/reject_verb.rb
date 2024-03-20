@@ -1,15 +1,9 @@
-require_relative "twiml_verb"
+require_relative "twiml_node"
 
 module TwiML
-  class RejectVerb < TwiMLVerb
+  class RejectVerb < TwiMLNode
     def reason
       attributes["reason"]
-    end
-
-    private
-
-    def attributes
-      super(verb)
     end
   end
 end

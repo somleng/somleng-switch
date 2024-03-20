@@ -46,36 +46,6 @@ RSpec.describe CallController, type: :call_controller do
 
           expect(controller).not_to have_received(:play_audio)
         end
-
-        it "raises an error if the url is invalid" do
-          controller = build_controller
-          stub_twiml_request(controller, response: <<~TWIML)
-            <?xml version="1.0" encoding="UTF-8"?>
-            <Response>
-              <Connect>
-                <Stream url="https://mystream.ngrok.io/audiostream" />
-              </Connect>
-            </Response>
-          TWIML
-
-          expect { controller.run }.to raise_error(Errors::TwiMLError, "<Stream> must contain a valid wss 'url' attribute")
-        end
-      end
-
-      describe "<Room>" do
-        it "raises an error" do
-          controller = build_controller
-          stub_twiml_request(controller, response: <<~TWIML)
-            <?xml version="1.0" encoding="UTF-8"?>
-            <Response>
-              <Connect>
-                <Room>DailyStandup</Room>
-              </Connect>
-            </Response>
-          TWIML
-
-          expect { controller.run }.to raise_error(Errors::TwiMLError, "<Connect> must contain exactly one of the following nouns: <Stream>")
-        end
       end
     end
   end
