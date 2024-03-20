@@ -39,10 +39,6 @@ module TwiML
         invalid_node = nested_nodes.find { |v| VALID_NESTED_VERBS.exclude?(v.name) }
         errors.add("<#{invalid_node.name}> is not allowed within <Gather>")
       end
-
-      def nested_nodes
-        node.children
-      end
     end
 
     class << self

@@ -28,5 +28,9 @@ module TwiML
     def valid?
       errors.empty?
     end
+
+    def nested_nodes
+      node.children.reject(&:comment?)
+    end
   end
 end

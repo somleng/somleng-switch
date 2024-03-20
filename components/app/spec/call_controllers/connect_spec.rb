@@ -32,7 +32,6 @@ RSpec.describe CallController, type: :call_controller do
 
         it "connects to a websockets stream" do
           controller = build_controller(
-            stub_voice_commands: :play_audio,
             call_properties: {
               call_sid: "6f362591-ab86-4d1a-b39b-40c87e7929fc"
             }
@@ -45,7 +44,6 @@ RSpec.describe CallController, type: :call_controller do
               <Connect>
                 <Stream url="wss://mystream.ngrok.io/audiostream" />
               </Connect>
-              <Play>http://api.twilio.com/cowbell.mp3</Play>
             </Response>
           TWIML
 
@@ -61,7 +59,41 @@ RSpec.describe CallController, type: :call_controller do
               "stream_sid" => be_present
             )
           end
-          expect(controller).not_to have_received(:play_audio)
+        end
+
+        it "handles custom parameters" do
+          controller = build_controller(
+            stub_voice_commands: :play_audio,
+            call_properties: {
+              call_sid: "6f362591-ab86-4d1a-b39b-40c87e7929fc"
+            }
+          )
+          allow(controller).to receive(:execute_component_and_await_completion).and_raise(Adhearsion::Call::Hangup)
+
+          stub_twiml_request(controller, response: <<~TWIML)
+            <Response>
+              <Play>https://api.twilio.com/cowbell.mp3</Play>
+              <Connect>
+                <Stream url="wss://mystream.ngrok.io/audiostream">
+                  <Parameter name="aCustomParameter" value="aCustomValue that was set in TwiML" />
+                  <Parameter name="bCustomParameter" value="bCustomValue that was set in TwiML" />
+                </Stream>
+              </Connect>
+            </Response>
+          TWIML
+
+          expect { controller.run }.to raise_error(Adhearsion::Call::Hangup)
+
+          expect(controller).to have_received(:play_audio).with("https://api.twilio.com/cowbell.mp3")
+          expect(controller).to have_received(:execute_component_and_await_completion) do |component|
+            metadata = JSON.parse(component.metadata)
+            expect(metadata).to include(
+              "custom_parameters" => {
+                "aCustomParameter" => "aCustomValue that was set in TwiML",
+                "bCustomParameter" => "bCustomValue that was set in TwiML"
+              }
+            )
+          end
         end
       end
     end

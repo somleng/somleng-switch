@@ -30,10 +30,6 @@ module TwiML
         invalid_node = nested_nodes.find { |v| VALID_NOUNS.exclude?(v.name) }
         errors.add("<#{invalid_node.name}> is not allowed within <Dial>")
       end
-
-      def nested_nodes
-        node.children
-      end
     end
 
     class << self
