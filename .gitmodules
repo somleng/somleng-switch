@@ -1,3 +1,9 @@
 [submodule "components/freeswitch/mod_twilio_stream/libs/lockfree"]
 	path = components/freeswitch/mod_twilio_stream/libs/lockfree
 	url = https://github.com/DNedic/lockfree.git
+[submodule "components/freeswitch/src/mod/mod_twilio_stream/libs/HtmlCoder"]
+	path = components/freeswitch/src/mod/mod_twilio_stream/libs/HtmlCoder
+	url = https://github.com/freshe/fb.HtmlCoder.git
+[submodule "components/freeswitch/src/mod/mod_twilio_stream/libs/lockfree"]
+	path = components/freeswitch/src/mod/mod_twilio_stream/libs/lockfree
+	url = https://github.com/DNedic/lockfree.git
