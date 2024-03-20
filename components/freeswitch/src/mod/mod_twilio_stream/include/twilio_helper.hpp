@@ -32,10 +32,6 @@ public:
 private:
   unsigned int get_incr_seq_num();
   unsigned int get_incr_chunk_num(bool inbound);
-  void replace_all(
-      std::string &s,
-      std::string const &toReplace,
-      std::string const &replaceWith);
 
   unsigned int m_seq_num = 1;
   unsigned int m_chunk_num[2] = {1, 1}; // inbound, outbound
@@ -45,6 +41,7 @@ private:
   std::string m_account_sid;
   std::string m_call_sid;
   std::string m_stream_sid;
+  std::string m_custom_parameters;
 
   bool m_isstart;
   bool m_isstop;
