@@ -43,6 +43,10 @@ module CallPlatform
       )
     end
 
+    def create_audio_stream(**)
+      AudioStreamResponse.new(id: SecureRandom.uuid)
+    end
+
     private
 
     def validate_gateway_headers(params)

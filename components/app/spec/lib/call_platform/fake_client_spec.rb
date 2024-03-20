@@ -46,5 +46,20 @@ module CallPlatform
         )
       end
     end
+
+    describe "#create_audio_stream" do
+      it "returns a mock audio stream" do
+        client = FakeClient.new
+
+        response = client.create_audio_stream(
+          url: "wss://example.com/audio",
+          phone_call_id: "phone-call-id"
+        )
+
+        expect(response).to have_attributes(
+          id: be_present
+        )
+      end
+    end
   end
 end
