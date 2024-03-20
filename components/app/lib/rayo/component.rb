@@ -4,4 +4,4 @@ module Rayo
 end
 
 require_relative "component/execute"
-require_relative "component/audio_fork"
+require_relative "component/twilio_stream"

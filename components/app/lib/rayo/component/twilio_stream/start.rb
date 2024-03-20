@@ -1,12 +1,10 @@
 module Rayo
-  module Command
-    module AudioFork
+  module Component
+    module TwilioStream
       class Start < Base
         COMMAND_NAME = "start".freeze
 
         attribute :url
-        attribute :mix_type
-        attribute :sampling_rate
 
         private
 
@@ -15,7 +13,7 @@ module Rayo
         end
 
         def command_args
-          [url, mix_type, sampling_rate]
+          [url]
         end
       end
     end

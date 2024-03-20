@@ -19,7 +19,7 @@
     <load module="mod_dptools"/>
     <load module="mod_httapi"/>
     <load module="mod_http_cache"/>
-    <load module="mod_audio_fork"/>
+    <load module="mod_twilio_stream"/>
 
     <!-- File Format Interfaces -->
     <load module="mod_sndfile"/>

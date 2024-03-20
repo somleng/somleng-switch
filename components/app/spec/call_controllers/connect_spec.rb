@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe CallController, type: :call_controller do
-  describe "<Connect>" do
+  describe "<Connect>", :vcr, cassette: :audio_stream do
     # From: https://www.twilio.com/docs/voice/twiml/connect
 
     # <Connect> is a TwiML verb that works together with nested TwiML nouns to connect
@@ -31,7 +31,14 @@ RSpec.describe CallController, type: :call_controller do
         # The <Stream> noun's url attribute must be set to a secure websocket server (wss).
 
         it "connects to a websockets stream" do
-          controller = build_controller
+          controller = build_controller(
+            stub_voice_commands: :play_audio,
+            call_properties: {
+              call_sid: "6f362591-ab86-4d1a-b39b-40c87e7929fc"
+            }
+          )
+          allow(controller).to receive(:execute_component_and_await_completion).and_raise(Adhearsion::Call::Hangup)
+
           stub_twiml_request(controller, response: <<~TWIML)
             <?xml version="1.0" encoding="UTF-8"?>
             <Response>
@@ -42,8 +49,18 @@ RSpec.describe CallController, type: :call_controller do
             </Response>
           TWIML
 
-          controller.run
+          expect { controller.run }.to raise_error(Adhearsion::Call::Hangup)
 
+          expect(controller).to have_received(:execute_component_and_await_completion) do |component|
+            expect(component.uuid).to eq(controller.call.id)
+            expect(component.url).to eq("wss://mystream.ngrok.io/audiostream")
+            metadata = JSON.parse(component.metadata)
+            expect(metadata).to include(
+              "call_sid" => controller.call_properties.call_sid,
+              "account_sid" => controller.call_properties.account_sid,
+              "stream_sid" => be_present
+            )
+          end
           expect(controller).not_to have_received(:play_audio)
         end
       end

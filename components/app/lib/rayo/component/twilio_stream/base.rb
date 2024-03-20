@@ -1,7 +1,7 @@
 module Rayo
-  module Command
-    module AudioFork
-      class Base < Adhearsion::Rayo::Command::Execute
+  module Component
+    module TwilioStream
+      class Base < Rayo::Component::Execute
         attribute :uuid
         attribute :metadata
 
@@ -11,7 +11,7 @@ module Rayo
         private
 
         def api
-          :uuid_audio_fork
+          :uuid_twilio_stream
         end
 
         def args
