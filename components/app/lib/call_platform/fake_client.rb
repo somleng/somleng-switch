@@ -8,7 +8,16 @@ module CallPlatform
 
     class ConnectTestNumber < TestNumber
       def twiml_response
-        "<Response><Connect><Stream url=\"#{wss_server_url}\" /></Connect></Response>"
+        "
+        <Response>
+          <Connect>
+            <!-- This is a comment -->
+            <Stream url=\"#{wss_server_url}\">
+              <Parameter name=\"aCustomParameter\" value=\"aCustomValue that was set in TwiML\" />
+            </Stream>
+          </Connect>
+        </Response>
+        "
       end
 
       private

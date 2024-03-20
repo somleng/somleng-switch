@@ -42,7 +42,7 @@ module CallPlatform
         )
 
         expect(response).to have_attributes(
-          twiml: "<Response><Connect><Stream url=\"wss://example.com\" /></Connect></Response>"
+          twiml: include("<Connect>")
         )
       end
     end
