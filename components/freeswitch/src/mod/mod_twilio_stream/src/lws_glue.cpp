@@ -148,13 +148,6 @@ namespace
             AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
             TwilioHelper *pTwilioHelper = static_cast<TwilioHelper *>(tech_pvt->pTwilioHelper);
             pTwilioHelper->connect(pAudioPipe);
-
-            if (strlen(tech_pvt->initialMetadata) > 0)
-            {
-              switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_DEBUG, "sending initial metadata %s\n", tech_pvt->initialMetadata);
-              AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
-              pAudioPipe->bufferForSending(tech_pvt->initialMetadata);
-            }
             pTwilioHelper->start(pAudioPipe);
           }
           else if (event == AudioPipe::CONNECT_FAIL)
@@ -236,7 +229,7 @@ namespace
 
     tech_pvt->pAudioPipe = static_cast<void *>(ap);
 
-    TwilioHelper *th = new TwilioHelper(metadata);
+      TwilioHelper *th = new TwilioHelper(metadata);
     if (!th)
     {
       switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_ERROR, "Error allocating TwilioHelper\n");

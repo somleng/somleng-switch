@@ -23,7 +23,6 @@
 #define EVENT_BUFFER_OVERRUN  "mod_twilio_stream::buffer_overrun"
 #define EVENT_JSON            "mod_twilio_stream::json"
 
-#define MAX_METADATA_LEN (8192)
 #define BUG_NAME "__mod_twilio_stream"
 
 struct playout {
@@ -52,7 +51,6 @@ struct private_data {
   int buffer_overrun_notified:1;
   int audio_paused:1;
   int graceful_shutdown:1;
-  char initialMetadata[8192];
 };
 
 typedef struct private_data private_t;

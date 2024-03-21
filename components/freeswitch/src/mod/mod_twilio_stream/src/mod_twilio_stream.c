@@ -177,7 +177,7 @@ static switch_status_t do_graceful_shutdown(switch_core_session_t *session, cons
 #define FORK_API_SYNTAX "<uuid> [start | stop | pause | resume | graceful-shutdown ] [wss-url | path] [metadata]"
 SWITCH_STANDARD_API(fork_function)
 {
-	char *mycmd = NULL, *argv[7] = {0};
+	char *mycmd = NULL, *argv[4] = {0};
 	int argc = 0;
 	switch_status_t status = SWITCH_STATUS_FALSE;
 	const char *bugname = BUG_NAME;

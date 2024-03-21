@@ -7,18 +7,56 @@
 #include "g711.h"
 #include "base64.hpp"
 
+#include "html_coder.hpp"
+#include "lockfree/lockfree.hpp"
+
 using namespace std::chrono;
 
 TwilioHelper::TwilioHelper(const char *config)
 {
   std::string parsedConfig = std::string(config);
-  replace_all(parsedConfig, "&quot;", "\"");
-  lwsl_notice("TwilioHelper:: CONFIG %s\n", parsedConfig.c_str());
+  fb::HtmlCoder html_decoder;
+  html_decoder.decode(parsedConfig);
+
+  lwsl_notice("TH::%s\n", parsedConfig.c_str());
 
   cJSON *json = cJSON_Parse(parsedConfig.c_str());
-  m_call_sid = std::string(cJSON_GetObjectCstr(json, "call_sid"));
-  m_account_sid = std::string(cJSON_GetObjectCstr(json, "account_sid"));
-  m_stream_sid = std::string(cJSON_GetObjectCstr(json, "stream_sid"));
+  if (json)
+  {
+    auto call_sid = cJSON_GetObjectCstr(json, "call_sid");
+    if (call_sid)
+      m_call_sid = std::string(call_sid);
+    auto account_sid = cJSON_GetObjectCstr(json, "account_sid");
+    if (account_sid)
+      m_account_sid = std::string(account_sid);
+    auto stream_sid = cJSON_GetObjectCstr(json, "stream_sid");
+    if (stream_sid)
+      m_stream_sid = std::string(stream_sid);
+
+    auto customParameters = cJSON_GetObjectItem(json, "custom_parameters");
+    if (customParameters)
+    {
+      auto customParametersFormat = cJSON_PrintUnformatted(customParameters);
+      if (customParametersFormat)
+      {
+        m_custom_parameters = std::string(customParametersFormat);
+        free(customParametersFormat);
+      }
+      else
+      {
+        lwsl_notice("TwilioHelper:: Unable to process custom properties sub %s\n", parsedConfig.c_str());
+      }
+    }
+    else
+    {
+      lwsl_notice("TwilioHelper:: Unable to process custom properties %s\n", parsedConfig.c_str());
+    }
+    cJSON_Delete(json);
+  }
+  else
+  {
+    lwsl_notice("TwilioHelper:: Unable to process metadata %s\n", parsedConfig.c_str());
+  }
 
   m_isstart = true;
   m_isstop = false;
@@ -58,6 +96,11 @@ void TwilioHelper::start(AudioPipe *pAudioPipe)
   json << R"("encoding": "audio/x-mulaw",)";
   json << R"("sampleRate": 8000,)";
   json << R"("channels": 1}},)";
+  if (!m_custom_parameters.empty())
+  {
+    json << R"("customParameters": )" << m_custom_parameters << ",";
+  }
+
   json << R"("streamSid": ")" << m_stream_sid << "\"}";
 
   pAudioPipe->bufferForSending(json.str().c_str());
@@ -163,32 +206,4 @@ unsigned int TwilioHelper::get_incr_chunk_num(bool inbound)
   std::lock_guard<std::mutex> lk(m_seq_mutex);
   auto chunk = m_chunk_num[inbound ? 0 : 1]++;
   return chunk;
-}
-
-// From https://stackoverflow.com/questions/5878775/how-to-find-and-replace-string
-void TwilioHelper::replace_all(
-    std::string &s,
-    std::string const &toReplace,
-    std::string const &replaceWith)
-{
-  std::string buf;
-  std::size_t pos = 0;
-  std::size_t prevPos;
-
-  // Reserves rough estimate of final size of string.
-  buf.reserve(s.size());
-
-  while (true)
-  {
-    prevPos = pos;
-    pos = s.find(toReplace, pos);
-    if (pos == std::string::npos)
-      break;
-    buf.append(s, prevPos, pos - prevPos);
-    buf += replaceWith;
-    pos += toReplace.size();
-  }
-
-  buf.append(s, prevPos, s.size() - prevPos);
-  s.swap(buf);
 }
