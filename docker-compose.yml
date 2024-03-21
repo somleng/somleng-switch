@@ -143,3 +143,11 @@ services:
     volumes:
       - workspace:/workspace
       - opensips_fifo:/opensips/fifo
+
+  freeswitch_event_logger:
+    build:
+      context: components/freeswitch_event_logger
+    image: freeswitch_event_logger:latest
+    environment:
+      EVENT_SOCKET_HOST: freeswitch:8021
+      EVENT_SOCKET_PASSWORD: secret

@@ -21,12 +21,12 @@ class ExecuteConnect < ExecuteTwiMLVerb
     Rayo::Component::TwilioStream::Start.new(
       uuid: phone_call.id,
       url:,
-      metadata: {
+      metadata: Base64.urlsafe_encode64({
         call_sid: call_properties.call_sid,
         account_sid: call_properties.account_sid,
         stream_sid:,
         custom_parameters:
-      }.to_json
+      }.to_json)
     )
   end
 end
