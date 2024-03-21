@@ -255,7 +255,7 @@ namespace
 
     tech_pvt->pAudioPipe = static_cast<void *>(ap);
 
-      TwilioHelper *th = new TwilioHelper(metadata);
+    TwilioHelper *th = new TwilioHelper(metadata);
     if (!th)
     {
       switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_ERROR, "Error allocating TwilioHelper\n");
