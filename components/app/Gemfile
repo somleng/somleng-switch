@@ -4,11 +4,13 @@ gem "adhearsion", github: "somleng/adhearsion", branch: "develop"
 gem "aws-sdk-lambda"
 gem "aws-sdk-polly"
 gem "blather", github: "adhearsion/blather", branch: "develop"
+gem "connection_pool"
 gem "faraday"
 gem "http"
 gem "okcomputer"
 gem "phony"
 gem "rackup"
+gem "redis"
 gem "reel", github: "somleng/reel", branch: "develop"
 gem "reel-rack", github: "somleng/reel-rack", branch: "develop"
 gem "sentry-ruby"
@@ -25,6 +27,7 @@ group :development, :test do
 end
 
 group :test do
+  gem "mock_redis"
   gem "rack-test"
   gem "rspec"
   gem "simplecov", require: false

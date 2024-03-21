@@ -1,6 +1,30 @@
 require "spec_helper"
 
 RSpec.describe CallController, type: :call_controller do
+  # stream_sid from VCR Cassette
+  def stub_twilio_stream(controller, with_events: [], stream_sid: "393a227f-0602-4024-b38a-dcbbeed4d5a0")
+    allow(controller).to receive(:write_and_await_response) do
+      AppSettings.redis.with do |redis|
+        build_twilio_stream_events(Array(with_events)).each do |event|
+          redis.publish_later("twilio-stream:#{stream_sid}", event.to_json)
+        end
+      end
+    end
+  end
+
+  def assert_twilio_stream(controller, &)
+    expect(controller).to have_received(:write_and_await_response, &)
+  end
+
+  def build_twilio_stream_events(events)
+    result = [
+      { event: "connected" },
+      { event: "start" }
+    ]
+    result.concat(Array(events))
+    result.push({ event: "closed" })
+  end
+
   describe "<Connect>", :vcr, cassette: :audio_stream do
     # From: https://www.twilio.com/docs/voice/twiml/connect
 
@@ -36,8 +60,7 @@ RSpec.describe CallController, type: :call_controller do
               call_sid: "6f362591-ab86-4d1a-b39b-40c87e7929fc"
             }
           )
-          allow(controller).to receive(:execute_component_and_await_completion).and_raise(Adhearsion::Call::Hangup)
-
+          stub_twilio_stream(controller)
           stub_twiml_request(controller, response: <<~TWIML)
             <?xml version="1.0" encoding="UTF-8"?>
             <Response>
@@ -47,12 +70,12 @@ RSpec.describe CallController, type: :call_controller do
             </Response>
           TWIML
 
-          expect { controller.run }.to raise_error(Adhearsion::Call::Hangup)
+          controller.run
 
-          expect(controller).to have_received(:execute_component_and_await_completion) do |component|
-            expect(component.uuid).to eq(controller.call.id)
-            expect(component.url).to eq("wss://mystream.ngrok.io/audiostream")
-            metadata = JSON.parse(component.metadata)
+          assert_twilio_stream(controller) do |command|
+            expect(command.uuid).to eq(controller.call.id)
+            expect(command.url).to eq("wss://mystream.ngrok.io/audiostream")
+            metadata = JSON.parse(command.metadata)
             expect(metadata).to include(
               "call_sid" => controller.call_properties.call_sid,
               "account_sid" => controller.call_properties.account_sid,
@@ -68,11 +91,9 @@ RSpec.describe CallController, type: :call_controller do
               call_sid: "6f362591-ab86-4d1a-b39b-40c87e7929fc"
             }
           )
-          allow(controller).to receive(:execute_component_and_await_completion).and_raise(Adhearsion::Call::Hangup)
-
+          stub_twilio_stream(controller)
           stub_twiml_request(controller, response: <<~TWIML)
             <Response>
-              <Play>https://api.twilio.com/cowbell.mp3</Play>
               <Connect>
                 <Stream url="wss://mystream.ngrok.io/audiostream">
                   <Parameter name="aCustomParameter" value="aCustomValue that was set in TwiML" />
@@ -82,11 +103,10 @@ RSpec.describe CallController, type: :call_controller do
             </Response>
           TWIML
 
-          expect { controller.run }.to raise_error(Adhearsion::Call::Hangup)
+          controller.run
 
-          expect(controller).to have_received(:play_audio).with("https://api.twilio.com/cowbell.mp3")
-          expect(controller).to have_received(:execute_component_and_await_completion) do |component|
-            metadata = JSON.parse(component.metadata)
+          assert_twilio_stream(controller) do |command|
+            metadata = JSON.parse(command.metadata)
             expect(metadata).to include(
               "custom_parameters" => {
                 "aCustomParameter" => "aCustomValue that was set in TwiML",

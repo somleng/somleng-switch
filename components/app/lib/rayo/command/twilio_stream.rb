@@ -1,5 +1,5 @@
 module Rayo
-  module Component
+  module Command
     module TwilioStream
     end
   end

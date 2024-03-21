@@ -1,7 +1,7 @@
 require "spec_helper"
 
 module Rayo
-  module Component
+  module Command
     module TwilioStream
       RSpec.describe Start do
         def parse_stanza(xml)

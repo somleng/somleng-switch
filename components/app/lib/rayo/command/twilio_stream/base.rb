@@ -1,12 +1,9 @@
 module Rayo
-  module Component
+  module Command
     module TwilioStream
-      class Base < Rayo::Component::Execute
+      class Base < Adhearsion::Rayo::Command::Execute
         attribute :uuid
         attribute :metadata
-
-        def domain; end
-        def target_call_id; end
 
         private
 

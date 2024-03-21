@@ -1,4 +1,4 @@
 module Rayo
 end
 
-require_relative "rayo/component"
+require_relative "rayo/command"

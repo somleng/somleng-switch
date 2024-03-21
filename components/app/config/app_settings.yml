@@ -8,6 +8,8 @@ default: &default
   call_platform_host: <%= ENV.fetch('CALL_PLATFORM_HOST') { "http://api.lvh.me:3000" } %>
   call_platform_username: "services"
   call_platform_password: "password"
+  redis_url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } %>
+  redis_pool_size: <%= ENV.fetch('DB_POOL') { 5 } %>
   services_function_arn: <%= ENV.fetch('SERVICES_FUNCTION_ARN') { "arn:aws:lambda:ap-southeast-1:12345:function:function-name" } %>
 
 production: &production

@@ -1,5 +1,5 @@
 module Rayo
-  module Component
+  module Command
     module TwilioStream
       class Start < Base
         COMMAND_NAME = "start".freeze
