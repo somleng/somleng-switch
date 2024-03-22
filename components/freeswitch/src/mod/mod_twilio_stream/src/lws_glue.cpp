@@ -34,6 +34,24 @@ namespace
   static unsigned int idxCallCount = 0;
   static uint32_t playCount = 0;
 
+  void send_event(private_t *tech_pvt, switch_core_session_t *session, const char *eventName, const char *json)
+  {
+    if (session && tech_pvt)
+    {
+      if (tech_pvt->pTwilioHelper)
+      {
+        TwilioHelper *pTwilioHelper = static_cast<TwilioHelper *>(tech_pvt->pTwilioHelper);
+        auto wrappedEvent = pTwilioHelper->wrapEvent(eventName, json);
+        switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_NOTICE, "send_event: %s\n", wrappedEvent.c_str());
+        tech_pvt->responseHandler(session, eventName, wrappedEvent.c_str());
+      }
+      else
+      {
+        tech_pvt->responseHandler(session, eventName, json);
+      }
+    }
+  }
+
   void processIncomingMessage(private_t *tech_pvt, switch_core_session_t *session, const char *message)
   {
     std::string msg = message;
@@ -93,8 +111,10 @@ namespace
                   pAudioPipe->binaryReadMark(name);
                   pAudioPipe->unlockAudioBuffer();
                 }
+                send_event(tech_pvt, session, EVENT_SOCKET_MARK, name);
               }
             }
+            
           }
           else if (0 == type.compare("clear"))
           {
@@ -106,10 +126,13 @@ namespace
               pAudioPipe->binaryReadClear();
               auto marks = pAudioPipe->clearExpiredMarks();
               for (int i = 0; i < marks.size(); i++)
+              {
                 pTwilioHelper->mark(pAudioPipe, marks[i]);
-
+                send_event(tech_pvt, session, EVENT_MARK, marks[i].c_str());
+              }
               pAudioPipe->unlockAudioBuffer();
             }
+            send_event(tech_pvt, session, EVENT_SOCKET_CLEAR, NULL);
           }
           else
           {
@@ -143,34 +166,36 @@ namespace
           if (event == AudioPipe::CONNECT_SUCCESS)
           {
             switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_INFO, "connection successful\n");
-            tech_pvt->responseHandler(session, EVENT_CONNECT_SUCCESS, NULL);
 
             AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
             TwilioHelper *pTwilioHelper = static_cast<TwilioHelper *>(tech_pvt->pTwilioHelper);
             pTwilioHelper->connect(pAudioPipe);
+            send_event(tech_pvt, session, EVENT_CONNECT_SUCCESS, NULL);
             pTwilioHelper->start(pAudioPipe);
+            send_event(tech_pvt, session, EVENT_START, NULL);
           }
           else if (event == AudioPipe::CONNECT_FAIL)
           {
             // first thing: we can no longer access the AudioPipe
             std::stringstream json;
             json << "{\"reason\":\"" << message << "\"}";
+            send_event(tech_pvt, session, EVENT_CONNECT_FAIL, (char *)json.str().c_str());
             tech_pvt->pAudioPipe = nullptr;
             tech_pvt->pTwilioHelper = nullptr;
-            tech_pvt->responseHandler(session, EVENT_CONNECT_FAIL, (char *)json.str().c_str());
             switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_NOTICE, "connection failed: %s\n", message);
           }
           else if (event == AudioPipe::CONNECTION_DROPPED)
           {
             // first thing: we can no longer access the AudioPipe
+            send_event(tech_pvt, session, EVENT_DISCONNECT, NULL);
             tech_pvt->pAudioPipe = nullptr;
             tech_pvt->pTwilioHelper = nullptr;
-            tech_pvt->responseHandler(session, EVENT_DISCONNECT, NULL);
             switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_NOTICE, "connection dropped from far end\n");
           }
           else if (event == AudioPipe::CONNECTION_CLOSED_GRACEFULLY)
           {
             // first thing: we can no longer access the AudioPipe
+            send_event(tech_pvt, session, EVENT_DISCONNECT, NULL);
             tech_pvt->pAudioPipe = nullptr;
             tech_pvt->pTwilioHelper = nullptr;
             switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_DEBUG, "connection closed gracefully\n");
@@ -184,6 +209,7 @@ namespace
       switch_core_session_rwunlock(session);
     }
   }
+
   switch_status_t fork_data_init(private_t *tech_pvt, switch_core_session_t *session, char *host,
                                  unsigned int port, char *path, int sslFlags, int sampling, int desiredSampling, int channels,
                                  char *metadata, const char *bugname, responseHandler_t responseHandler)
@@ -229,7 +255,7 @@ namespace
 
     tech_pvt->pAudioPipe = static_cast<void *>(ap);
 
-      TwilioHelper *th = new TwilioHelper(metadata);
+    TwilioHelper *th = new TwilioHelper(metadata);
     if (!th)
     {
       switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_ERROR, "Error allocating TwilioHelper\n");
@@ -507,6 +533,7 @@ extern "C"
     if (pAudioPipe && pTwilioHelper)
     {
       pTwilioHelper->stop(pAudioPipe);
+      send_event(tech_pvt, session, EVENT_DISCONNECT, NULL);
     }
 
     if (pAudioPipe)
@@ -536,6 +563,7 @@ extern "C"
     AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
     TwilioHelper *pTwilioHelper = static_cast<TwilioHelper *>(tech_pvt->pTwilioHelper);
     pTwilioHelper->dtmf(pAudioPipe, match_digits);
+    send_event(tech_pvt, session, EVENT_DTMF, match_digits);
 
     return SWITCH_STATUS_SUCCESS;
   }
@@ -584,6 +612,7 @@ extern "C"
     if (pAudioPipe && pTwilioHelper)
     {
       pTwilioHelper->stop(pAudioPipe);
+      send_event(tech_pvt, session, EVENT_DISCONNECT, NULL);
     }
     if (pAudioPipe)
       pAudioPipe->do_graceful_shutdown();
@@ -632,7 +661,7 @@ extern "C"
             if (!tech_pvt->buffer_overrun_notified)
             {
               tech_pvt->buffer_overrun_notified = 1;
-              tech_pvt->responseHandler(session, EVENT_BUFFER_OVERRUN, NULL);
+              send_event(tech_pvt, session, EVENT_BUFFER_OVERRUN, NULL);
             }
             switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_ERROR, "(%u) dropping packets!\n",
                               tech_pvt->id);
@@ -690,7 +719,7 @@ extern "C"
                 tech_pvt->buffer_overrun_notified = 1;
                 switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_ERROR, "(%u) dropping packets!\n",
                                   tech_pvt->id);
-                tech_pvt->responseHandler(session, EVENT_BUFFER_OVERRUN, NULL);
+                send_event(tech_pvt, session, EVENT_BUFFER_OVERRUN, NULL);
               }
               break;
             }
@@ -747,7 +776,10 @@ extern "C"
           {
             auto marks = pAudioPipe->clearExpiredMarks();
             for (int i = 0; i < marks.size(); i++)
+            {
               pTwilioHelper->mark(pAudioPipe, marks[i]);
+              send_event(tech_pvt, session, EVENT_MARK, marks[i].c_str());
+            }
           }
         }
       }

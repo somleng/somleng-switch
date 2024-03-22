@@ -7,19 +7,13 @@
 #include "g711.h"
 #include "base64.hpp"
 
-#include "html_coder.hpp"
 #include "lockfree/lockfree.hpp"
 
 using namespace std::chrono;
 
 TwilioHelper::TwilioHelper(const char *config)
 {
-  std::string parsedConfig = std::string(config);
-  fb::HtmlCoder html_decoder;
-  html_decoder.decode(parsedConfig);
-
-  lwsl_notice("TH::%s\n", parsedConfig.c_str());
-
+  std::string parsedConfig = drachtio::base64_decode(std::string(config));
   cJSON *json = cJSON_Parse(parsedConfig.c_str());
   if (json)
   {
@@ -88,7 +82,6 @@ void TwilioHelper::start(AudioPipe *pAudioPipe)
   json << R"({"event": "start",)";
   json << R"("sequenceNumber": ")" << seq << "\",";
   json << R"("start": {)";
-  json << R"("streamSid": ")" << m_stream_sid << "\",";
   json << R"("accountSid": ")" << m_account_sid << "\",";
   json << R"("callSid": ")" << m_call_sid << "\",";
   json << R"("tracks": ["inbound","outbound"],)";
@@ -192,6 +185,20 @@ void TwilioHelper::audio(AudioPipe *pAudioPipe, bool inbound, int16_t *samples, 
   json << R"("streamSid": ")" << m_stream_sid << "\"}";
 
   pAudioPipe->bufferForSending(json.str().c_str());
+}
+
+std::string TwilioHelper::wrapEvent(const char *eventName, const char *payload)
+{
+  std::stringstream json;
+  json << R"({"event": ")" << eventName << "\",";
+  json << R"("accountSid": ")" << m_account_sid << "\",";
+  json << R"("callSid": ")" << m_call_sid << "\",";
+  if (payload)
+  {
+    json << R"("payload": )" << payload << ",";
+  }
+  json << R"("streamSid": ")" << m_stream_sid << "\"}";
+  return json.str();
 }
 
 unsigned int TwilioHelper::get_incr_seq_num()

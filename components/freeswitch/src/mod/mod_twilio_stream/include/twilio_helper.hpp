@@ -23,6 +23,8 @@ public:
   void dtmf_single(AudioPipe *pAudioPipe, char digit);
   void mark(AudioPipe *pAudioPipe, std::string name);
   void audio(AudioPipe *pAudioPipe, bool inbound, int16_t *samples, int num_samples);
+  
+  std::string wrapEvent(const char *eventName, const char *payload);
 
   std::string getStreamId(void)
   {
