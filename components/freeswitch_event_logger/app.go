@@ -26,7 +26,7 @@ const EVENT_ERROR = "mod_twilio_stream::error"
 const EVENT_CONNECT_SUCCESS = "mod_twilio_stream::connect"
 const EVENT_START = "mod_twilio_stream::start"
 const EVENT_STOP = "mod_twilio_stream::stop"
-const EVENT_DTMF  ="mod_twilio_stream::dtmf"
+const EVENT_DTMF = "mod_twilio_stream::dtmf"
 const EVENT_MARK = "mod_twilio_stream::mark"
 const EVENT_SOCKET_MARK = "mod_twilio_stream::socket_mark"
 const EVENT_SOCKET_CLEAR = "mod_twilio_stream::socket_clear"
@@ -39,16 +39,20 @@ func logHeartbeat(eventStr string, connIdx int) {
 	fmt.Println(string(jsonString))
 }
 
-func customEventHantler(eventStr string, connIdx int) {
+func customEventHandler(eventStr string, connIdx int) {
 	eventMap := fsock.FSEventStrToMap(eventStr, []string{})
+	jsonString, _ := json.Marshal(eventMap)
+	fmt.Println("Receiving custom Event")
+	fmt.Println(string(jsonString))
+
 	switch eventMap["Event-Subclass"] {
-    case EVENT_CONNECT_SUCCESS:
-        fmt.Println("CONNECT")
-    case EVENT_DISCONNECT:
-        fmt.Println("DISCONNECT")
+	case EVENT_CONNECT_SUCCESS:
+		fmt.Println("CONNECT")
+	case EVENT_DISCONNECT:
+		fmt.Println("DISCONNECT")
 	default:
 		fmt.Println("Unhandled Event Type:" + eventMap["Event-Subclass"])
-    }
+	}
 }
 
 func fibDuration(durationUnit, maxDuration time.Duration) func() time.Duration {
@@ -64,22 +68,22 @@ func fibDuration(durationUnit, maxDuration time.Duration) func() time.Duration {
 }
 
 func main() {
-	// Filters
-	evFilters := make(map[string][]string)
-	evFilters["Event-Name"] = append(evFilters["Event-Name"], "HEARTBEAT")
-	evFilters["Event-Name"] = append(evFilters["Event-Name"], "CUSTOM")
+	evFilters := map[string][]string{
+		"Event-Name": {"HEARTBEAT", "CUSTOM"},
+	}
 	evHandlers := map[string][]func(string, int){
 		"HEARTBEAT": {logHeartbeat},
-		"ALL": {customEventHantler},
+		"ALL":       {customEventHandler},
 	}
 
 	event_socket_host := os.Getenv("EVENT_SOCKET_HOST")
 	event_socket_password := os.Getenv("EVENT_SOCKET_PASSWORD")
 
-	fs, err := fsock.NewFSock(event_socket_host, event_socket_password, 10, 0, fibDuration, evHandlers, evFilters, nopLogger{}, 0, false)
+	errChan := make(chan error)
+	_, err := fsock.NewFSock(event_socket_host, event_socket_password, 10, 60, 0, fibDuration, evHandlers, evFilters, nopLogger{}, 0, false, errChan)
 	if err != nil {
-		fmt.Println(fmt.Sprintf("FreeSWITCH error: %s", err))
+		fmt.Printf("FreeSWITCH error: %s\n", err)
 		return
 	}
-	fs.ReadEvents()
+	<-errChan
 }

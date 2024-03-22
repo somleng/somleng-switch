@@ -1,5 +1,5 @@
 module freeswitch_event_logger
 
-go 1.17
+go 1.22.1
 
-require github.com/cgrates/fsock v0.0.0-20220525160530-35a725c0140f
+require github.com/cgrates/fsock v0.0.0-20240321180839-4d5a76e3d51b

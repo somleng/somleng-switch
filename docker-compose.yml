@@ -13,6 +13,8 @@ volumes:
 services:
   redis:
     image: redis:alpine
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
 
   gateway-bootstrap:
     build:
@@ -97,7 +99,6 @@ services:
       FS_ALTERNATIVE_RTP_IP: "18.141.245.230"
       FS_EVENT_SOCKET_PASSWORD: secret
       FS_EVENT_SOCKET_PORT: secret
-
     expose:
       - "5060/udp"
       - "5222/tcp"
@@ -114,6 +115,11 @@ services:
     build:
       context: components/freeswitch_event_logger
     image: freeswitch_event_logger:latest
+    depends_on:
+      redis:
+        condition: service_healthy
+      freeswitch:
+        condition: service_healthy
     environment:
       EVENT_SOCKET_HOST: freeswitch:8021
       EVENT_SOCKET_PASSWORD: secret
@@ -123,6 +129,9 @@ services:
       context: components/app
     image: switch-app:latest
     platform: linux/amd64
+    depends_on:
+      redis:
+        condition: service_healthy
     environment:
       AHN_CORE_HOST: freeswitch
       CALL_PLATFORM_STUB_RESPONSES: "true"
