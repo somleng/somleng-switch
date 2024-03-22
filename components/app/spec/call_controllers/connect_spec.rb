@@ -6,7 +6,7 @@ RSpec.describe CallController, type: :call_controller do
     allow(controller).to receive(:write_and_await_response) do
       AppSettings.redis.with do |redis|
         build_twilio_stream_events(Array(with_events)).each do |event|
-          redis.publish_later("twilio-stream:#{stream_sid}", event.to_json)
+          redis.publish_later("mod_twilio_stream:#{stream_sid}", event.to_json)
         end
       end
     end
