@@ -8,17 +8,6 @@ module Rayo
           Nokogiri::XML.parse(xml, nil, nil, Nokogiri::XML::ParseOptions::NOBLANKS)
         end
 
-        it "is a server command" do
-          command = Start.new
-          command.domain = "mydomain"
-          command.target_call_id = SecureRandom.uuid
-
-          expect(command).to have_attributes(
-            domain: nil,
-            target_call_id: nil
-          )
-        end
-
         describe "#to_xml" do
           it "serializes to Rayo XML" do
             metadata = {

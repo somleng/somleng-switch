@@ -5,9 +5,6 @@ module Rayo
         attribute :uuid
         attribute :metadata
 
-        def domain; end
-        def target_call_id; end
-
         private
 
         def api
