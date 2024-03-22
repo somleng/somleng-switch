@@ -13,7 +13,7 @@ module Rayo
         end
 
         def command_args
-          [url]
+          [ url ]
         end
       end
     end

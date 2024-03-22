@@ -11,7 +11,7 @@ module TwiML
     def times
       return MAX_LOOP.times if value.to_s == "0"
 
-      [(value || 1).to_i, MAX_LOOP].min.times
+      [ (value || 1).to_i, MAX_LOOP ].min.times
     end
   end
 end

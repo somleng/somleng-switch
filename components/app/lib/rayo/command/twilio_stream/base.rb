@@ -12,7 +12,7 @@ module Rayo
         end
 
         def args
-          [uuid, command_name, *command_args, Base64.urlsafe_encode64(metadata)].compact
+          [ uuid, command_name, *command_args, Base64.urlsafe_encode64(metadata) ].compact
         end
 
         def command_args

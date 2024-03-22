@@ -85,7 +85,7 @@ RSpec.describe CallController, type: :call_controller do
             </Response>
           TWIML
 
-          stub_twiml_request(controller, response: [first_response, second_response])
+          stub_twiml_request(controller, response: [ first_response, second_response ])
 
           controller.run
 
@@ -146,7 +146,7 @@ RSpec.describe CallController, type: :call_controller do
 
         it "falls through the the next verb in the TwiML document if no input is received" do
           controller = build_controller(
-            stub_voice_commands: [:play_audio, { ask: build_input_result(nil) } ]
+            stub_voice_commands: [ :play_audio, { ask: build_input_result(nil) } ]
           )
 
           stub_twiml_request(controller, response: <<~TWIML)

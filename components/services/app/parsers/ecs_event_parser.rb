@@ -73,7 +73,7 @@ class ECSEventParser
 
   def private_ip
     return eni_private_ip unless eni_private_ip.nil?
-    return ec2_instance_private_ip unless container_instance_arn.nil?
+    ec2_instance_private_ip unless container_instance_arn.nil?
   end
 
   def public_ip
@@ -119,7 +119,7 @@ class ECSEventParser
 
   def ec2_instance_details
     @ec2_instance_details ||= ec2_client.describe_instances(
-      instance_ids: [ec2_instance_id]
+      instance_ids: [ ec2_instance_id ]
     ).to_h
   end
 

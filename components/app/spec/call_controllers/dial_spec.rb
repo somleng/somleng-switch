@@ -27,7 +27,7 @@ RSpec.describe CallController, type: :call_controller do
 
     it "dials to plain text", :vcr, cassette: :build_routing_parameters do
       controller = build_controller(
-        stub_voice_commands: [:play_audio, { dial: build_dial_status }],
+        stub_voice_commands: [ :play_audio, { dial: build_dial_status } ],
         call_properties: {
           account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34",
           from: "855715100860",
@@ -55,7 +55,7 @@ RSpec.describe CallController, type: :call_controller do
 
     it "handles national dialing", :vcr, cassette: :build_routing_parameters_with_national_dialing do
       controller = build_controller(
-        stub_voice_commands: [:play_audio, { dial: build_dial_status }],
+        stub_voice_commands: [ :play_audio, { dial: build_dial_status } ],
         call_properties: {
           account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34",
           to: "855715100860",
@@ -81,7 +81,7 @@ RSpec.describe CallController, type: :call_controller do
 
     it "handles numbers without symmetric latching support", :vcr, cassette: :build_routing_parameters_without_symmetric_latching do
       controller = build_controller(
-        stub_voice_commands: [{ dial: build_dial_status }],
+        stub_voice_commands: [ { dial: build_dial_status } ],
         call_properties: {
           account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34"
         }

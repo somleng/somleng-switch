@@ -21,9 +21,9 @@ gem "sucker_punch"
 gem "tts_voices", github: "somleng/tts_voices"
 
 group :development, :test do
-  gem "rubocop"
-  gem "rubocop-performance"
-  gem "rubocop-rspec"
+  gem "rubocop-rails-omakase", require: false
+  gem "rubocop-performance", require: false
+  gem "rubocop-rspec", require: false
 end
 
 group :test do

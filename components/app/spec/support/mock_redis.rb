@@ -21,6 +21,7 @@ class FakeRedis < MockRedis
       end
 
       poll_for_messages
+      foo = [ "bar", "baz" ]
     end
 
     def publish(message)

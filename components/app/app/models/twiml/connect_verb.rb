@@ -4,7 +4,7 @@ module TwiML
   class ConnectVerb < TwiMLNode
     class StreamNoun < TwiMLNode
       class Parser < TwiML::NodeParser
-        VALID_NOUNS = ["Parameter"].freeze
+        VALID_NOUNS = [ "Parameter" ].freeze
 
         def parse(node)
           super.merge(parameters: build_parameters)
@@ -85,7 +85,7 @@ module TwiML
     end
 
     class Parser < TwiML::NodeParser
-      VALID_NOUNS = ["Stream"].freeze
+      VALID_NOUNS = [ "Stream" ].freeze
 
       def parse(node)
         super.merge(stream_noun:)

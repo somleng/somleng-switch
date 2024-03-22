@@ -233,7 +233,7 @@ RSpec.describe CallController, type: :call_controller do
       </Response>
     TWIML
 
-    stub_twiml_request(controller, response: [options.fetch(:twiml), second_response])
+    stub_twiml_request(controller, response: [ options.fetch(:twiml), second_response ])
 
     controller
   end

@@ -10,6 +10,6 @@ class ExecuteRedirect < ExecuteTwiMLVerb
   private
 
   def redirect
-    throw(:redirect, [verb.content, verb.method])
+    throw(:redirect, [ verb.content, verb.method ])
   end
 end

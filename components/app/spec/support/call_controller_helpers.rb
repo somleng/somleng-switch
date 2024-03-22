@@ -57,7 +57,7 @@ module CallControllerHelpers
     )
     allow(fake_call).to receive(:answer_time).and_return(
       *Array(
-        options.fetch(:answer_time) { [nil, Time.now] }
+        options.fetch(:answer_time) { [ nil, Time.now ] }
       )
     )
     fake_call

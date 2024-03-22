@@ -29,7 +29,7 @@ class ExecuteGather < ExecuteTwiMLVerb
   private
 
   def redirect(params)
-    throw(:redirect, [verb.action, verb.method, params])
+    throw(:redirect, [ verb.action, verb.method, params ])
   end
 
   def build_callback_params(digits)
@@ -52,11 +52,11 @@ class ExecuteGather < ExecuteTwiMLVerb
 
   def build_ask_parameter(nested_verb)
     parameter = case nested_verb.name
-                when "Say"
+    when "Say"
                   build_say_parameter(nested_verb)
-                when "Play"
+    when "Play"
                   build_play_parameter(nested_verb)
-                end
+    end
 
     parameter.repeat = nested_verb.loop.times.count
     parameter

@@ -22,7 +22,7 @@ module EncryptedCredentials
     end
 
     def edit
-      Tempfile.open([file_path.basename.to_s.chomp(".enc"), ".yml"]) do |tmp_file|
+      Tempfile.open([ file_path.basename.to_s.chomp(".enc"), ".yml" ]) do |tmp_file|
         if file_path.exist?
           tmp_file.write(read_credentials)
           tmp_file.flush
@@ -64,13 +64,13 @@ module EncryptedCredentials
 
     def encrypt(content)
       cipher = OpenSSL::Cipher.new(CIPHER).encrypt
-      cipher.key = [key].pack("H*")
+      cipher.key = [ key ].pack("H*")
       cipher.update(content) + cipher.final
     end
 
     def decrypt(content)
       cipher = OpenSSL::Cipher.new(CIPHER).decrypt
-      cipher.key = [key].pack("H*")
+      cipher.key = [ key ].pack("H*")
       cipher.update(content) + cipher.final
     end
   end

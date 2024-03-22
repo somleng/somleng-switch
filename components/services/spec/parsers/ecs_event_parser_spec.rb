@@ -149,7 +149,7 @@ RSpec.describe ECSEventParser do
       }
     )
 
-    [ecs_client, ec2_client]
+    [ ecs_client, ec2_client ]
   end
 
   def build_instance_data(options)

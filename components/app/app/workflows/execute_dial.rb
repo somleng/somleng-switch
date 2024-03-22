@@ -20,7 +20,7 @@ class ExecuteDial < ExecuteTwiMLVerb
   private
 
   def redirect(params)
-    throw(:redirect, [verb.action, verb.method, params])
+    throw(:redirect, [ verb.action, verb.method, params ])
   end
 
   def build_callback_params(dial_status)

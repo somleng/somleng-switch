@@ -43,7 +43,7 @@ class ExecuteRecord < ExecuteTwiMLVerb
   end
 
   def redirect(params)
-    throw(:redirect, [verb.action, verb.method, params])
+    throw(:redirect, [ verb.action, verb.method, params ])
   end
 
   def build_callback_params(response, record_result)
