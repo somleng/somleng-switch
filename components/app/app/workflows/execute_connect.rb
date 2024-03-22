@@ -15,7 +15,7 @@ class ExecuteConnect < ExecuteTwiMLVerb
     def execute(stream_sid:, **)
       context.write_and_await_response(build_command(stream_sid:, **))
 
-      subscribe_to_stream_events("twilio-stream:#{stream_sid}")
+      subscribe_to_stream_events("mod_twilio_stream:#{stream_sid}")
     end
 
     private

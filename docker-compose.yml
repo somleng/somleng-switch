@@ -98,7 +98,7 @@ services:
     environment:
       FS_ALTERNATIVE_RTP_IP: "18.141.245.230"
       FS_EVENT_SOCKET_PASSWORD: secret
-      FS_EVENT_SOCKET_PORT: secret
+      FS_EVENT_SOCKET_PORT: 8021
     expose:
       - "5060/udp"
       - "5222/tcp"

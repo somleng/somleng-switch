@@ -45,6 +45,13 @@ func customEventHandler(eventStr string, connIdx int) {
 	fmt.Println("Receiving custom Event")
 	fmt.Println(string(jsonString))
 
+	// 1. Get the Event-Subclass
+	// 2. Get the Event-Payload
+	// 3. Get the stream_sid
+	// 4. Split the event-subclass on the :: to get the module name
+	// 5. Combine the module name with the stream-sid (mod_twilio_stream::stream-sid)
+	// 6. Publish the Event-Payload to the channel from step 5
+
 	// Handle the event
 	// Closed event
 	// {
