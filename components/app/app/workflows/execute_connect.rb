@@ -67,4 +67,17 @@ class ExecuteConnect < ExecuteTwiMLVerb
   def create_audio_stream(**params)
     call_platform_client.create_audio_stream(phone_call_id: call_properties.call_sid, **params)
   end
+
+  def build_component(url:, stream_sid:, custom_parameters:)
+    Rayo::Component::TwilioStream::Start.new(
+      uuid: phone_call.id,
+      url:,
+      metadata: Base64.urlsafe_encode64({
+        call_sid: call_properties.call_sid,
+        account_sid: call_properties.account_sid,
+        stream_sid:,
+        custom_parameters:
+      }.to_json)
+    )
+  end
 end
