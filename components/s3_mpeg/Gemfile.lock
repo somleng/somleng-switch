@@ -20,7 +20,7 @@ GEM
     diff-lcs (1.5.1)
     docile (1.4.0)
     jmespath (1.6.2)
-    ox (2.14.17)
+    ox (2.14.18)
     rexml (3.2.5)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
