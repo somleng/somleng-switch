@@ -23,8 +23,7 @@ static void responseHandler(switch_core_session_t *session, const char *eventNam
 		switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_DEBUG, "responseHandler: sending event payload: %s.\n", json);
 	switch_event_create_subclass(&event, SWITCH_EVENT_CUSTOM, eventName);
 	switch_channel_event_set_data(channel, event);
-	if (json)
-		switch_event_add_body(event, "%s", json);
+	switch_event_add_header_string(event, SWITCH_STACK_BOTTOM, "Event-Payload", json);
 	switch_event_fire(&event);
 }
 
