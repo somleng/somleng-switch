@@ -123,6 +123,7 @@ services:
     environment:
       EVENT_SOCKET_HOST: freeswitch:8021
       EVENT_SOCKET_PASSWORD: secret
+      REDIS_URL: "redis://redis:6379/1"
 
   switch-app:
     build:

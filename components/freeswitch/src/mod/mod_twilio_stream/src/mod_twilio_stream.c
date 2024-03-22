@@ -163,17 +163,7 @@ static switch_status_t do_pauseresume(switch_core_session_t *session, const char
 	return status;
 }
 
-static switch_status_t do_graceful_shutdown(switch_core_session_t *session, const char *bugname)
-{
-	switch_status_t status = SWITCH_STATUS_SUCCESS;
-
-	switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_INFO, "mod_twilio_stream (%s): do_graceful_shutdown \n", bugname);
-	status = fork_session_graceful_shutdown(session, bugname);
-
-	return status;
-}
-
-#define FORK_API_SYNTAX "<uuid> [start | stop | pause | resume | graceful-shutdown ] [wss-url | path] [metadata]"
+#define FORK_API_SYNTAX "<uuid> [start | stop | pause | resume ] [wss-url | path] [metadata]"
 SWITCH_STANDARD_API(fork_function)
 {
 	char *mycmd = NULL, *argv[4] = {0};
@@ -215,10 +205,6 @@ SWITCH_STANDARD_API(fork_function)
 			else if (!strcasecmp(argv[1], "resume"))
 			{
 				status = do_pauseresume(lsession, bugname, 0);
-			}
-			else if (!strcasecmp(argv[1], "graceful-shutdown"))
-			{
-				status = do_graceful_shutdown(lsession, bugname);
 			}
 			else if (!strcasecmp(argv[1], "start"))
 			{
