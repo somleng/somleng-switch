@@ -8,12 +8,26 @@ module Rayo
           Nokogiri::XML.parse(xml, nil, nil, Nokogiri::XML::ParseOptions::NOBLANKS)
         end
 
+        it "is a server command" do
+          command = Start.new
+          command.domain = "mydomain"
+          command.target_call_id = SecureRandom.uuid
+
+          expect(command).to have_attributes(
+            domain: nil,
+            target_call_id: nil
+          )
+        end
+
         describe "#to_xml" do
           it "serializes to Rayo XML" do
             metadata = {
               call_sid: "call-sid",
               account_sid: "account-sid",
-              stream_sid: "stream-sid"
+              stream_sid: "stream-sid",
+              custom_parameters: {
+                foo: "bar"
+              }
             }.to_json
 
             command = Start.new(
@@ -26,7 +40,7 @@ module Rayo
 
             expect(xml.fetch("exec")).to include(
               "api" => "uuid_twilio_stream",
-              "args" => "call-id start wss://mystream.ngrok.io/audiostream #{metadata}"
+              "args" => "call-id start wss://mystream.ngrok.io/audiostream #{Base64.strict_encode64(metadata)}"
             )
           end
         end

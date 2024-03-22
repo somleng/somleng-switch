@@ -10,6 +10,7 @@ vendor/ruby
 coverage
 
 .idea
+.vscode
 
 # terraform
 terraform.tfstate.d/
@@ -22,5 +23,3 @@ examples.txt
 
 node_modules
 nohup.out
-.vscode
-components/freeswitch/src/mod/mod_twilio_stream/.vscode

@@ -67,5 +67,4 @@ class ExecuteConnect < ExecuteTwiMLVerb
   def create_audio_stream(**params)
     call_platform_client.create_audio_stream(phone_call_id: call_properties.call_sid, **params)
   end
-  
 end
