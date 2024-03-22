@@ -45,6 +45,28 @@ func customEventHandler(eventStr string, connIdx int) {
 	fmt.Println("Receiving custom Event")
 	fmt.Println(string(jsonString))
 
+	// Handle the event
+	// Closed event
+	// {
+	//   Event-Subclass: "mod_twilio_stream::closed",
+	//   Event-Payload: {
+	//     "event": "closed",
+	//     "stream_sid": "stream-sid",
+	//     "foo": "bar"
+	//	 }
+	// }
+
+	// Start event
+	// {
+	//   Event-Subclass: "mod_twilio_stream::start",
+	//   Event-Payload: {
+	//     "event": "start",
+	//     "stream_sid": "stream-sid",
+	//     "tracks": ["inbound", "outbound"]
+	//   }
+	// }
+	//
+
 	switch eventMap["Event-Subclass"] {
 	case EVENT_CONNECT_SUCCESS:
 		fmt.Println("CONNECT")
