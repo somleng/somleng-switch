@@ -1,5 +1,6 @@
 module TwiML
   class LoopAttribute
+    # https://www.twilio.com/docs/voice/twiml/play#attributes-loop
     MAX_LOOP = 1000
 
     attr_reader :value
