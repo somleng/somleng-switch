@@ -187,8 +187,10 @@ void TwilioHelper::audio(AudioPipe *pAudioPipe, bool inbound, int16_t *samples, 
   pAudioPipe->bufferForSending(json.str().c_str());
 }
 
-std::string TwilioHelper::wrapEvent(const char *eventName, const char *payload)
+std::string TwilioHelper::wrapEvent(const char *event, const char *payload)
 {
+  std::string fullEventName = std::string(event);
+  std::string eventName = fullEventName.substr(fullEventName.find_last_of("::") + 1);
   std::stringstream json;
   json << R"({"event": ")" << eventName << "\",";
   json << R"("accountSid": ")" << m_account_sid << "\",";

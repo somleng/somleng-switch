@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 	"time"
-
+	"strings"
 	"github.com/cgrates/fsock"
+	"github.com/redis/go-redis/v9"
 )
 
 type nopLogger struct{}
@@ -21,15 +23,7 @@ func (nopLogger) Info(string) error    { return nil }
 func (nopLogger) Notice(string) error  { return nil }
 func (nopLogger) Warning(string) error { return nil }
 
-const EVENT_DISCONNECT = "mod_twilio_stream::disconnect"
-const EVENT_ERROR = "mod_twilio_stream::error"
-const EVENT_CONNECT_SUCCESS = "mod_twilio_stream::connect"
-const EVENT_START = "mod_twilio_stream::start"
-const EVENT_STOP = "mod_twilio_stream::stop"
-const EVENT_DTMF = "mod_twilio_stream::dtmf"
-const EVENT_MARK = "mod_twilio_stream::mark"
-const EVENT_SOCKET_MARK = "mod_twilio_stream::socket_mark"
-const EVENT_SOCKET_CLEAR = "mod_twilio_stream::socket_clear"
+
 
 // Formats the event as map and prints it out
 func logHeartbeat(eventStr string, connIdx int) {
@@ -39,49 +33,48 @@ func logHeartbeat(eventStr string, connIdx int) {
 	fmt.Println(string(jsonString))
 }
 
-func customEventHandler(eventStr string, connIdx int) {
+func customEventHandler(ctx context.Context, rdb *redis.Client, eventStr string, connIdx int) {
 	eventMap := fsock.FSEventStrToMap(eventStr, []string{})
 	jsonString, _ := json.Marshal(eventMap)
 	fmt.Println("Receiving custom Event")
 	fmt.Println(string(jsonString))
 
-	// 1. Get the Event-Subclass
-	// 2. Get the Event-Payload
-	// 3. Get the stream_sid
-	// 4. Split the event-subclass on the :: to get the module name
-	// 5. Combine the module name with the stream-sid (mod_twilio_stream::stream-sid)
-	// 6. Publish the Event-Payload to the channel from step 5
+	prefix := "mod_twilio_stream"
+	eventName := eventMap["Event-Subclass"]
+	if strings.HasPrefix(eventName, prefix) {
+		payload := eventMap["Event-Payload"]
 
-	// Handle the event
-	// Closed event
-	// {
-	//   Event-Subclass: "mod_twilio_stream::closed",
-	//   Event-Payload: {
-	//     "event": "closed",
-	//     "stream_sid": "stream-sid",
-	//     "foo": "bar"
-	//	 }
-	// }
+		fmt.Println("--------START---------")
+		fmt.Println(payload)
+		fmt.Println("--------END---------")
 
-	// Start event
-	// {
-	//   Event-Subclass: "mod_twilio_stream::start",
-	//   Event-Payload: {
-	//     "event": "start",
-	//     "stream_sid": "stream-sid",
-	//     "tracks": ["inbound", "outbound"]
-	//   }
-	// }
-	//
+		result := make(map[string]any)
+		err := json.Unmarshal([]byte(payload), &result)
+		if err != nil {
+			panic(err)
+			return
+		}
 
-	switch eventMap["Event-Subclass"] {
-	case EVENT_CONNECT_SUCCESS:
-		fmt.Println("CONNECT")
-	case EVENT_DISCONNECT:
-		fmt.Println("DISCONNECT")
-	default:
+		stream_sid, stream_sid_ok := result["streamSid"].(string)
+		fmt.Println("--------START---------")
+		fmt.Println(result)
+		fmt.Println(stream_sid)
+		fmt.Println(stream_sid_ok)
+		fmt.Println("--------END---------")
+
+		if stream_sid_ok {
+			fmt.Println(stream_sid)
+			err := rdb.Publish(ctx, prefix + "::" + stream_sid, payload).Err()
+			if err != nil {
+				panic(err)
+			}
+		} else {
+			fmt.Println("Unable to process streamSid")
+		}
+	} else {
 		fmt.Println("Unhandled Event Type:" + eventMap["Event-Subclass"])
 	}
+
 }
 
 func fibDuration(durationUnit, maxDuration time.Duration) func() time.Duration {
@@ -97,12 +90,27 @@ func fibDuration(durationUnit, maxDuration time.Duration) func() time.Duration {
 }
 
 func main() {
+	ctx := context.Background()
+
+	redis_url := os.Getenv("REDIS_URL")
+	opt, e := redis.ParseURL(redis_url)
+	if e != nil {
+		panic(e)
+	}
+
+	rdb := redis.NewClient(opt)
+
+	customEventHandlerWrapper := func(eventStr string, connIdx int) { 
+		customEventHandler(ctx, rdb, eventStr, connIdx) 
+	}
+
 	evFilters := map[string][]string{
 		"Event-Name": {"HEARTBEAT", "CUSTOM"},
 	}
+
 	evHandlers := map[string][]func(string, int){
 		"HEARTBEAT": {logHeartbeat},
-		"ALL":       {customEventHandler},
+		"ALL":       {customEventHandlerWrapper},
 	}
 
 	event_socket_host := os.Getenv("EVENT_SOCKET_HOST")

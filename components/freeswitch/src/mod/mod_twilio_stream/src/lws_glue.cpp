@@ -26,6 +26,9 @@
 
 namespace
 {
+  void destroy_tech_pvt(private_t *tech_pvt);
+  void send_event(private_t *tech_pvt, switch_core_session_t *session, const char *eventName, const char *json);
+
   static const char *requestedBufferSecs = std::getenv("MOD_TWILIO_STREAM_BUFFER_SECS");
   static int nAudioBufferSecs = std::max(1, std::min(requestedBufferSecs ? ::atoi(requestedBufferSecs) : 2, 5));
   static const char *requestedNumServiceThreads = std::getenv("MOD_TWILIO_STREAM_SERVICE_THREADS");
@@ -33,6 +36,58 @@ namespace
   static unsigned int nServiceThreads = std::max(1, std::min(requestedNumServiceThreads ? ::atoi(requestedNumServiceThreads) : 1, 5));
   static unsigned int idxCallCount = 0;
   static uint32_t playCount = 0;
+
+  switch_status_t session_cleanup(switch_core_session_t *session, const char *bugname, int channelIsClosing)
+  {
+    switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_DEBUG, "mod_twilio_stream: fork_session_cleanup\n");
+    switch_channel_t *channel = switch_core_session_get_channel(session);
+    switch_media_bug_t *bug = (switch_media_bug_t *)switch_channel_get_private(channel, bugname);
+    if (!bug)
+    {
+      switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_DEBUG, "fork_session_cleanup: no bug %s - websocket conection already closed\n", bugname);
+      return SWITCH_STATUS_FALSE;
+    }
+    private_t *tech_pvt = (private_t *)switch_core_media_bug_get_user_data(bug);
+    uint32_t id = tech_pvt->id;
+
+    switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_DEBUG, "(%u) fork_session_cleanup\n", id);
+
+    if (!tech_pvt)
+      return SWITCH_STATUS_FALSE;
+    AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
+    TwilioHelper *pTwilioHelper = static_cast<TwilioHelper *>(tech_pvt->pTwilioHelper);
+
+    switch_mutex_lock(tech_pvt->mutex);
+
+    // get the bug again, now that we are under lock
+    {
+      switch_media_bug_t *bug = (switch_media_bug_t *)switch_channel_get_private(channel, bugname);
+      if (bug)
+      {
+        switch_channel_set_private(channel, bugname, NULL);
+        if (!channelIsClosing)
+        {
+          switch_core_media_bug_remove(session, &bug);
+        }
+      }
+    }
+
+    if (pAudioPipe && pTwilioHelper)
+    {
+      pTwilioHelper->stop(pAudioPipe);
+      send_event(tech_pvt, session, EVENT_DISCONNECT, NULL);
+    }
+
+    if (pAudioPipe)
+      pAudioPipe->close();
+
+    tech_pvt->pAudioPipe = nullptr;
+    tech_pvt->pTwilioHelper = nullptr;
+
+    destroy_tech_pvt(tech_pvt);
+    switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_INFO, "(%u) fork_session_cleanup: connection closed\n", id);
+    return SWITCH_STATUS_SUCCESS;
+  }
 
   void send_event(private_t *tech_pvt, switch_core_session_t *session, const char *eventName, const char *json)
   {
@@ -114,7 +169,6 @@ namespace
                 send_event(tech_pvt, session, EVENT_SOCKET_MARK, name);
               }
             }
-            
           }
           else if (0 == type.compare("clear"))
           {
@@ -151,7 +205,7 @@ namespace
     }
   }
 
-  static void eventCallback(const char *sessionId, const char *bugname, AudioPipe::NotifyEvent_t event, const char *message)
+  void eventCallback(const char *sessionId, const char *bugname, AudioPipe::NotifyEvent_t event, const char *message)
   {
     switch_core_session_t *session = switch_core_session_locate(sessionId);
     if (session)
@@ -180,25 +234,19 @@ namespace
             std::stringstream json;
             json << "{\"reason\":\"" << message << "\"}";
             send_event(tech_pvt, session, EVENT_CONNECT_FAIL, (char *)json.str().c_str());
-            tech_pvt->pAudioPipe = nullptr;
-            tech_pvt->pTwilioHelper = nullptr;
             switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_NOTICE, "connection failed: %s\n", message);
+            session_cleanup(session, bugname, 0);
           }
           else if (event == AudioPipe::CONNECTION_DROPPED)
           {
-            // first thing: we can no longer access the AudioPipe
-            send_event(tech_pvt, session, EVENT_DISCONNECT, NULL);
-            tech_pvt->pAudioPipe = nullptr;
-            tech_pvt->pTwilioHelper = nullptr;
             switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_NOTICE, "connection dropped from far end\n");
+            session_cleanup(session, bugname, 0);
           }
           else if (event == AudioPipe::CONNECTION_CLOSED_GRACEFULLY)
           {
-            // first thing: we can no longer access the AudioPipe
-            send_event(tech_pvt, session, EVENT_DISCONNECT, NULL);
-            tech_pvt->pAudioPipe = nullptr;
-            tech_pvt->pTwilioHelper = nullptr;
+
             switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_DEBUG, "connection closed gracefully\n");
+            session_cleanup(session, bugname, 0);
           }
           else if (event == AudioPipe::MESSAGE)
           {
@@ -497,51 +545,7 @@ extern "C"
 
   switch_status_t fork_session_cleanup(switch_core_session_t *session, const char *bugname, int channelIsClosing)
   {
-    switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_DEBUG, "mod_twilio_stream: fork_session_cleanup\n");
-    switch_channel_t *channel = switch_core_session_get_channel(session);
-    switch_media_bug_t *bug = (switch_media_bug_t *)switch_channel_get_private(channel, bugname);
-    if (!bug)
-    {
-      switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_DEBUG, "fork_session_cleanup: no bug %s - websocket conection already closed\n", bugname);
-      return SWITCH_STATUS_FALSE;
-    }
-    private_t *tech_pvt = (private_t *)switch_core_media_bug_get_user_data(bug);
-    uint32_t id = tech_pvt->id;
-
-    switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_DEBUG, "(%u) fork_session_cleanup\n", id);
-
-    if (!tech_pvt)
-      return SWITCH_STATUS_FALSE;
-    AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
-    TwilioHelper *pTwilioHelper = static_cast<TwilioHelper *>(tech_pvt->pTwilioHelper);
-
-    switch_mutex_lock(tech_pvt->mutex);
-
-    // get the bug again, now that we are under lock
-    {
-      switch_media_bug_t *bug = (switch_media_bug_t *)switch_channel_get_private(channel, bugname);
-      if (bug)
-      {
-        switch_channel_set_private(channel, bugname, NULL);
-        if (!channelIsClosing)
-        {
-          switch_core_media_bug_remove(session, &bug);
-        }
-      }
-    }
-
-    if (pAudioPipe && pTwilioHelper)
-    {
-      pTwilioHelper->stop(pAudioPipe);
-      send_event(tech_pvt, session, EVENT_DISCONNECT, NULL);
-    }
-
-    if (pAudioPipe)
-      pAudioPipe->close();
-
-    destroy_tech_pvt(tech_pvt);
-    switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_INFO, "(%u) fork_session_cleanup: connection closed\n", id);
-    return SWITCH_STATUS_SUCCESS;
+    return session_cleanup(session, bugname, channelIsClosing);
   }
 
   switch_status_t fork_session_dtmf_text(switch_core_session_t *session, const char *bugname, const char *match_digits)
@@ -586,37 +590,6 @@ extern "C"
 
     switch_core_media_bug_flush(bug);
     tech_pvt->audio_paused = pause;
-    return SWITCH_STATUS_SUCCESS;
-  }
-
-  switch_status_t fork_session_graceful_shutdown(switch_core_session_t *session, char *bugname)
-  {
-    switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_DEBUG, "mod_twilio_stream: fork_session_graceful_shutdown\n");
-
-    switch_channel_t *channel = switch_core_session_get_channel(session);
-    switch_media_bug_t *bug = (switch_media_bug_t *)switch_channel_get_private(channel, bugname);
-    if (!bug)
-    {
-      switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_ERROR, "fork_session_graceful_shutdown failed because no bug\n");
-      return SWITCH_STATUS_FALSE;
-    }
-    private_t *tech_pvt = (private_t *)switch_core_media_bug_get_user_data(bug);
-
-    if (!tech_pvt)
-      return SWITCH_STATUS_FALSE;
-
-    tech_pvt->graceful_shutdown = 1;
-
-    AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
-    TwilioHelper *pTwilioHelper = static_cast<TwilioHelper *>(tech_pvt->pTwilioHelper);
-    if (pAudioPipe && pTwilioHelper)
-    {
-      pTwilioHelper->stop(pAudioPipe);
-      send_event(tech_pvt, session, EVENT_DISCONNECT, NULL);
-    }
-    if (pAudioPipe)
-      pAudioPipe->do_graceful_shutdown();
-
     return SWITCH_STATUS_SUCCESS;
   }
 
