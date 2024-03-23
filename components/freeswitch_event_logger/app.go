@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"time"
 	"strings"
+	"time"
+
 	"github.com/cgrates/fsock"
 	"github.com/redis/go-redis/v9"
 )
@@ -22,8 +23,6 @@ func (nopLogger) Err(string) error     { return nil }
 func (nopLogger) Info(string) error    { return nil }
 func (nopLogger) Notice(string) error  { return nil }
 func (nopLogger) Warning(string) error { return nil }
-
-
 
 // Formats the event as map and prints it out
 func logHeartbeat(eventStr string, connIdx int) {
@@ -52,7 +51,6 @@ func customEventHandler(ctx context.Context, rdb *redis.Client, eventStr string,
 		err := json.Unmarshal([]byte(payload), &result)
 		if err != nil {
 			panic(err)
-			return
 		}
 
 		stream_sid, stream_sid_ok := result["streamSid"].(string)
@@ -64,7 +62,7 @@ func customEventHandler(ctx context.Context, rdb *redis.Client, eventStr string,
 
 		if stream_sid_ok {
 			fmt.Println(stream_sid)
-			err := rdb.Publish(ctx, prefix + "::" + stream_sid, payload).Err()
+			err := rdb.Publish(ctx, prefix+":"+stream_sid, payload).Err()
 			if err != nil {
 				panic(err)
 			}
@@ -100,8 +98,8 @@ func main() {
 
 	rdb := redis.NewClient(opt)
 
-	customEventHandlerWrapper := func(eventStr string, connIdx int) { 
-		customEventHandler(ctx, rdb, eventStr, connIdx) 
+	customEventHandlerWrapper := func(eventStr string, connIdx int) {
+		customEventHandler(ctx, rdb, eventStr, connIdx)
 	}
 
 	evFilters := map[string][]string{

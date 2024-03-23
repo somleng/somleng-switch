@@ -1,13 +1,19 @@
 class FakeRedis < MockRedis
-  class NullSubscription
+  class DefaultSubscription
     def message(&)
       sleep
     end
 
-    def unsubscribe; end
+    def subscribe(&)
+      yield
+    end
+
+    def unsubscribe(&)
+      yield
+    end
   end
 
-  class Subscription
+  class Subscription < DefaultSubscription
     attr_reader :channel, :messages
 
     def initialize(channel)
@@ -21,14 +27,13 @@ class FakeRedis < MockRedis
       end
 
       poll_for_messages
-      foo = [ "bar", "baz" ]
     end
 
     def publish(message)
       messages << message
     end
 
-    def unsubscribe
+    def unsubscribe!
       @unsubscribed = true
     end
 
@@ -52,7 +57,7 @@ class FakeRedis < MockRedis
   end
 
   def unsubscribe(channel)
-    find_subscription(channel).unsubscribe
+    find_subscription(channel).unsubscribe!
     subscriptions.delete(channel)
   end
 
@@ -68,7 +73,7 @@ class FakeRedis < MockRedis
   end
 
   def find_subscription(channel)
-    subscriptions.fetch(channel) { NullSubscription.new }
+    subscriptions.fetch(channel) { DefaultSubscription.new }
   end
 end
 

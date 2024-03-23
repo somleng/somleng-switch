@@ -8,7 +8,6 @@ RSpec.describe ExecuteGather, type: :call_controller do
       TwiML::PlayVerb.new(name: "Play", content: "http://api.twilio.com/cowbell.mp3", attributes: { "loop" => "3" }),
       TwiML::SayVerb.new(name: "Say", content: say_content, attributes: { "voice" => "woman" })
     ]
-
     verb = build_verb(nested_verbs:)
     context = build_controller(stub_voice_commands: { ask: build_input_result })
     tts_event_notifier = instance_spy(TTSEventNotifier)

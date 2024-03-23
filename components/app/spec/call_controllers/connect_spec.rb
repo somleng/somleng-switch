@@ -1,29 +1,9 @@
 require "spec_helper"
 
 RSpec.describe CallController, type: :call_controller do
-  # stream_sid from VCR Cassette
-  def stub_twilio_stream(controller, with_events: [], stream_sid: "393a227f-0602-4024-b38a-dcbbeed4d5a0")
-    allow(controller).to receive(:write_and_await_response) do
-      AppSettings.redis.with do |redis|
-        build_twilio_stream_events(Array(with_events)).each do |event|
-          redis.publish_later("mod_twilio_stream:#{stream_sid}", event.to_json)
-        end
-      end
-    end
-  end
-
-  def assert_twilio_stream(controller, &)
-    expect(controller).to have_received(:write_and_await_response, &)
-  end
-
-  def build_twilio_stream_events(events)
-    result = [
-      { event: "connected" },
-      { event: "start" }
-    ]
-    result.concat(Array(events))
-    result.push({ event: "closed" })
-  end
+  # from cassette
+  VCR_CALL_SID = "6f362591-ab86-4d1a-b39b-40c87e7929fc".freeze
+  VCR_STREAM_SID = "393a227f-0602-4024-b38a-dcbbeed4d5a0".freeze
 
   describe "<Connect>", :vcr, cassette: :audio_stream do
     # From: https://www.twilio.com/docs/voice/twiml/connect
@@ -56,9 +36,8 @@ RSpec.describe CallController, type: :call_controller do
 
         it "connects to a websockets stream" do
           controller = build_controller(
-            call_properties: {
-              call_sid: "6f362591-ab86-4d1a-b39b-40c87e7929fc"
-            }
+            stub_voice_commands: :play_audio,
+            call_properties: { call_sid: VCR_CALL_SID }
           )
           stub_twilio_stream(controller)
           stub_twiml_request(controller, response: <<~TWIML)
@@ -67,6 +46,7 @@ RSpec.describe CallController, type: :call_controller do
               <Connect>
                 <Stream url="wss://mystream.ngrok.io/audiostream" />
               </Connect>
+              <Play>http://api.twilio.com/cowbell.mp3</Play>
             </Response>
           TWIML
 
@@ -79,17 +59,15 @@ RSpec.describe CallController, type: :call_controller do
             expect(metadata).to include(
               "call_sid" => controller.call_properties.call_sid,
               "account_sid" => controller.call_properties.account_sid,
-              "stream_sid" => be_present
+              "stream_sid" => VCR_STREAM_SID
             )
           end
+          expect(controller).to have_received(:play_audio).with("http://api.twilio.com/cowbell.mp3")
         end
 
         it "handles custom parameters" do
           controller = build_controller(
-            stub_voice_commands: :play_audio,
-            call_properties: {
-              call_sid: "6f362591-ab86-4d1a-b39b-40c87e7929fc"
-            }
+            call_properties: { call_sid: VCR_CALL_SID }
           )
           stub_twilio_stream(controller)
           stub_twiml_request(controller, response: <<~TWIML)
@@ -117,5 +95,28 @@ RSpec.describe CallController, type: :call_controller do
         end
       end
     end
+  end
+
+  def stub_twilio_stream(controller, with_events: [], stream_sid: VCR_STREAM_SID)
+    allow(controller).to receive(:write_and_await_response)
+
+    AppSettings.redis.with do |redis|
+      build_twilio_stream_events(Array(with_events)).each do |event|
+        redis.publish_later("mod_twilio_stream:#{stream_sid}", event.to_json)
+      end
+    end
+  end
+
+  def build_twilio_stream_events(events)
+    result = [
+      { event: "connected" },
+      { event: "start" }
+    ]
+    result.concat(Array(events))
+    result.push({ event: "disconnect" })
+  end
+
+  def assert_twilio_stream(controller, &)
+    expect(controller).to have_received(:write_and_await_response, &)
   end
 end

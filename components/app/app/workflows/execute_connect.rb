@@ -2,20 +2,25 @@ require_relative "execute_twiml_verb"
 
 class ExecuteConnect < ExecuteTwiMLVerb
   class ExecuteCommand < ExecuteTwiMLVerb
-    Event = Struct.new(:type, keyword_init: true) do
+    CHANNEL_PREFIX = "mod_twilio_stream".freeze
+
+    Event = Struct.new(:type, :disconnect?, keyword_init: true) do
+      DISCONNECT_EVENTS = [ "connect_failed", "disconnect" ].freeze
+
       def self.parse(payload)
         message = JSON.parse(payload)
 
         new(
-          type: ActiveSupport::StringInquirer.new(message.fetch("event"))
+          type: ActiveSupport::StringInquirer.new(message.fetch("event")),
+          disconnect?: message.fetch("event").in?(DISCONNECT_EVENTS)
         )
       end
     end
 
     def execute(stream_sid:, **)
-      context.write_and_await_response(build_command(stream_sid:, **))
-
-      subscribe_to_stream_events("mod_twilio_stream:#{stream_sid}")
+      subscribe_to_stream_events("#{CHANNEL_PREFIX}:#{stream_sid}") do
+        context.write_and_await_response(build_command(stream_sid:, **))
+      end
     end
 
     private
@@ -33,12 +38,13 @@ class ExecuteConnect < ExecuteTwiMLVerb
       )
     end
 
-    def subscribe_to_stream_events(channel_name)
+    def subscribe_to_stream_events(channel_name, &)
       AppSettings.redis.with do |redis|
         redis.subscribe(channel_name) do |on|
+          on.subscribe(&)
           on.message do |_channel, message|
             event = Event.parse(message)
-            redis.unsubscribe(channel_name) if event.type.closed?
+            redis.unsubscribe(channel_name) if event.disconnect?
           end
         end
       end
