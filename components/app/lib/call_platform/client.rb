@@ -81,8 +81,8 @@ module CallPlatform
       )
     end
 
-    def create_audio_stream(params)
-      json_response = make_request("/services/audio_streams", params:)
+    def create_media_stream(params)
+      json_response = make_request("/services/media_streams", params:)
       AudioStreamResponse.new(
         id: json_response.fetch("sid")
       )

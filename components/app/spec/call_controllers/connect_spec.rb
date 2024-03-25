@@ -3,9 +3,9 @@ require "spec_helper"
 RSpec.describe CallController, type: :call_controller do
   # from cassette
   VCR_CALL_SID = "6f362591-ab86-4d1a-b39b-40c87e7929fc".freeze
-  VCR_STREAM_SID = "393a227f-0602-4024-b38a-dcbbeed4d5a0".freeze
+  VCR_STREAM_SID = "eb1c009e-8015-4b8a-9ded-1ba6e5105c51".freeze
 
-  describe "<Connect>", :vcr, cassette: :audio_stream do
+  describe "<Connect>", :vcr, cassette: :media_stream do
     # From: https://www.twilio.com/docs/voice/twiml/connect
 
     # <Connect> is a TwiML verb that works together with nested TwiML nouns to connect

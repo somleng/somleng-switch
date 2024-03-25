@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe ExecuteConnect, type: :call_controller do
-  it "creates an Audio Stream" do
+  it "creates a media stream" do
     verb = build_verb(
       url: "wss://example.com/audio",
       custom_parameters: {
@@ -25,7 +25,7 @@ RSpec.describe ExecuteConnect, type: :call_controller do
       )
     )
 
-    expect(call_platform_client).to have_received(:create_audio_stream).with(
+    expect(call_platform_client).to have_received(:create_media_stream).with(
       url: "wss://example.com/audio",
       phone_call_id: "call-sid",
       custom_parameters: {
@@ -81,7 +81,7 @@ RSpec.describe ExecuteConnect, type: :call_controller do
   def stub_call_platform_client(stream_sid: "stream-sid")
     call_platform_client = instance_double(
       CallPlatform::Client,
-      create_audio_stream: CallPlatform::Client::AudioStreamResponse.new(id: stream_sid)
+      create_media_stream: CallPlatform::Client::AudioStreamResponse.new(id: stream_sid)
     )
   end
 

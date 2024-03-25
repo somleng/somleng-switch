@@ -52,7 +52,7 @@ module CallPlatform
       )
     end
 
-    def create_audio_stream(**)
+    def create_media_stream(**)
       AudioStreamResponse.new(id: SecureRandom.uuid)
     end
 
