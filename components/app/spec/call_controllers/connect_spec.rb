@@ -55,11 +55,10 @@ RSpec.describe CallController, type: :call_controller do
           assert_twilio_stream(controller) do |command|
             expect(command.uuid).to eq(controller.call.id)
             expect(command.url).to eq("wss://mystream.ngrok.io/audiostream")
-            metadata = JSON.parse(command.metadata)
-            expect(metadata).to include(
-              "call_sid" => controller.call_properties.call_sid,
-              "account_sid" => controller.call_properties.account_sid,
-              "stream_sid" => VCR_STREAM_SID
+            expect(command.metadata).to include(
+              call_sid: controller.call_properties.call_sid,
+              account_sid: controller.call_properties.account_sid,
+              stream_sid: VCR_STREAM_SID
             )
           end
           expect(controller).to have_received(:play_audio).with("http://api.twilio.com/cowbell.mp3")
@@ -84,9 +83,8 @@ RSpec.describe CallController, type: :call_controller do
           controller.run
 
           assert_twilio_stream(controller) do |command|
-            metadata = JSON.parse(command.metadata)
-            expect(metadata).to include(
-              "custom_parameters" => {
+            expect(command.metadata).to include(
+              custom_parameters: {
                 "aCustomParameter" => "aCustomValue that was set in TwiML",
                 "bCustomParameter" => "bCustomValue that was set in TwiML"
               }

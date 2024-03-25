@@ -3,7 +3,6 @@ module Rayo
     module TwilioStream
       class Base < Adhearsion::Rayo::Command::Execute
         attribute :uuid
-        attribute :metadata
 
         private
 
@@ -12,7 +11,7 @@ module Rayo
         end
 
         def args
-          [ uuid, command_name, *command_args, Base64.urlsafe_encode64(metadata) ].compact
+          [ uuid, command_name, *command_args ].compact
         end
 
         def command_args

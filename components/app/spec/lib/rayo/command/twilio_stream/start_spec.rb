@@ -17,7 +17,7 @@ module Rayo
               custom_parameters: {
                 foo: "bar"
               }
-            }.to_json
+            }
 
             command = Start.new(
               uuid: "call-id",
@@ -29,7 +29,7 @@ module Rayo
 
             expect(xml.fetch("exec")).to include(
               "api" => "uuid_twilio_stream",
-              "args" => "call-id start wss://mystream.ngrok.io/audiostream #{Base64.strict_encode64(metadata)}"
+              "args" => "call-id start wss://mystream.ngrok.io/audiostream #{Base64.strict_encode64(metadata.to_json)}"
             )
           end
         end

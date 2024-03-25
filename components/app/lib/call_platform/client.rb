@@ -30,6 +30,13 @@ module CallPlatform
       keyword_init: true
     )
 
+    attr_reader :http_client
+
+    def initialize(**options)
+      http_client_options = options.fetch(:http_client_options, {})
+      @http_client = options.fetch(:http_client) { default_http_client(**http_client_options) }
+    end
+
     def notify_call_event(params)
       response = http_client.post("/services/phone_call_events", params.to_json)
 
@@ -99,8 +106,8 @@ module CallPlatform
       JSON.parse(response.body)
     end
 
-    def http_client
-      @http_client ||= Faraday.new(url: CallPlatform.configuration.host) do |conn|
+    def default_http_client(**options)
+      Faraday.new(url: options.fetch(:url, CallPlatform.configuration.host)) do |conn|
         conn.headers["Accept"] = "application/json"
         conn.headers["Content-Type"] = "application/json"
 
@@ -109,8 +116,8 @@ module CallPlatform
         conn.request(
           :authorization,
           :basic,
-          CallPlatform.configuration.username,
-          CallPlatform.configuration.password
+          options.fetch(:username, CallPlatform.configuration.username),
+          options.fetch(:password, CallPlatform.configuration.password)
         )
       end
     end

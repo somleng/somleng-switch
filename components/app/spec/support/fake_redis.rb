@@ -11,6 +11,8 @@ class FakeRedis < MockRedis
     def unsubscribe(&)
       yield
     end
+
+    def unsubscribe!; end
   end
 
   class Subscription < DefaultSubscription
@@ -52,6 +54,12 @@ class FakeRedis < MockRedis
     end
   end
 
+  attr_reader :default_subscription
+
+  def initialize(default_subscription: DefaultSubscription.new)
+    @default_subscription = default_subscription
+  end
+
   def subscribe(channel, &)
     yield(find_subscription(channel))
   end
@@ -73,7 +81,7 @@ class FakeRedis < MockRedis
   end
 
   def find_subscription(channel)
-    subscriptions.fetch(channel) { DefaultSubscription.new }
+    subscriptions.fetch(channel) { default_subscription }
   end
 end
 

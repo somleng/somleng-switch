@@ -7,7 +7,10 @@ module TwiML
         VALID_NOUNS = [ "Parameter" ].freeze
 
         def parse(node)
-          super.merge(parameters: build_parameters)
+          node_options = super
+          node_options[:url] = node_options.dig(:attributes, "url")
+          node_options[:parameters] = build_parameters
+          node_options
         end
 
         private
@@ -37,20 +40,24 @@ module TwiML
         end
       end
 
-      attr_reader :parameters
+      attr_reader :url, :parameters
 
-      def initialize(parameters:, **options)
+      def initialize(url:, parameters:, **options)
         super(**options)
+        @url = url
         @parameters = parameters
-      end
-
-      def url
-        attributes.fetch("url")
       end
     end
 
     class ParameterNoun < TwiMLNode
       class Parser < TwiML::NodeParser
+        def parse(node)
+          node_options = super
+          node_options[:name] = node_options.dig(:attributes, "name")
+          node_options[:value] = node_options.dig(:attributes, "value")
+          node_options
+        end
+
         private
 
         def valid?
@@ -75,12 +82,12 @@ module TwiML
         end
       end
 
-      def name
-        attributes.fetch("name")
-      end
+      attr_reader :name, :value
 
-      def value
-        attributes.fetch("value")
+      def initialize(name:, value:, **options)
+        super(options)
+        @name = name
+        @value = value
       end
     end
 
