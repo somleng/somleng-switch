@@ -3,8 +3,7 @@ require "spec_helper"
 RSpec.describe CallController, type: :call_controller do
   # from cassette
   VCR_CALL_SID = "6f362591-ab86-4d1a-b39b-40c87e7929fc".freeze
-  # set to * to re-record
-  VCR_STREAM_SID = "2a0f07e5-aa22-47ca-90e3-c119f98f92d0".freeze
+  VCR_STREAM_SID = "143fb02b-f0ce-4258-b957-ebdd60a2945d".freeze
 
   describe "<Connect>", :vcr, cassette: :media_stream do
     # From: https://www.twilio.com/docs/voice/twiml/connect
@@ -40,6 +39,7 @@ RSpec.describe CallController, type: :call_controller do
             stub_voice_commands: :play_audio,
             call_properties: { call_sid: VCR_CALL_SID }
           )
+
           stub_twilio_stream(controller)
           stub_twiml_request(controller, response: <<~TWIML)
             <?xml version="1.0" encoding="UTF-8"?>
@@ -96,23 +96,27 @@ RSpec.describe CallController, type: :call_controller do
     end
   end
 
-  def stub_twilio_stream(controller, with_events: [], stream_sid: VCR_STREAM_SID)
+  def stub_twilio_stream(controller, with_events: [])
     allow(controller).to receive(:write_and_await_response)
 
     AppSettings.redis.with do |redis|
       build_twilio_stream_events(Array(with_events)).each do |event|
-        redis.publish_later("mod_twilio_stream:#{stream_sid}", event.to_json)
+        redis.publish_later("mod_twilio_stream:*", event)
       end
     end
   end
 
   def build_twilio_stream_events(events)
     result = [
-      { event: "connected", streamSid: VCR_STREAM_SID },
-      { event: "start", streamSid: VCR_STREAM_SID }
+      build_twilio_stream_event(event: "connect"),
+      build_twilio_stream_event(event: "start")
     ]
-    result.concat(Array(events))
-    result.push({ event: "disconnect", streamSid: VCR_STREAM_SID })
+    Array(events).each { |event| result.push(build_twilio_stream_event(**event)) }
+    result.push(build_twilio_stream_event(event: "disconnect"))
+  end
+
+  def build_twilio_stream_event(event:, **attributes)
+    ->(channel) { { event:, streamSid: channel.split(":").last, **attributes }.to_json }
   end
 
   def assert_twilio_stream(controller, &)

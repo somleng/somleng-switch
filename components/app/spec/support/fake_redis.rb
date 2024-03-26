@@ -1,5 +1,7 @@
 class FakeRedis < MockRedis
   class DefaultSubscription
+    attr_accessor :channel
+
     def message(&)
       sleep
     end
@@ -16,7 +18,7 @@ class FakeRedis < MockRedis
   end
 
   class Subscription < DefaultSubscription
-    attr_reader :channel, :messages
+    attr_reader :messages
 
     def initialize(channel)
       @channel = channel
@@ -25,7 +27,7 @@ class FakeRedis < MockRedis
 
     def message(&)
       messages.each do |message|
-        yield(channel, message)
+        yield(channel, message.respond_to?(:call) ? message.call(channel) : message)
       end
 
       poll_for_messages
@@ -57,11 +59,14 @@ class FakeRedis < MockRedis
   attr_reader :default_subscription
 
   def initialize(default_subscription: DefaultSubscription.new)
+    super()
     @default_subscription = default_subscription
   end
 
   def subscribe(channel, &)
-    yield(find_subscription(channel))
+    subscription = find_subscription(channel)
+    subscription.channel = channel
+    yield(subscription)
   end
 
   def unsubscribe(channel)
@@ -72,6 +77,11 @@ class FakeRedis < MockRedis
   def publish_later(channel, message)
     subscriptions[channel] ||= Subscription.new(channel)
     subscriptions[channel].publish(message)
+  end
+
+  def flushall
+    subscriptions.clear
+    super
   end
 
   private
@@ -86,3 +96,9 @@ class FakeRedis < MockRedis
 end
 
 AppSettings.redis_client = -> { FakeRedis.new }
+
+RSpec.configure do |config|
+  config.before(:each) do
+    AppSettings.redis.with { |redis| redis.flushall }
+  end
+end

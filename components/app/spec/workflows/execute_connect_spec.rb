@@ -56,7 +56,7 @@ RSpec.describe ExecuteConnect, type: :call_controller do
     redis_connection = FakeRedis.new
     redis_connection.publish_later(
       "mod_twilio_stream:stream-sid",
-      { event: "disconnect" }.to_json
+      { event: "disconnect", streamSid: "stream-sid" }.to_json
     )
     handled_events = []
     event_handler = ->(event) { handled_events << event }

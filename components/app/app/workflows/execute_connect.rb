@@ -29,7 +29,7 @@ class ExecuteConnect < ExecuteTwiMLVerb
     def call
       event_notifier.notify(
         call_platform_client,
-        event: { media_stream_id: event.stream_sid, type: event.type }
+        media_stream_id: event.stream_sid, event: { type: event.type }
       )
     end
   end
