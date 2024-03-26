@@ -4,33 +4,37 @@ module CallPlatform
     def notify_media_stream_event(params); end
     def notify_tts_event(params); end
 
-    TestNumber = Struct.new(:number, :twiml_response, keyword_init: true)
+    TestNumber = Struct.new(:number, :twiml_response, :voice_url, :voice_method, keyword_init: true)
     DEFAULT_TEST_NUMBER = TestNumber.new(twiml_response: "<Response><Play>https://demo.twilio.com/docs/classic.mp3</Play></Response>").freeze
 
     class ConnectTestNumber < TestNumber
-      def twiml_response
-        "
-        <Response>
-          <Connect>
-            <!-- This is a comment -->
-            <Stream url=\"#{wss_server_url}\">
-              <Parameter name=\"aCustomParameter\" value=\"aCustomValue that was set in TwiML\" />
-            </Stream>
-          </Connect>
-        </Response>
-        "
-      end
+      def self.initialize_from(env: ENV, **options)
+        if env.key?("CONNECT_VOICE_URL")
+          new(
+            voice_url: env.fetch("CONNECT_VOICE_URL"),
+            voice_method: env.fetch("CONNECT_VOICE_METHOD", "POST"),
+            **options
+          )
+        else
+          twiml_response = <<~TWIML
+          <Response>
+            <Connect>
+              <!-- This is a comment -->
+              <Stream url=\"#{env.fetch("CONNECT_WS_SERVER_URL", "wss://example.com")}\">
+                <Parameter name=\"aCustomParameter\" value=\"aCustomValue that was set in TwiML\" />
+              </Stream>
+            </Connect>
+          </Response>
+          TWIML
 
-      private
-
-      def wss_server_url
-        ENV.fetch("CALL_PLATFORM_WS_SERVER_URL") { "wss://example.com" }
+          new(twiml_response:, **options)
+        end
       end
     end
 
     TEST_NUMBERS = [
       TestNumber.new(number: "1111", twiml_response: "<Response><Say>Hello World!</Say><Hangup /></Response>"),
-      ConnectTestNumber.new(number: "2222")
+      ConnectTestNumber.initialize_from(number: "2222")
     ].freeze
 
     def create_call(params)
@@ -39,8 +43,8 @@ module CallPlatform
       test_number = find_test_number(params.fetch(:to))
 
       InboundPhoneCallResponse.new(
-        voice_url: nil,
-        voice_method: nil,
+        voice_url: test_number.voice_url,
+        voice_method: test_number.voice_method,
         twiml: test_number.twiml_response,
         account_sid: SecureRandom.uuid,
         auth_token: SecureRandom.uuid,

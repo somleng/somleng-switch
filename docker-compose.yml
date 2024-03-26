@@ -136,7 +136,8 @@ services:
     environment:
       AHN_CORE_HOST: freeswitch
       CALL_PLATFORM_STUB_RESPONSES: "true"
-      CALL_PLATFORM_WS_SERVER_URL: "ws://testing:3001"
+      CONNECT_WS_SERVER_URL: "ws://testing:3001"
+      CONNECT_HTTP_SERVER_URL: "http://testing:3000"
       AHN_CORE_HTTP_PORT: "8080"
       AWS_DEFAULT_REGION: "ap-southeast-1"
       REDIS_URL: "redis://redis:6379/1"
