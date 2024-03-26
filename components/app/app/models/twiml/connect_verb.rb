@@ -8,16 +8,14 @@ module TwiML
 
         attr_reader :allow_insecure_urls
 
-        def initialize(**options)
-          super()
-          @allow_insecure_urls = options.fetch(:allow_insecure_urls) do
-            CallPlatform.configuration.stub_responses
-          end
+        def initialize(**)
+          super
+          @allow_insecure_urls = options.fetch(:allow_insecure_urls, false)
         end
 
         def parse(node)
           node_options = super
-          node_options[:url] = node_options.dig(:attributes, "url")
+          node_options[:url] = attributes.fetch("url")
           node_options[:parameters] = build_parameters
           node_options
         end
@@ -43,10 +41,6 @@ module TwiML
 
           errors.add("<Stream> must only contain <Parameter> nouns")
           false
-        end
-
-        def parse_url_scheme(url)
-          URI(url.to_s).scheme
         end
 
         def build_parameters
@@ -80,8 +74,8 @@ module TwiML
       class Parser < TwiML::NodeParser
         def parse(node)
           node_options = super
-          node_options[:name] = node_options.dig(:attributes, "name")
-          node_options[:value] = node_options.dig(:attributes, "value")
+          node_options[:name] = attributes.fetch("name")
+          node_options[:value] = attributes.fetch("value")
           node_options
         end
 
@@ -141,7 +135,7 @@ module TwiML
       end
 
       def stream_noun
-        @stream_noun ||= StreamNoun.parse(nested_nodes.first)
+        @stream_noun ||= StreamNoun.parse(nested_nodes.first, **options)
       end
     end
 

@@ -32,7 +32,12 @@ class ExecuteTwiML < ApplicationWorkflow
         when "Record"
           ExecuteRecord.call(TwiML::RecordVerb.parse(verb), **options)
         when "Connect"
-          ExecuteConnect.call(TwiML::ConnectVerb.parse(verb), **options)
+          ExecuteConnect.call(
+            TwiML::ConnectVerb.parse(
+              verb,
+              allow_insecure_urls: options[:stub_call_platform_responses]
+            ), **options
+          )
         else
           raise(Errors::TwiMLError, "Invalid element <#{verb.name}>")
         end

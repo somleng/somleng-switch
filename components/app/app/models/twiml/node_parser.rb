@@ -3,9 +3,10 @@ require_relative "../errors"
 
 module TwiML
   class NodeParser
-    attr_reader :errors
+    attr_reader :options, :errors
 
-    def initialize
+    def initialize(**options)
+      @options = options
       @errors = Errors.new
     end
 
