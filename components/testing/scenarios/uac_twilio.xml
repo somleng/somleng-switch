@@ -88,6 +88,8 @@
     </action>
   </nop>
 
+  <pause milliseconds="3000"/>
+
   <!-- Play an out of band DTMF '1'                                     -->
   <nop>
     <action>
