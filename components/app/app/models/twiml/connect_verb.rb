@@ -6,6 +6,15 @@ module TwiML
       class Parser < TwiML::NodeParser
         VALID_NOUNS = [ "Parameter" ].freeze
 
+        attr_reader :allow_insecure_urls
+
+        def initialize(**options)
+          super()
+          @allow_insecure_urls = options.fetch(:allow_insecure_urls) do
+            CallPlatform.configuration.stub_responses
+          end
+        end
+
         def parse(node)
           node_options = super
           node_options[:url] = node_options.dig(:attributes, "url")
@@ -16,14 +25,28 @@ module TwiML
         private
 
         def valid?
-          validate_nested_nouns
+          validate_attributes && validate_nested_nouns
           super
         end
 
+        def validate_attributes
+          url_scheme = parse_url_scheme(attributes["url"])
+          return true if url_scheme == "wss"
+          return true if allow_insecure_urls && url_scheme == "ws"
+
+          errors.add("<Stream> must contain a valid wss 'url' attribute")
+          false
+        end
+
         def validate_nested_nouns
-          return if nested_nodes.all? { |nested_node| VALID_NOUNS.include?(nested_node.name) }
+          return true if nested_nodes.all? { |nested_node| VALID_NOUNS.include?(nested_node.name) }
 
           errors.add("<Stream> must only contain <Parameter> nouns")
+          false
+        end
+
+        def parse_url_scheme(url)
+          URI(url.to_s).scheme
         end
 
         def build_parameters
@@ -32,11 +55,15 @@ module TwiML
             result[parameter_noun.name] = parameter_noun.value
           end
         end
+
+        def parse_url_scheme(url)
+          URI(url.to_s).scheme
+        end
       end
 
       class << self
-        def parse(node)
-          super(node, parser: Parser.new)
+        def parse(node, **options)
+          super(node, parser: Parser.new(**options))
         end
       end
 
@@ -101,29 +128,16 @@ module TwiML
       private
 
       def valid?
-        validate_nested_nouns && validate_stream_attributes
+        validate_nested_nouns
 
         super
       end
 
       def validate_nested_nouns
-        return true if nested_nodes.one? && VALID_NOUNS.include?(nested_nodes.first.name)
+        return if nested_nodes.one? && VALID_NOUNS.include?(nested_nodes.first.name)
 
         valid_nouns = VALID_NOUNS.map { |noun| "<#{noun}>" }.join(", ")
         errors.add("<Connect> must contain exactly one of the following nouns: #{valid_nouns}")
-        false
-      end
-
-      def validate_stream_attributes
-        return true if url_scheme(stream_noun.attributes["url"]) == "wss"
-        return true if url_scheme(ENV.fetch("CALL_PLATFORM_WS_SERVER_URL", nil)) == "ws"
-
-        errors.add("<Stream> must contain a valid wss 'url' attribute")
-        false
-      end
-
-      def url_scheme(url)
-        URI(url.to_s).scheme
       end
 
       def stream_noun
@@ -132,8 +146,8 @@ module TwiML
     end
 
     class << self
-      def parse(node)
-        super(node, parser: Parser.new)
+      def parse(node, **options)
+        super(node, parser: Parser.new(**options))
       end
     end
 

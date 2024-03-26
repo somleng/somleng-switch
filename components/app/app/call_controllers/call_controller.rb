@@ -74,7 +74,14 @@ class CallController < Adhearsion::CallController
   end
 
   def prepare_twiml(call_properties)
+    p "----Preparing TwiML----"
+    p call_properties
+    p call_properties.voice_url
+
     return call_properties.twiml if call_properties.voice_url.blank?
+
+    p "Requesting TwiML"
+
 
     request_twiml(
       call_properties.voice_url,

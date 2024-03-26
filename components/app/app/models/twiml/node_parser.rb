@@ -15,7 +15,7 @@ module TwiML
 
       {
         name: node.name,
-        attributes: node.attributes.transform_values(&:value),
+        attributes:,
         content: node.content,
         text?: node.text?
       }
@@ -27,6 +27,10 @@ module TwiML
 
     def valid?
       errors.empty?
+    end
+
+    def attributes
+      node.attributes.transform_values(&:value)
     end
 
     def nested_nodes
