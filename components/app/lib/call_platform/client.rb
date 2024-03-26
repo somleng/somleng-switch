@@ -38,19 +38,15 @@ module CallPlatform
     end
 
     def notify_call_event(params)
-      response = http_client.post("/services/phone_call_events", params.to_json)
-
-      unless response.success?
-        Sentry.capture_message("Invalid phone call event", extra: { response_body: response.body })
-      end
+      notify_request("/services/phone_call_events", params)
     end
 
     def notify_tts_event(params)
-      response = http_client.post("/services/tts_events", params.to_json)
+      notify_request("/services/tts_events", params)
+    end
 
-      unless response.success?
-        Sentry.capture_message("Invalid TTS event", extra: { response_body: response.body })
-      end
+    def notify_media_stream_event(params)
+      notify_request("/services/media_stream_events", params)
     end
 
     def build_routing_parameters(params)
@@ -97,6 +93,14 @@ module CallPlatform
     end
 
     private
+
+    def notify_request(url, params)
+      response = http_client.post(url, params.to_json)
+
+      unless response.success?
+        Sentry.capture_message("Invalid Request to: #{url}", extra: { response_body: response.body })
+      end
+    end
 
     def make_request(uri, http_method: :post, params: {}, headers: {})
       response = http_client.run_request(http_method, uri, params.to_json, headers)

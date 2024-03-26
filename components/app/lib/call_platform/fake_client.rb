@@ -1,6 +1,7 @@
 module CallPlatform
   class FakeClient < Client
     def notify_call_event(params); end
+    def notify_media_stream_event(params); end
     def notify_tts_event(params); end
 
     TestNumber = Struct.new(:number, :twiml_response, keyword_init: true)

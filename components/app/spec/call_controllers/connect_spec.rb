@@ -3,7 +3,8 @@ require "spec_helper"
 RSpec.describe CallController, type: :call_controller do
   # from cassette
   VCR_CALL_SID = "6f362591-ab86-4d1a-b39b-40c87e7929fc".freeze
-  VCR_STREAM_SID = "eb1c009e-8015-4b8a-9ded-1ba6e5105c51".freeze
+  # set to * to re-record
+  VCR_STREAM_SID = "2a0f07e5-aa22-47ca-90e3-c119f98f92d0".freeze
 
   describe "<Connect>", :vcr, cassette: :media_stream do
     # From: https://www.twilio.com/docs/voice/twiml/connect
@@ -107,11 +108,11 @@ RSpec.describe CallController, type: :call_controller do
 
   def build_twilio_stream_events(events)
     result = [
-      { event: "connected" },
-      { event: "start" }
+      { event: "connected", streamSid: VCR_STREAM_SID },
+      { event: "start", streamSid: VCR_STREAM_SID }
     ]
     result.concat(Array(events))
-    result.push({ event: "disconnect" })
+    result.push({ event: "disconnect", streamSid: VCR_STREAM_SID })
   end
 
   def assert_twilio_stream(controller, &)

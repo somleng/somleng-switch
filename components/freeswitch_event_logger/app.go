@@ -32,47 +32,32 @@ func logHeartbeat(eventStr string, connIdx int) {
 	fmt.Println(string(jsonString))
 }
 
-func customEventHandler(ctx context.Context, rdb *redis.Client, eventStr string, connIdx int) {
+func customEventHandler(ctx context.Context, rdb *redis.Client, eventStr string) {
 	eventMap := fsock.FSEventStrToMap(eventStr, []string{})
-	jsonString, _ := json.Marshal(eventMap)
-	fmt.Println("Receiving custom Event")
-	fmt.Println(string(jsonString))
 
-	prefix := "mod_twilio_stream"
+	modTwilioStreamPrefix := "mod_twilio_stream"
 	eventName := eventMap["Event-Subclass"]
-	if strings.HasPrefix(eventName, prefix) {
-		payload := eventMap["Event-Payload"]
 
-		fmt.Println("--------START---------")
-		fmt.Println(payload)
-		fmt.Println("--------END---------")
-
-		result := make(map[string]any)
-		err := json.Unmarshal([]byte(payload), &result)
-		if err != nil {
-			panic(err)
-		}
-
-		stream_sid, stream_sid_ok := result["streamSid"].(string)
-		fmt.Println("--------START---------")
-		fmt.Println(result)
-		fmt.Println(stream_sid)
-		fmt.Println(stream_sid_ok)
-		fmt.Println("--------END---------")
-
-		if stream_sid_ok {
-			fmt.Println(stream_sid)
-			err := rdb.Publish(ctx, prefix+":"+stream_sid, payload).Err()
-			if err != nil {
-				panic(err)
-			}
-		} else {
-			fmt.Println("Unable to process streamSid")
-		}
-	} else {
-		fmt.Println("Unhandled Event Type:" + eventMap["Event-Subclass"])
+	if !strings.HasPrefix(eventName, modTwilioStreamPrefix) {
+		fmt.Println("Unhandled Event Type: " + eventName)
+		return
 	}
 
+	eventPayload := make(map[string]any)
+	err := json.Unmarshal([]byte(eventMap["Event-Payload"]), &eventPayload)
+	if err != nil {
+		fmt.Println("Failed to parse Event Payload: " + eventMap["Event-Payload"])
+		return
+	}
+
+	streamSid, streamSidExists := eventPayload["streamSid"].(string)
+	if !streamSidExists {
+		fmt.Println("Event does not contain streamSid: " + eventMap["Event-Payload"])
+		return
+	}
+
+	fmt.Println("Publishing Event:" + eventMap["Event-Payload"])
+	rdb.Publish(ctx, modTwilioStreamPrefix+":"+streamSid, eventPayload)
 }
 
 func fibDuration(durationUnit, maxDuration time.Duration) func() time.Duration {
@@ -99,7 +84,7 @@ func main() {
 	rdb := redis.NewClient(opt)
 
 	customEventHandlerWrapper := func(eventStr string, connIdx int) {
-		customEventHandler(ctx, rdb, eventStr, connIdx)
+		customEventHandler(ctx, rdb, eventStr)
 	}
 
 	evFilters := map[string][]string{

@@ -3,7 +3,7 @@ require_relative "execute_twiml_verb"
 class ExecuteConnect < ExecuteTwiMLVerb
   CHANNEL_PREFIX = "mod_twilio_stream".freeze
 
-  Event = Struct.new(:type, :disconnect?, keyword_init: true) do
+  Event = Struct.new(:type, :disconnect?, :stream_sid, keyword_init: true) do
     DISCONNECT_EVENTS = [ "connect_failed", "disconnect" ].freeze
 
     def self.parse(payload)
@@ -11,27 +11,35 @@ class ExecuteConnect < ExecuteTwiMLVerb
 
       new(
         type: ActiveSupport::StringInquirer.new(message.fetch("event")),
+        stream_sid: message.fetch("streamSid"),
         disconnect?: message.fetch("event").in?(DISCONNECT_EVENTS)
       )
     end
   end
 
   class EventHandler
-    attr_reader :event
+    attr_reader :event, :call_platform_client, :event_notifier
 
-    def initialize(event)
+    def initialize(event, call_platform_client:, event_notifier: MediaStreamEventNotifier.new)
       @event = event
+      @call_platform_client = call_platform_client
+      @event_notifier = event_notifier
     end
 
-    def call; end
+    def call
+      event_notifier.notify(
+        call_platform_client,
+        event: { media_stream_id: event.stream_sid, type: event.type }
+      )
+    end
   end
 
   attr_reader :redis_connection, :event_handler
 
-  def initialize(verb, redis_connection: -> { AppSettings.redis }, event_handler: ->(event) { EventHandler.new(event).call }, **options)
+  def initialize(verb, **options)
     super
-    @redis_connection = redis_connection
-    @event_handler = event_handler
+    @redis_connection = options.fetch(:redis_connection) { -> { AppSettings.redis } }
+    @event_handler = options.fetch(:event_handler) { ->(event) { EventHandler.new(event, call_platform_client:).call } }
   end
 
   def call

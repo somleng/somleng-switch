@@ -81,7 +81,7 @@ class FakeRedis < MockRedis
   end
 
   def find_subscription(channel)
-    subscriptions.fetch(channel) { default_subscription }
+    subscriptions.find(-> { default_subscription }) { |k, v| return v if File.fnmatch(k, channel) }
   end
 end
 
