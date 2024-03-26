@@ -113,90 +113,88 @@ namespace
     std::string type;
     std::string streamSid;
     cJSON *json = parse_json(session, msg, type, streamSid);
+
     if (json)
     {
       TwilioHelper *pTwilioHelper = static_cast<TwilioHelper *>(tech_pvt->pTwilioHelper);
       if (pTwilioHelper)
-        if (0 == streamSid.compare(pTwilioHelper->getStreamId()))
+        if (0 == type.compare("media"))
         {
-          if (0 == type.compare("media"))
+          cJSON *jsonData = cJSON_GetObjectItem(json, "media");
+          if (jsonData)
           {
-            cJSON *jsonData = cJSON_GetObjectItem(json, "media");
-            if (jsonData)
+
+            const char *payload = cJSON_GetObjectCstr(jsonData, "payload");
+            if (payload)
             {
-              const char *payload = cJSON_GetObjectCstr(jsonData, "payload");
-              if (payload)
-              {
-                std::string rawAudio = drachtio::base64_decode(payload);
-                AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
-                pAudioPipe->lockAudioBuffer();
-                size_t available = pAudioPipe->binaryReadSpaceAvailable();
-                int num_samples_8 = rawAudio.length();
-                if (num_samples_8 <= (available * 2))
-                {
-                  for (int i = 0; i < num_samples_8; i++)
-                  {
-                    int16_t sample = ulaw_to_linear(rawAudio.at(i));
-                    uint8_t buf[2];
-                    memcpy(buf, &sample, sizeof(int16_t));
-                    pAudioPipe->binaryReadPush(buf, sizeof(int16_t));
-                  }
-                }
-                else
-                {
-                  switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_ERROR, "(%u) dropping incoming packets!\n",
-                                    tech_pvt->id);
-                }
-                pAudioPipe->unlockAudioBuffer();
-              }
-            }
-          }
-          else if (0 == type.compare("mark"))
-          {
-            cJSON *jsonData = cJSON_GetObjectItem(json, "mark");
-            if (jsonData)
-            {
-              const char *name = cJSON_GetObjectCstr(jsonData, "name");
-              if (name)
-              {
-                AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
-                if (pAudioPipe != nullptr)
-                {
-                  pAudioPipe->lockAudioBuffer();
-                  pAudioPipe->binaryReadMark(name);
-                  pAudioPipe->unlockAudioBuffer();
-                }
-                send_event(tech_pvt, session, EVENT_SOCKET_MARK, name);
-              }
-            }
-          }
-          else if (0 == type.compare("clear"))
-          {
-            AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
-            TwilioHelper *pTwilioHelper = static_cast<TwilioHelper *>(tech_pvt->pTwilioHelper);
-            if (pAudioPipe != nullptr && pTwilioHelper != nullptr)
-            {
+
+              std::string rawAudio = drachtio::base64_decode(payload);
+              AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
               pAudioPipe->lockAudioBuffer();
-              pAudioPipe->binaryReadClear();
-              auto marks = pAudioPipe->clearExpiredMarks();
-              for (int i = 0; i < marks.size(); i++)
+              size_t available = pAudioPipe->binaryReadSpaceAvailable();
+              int num_samples_8 = rawAudio.length();
+
+              if (num_samples_8 <= (available * 2))
               {
-                pTwilioHelper->mark(pAudioPipe, marks[i]);
-                send_event(tech_pvt, session, EVENT_MARK, marks[i].c_str());
+                for (int i = 0; i < num_samples_8; i++)
+                {
+                  int16_t sample = ulaw_to_linear(rawAudio.at(i));
+                  uint8_t buf[2];
+                  memcpy(buf, &sample, sizeof(int16_t));
+                  pAudioPipe->binaryReadPush(buf, sizeof(int16_t));
+                }
+              }
+              else
+              {
+                switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_ERROR, "(%u) dropping incoming packets!\n",
+                                  tech_pvt->id);
               }
               pAudioPipe->unlockAudioBuffer();
             }
-            send_event(tech_pvt, session, EVENT_SOCKET_CLEAR, NULL);
           }
-          else
+        }
+        else if (0 == type.compare("mark"))
+        {
+          cJSON *jsonData = cJSON_GetObjectItem(json, "mark");
+          if (jsonData)
           {
-            switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "(%u) processIncomingMessage - unsupported msg type %s\n", tech_pvt->id, type.c_str());
+            const char *name = cJSON_GetObjectCstr(jsonData, "name");
+            if (name)
+            {
+              AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
+              if (pAudioPipe != nullptr)
+              {
+                pAudioPipe->lockAudioBuffer();
+                pAudioPipe->binaryReadMark(name);
+                pAudioPipe->unlockAudioBuffer();
+              }
+              send_event(tech_pvt, session, EVENT_SOCKET_MARK, name);
+            }
           }
+        }
+        else if (0 == type.compare("clear"))
+        {
+          AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
+          TwilioHelper *pTwilioHelper = static_cast<TwilioHelper *>(tech_pvt->pTwilioHelper);
+          if (pAudioPipe != nullptr && pTwilioHelper != nullptr)
+          {
+            pAudioPipe->lockAudioBuffer();
+            pAudioPipe->binaryReadClear();
+            auto marks = pAudioPipe->clearExpiredMarks();
+            for (int i = 0; i < marks.size(); i++)
+            {
+              pTwilioHelper->mark(pAudioPipe, marks[i]);
+              send_event(tech_pvt, session, EVENT_MARK, marks[i].c_str());
+            }
+            pAudioPipe->unlockAudioBuffer();
+          }
+          send_event(tech_pvt, session, EVENT_SOCKET_CLEAR, NULL);
         }
         else
         {
-          switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "(%u) processIncomingMessage - session id doesn't match %s != %s\n", tech_pvt->id, tech_pvt->sessionId, streamSid.c_str());
+          switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "(%u) processIncomingMessage - unsupported msg type %s\n", tech_pvt->id, type.c_str());
         }
+
       cJSON_Delete(json);
     }
     else
