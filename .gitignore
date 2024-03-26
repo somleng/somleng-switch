@@ -23,4 +23,4 @@ examples.txt
 
 node_modules
 nohup.out
-components/testing/support/ws_server/audiotest.raw
+.raw
