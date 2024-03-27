@@ -35,6 +35,12 @@
        }
     },
     "startTimeout": 120,
+    "dependsOn": [
+      {
+        "containerName": "redis",
+        "condition": "HEALTHY"
+      }
+    ],
     "healthCheck": {
       "command": [ "CMD-SHELL", "wget --server-response --spider --quiet http://localhost:3000/health_checks 2>&1 | grep '200 OK' > /dev/null" ],
       "interval": 10,
@@ -85,6 +91,10 @@
       {
         "name": "SERVICES_FUNCTION_ARN",
         "value": "${services_function_arn}"
+      },
+      {
+        "name": "REDIS_URL",
+        "value": "redis://localhost:6379/1"
       }
     ]
   },
@@ -217,6 +227,30 @@
     ]
   },
   {
+    "name": "redis",
+    "image": "public.ecr.aws/docker/library/redis:alpine",
+    "logConfiguration": {
+      "logDriver": "awslogs",
+       "options": {
+         "awslogs-group": "${redis_logs_group}",
+         "awslogs-region": "${logs_group_region}",
+         "awslogs-stream-prefix": "${app_environment}"
+       }
+    },
+    "essential": true,
+    "healthCheck": {
+      "command": [ "CMD-SHELL", "redis-cli", "--raw", "incr", "ping" ],
+      "interval": 10,
+      "retries": 10,
+      "timeout": 5
+    },
+    "portMappings": [
+      {
+        "containerPort": 6379
+      }
+    ]
+  },
+  {
     "name": "freeswitch-event-logger",
     "image": "${freeswitch_event_logger_image}:latest",
     "logConfiguration": {
@@ -228,7 +262,7 @@
        }
     },
     "startTimeout": 120,
-    "essential": false,
+    "essential": true,
     "secrets": [
       {
         "name": "EVENT_SOCKET_PASSWORD",
@@ -239,12 +273,20 @@
       {
         "containerName": "freeswitch",
         "condition": "HEALTHY"
+      },
+      {
+        "containerName": "redis",
+        "condition": "HEALTHY"
       }
     ],
     "environment": [
       {
         "name": "EVENT_SOCKET_HOST",
         "value": "localhost:${freeswitch_event_socket_port}"
+      },
+      {
+        "name": "REDIS_URL",
+        "value": "redis://localhost:6379/1"
       }
     ]
   }

@@ -51,6 +51,11 @@ resource "aws_cloudwatch_log_group" "freeswitch_event_logger" {
   retention_in_days = 7
 }
 
+resource "aws_cloudwatch_log_group" "redis" {
+  name = "${var.switch_identifier}-redis"
+  retention_in_days = 7
+}
+
 # Security Group
 resource "aws_security_group" "switch" {
   name   = var.switch_identifier
@@ -389,6 +394,7 @@ data "template_file" "switch" {
     freeswitch_logs_group = aws_cloudwatch_log_group.freeswitch.name
     freeswitch_event_logger_logs_group = aws_cloudwatch_log_group.freeswitch_event_logger.name
     app_logs_group = aws_cloudwatch_log_group.switch_app.name
+    redis_logs_group = aws_cloudwatch_log_group.redis.name
     logs_group_region = var.aws_region
     app_environment = var.app_environment
 
