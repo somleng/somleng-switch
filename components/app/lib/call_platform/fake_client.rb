@@ -1,40 +1,41 @@
 module CallPlatform
   class FakeClient < Client
     def notify_call_event(params); end
-    def notify_media_stream_event(params); end
     def notify_tts_event(params); end
+    def notify_media_stream_event(params); end
 
     TestNumber = Struct.new(:number, :twiml_response, :voice_url, :voice_method, keyword_init: true)
     DEFAULT_TEST_NUMBER = TestNumber.new(twiml_response: "<Response><Play>https://demo.twilio.com/docs/classic.mp3</Play></Response>").freeze
 
-    class ConnectTestNumber < TestNumber
-      def self.initialize_from(env: ENV, **options)
-        if env.key?("CONNECT_VOICE_URL")
-          new(
-            voice_url: env.fetch("CONNECT_VOICE_URL"),
-            voice_method: env.fetch("CONNECT_VOICE_METHOD", "POST"),
-            **options
-          )
-        else
-          twiml_response = <<~TWIML
-          <Response>
-            <Connect>
-              <!-- This is a comment -->
-              <Stream url=\"#{env.fetch("CONNECT_WS_SERVER_URL", "wss://example.com")}\">
-                <Parameter name=\"aCustomParameter\" value=\"aCustomValue that was set in TwiML\" />
-              </Stream>
-            </Connect>
-          </Response>
-          TWIML
+    class ConnectTestNumberWithTwiMLResponse < TestNumber
+      def twiml_response
+        <<~TWIML
+        <Response>
+          <Connect>
+            <!-- This is a comment -->
+            <Stream url=\"#{connect_ws_server_url}\">
+              <Parameter name=\"aCustomParameter\" value=\"aCustomValue that was set in TwiML\" />
+            </Stream>
+          </Connect>
+        </Response>
+        TWIML
+      end
 
-          new(twiml_response:, **options)
-        end
+      private
+
+      def connect_ws_server_url
+        ENV.fetch("CONNECT_WS_SERVER_URL", "wss://example.com")
       end
     end
 
     TEST_NUMBERS = [
       TestNumber.new(number: "1111", twiml_response: "<Response><Say>Hello World!</Say><Hangup /></Response>"),
-      ConnectTestNumber.initialize_from(number: "2222")
+      ConnectTestNumberWithTwiMLResponse.new(number: "2222"),
+      TestNumber.new(
+        number: "3333",
+        voice_url: ENV.fetch("CONNECT_VOICE_URL", "https://example.com/connect"),
+        voice_method: ENV.fetch("CONNECT_VOICE_METHOD", "POST")
+      )
     ].freeze
 
     def create_call(params)

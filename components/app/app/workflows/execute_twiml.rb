@@ -2,7 +2,7 @@ class ExecuteTwiML < ApplicationWorkflow
   attr_reader :context, :twiml, :logger, :options
 
   def initialize(**options)
-    super
+    super()
     @options = options
     @context = options.fetch(:context)
     @twiml = options.fetch(:twiml)

@@ -1,5 +1,5 @@
-class NotifyCallEvent
-  attr_reader :event, :client
+class NotifyCallEvent < ApplicationWorkflow
+  attr_reader :event, :client, :call_event_notifier
 
   EVENT_TYPES = {
     Adhearsion::Event::Ringing => :ringing,
@@ -7,9 +7,11 @@ class NotifyCallEvent
     Adhearsion::Event::End => :completed
   }.freeze
 
-  def initialize(event, client: CallPlatform::Client.new)
+  def initialize(event, client: CallPlatform::Client.new, call_event_notifier: CallEventNotifier.new)
+    super()
     @event = event
     @client = client
+    @call_event_notifier = call_event_notifier
   end
 
   def self.subscribe_events(call, client:)
@@ -19,7 +21,7 @@ class NotifyCallEvent
   end
 
   def call
-    client.notify_call_event(call_event_data)
+    call_event_notifier.notify(client, call_event_data)
   end
 
   private
