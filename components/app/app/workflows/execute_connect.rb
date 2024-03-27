@@ -46,7 +46,7 @@ class ExecuteConnect < ExecuteTwiMLVerb
 
     url = verb.stream_noun.url
     custom_parameters = verb.stream_noun.parameters
-    response = create_media_stream(url:, custom_parameters:)
+    response = create_media_stream(url:, custom_parameters:, tracks: :inbound)
 
     execute_command(url:, custom_parameters:, stream_sid: response.id)
   end
@@ -54,7 +54,9 @@ class ExecuteConnect < ExecuteTwiMLVerb
   private
 
   def create_media_stream(**params)
-    call_platform_client.create_media_stream(phone_call_id: call_properties.call_sid, **params)
+    call_platform_client.create_media_stream(
+      phone_call_id: call_properties.call_sid, **params
+    )
   end
 
   def execute_command(stream_sid:, **)

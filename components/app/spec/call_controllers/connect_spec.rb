@@ -58,7 +58,7 @@ RSpec.describe CallController, type: :call_controller do
             expect(command.metadata).to include(
               call_sid: controller.call_properties.call_sid,
               account_sid: controller.call_properties.account_sid,
-              stream_sid: "143fb02b-f0ce-4258-b957-ebdd60a2945d" # From VCR Cassette
+              stream_sid: "0edc29ef-e45f-408a-89f2-3266ce3352b6" # From VCR Cassette
             )
           end
           expect(controller).to have_received(:play_audio).with("http://api.twilio.com/cowbell.mp3")

@@ -5,7 +5,7 @@ http_interactions:
     uri: http://api.lvh.me:3000/services/media_streams
     body:
       encoding: UTF-8
-      string: '{"phone_call_id":"6f362591-ab86-4d1a-b39b-40c87e7929fc","url":"wss://mystream.ngrok.io/audiostream","custom_parameters":{}}'
+      string: '{"phone_call_id":"6f362591-ab86-4d1a-b39b-40c87e7929fc","url":"wss://mystream.ngrok.io/audiostream","custom_parameters":{},"tracks":"inbound"}'
     headers:
       Accept:
       - application/json
@@ -35,28 +35,29 @@ http_interactions:
       Content-Type:
       - application/vnd.api+json; charset=utf-8
       Etag:
-      - W/"266feb0f5c581cde79a7409e44bb3e60"
+      - W/"302699c3096fb77ddd04182e45831fd4"
       Cache-Control:
       - max-age=0, private, must-revalidate
       X-Request-Id:
-      - 900d0b52-2a34-4a65-a856-3f9320c2989e
+      - 527316fc-9fa0-4f2d-9fe8-0c554789a667
       X-Runtime:
-      - '0.060121'
+      - '0.236037'
       Server-Timing:
-      - start_processing.action_controller;dur=0.01, sql.active_record;dur=5.57, instantiation.active_record;dur=2.31,
-        transaction.active_record;dur=2.94, process_action.action_controller;dur=22.66
+      - sql.active_record;dur=36.66, start_processing.action_controller;dur=0.00,
+        instantiation.active_record;dur=17.53, transaction.active_record;dur=7.59,
+        process_action.action_controller;dur=104.28
       Content-Length:
       - '162'
     body:
       encoding: UTF-8
-      string: '{"created_at":"2024-03-26T13:46:06Z","updated_at":"2024-03-26T13:46:06Z","sid":"143fb02b-f0ce-4258-b957-ebdd60a2945d","url":"wss://mystream.ngrok.io/audiostream"}'
-  recorded_at: Tue, 26 Mar 2024 13:46:06 GMT
+      string: '{"created_at":"2024-03-27T10:05:04Z","updated_at":"2024-03-27T10:05:04Z","sid":"0edc29ef-e45f-408a-89f2-3266ce3352b6","url":"wss://mystream.ngrok.io/audiostream"}'
+  recorded_at: Wed, 27 Mar 2024 10:05:04 GMT
 - request:
     method: post
     uri: http://api.lvh.me:3000/services/media_stream_events
     body:
       encoding: UTF-8
-      string: '{"media_stream_id":"143fb02b-f0ce-4258-b957-ebdd60a2945d","event":{"type":"connect"}}'
+      string: '{"media_stream_id":"0edc29ef-e45f-408a-89f2-3266ce3352b6","event":{"type":"connect"}}'
     headers:
       Accept:
       - application/json
@@ -88,24 +89,24 @@ http_interactions:
       Cache-Control:
       - no-cache
       X-Request-Id:
-      - 75e07ebb-77f2-4adf-974d-6e283c66d5db
+      - 0c2e6636-804a-403d-9e78-90e59e064750
       X-Runtime:
-      - '0.020152'
+      - '0.061709'
       Server-Timing:
-      - start_processing.action_controller;dur=0.00, sql.active_record;dur=6.72, instantiation.active_record;dur=0.12,
-        transaction.active_record;dur=2.58, process_action.action_controller;dur=10.16
+      - sql.active_record;dur=8.69, start_processing.action_controller;dur=0.00, instantiation.active_record;dur=0.18,
+        transaction.active_record;dur=4.89, process_action.action_controller;dur=39.13
       Content-Length:
       - '0'
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Tue, 26 Mar 2024 13:46:06 GMT
+  recorded_at: Wed, 27 Mar 2024 10:05:04 GMT
 - request:
     method: post
     uri: http://api.lvh.me:3000/services/media_stream_events
     body:
       encoding: UTF-8
-      string: '{"media_stream_id":"143fb02b-f0ce-4258-b957-ebdd60a2945d","event":{"type":"start"}}'
+      string: '{"media_stream_id":"0edc29ef-e45f-408a-89f2-3266ce3352b6","event":{"type":"start"}}'
     headers:
       Accept:
       - application/json
@@ -137,24 +138,24 @@ http_interactions:
       Cache-Control:
       - no-cache
       X-Request-Id:
-      - 13fcbb11-6020-4b07-82d7-da813bd574ff
+      - bfb621e4-4d86-4ebe-93fb-9a8f66e12871
       X-Runtime:
-      - '0.016895'
+      - '0.013973'
       Server-Timing:
-      - start_processing.action_controller;dur=0.00, sql.active_record;dur=2.76, instantiation.active_record;dur=0.10,
-        transaction.active_record;dur=3.75, process_action.action_controller;dur=8.50
+      - start_processing.action_controller;dur=0.00, sql.active_record;dur=2.40, instantiation.active_record;dur=0.15,
+        transaction.active_record;dur=2.25, process_action.action_controller;dur=5.24
       Content-Length:
       - '0'
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Tue, 26 Mar 2024 13:46:06 GMT
+  recorded_at: Wed, 27 Mar 2024 10:05:04 GMT
 - request:
     method: post
     uri: http://api.lvh.me:3000/services/media_stream_events
     body:
       encoding: UTF-8
-      string: '{"media_stream_id":"143fb02b-f0ce-4258-b957-ebdd60a2945d","event":{"type":"disconnect"}}'
+      string: '{"media_stream_id":"0edc29ef-e45f-408a-89f2-3266ce3352b6","event":{"type":"disconnect"}}'
     headers:
       Accept:
       - application/json
@@ -186,16 +187,16 @@ http_interactions:
       Cache-Control:
       - no-cache
       X-Request-Id:
-      - d4bfcce1-6ef1-48c0-8b71-9f1bce4459ae
+      - 5407fbcd-5e1e-4545-ae50-233e70f0f2ea
       X-Runtime:
-      - '0.012087'
+      - '0.012400'
       Server-Timing:
-      - start_processing.action_controller;dur=0.00, sql.active_record;dur=2.27, instantiation.active_record;dur=0.08,
-        transaction.active_record;dur=2.18, process_action.action_controller;dur=4.72
+      - start_processing.action_controller;dur=0.00, sql.active_record;dur=2.39, instantiation.active_record;dur=0.09,
+        transaction.active_record;dur=1.82, process_action.action_controller;dur=4.88
       Content-Length:
       - '0'
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Tue, 26 Mar 2024 13:46:06 GMT
+  recorded_at: Wed, 27 Mar 2024 10:05:04 GMT
 recorded_with: VCR 6.2.0

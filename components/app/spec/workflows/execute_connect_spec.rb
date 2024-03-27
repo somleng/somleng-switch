@@ -28,6 +28,7 @@ RSpec.describe ExecuteConnect, type: :call_controller do
     expect(call_platform_client).to have_received(:create_media_stream).with(
       url: "wss://example.com/audio",
       phone_call_id: "call-sid",
+      tracks: :inbound,
       custom_parameters: {
         "foo" => "bar",
         "bar" => "baz"
