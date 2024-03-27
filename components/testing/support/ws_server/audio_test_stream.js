@@ -26,14 +26,16 @@ class AudioTestStream {
 
       if (ws) {
         console.log(`${JSON.stringify(msg)}`)
-        ws.send(JSON.stringify(msg))
+        ws.sendUTF(JSON.stringify(msg))
       }
     }
+  }
 
+  markAudio(ws) {
     const msg = this.makeMark()
     if (ws) {
       console.log(`${JSON.stringify(msg)}`)
-      ws.send(JSON.stringify(msg))
+      ws.sendUTF(JSON.stringify(msg))
     }
   }
 
