@@ -32,7 +32,7 @@ namespace
   static const char *requestedBufferSecs = std::getenv("MOD_TWILIO_STREAM_BUFFER_SECS");
   static int nAudioBufferSecs = std::max(1, std::min(requestedBufferSecs ? ::atoi(requestedBufferSecs) : 2, 5));
   static const char *requestedNumServiceThreads = std::getenv("MOD_TWILIO_STREAM_SERVICE_THREADS");
-  static const char *mySubProtocolName = std::getenv("MOD_TWILIO_STREAM_SUBPROTOCOL_NAME") ? std::getenv("MOD_TWILIO_STREAM_SUBPROTOCOL_NAME") : "audio.drachtio.org";
+  static const char *mySubProtocolName = std::getenv("MOD_TWILIO_STREAM_SUBPROTOCOL_NAME") ? std::getenv("MOD_TWILIO_STREAM_SUBPROTOCOL_NAME") : "audio.somleng.org";
   static unsigned int nServiceThreads = std::max(1, std::min(requestedNumServiceThreads ? ::atoi(requestedNumServiceThreads) : 1, 5));
   static unsigned int idxCallCount = 0;
   static uint32_t playCount = 0;
@@ -128,7 +128,7 @@ namespace
             if (payload)
             {
 
-              std::string rawAudio = drachtio::base64_decode(payload);
+              std::string rawAudio = somleng::base64_decode(payload);
               AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
               pAudioPipe->lockAudioBuffer();
               size_t available = pAudioPipe->binaryReadSpaceAvailable();

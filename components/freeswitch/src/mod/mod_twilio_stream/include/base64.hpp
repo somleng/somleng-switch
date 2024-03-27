@@ -38,7 +38,7 @@
 
 #include <string>
 
-namespace drachtio {
+namespace somleng {
 
 static std::string const base64_chars =
              "ABCDEFGHIJKLMNOPQRSTUVWXYZ"

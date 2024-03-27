@@ -13,7 +13,7 @@ using namespace std::chrono;
 
 TwilioHelper::TwilioHelper(const char *config)
 {
-  std::string parsedConfig = drachtio::base64_decode(std::string(config));
+  std::string parsedConfig = somleng::base64_decode(std::string(config));
   cJSON *json = cJSON_Parse(parsedConfig.c_str());
   if (json)
   {
@@ -169,7 +169,7 @@ void TwilioHelper::audio(AudioPipe *pAudioPipe, bool inbound, int16_t *samples, 
   for (int i = 0; i < num_samples; i++)
     base64data << (char)linear_to_ulaw(samples[i]);
 
-  std::string payload = drachtio::base64_encode(base64data.str());
+  std::string payload = somleng::base64_encode(base64data.str());
 
   std::stringstream json;
   json << R"({ )";
