@@ -20,7 +20,7 @@ gem "skylight"
 gem "sucker_punch"
 gem "tts_voices", github: "somleng/tts_voices"
 
-group :development, :test do
+group :development do
   gem "rubocop-rails-omakase", require: false
   gem "rubocop-performance", require: false
   gem "rubocop-rspec", require: false

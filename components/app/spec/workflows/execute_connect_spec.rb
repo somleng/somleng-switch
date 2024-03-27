@@ -17,7 +17,7 @@ RSpec.describe ExecuteConnect, type: :call_controller do
 
     ExecuteConnect.call(
       verb,
-      redis_connection: -> { FakeRedis.new(default_subscription: stub_redis_subscription) },
+      redis_connection: -> { stub_fake_redis },
       **build_workflow_options(
         context: controller,
         call_platform_client:,
@@ -53,13 +53,11 @@ RSpec.describe ExecuteConnect, type: :call_controller do
   it "handles stream disconnects" do
     verb = build_verb
     call_platform_client = stub_call_platform_client(stream_sid: "stream-sid")
-    redis_connection = FakeRedis.new
-    redis_connection.publish_later(
-      "mod_twilio_stream:stream-sid",
-      { event: "disconnect", streamSid: "stream-sid" }.to_json
-    )
+    redis_connection = stub_fake_redis(has_messages_on_channel: "mod_twilio_stream:stream-sid")
     handled_events = []
     event_handler = ->(event) { handled_events << event }
+    disconnect_event = ExecuteConnect::Event.new(disconnect?: true)
+    allow(ExecuteConnect::Event).to receive(:parse).and_return(disconnect_event)
 
     ExecuteConnect.call(
       verb,
@@ -67,21 +65,61 @@ RSpec.describe ExecuteConnect, type: :call_controller do
       **build_workflow_options(call_platform_client:, event_handler:)
     )
 
-    expect(handled_events.first).to have_attributes(
-      disconnect?: true
-    )
+    expect(redis_connection).to have_received(:unsubscribe).with("mod_twilio_stream:stream-sid")
+    expect(handled_events).to match_array([ disconnect_event ])
   end
 
-  def stub_redis_subscription
-    fake_subscription = FakeRedis::DefaultSubscription.new
-    allow(fake_subscription).to receive(:message)
-    fake_subscription
+
+  describe ExecuteConnect::Event do
+    it "parses events" do
+      event_payload = { event: "connect_failed", streamSid: "stream-sid" }.to_json
+
+      event = ExecuteConnect::Event.parse(event_payload)
+
+      expect(event).to have_attributes(
+        type: "connect_failed",
+        disconnect?: true,
+        stream_sid: "stream-sid"
+      )
+    end
+  end
+
+  describe ExecuteConnect::EventHandler do
+    it "handles events" do
+      call_platform_client = stub_call_platform_client
+      event = ExecuteConnect::Event.new(type: "connect_failed", stream_sid: "stream-sid")
+      event_handler = ExecuteConnect::EventHandler.new(event, call_platform_client:)
+
+      event_handler.call
+
+      expect(call_platform_client).to have_received(
+        :notify_media_stream_event
+      ).with(media_stream_id: "stream-sid", event: { type: "connect_failed" })
+    end
+  end
+
+  def stub_fake_redis(has_messages_on_channel: nil, messages: [])
+    if has_messages_on_channel.present?
+      fake_redis = FakeRedis.new
+      if messages.any?
+        messages.each { |message| fake_redis.publish_later(has_messages_on_channel, message) }
+      else
+        fake_redis.publish_later(has_messages_on_channel, "dummy-message")
+      end
+    else
+      fake_subscription = FakeRedis::DefaultSubscription.new
+      allow(fake_subscription).to receive(:message)
+      fake_redis = FakeRedis.new(default_subscription: fake_subscription)
+    end
+    allow(fake_redis).to receive(:unsubscribe).and_call_original
+    fake_redis
   end
 
   def stub_call_platform_client(stream_sid: "stream-sid")
     instance_double(
       CallPlatform::Client,
-      create_media_stream: CallPlatform::Client::AudioStreamResponse.new(id: stream_sid)
+      create_media_stream: CallPlatform::Client::AudioStreamResponse.new(id: stream_sid),
+      notify_media_stream_event: nil
     )
   end
 
