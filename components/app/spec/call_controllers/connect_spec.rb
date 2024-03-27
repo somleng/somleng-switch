@@ -2,10 +2,9 @@ require "spec_helper"
 
 RSpec.describe CallController, type: :call_controller do
   # from cassette
-  VCR_CALL_SID = "6f362591-ab86-4d1a-b39b-40c87e7929fc".freeze
-  VCR_STREAM_SID = "143fb02b-f0ce-4258-b957-ebdd60a2945d".freeze
-
   describe "<Connect>", :vcr, cassette: :media_stream do
+    let(:vcr_call_sid) { "6f362591-ab86-4d1a-b39b-40c87e7929fc" }
+
     # From: https://www.twilio.com/docs/voice/twiml/connect
 
     # <Connect> is a TwiML verb that works together with nested TwiML nouns to connect
@@ -37,7 +36,7 @@ RSpec.describe CallController, type: :call_controller do
         it "connects to a websockets stream" do
           controller = build_controller(
             stub_voice_commands: :play_audio,
-            call_properties: { call_sid: VCR_CALL_SID }
+            call_properties: { call_sid: vcr_call_sid }
           )
 
           stub_twilio_stream(controller)
@@ -59,7 +58,7 @@ RSpec.describe CallController, type: :call_controller do
             expect(command.metadata).to include(
               call_sid: controller.call_properties.call_sid,
               account_sid: controller.call_properties.account_sid,
-              stream_sid: VCR_STREAM_SID
+              stream_sid: "143fb02b-f0ce-4258-b957-ebdd60a2945d" # From VCR Cassette
             )
           end
           expect(controller).to have_received(:play_audio).with("http://api.twilio.com/cowbell.mp3")
@@ -67,7 +66,7 @@ RSpec.describe CallController, type: :call_controller do
 
         it "handles custom parameters" do
           controller = build_controller(
-            call_properties: { call_sid: VCR_CALL_SID }
+            call_properties: { call_sid: vcr_call_sid }
           )
           stub_twilio_stream(controller)
           stub_twiml_request(controller, response: <<~TWIML)

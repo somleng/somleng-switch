@@ -7,6 +7,7 @@ class ResolveTTSVoice < ApplicationWorkflow
   attr_reader :default, :voice, :language
 
   def initialize(default:, **options)
+    super()
     @default = find(default)
     @voice = options[:voice]
     @language = options[:language]

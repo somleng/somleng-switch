@@ -21,6 +21,7 @@ class FakeRedis < MockRedis
     attr_reader :messages
 
     def initialize(channel)
+      super()
       @channel = channel
       @messages = []
     end

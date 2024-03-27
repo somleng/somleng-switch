@@ -79,7 +79,7 @@ RSpec.describe ExecuteConnect, type: :call_controller do
   end
 
   def stub_call_platform_client(stream_sid: "stream-sid")
-    call_platform_client = instance_double(
+    instance_double(
       CallPlatform::Client,
       create_media_stream: CallPlatform::Client::AudioStreamResponse.new(id: stream_sid)
     )

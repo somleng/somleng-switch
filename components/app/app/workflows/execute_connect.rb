@@ -2,10 +2,9 @@ require_relative "execute_twiml_verb"
 
 class ExecuteConnect < ExecuteTwiMLVerb
   CHANNEL_PREFIX = "mod_twilio_stream".freeze
+  DISCONNECT_EVENTS = [ "connect_failed", "disconnect" ].freeze
 
   Event = Struct.new(:type, :disconnect?, :stream_sid, keyword_init: true) do
-    DISCONNECT_EVENTS = [ "connect_failed", "disconnect" ].freeze
-
     def self.parse(payload)
       message = JSON.parse(payload)
 
