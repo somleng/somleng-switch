@@ -3,7 +3,7 @@ var HttpDispatcher = require("httpdispatcher");
 var assert = require('assert');
 
 const argv = require("minimist")(process.argv.slice(2));
-const port = argv.port && parseInt(argv.port) ? parseInt(argv.port) : 8888;
+const httpPort = argv.port && parseInt(argv.port) ? parseInt(argv.port) : 8888;
 const api_key = argv.api_key  ? argv.api_key : null;
 const agent_id = argv.agent_id  ? argv.agent_id : null;
 
@@ -23,7 +23,7 @@ function handleRequest(request, response) {
 dispatcher.onPost("/connect", async function (req, res) {
   console.log("POST TwiML");
   const call_id = await registerCall()
-  res.write(makeTwilioConnect(call_id)); 
+  res.write(makeTwilioConnect(call_id));
   res.end();
 });
 
@@ -48,7 +48,7 @@ async function registerCall() {
 }
 
 function makeTwilioConnect(call_id) {
-  const wsUrl = `wss://api.retellai.com/audio-websocket/${call_id}`; 
+  const wsUrl = `wss://api.retellai.com/audio-websocket/${call_id}`;
   console.log(`makeTwilioConnect socker url: ${wsUrl}`)
   return `<?xml version="1.0" encoding="UTF-8" ?>
   <Response>
@@ -58,6 +58,6 @@ function makeTwilioConnect(call_id) {
   </Response>`
 }
 
-wsserver.listen(http_port, function () {
-  console.log("Server listening on: http://localhost:%s", http_port);
+wsserver.listen(httpPort, function () {
+  console.log("Server listening on: http://localhost:%s", httpPort);
 });

@@ -44,8 +44,8 @@ func customEventHandler(ctx context.Context, rdb *redis.Client, eventStr string)
 	}
 
 	eventPayload := make(map[string]any)
-	err := json.Unmarshal([]byte(eventMap["Event-Payload"]), &eventPayload)
-	if err != nil {
+	parsePayloadError := json.Unmarshal([]byte(eventMap["Event-Payload"]), &eventPayload)
+	if parsePayloadError != nil {
 		fmt.Println("Failed to parse Event Payload: " + eventMap["Event-Payload"])
 		return
 	}
@@ -57,7 +57,11 @@ func customEventHandler(ctx context.Context, rdb *redis.Client, eventStr string)
 	}
 
 	fmt.Println("Publishing Event:" + eventMap["Event-Payload"])
-	rdb.Publish(ctx, modTwilioStreamPrefix+":"+streamSid, eventPayload)
+	redisChannel := modTwilioStreamPrefix + ":" + streamSid
+	redisError := rdb.Publish(ctx, redisChannel, eventMap["Event-Payload"]).Err()
+	if redisError != nil {
+		fmt.Println("Problem publishing to Redis channel: " + redisChannel + " Payload: " + eventMap["Event-Payload"] + " Error: " + redisError.Error())
+	}
 }
 
 func fibDuration(durationUnit, maxDuration time.Duration) func() time.Duration {
