@@ -97,7 +97,7 @@
     </action>
   </nop>
 
-  <pause milliseconds="5000"/>
+  <pause milliseconds="3000"/>
 
   <!-- The 'crlf' option inserts a blank line in the statistics report. -->
   <send retrans="500">

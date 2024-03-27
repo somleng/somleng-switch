@@ -76,8 +76,8 @@ class MediaStream {
         if (data.event === 'dtmf') {
           log(`Start sending stored data`);
           this.isRecord = false
-          this.audioStream.streamStoredAudio(ws);
-          this.audioStream.markAudio(ws);
+          this.audioStream.streamStoredAudio(this.connection);
+          this.audioStream.markAudio(this.connection);
         }
         if (data.event === "media") {
           const b64string = data.media.payload
