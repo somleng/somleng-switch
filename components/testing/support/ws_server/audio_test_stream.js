@@ -1,11 +1,6 @@
 class AudioTestStream {
   audioData = Buffer.alloc(0);
-  chunkMs = 80;
-  sampleRate = 8000;
-  chunkSize = this.sampleRate * (this.chunkMs / 1000.0);
   streamSid = "";
-  saveAudio = false;
-  audioPath = "";
 
   initializeAudio(streamSid) {
     this.audioData = Buffer.alloc(0);
@@ -14,12 +9,6 @@ class AudioTestStream {
 
   streamStoredAudio(ws) {
     console.log(`streamStoredAudio start sending data LEN: ${this.audioData.length}`);
-    if(this.saveAudio && this.audioPath) {
-      let wstream = fs.createWriteStream(audioPath);
-      wstream.write(this.audioData)
-      wstream.close()
-    }
-
     const base64Data = this.audioData.toString('base64');
     const msg = this.makeOutboundSample(base64Data)
 
