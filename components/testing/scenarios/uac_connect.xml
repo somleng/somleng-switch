@@ -84,12 +84,12 @@
   <!-- Play a pre-recorded PCAP file (RTP stream)                       -->
   <nop>
     <action>
-      <exec rtp_stream="/testing/scenarios/files/fridge.wav" />
+      <exec rtp_stream="/testing/scenarios/files/tone.wav" />
     </action>
   </nop>
 
   <!-- Wait for caller audio to be recevied by callee -->
-  <pause milliseconds="3000"/>
+  <pause milliseconds="4000"/>
 
   <!-- Play an out of band DTMF '1'                                     -->
   <nop>
