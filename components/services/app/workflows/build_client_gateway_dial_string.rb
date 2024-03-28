@@ -22,7 +22,7 @@ class BuildClientGatewayDialString < ApplicationWorkflow
 
     address = format(DIAL_STRING_FORMAT, destination:, host: destination_address.host, port: destination_address.port)
     proxy_path = format(PROXY_PATH_FORMAT, host: socket_address.host, port: socket_address.port)
-    [address, proxy_path].join(";")
+    [ address, proxy_path ].join(";")
   end
 
   def socket_address

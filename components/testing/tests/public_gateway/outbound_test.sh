@@ -10,6 +10,7 @@ log_file=$(find . -type f -iname "uas_*_messages.log")
 cat /dev/null > $log_file
 
 uas="$(dig +short testing)"
+media_server="$(dig +short freeswitch)"
 
 curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/calls \
 -H 'Content-Type: application/json; charset=utf-8' \
@@ -42,7 +43,7 @@ EOF
 
 sleep 10
 
-if ! assert_in_file $log_file "c=IN IP4 13.250.230.15"; then
+if ! assert_in_file $log_file "c=IN IP4 $media_server"; then
 	exit 1
 fi
 

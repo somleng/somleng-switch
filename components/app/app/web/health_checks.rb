@@ -4,7 +4,7 @@ module SomlengAdhearsion
   module Web
     class HealthChecks < Application
       error OkComputer::Registry::CheckNotFound do
-        halt 404, env["sinatra.error"].message
+        halt(404, env["sinatra.error"].message)
       end
 
       get "/" do
@@ -21,7 +21,7 @@ module SomlengAdhearsion
 
       def respond_with(checks)
         status_code = checks.success? ? 200 : 500
-        halt status_code, { "Content-Type" => "text/plain" }, checks.to_text
+        halt(status_code, { "Content-Type" => "text/plain" }, checks.to_text)
       end
     end
   end

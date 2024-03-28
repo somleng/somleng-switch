@@ -8,11 +8,11 @@ class EventParser
   def parse_event
     parser = if ecs_event?
                ECSEventParser
-             elsif sqs_message_event?
+    elsif sqs_message_event?
                SQSMessageEventParser
-             elsif service_action?
+    elsif service_action?
                ServiceActionParser
-             end
+    end
 
     parser.new(event).parse_event
   end

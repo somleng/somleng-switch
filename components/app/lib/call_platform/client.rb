@@ -25,20 +25,28 @@ module CallPlatform
       keyword_init: true
     )
 
-    def notify_call_event(params)
-      response = http_client.post("/services/phone_call_events", params.to_json)
+    AudioStreamResponse = Struct.new(
+      :id,
+      keyword_init: true
+    )
 
-      unless response.success?
-        Sentry.capture_message("Invalid phone call event", extra: { response_body: response.body })
-      end
+    attr_reader :http_client
+
+    def initialize(**options)
+      http_client_options = options.fetch(:http_client_options, {})
+      @http_client = options.fetch(:http_client) { default_http_client(**http_client_options) }
+    end
+
+    def notify_call_event(params)
+      notify_request("/services/phone_call_events", params)
     end
 
     def notify_tts_event(params)
-      response = http_client.post("/services/tts_events", params.to_json)
+      notify_request("/services/tts_events", params)
+    end
 
-      unless response.success?
-        Sentry.capture_message("Invalid TTS event", extra: { response_body: response.body })
-      end
+    def notify_media_stream_event(params)
+      notify_request("/services/media_stream_events", params)
     end
 
     def build_routing_parameters(params)
@@ -63,8 +71,15 @@ module CallPlatform
     end
 
     def create_recording(params)
-      json_response = make_request("/services/recordings", params: params)
+      json_response = make_request("/services/recordings", params:)
       RecordingResponse.new(
+        id: json_response.fetch("sid")
+      )
+    end
+
+    def create_media_stream(params)
+      json_response = make_request("/services/media_streams", params:)
+      AudioStreamResponse.new(
         id: json_response.fetch("sid")
       )
     end
@@ -79,6 +94,14 @@ module CallPlatform
 
     private
 
+    def notify_request(url, params)
+      response = http_client.post(url, params.to_json)
+
+      unless response.success?
+        Sentry.capture_message("Invalid Request to: #{url}", extra: { response_body: response.body })
+      end
+    end
+
     def make_request(uri, http_method: :post, params: {}, headers: {})
       response = http_client.run_request(http_method, uri, params.to_json, headers)
 
@@ -87,8 +110,8 @@ module CallPlatform
       JSON.parse(response.body)
     end
 
-    def http_client
-      @http_client ||= Faraday.new(url: CallPlatform.configuration.host) do |conn|
+    def default_http_client(**options)
+      Faraday.new(url: options.fetch(:url, CallPlatform.configuration.host)) do |conn|
         conn.headers["Accept"] = "application/json"
         conn.headers["Content-Type"] = "application/json"
 
@@ -97,8 +120,8 @@ module CallPlatform
         conn.request(
           :authorization,
           :basic,
-          CallPlatform.configuration.username,
-          CallPlatform.configuration.password
+          options.fetch(:username, CallPlatform.configuration.username),
+          options.fetch(:password, CallPlatform.configuration.password)
         )
       end
     end

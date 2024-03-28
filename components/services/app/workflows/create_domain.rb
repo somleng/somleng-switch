@@ -6,7 +6,7 @@ class CreateDomain < ApplicationWorkflow
   end
 
   def call
-    result, = ManageDomains.new(domains: [domain]).create_domains
+    result, = ManageDomains.new(domains: [ domain ]).create_domains
     {
       domain: result
     }

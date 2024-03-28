@@ -208,7 +208,7 @@ RSpec.describe CallController, type: :call_controller do
 
           controller.run
 
-          expect(controller).to have_received(:say).exactly(100).times
+          expect(controller).to have_received(:say).exactly(1000).times
         end
 
         it "loops n times when n is specified" do

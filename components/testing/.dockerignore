@@ -1,0 +1,5 @@
+.tool-versions
+Dockerfile
+**/node_modules
+**/nohup.out
+**/.prettierrc

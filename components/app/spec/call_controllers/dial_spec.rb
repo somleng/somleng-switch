@@ -27,7 +27,7 @@ RSpec.describe CallController, type: :call_controller do
 
     it "dials to plain text", :vcr, cassette: :build_routing_parameters do
       controller = build_controller(
-        stub_voice_commands: [:play_audio, { dial: build_dial_status }],
+        stub_voice_commands: [ :play_audio, { dial: build_dial_status } ],
         call_properties: {
           account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34",
           from: "855715100860",
@@ -55,7 +55,7 @@ RSpec.describe CallController, type: :call_controller do
 
     it "handles national dialing", :vcr, cassette: :build_routing_parameters_with_national_dialing do
       controller = build_controller(
-        stub_voice_commands: [:play_audio, { dial: build_dial_status }],
+        stub_voice_commands: [ :play_audio, { dial: build_dial_status } ],
         call_properties: {
           account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34",
           to: "855715100860",
@@ -81,7 +81,7 @@ RSpec.describe CallController, type: :call_controller do
 
     it "handles numbers without symmetric latching support", :vcr, cassette: :build_routing_parameters_without_symmetric_latching do
       controller = build_controller(
-        stub_voice_commands: [{ dial: build_dial_status }],
+        stub_voice_commands: [ { dial: build_dial_status } ],
         call_properties: {
           account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34"
         }
@@ -255,7 +255,7 @@ RSpec.describe CallController, type: :call_controller do
         joins_status = build_dial_join_status(:joined, duration: 23.7)
 
         controller = build_controller(
-          stub_voice_commands: { dial: build_dial_status(:answer, joins: { outbound_call => joins_status}) },
+          stub_voice_commands: { dial: build_dial_status(:answer, joins: { outbound_call => joins_status }) },
           call_properties: { voice_url: "https://www.example.com/dial.xml" }
         )
 
@@ -435,11 +435,11 @@ RSpec.describe CallController, type: :call_controller do
   end
 
   def build_dial_status(result = :answer, joins: {})
-    instance_double(Adhearsion::CallController::DialStatus, result: result, joins: joins)
+    instance_double(Adhearsion::CallController::DialStatus, result:, joins:)
   end
 
   def build_dial_join_status(result = :joined, options = {})
-    instance_double(Adhearsion::CallController::Dial::JoinStatus, result: result, **options)
+    instance_double(Adhearsion::CallController::Dial::JoinStatus, result:, **options)
   end
 
   def build_outbound_call(options = {})

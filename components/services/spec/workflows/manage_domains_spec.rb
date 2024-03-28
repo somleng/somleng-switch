@@ -2,7 +2,7 @@ require_relative "../spec_helper"
 
 RSpec.describe ManageDomains, :client_gateway do
   it "Adds domains" do
-    ManageDomains.new(domains: ["10.1.1.1", "54.251.92.1"]).create_domains
+    ManageDomains.new(domains: [ "10.1.1.1", "54.251.92.1" ]).create_domains
 
     result = client_gateway_domains.all
     expect(result.count).to eq(2)
@@ -14,7 +14,7 @@ RSpec.describe ManageDomains, :client_gateway do
     create_domain(domain: "10.1.1.1")
     create_domain(domain: "54.251.92.1")
 
-    ManageDomains.new(domains: ["10.1.1.1", "54.251.92.1"]).create_domains
+    ManageDomains.new(domains: [ "10.1.1.1", "54.251.92.1" ]).create_domains
 
     result = client_gateway_domains.all
     expect(result.count).to eq(2)
@@ -24,7 +24,7 @@ RSpec.describe ManageDomains, :client_gateway do
     create_domain(domain: "10.1.1.1")
     create_domain(domain: "54.251.92.1")
 
-    ManageDomains.new(domains: ["10.1.1.1", "54.251.92.1"]).delete_domains
+    ManageDomains.new(domains: [ "10.1.1.1", "54.251.92.1" ]).delete_domains
 
     result = client_gateway_domains.all
     expect(result.count).to eq(0)

@@ -1,22 +1,31 @@
 module CallControllerHelpers
   def build_controller(call: build_fake_call, call_properties: {}, **options)
-    call_properties.reverse_merge!(
+    controller = CallController.new(call, call_properties: build_call_properties(**call_properties))
+    stub_controller_voice_commands(controller, voice_commands: options[:stub_voice_commands])
+    controller
+  end
+
+  def build_call_properties(**options)
+    call_sid = options.fetch(:call_sid) { SecureRandom.uuid }
+    account_sid = options.fetch(:account_sid) { SecureRandom.uuid }
+
+    CallProperties.new(
       voice_url: "https://example.com/twiml",
       voice_method: "POST",
-      call_sid: SecureRandom.uuid,
+      call_sid:,
+      account_sid:,
       direction: "outbound-api",
-      account_sid: SecureRandom.uuid,
       api_version: "2010-04-01",
       auth_token: SecureRandom.alphanumeric,
       default_tts_voice: "Basic.Kal",
       from: "1000",
-      to: "85512456869"
+      to: "85512456869",
+      sip_headers: SIPHeaders.new(
+        call_sid:,
+        account_sid:
+      ),
+      **options
     )
-    controller = CallController.new(call, call_properties: CallProperties.new(call_properties))
-
-    stub_controller_voice_commands(controller, voice_commands: options[:stub_voice_commands])
-
-    controller
   end
 
   def stub_controller_voice_commands(controller, voice_commands:)
@@ -48,14 +57,14 @@ module CallControllerHelpers
     )
     allow(fake_call).to receive(:answer_time).and_return(
       *Array(
-        options.fetch(:answer_time) { [nil, Time.now] }
+        options.fetch(:answer_time) { [ nil, Time.now ] }
       )
     )
     fake_call
   end
 
   def stub_twiml_request(controller, response:)
-    responses = Array(response).map { |body| { body: body } }
+    responses = Array(response).map { |body| { body: } }
     stub_request(:any, controller.metadata.fetch(:call_properties).voice_url).to_return(*responses)
   end
 end

@@ -103,7 +103,15 @@ class CallController < Adhearsion::CallController
   end
 
   def execute_twiml(twiml)
-    ExecuteTwiML.call(context: self, twiml:)
+    ExecuteTwiML.call(
+      context: self,
+      twiml:,
+      call_properties:,
+      phone_call: call,
+      call_platform_client:,
+      logger:,
+      stub_call_platform_responses: CallPlatform.configuration.stub_responses
+    )
   end
 
   def output_formatter

@@ -10,7 +10,7 @@ RSpec.describe NotifyCallEvent do
       }
     )
 
-    NotifyCallEvent.new(event).call
+    NotifyCallEvent.call(event)
 
     expect(WebMock).to(have_requested(:post, %r{services/phone_call_events}).with { |request|
       JSON.parse(request.body) == {
