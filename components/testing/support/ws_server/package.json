@@ -13,7 +13,6 @@
     "httpdispatcher": "^2.2.0",
     "minimist": "^1.2.8",
     "wavefile": "^11.0.0",
-    "websocket": "^1.0.34",
     "ws": "^8.16.0"
   }
 }

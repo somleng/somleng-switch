@@ -30,12 +30,7 @@ module CallPlatform
 
     TEST_NUMBERS = [
       TestNumber.new(number: "1111", twiml_response: "<Response><Say>Hello World!</Say><Hangup /></Response>"),
-      ConnectTestNumberWithTwiMLResponse.new(number: "2222"),
-      TestNumber.new(
-        number: "3333",
-        voice_url: ENV.fetch("CONNECT_VOICE_URL", "https://example.com/connect"),
-        voice_method: ENV.fetch("CONNECT_VOICE_METHOD", "POST")
-      )
+      ConnectTestNumberWithTwiMLResponse.new(number: "2222")
     ].freeze
 
     def create_call(params)

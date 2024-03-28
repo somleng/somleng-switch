@@ -1,11 +1,23 @@
+// Usage:
+// Obtain Retell API key and Agent ID from https://www.retellai.com/
+// Obtain your Somleng credentials from https://app.somleng.org
+// $ node retell_server.js --api_key <retell-api-key> --agent_id <retell-agent-id> --port 3000
+// $ ngrok http 3000
+// $ curl -X "POST" "https://api.somleng.org/2010-04-01/Accounts/<AccountSID>/Calls.json" \
+//        -H 'Content-Type: application/x-www-form-urlencoded; charset=utf-8' \
+//        -u '<AccountSID>:<AuthToken>' \
+//        --data-urlencode "Url=<ngrok-url>" \
+//        --data-urlencode "To=<destination-number>" \
+//        --data-urlencode "From=<from-number>"
+
 var http = require("http");
 var HttpDispatcher = require("httpdispatcher");
 var assert = require('assert');
 
 const argv = require("minimist")(process.argv.slice(2));
-const httpPort = argv.port && parseInt(argv.port) ? parseInt(argv.port) : 8888;
-const api_key = argv.api_key  ? argv.api_key : null;
-const agent_id = argv.agent_id  ? argv.agent_id : null;
+const httpPort = argv.port && parseInt(argv.port) ? parseInt(argv.port) : 3000;
+const api_key = argv.api_key ? argv.api_key : null;
+const agent_id = argv.agent_id ? argv.agent_id : null;
 
 assert.ok(api_key, 'Retell api key not provided')
 assert.ok(agent_id, 'Retell agent id not provided')

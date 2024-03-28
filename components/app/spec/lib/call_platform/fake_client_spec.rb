@@ -45,20 +45,6 @@ module CallPlatform
           twiml: include("<Connect>")
         )
       end
-
-      it "returns a mock connect response via URL" do
-        client = FakeClient.new
-
-        response = client.create_call(
-          to: "3333",
-          from: "+855715200987"
-        )
-
-        expect(response).to have_attributes(
-          voice_url: "https://example.com/connect",
-          voice_method: "POST"
-        )
-      end
     end
 
     describe "#create_media_stream" do
