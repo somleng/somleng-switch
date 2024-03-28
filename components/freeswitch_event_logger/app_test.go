@@ -5,8 +5,8 @@ import (
 )
 
 func TestParseEventFail(t *testing.T) {
-	_, _, e := processIncomingEvent("")
-	if e == nil {
+	_, _, parseEventError := parseEvent("")
+	if parseEventError == nil {
 		t.Errorf("got pass expected error")
 	}
 }
@@ -21,9 +21,9 @@ Event-Payload: %7B%22event%22%3A%20%22disconnect%22,%22accountSid%22%3A%20%22c46
 	wantRedisChannel := `mod_twilio_stream:5cc24afd-ea42-4605-858d-5c47b597b646`
 	wantRedisMsg := `{"event": "disconnect","accountSid": "c4612957-a00a-480d-a168-c75fbf29b2db","callSid": "21fb5eee-ce7c-4e30-a069-439fa0269aeb","streamSid": "5cc24afd-ea42-4605-858d-5c47b597b646"}`
 
-	redisChannel, redisMsg, e := processIncomingEvent(incomingMsg)
+	redisChannel, redisMsg, parseEventError := parseEvent(incomingMsg)
 
-	if e != nil {
+	if parseEventError != nil {
 		t.Errorf("Unexpected error")
 	}
 

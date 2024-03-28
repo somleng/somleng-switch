@@ -31,8 +31,20 @@ jobs:
           bundle exec rspec
 
       - name: Run FreeSWITCH tests
+        working-directory: components/freeswitch
         run: |
-          ../freeswitch/tests/tests.sh
+          ./tests/tests.sh
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.21.x"
+
+      - name: Run tests
+        working-directory: components/freeswitch_event_logger
+        run: |
+          go get .
+          go test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4

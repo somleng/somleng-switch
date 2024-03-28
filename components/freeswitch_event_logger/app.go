@@ -34,7 +34,7 @@ func logHeartbeat(eventStr string, connIdx int) {
 	fmt.Println(string(jsonString))
 }
 
-func processIncomingEvent(eventStr string) (string, string, error) {
+func parseEvent(eventStr string) (string, string, error) {
 	eventMap := fsock.FSEventStrToMap(eventStr, []string{})
 
 	eventName := eventMap["Event-Subclass"]
@@ -57,19 +57,19 @@ func processIncomingEvent(eventStr string) (string, string, error) {
 		return "", "", fmt.Errorf("Event does not contain streamSid: " + eventMap["Event-Payload"])
 	}
 
-	fmt.Println("Publishing Event:" + eventMap["Event-Payload"])
 	redisChannel := modTwilioStreamPrefix + ":" + streamSid
 	return redisChannel, eventMap["Event-Payload"], nil
 }
 
-func customEventHandler(ctx context.Context, rdb *redis.Client, eventStr string) {
-	redisChannel, redisMsg, e := processIncomingEvent(eventStr)
+func customEventHandler(ctx context.Context, redisClient *redis.Client, eventStr string) {
+	redisChannel, redisMsg, parseEventError := parseEvent(eventStr)
 
-	if e != nil {
-		fmt.Println(" Error: " + e.Error())
+	if parseEventError != nil {
+		fmt.Println("Error: " + parseEventError.Error())
 		return
 	}
-	redisError := rdb.Publish(ctx, redisChannel, redisMsg).Err()
+
+	redisError := redisClient.Publish(ctx, redisChannel, redisMsg).Err()
 	if redisError != nil {
 		fmt.Println("Problem publishing to Redis channel: " + redisChannel + " Payload: " + redisMsg + " Error: " + redisError.Error())
 	}
@@ -90,16 +90,17 @@ func fibDuration(durationUnit, maxDuration time.Duration) func() time.Duration {
 func main() {
 	ctx := context.Background()
 
-	redis_url := os.Getenv("REDIS_URL")
-	opt, e := redis.ParseURL(redis_url)
-	if e != nil {
-		panic(e)
+	redisUrl := os.Getenv("REDIS_URL")
+	redisOptions, redisError := redis.ParseURL(redisUrl)
+
+	if redisError != nil {
+		panic(redisError)
 	}
 
-	rdb := redis.NewClient(opt)
+	redisClient := redis.NewClient(redisOptions)
 
 	customEventHandlerWrapper := func(eventStr string, connIdx int) {
-		customEventHandler(ctx, rdb, eventStr)
+		customEventHandler(ctx, redisClient, eventStr)
 	}
 
 	evFilters := map[string][]string{
