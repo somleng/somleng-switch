@@ -20,15 +20,15 @@ class AudioTestStream {
       wstream.close()
     }
 
-    for (let i = 0; i < this.audioData.length / this.chunkSize; i++) {
-      const base64Data = this.audioData.subarray(i * this.chunkSize, (i + 1) * this.chunkSize).toString('base64');
+    //for (let i = 0; i < this.audioData.length / this.chunkSize; i++) {
+      const base64Data = this.audioData.toString('base64');
       const msg = this.makeOutboundSample(base64Data)
 
       if (ws) {
         console.log(`${JSON.stringify(msg)}`)
         ws.send(JSON.stringify(msg))
       }
-    }
+    //}
   }
 
   markAudio(ws) {

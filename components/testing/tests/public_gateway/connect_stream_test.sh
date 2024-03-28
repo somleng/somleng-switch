@@ -31,13 +31,17 @@ reset_db
 kill $tcpdump_pid
 
 # extract audio
-tshark -n -r uac_connect.pcap -2 -R rtp -T fields -e rtp.payload | tr -d '\n',':' | xxd -r -p > uac_connect.rtp
-sox -t al -r 8000 -c 1 uac_connect.rtp uac_connect.wav
+mkdir tmp
 
-echo "md5 of rtp file: $(md5sum uac_connect.rtp | head -c 32)"
+tshark -n -r uac_connect.pcap -2 -R rtp -T fields -e rtp.payload | tr -d '\n',':' | xxd -r -p > uac_connect.rtp
+sox -t al -r 8000 -c 1 uac_connect.rtp tmp/temp1.wav
+ffmpeg -y -i tmp/temp1.wav -ss 6.3 tmp/temp2.wav 2> /dev/null
+ffmpeg -y -i tmp/temp2.wav -af silenceremove=1:0:-40dB,areverse,silenceremove=1:0:-50dB,areverse uac_connect.wav 2> /dev/null
+
+rm -r tmp
 
 actual_md5=$(md5sum uac_connect.wav | head -c 32)
-expected_md5="b7318190068400dc20ab9ae87e450bb8"
+expected_md5="328489d203813f6e216a1d77c41b3ad9"
 
 echo "Act MD5: $actual_md5"
 echo "Exp MD5: $expected_md5"
