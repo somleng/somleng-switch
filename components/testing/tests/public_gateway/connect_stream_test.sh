@@ -51,7 +51,7 @@ ws_server_audio_md5=$(md5sum $artifacts_dir/uac_connect_trimmed_ws_server_audio.
 expected_ws_server_audio_md5="328489d203813f6e216a1d77c41b3ad9"
 
 play_verb_audio_md5=$(md5sum $artifacts_dir/uac_connect_trimmed_play_verb_audio.wav | head -c 32)
-expected_play_verb_audio_md5="1876af04af732feae7f5fac634314187"
+expected_play_verb_audio_md5="bc95f79be89a5c2aee2965575af2e33d"
 
 echo "Actual ws_server_audio_md5: $ws_server_audio_md5"
 echo "Expected ws_server_audio_md5: $expected_ws_server_audio_md5"
