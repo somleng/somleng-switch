@@ -89,6 +89,13 @@ namespace
     return SWITCH_STATUS_SUCCESS;
   }
 
+  std::string build_json_payload(const char *key, const char *value)
+  {
+    std::stringstream json;
+    json << "{\"" << key << "\":\"" << value << "\"}";
+    return json.str();
+  }
+
   void send_event(private_t *tech_pvt, switch_core_session_t *session, const char *eventName, const char *json)
   {
     if (session && tech_pvt)
@@ -168,7 +175,8 @@ namespace
                 pAudioPipe->binaryReadMark(name);
                 pAudioPipe->unlockAudioBuffer();
               }
-              send_event(tech_pvt, session, EVENT_SOCKET_MARK, name);
+              auto payload = build_json_payload("mark", name);
+              send_event(tech_pvt, session, EVENT_SOCKET_MARK, payload.c_str());
             }
           }
         }
@@ -184,7 +192,8 @@ namespace
             for (int i = 0; i < marks.size(); i++)
             {
               pTwilioHelper->mark(pAudioPipe, marks[i]);
-              send_event(tech_pvt, session, EVENT_MARK, marks[i].c_str());
+              auto payload = build_json_payload("mark", marks[i].c_str());
+              send_event(tech_pvt, session, EVENT_MARK, payload.c_str());
             }
             pAudioPipe->unlockAudioBuffer();
           }
@@ -229,9 +238,8 @@ namespace
           else if (event == AudioPipe::CONNECT_FAIL)
           {
             // first thing: we can no longer access the AudioPipe
-            std::stringstream json;
-            json << "{\"reason\":\"" << message << "\"}";
-            send_event(tech_pvt, session, EVENT_CONNECT_FAIL, (char *)json.str().c_str());
+            auto payload = build_json_payload("reason", message);
+            send_event(tech_pvt, session, EVENT_CONNECT_FAIL, payload.c_str());
             switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_NOTICE, "connection failed: %s\n", message);
             session_cleanup(session, bugname, 0);
           }
@@ -565,7 +573,9 @@ extern "C"
     AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
     TwilioHelper *pTwilioHelper = static_cast<TwilioHelper *>(tech_pvt->pTwilioHelper);
     pTwilioHelper->dtmf(pAudioPipe, match_digits);
-    send_event(tech_pvt, session, EVENT_DTMF, match_digits);
+
+    auto payload = build_json_payload("dtmf", match_digits);
+    send_event(tech_pvt, session, EVENT_DTMF, payload.c_str());
 
     return SWITCH_STATUS_SUCCESS;
   }
@@ -749,7 +759,8 @@ extern "C"
             for (int i = 0; i < marks.size(); i++)
             {
               pTwilioHelper->mark(pAudioPipe, marks[i]);
-              send_event(tech_pvt, session, EVENT_MARK, marks[i].c_str());
+              auto payload = build_json_payload("mark", marks[i].c_str());
+              send_event(tech_pvt, session, EVENT_MARK, payload.c_str());
             }
           }
         }
