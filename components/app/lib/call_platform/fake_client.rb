@@ -17,7 +17,7 @@ module CallPlatform
               <Parameter name=\"aCustomParameter\" value=\"aCustomValue that was set in TwiML\" />
             </Stream>
           </Connect>
-          <Play>https://www2.cs.uic.edu/~i101/SoundFiles/taunt.wav</Play>
+          <Play>#{audio_file_url}</Play>
         </Response>
         TWIML
       end
@@ -26,6 +26,10 @@ module CallPlatform
 
       def connect_ws_server_url
         ENV.fetch("CONNECT_WS_SERVER_URL", "wss://example.com")
+      end
+
+      def audio_file_url
+        ENV.fetch("AUDIO_FILE_URL", "https://api.twilio.com/cowbell.mp3")
       end
     end
 

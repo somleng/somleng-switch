@@ -88,6 +88,7 @@
     </action>
   </nop>
 
+  <!-- Wait for caller audio to be recevied by callee -->
   <pause milliseconds="3000"/>
 
   <!-- Play an out of band DTMF '1'                                     -->
@@ -97,33 +98,32 @@
     </action>
   </nop>
 
+  <!-- Wait for audio from websockets server to be played back to callee -->
   <pause milliseconds="3000"/>
 
-  <!-- The 'crlf' option inserts a blank line in the statistics report. -->
-  <send retrans="500">
-    <![CDATA[
+  <!-- Wait for play audio from the <Play> verb -->
+  <!-- Play>https://www2.cs.uic.edu/~i101/SoundFiles/taunt.wav</Play> -->
+  <!-- Give it enough time to download and play -->
 
-      BYE sip:[service]@[remote_ip]:[remote_port] SIP/2.0
-      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
-      From: sipp <sip:+85512234567@[local_ip]:[local_port]>;tag=[pid]SIPpTag09[call_number]
-      To: [service] <sip:[service]@[remote_ip]:[remote_port]>[peer_tag_param]
-      Call-ID: [call_id]
-      CSeq: 2 BYE
-      Contact: sip:+85512234567@[local_ip]:[local_port]
-      Max-Forwards: 70
-      Subject: Performance Test
+  <recv request="BYE" timeout="30000">
+  </recv>
+
+  <send>
+    <![CDATA[
+      SIP/2.0 200 OK
+      [last_Via:]
+      [last_From:]
+      [last_To:];tag=[call_number]
+      [last_Call-ID:]
+      [last_CSeq:]
+      Contact: <sip:+85512234567@[local_ip]:[local_port];transport=udp>
       Content-Length: 0
-      [routes]
     ]]>
   </send>
-
-  <recv response="200" crlf="true">
-  </recv>
 
   <!-- definition of the response time repartition table (unit is ms)   -->
   <ResponseTimeRepartition value="10, 20, 30, 40, 50, 100, 150, 200"/>
 
   <!-- definition of the call length repartition table (unit is ms)     -->
   <CallLengthRepartition value="10, 50, 100, 500, 1000, 5000, 10000"/>
-
 </scenario>

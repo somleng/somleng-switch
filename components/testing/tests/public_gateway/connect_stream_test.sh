@@ -34,23 +34,39 @@ reset_db
 # kill tcpdump
 kill $tcpdump_pid
 
-# extract audio
+# extract RTP from PCAP
 tshark -n -r $artifacts_dir/uac_connect.pcap -2 -R rtp -T fields -e rtp.payload | tr -d '\n',':' | xxd -r -p > $artifacts_dir/uac_connect.rtp
+# Convert RTP to wav
 sox -t al -r 8000 -c 1 $artifacts_dir/uac_connect.rtp $artifacts_dir/uac_connect_full_audio.wav
-ffmpeg -y -i $artifacts_dir/uac_connect_full_audio.wav -ss 6.3 $artifacts_dir/uac_connect_callee_audio.wav 2> /dev/null
-ffmpeg -y -i $artifacts_dir/uac_connect_callee_audio.wav -af silenceremove=1:0:-40dB,areverse,silenceremove=1:0:-50dB,areverse $artifacts_dir/uac_connect_trimmed_callee_audio.wav 2> /dev/null
+# Cut the audio from the ws server
+ffmpeg -y -i $artifacts_dir/uac_connect_full_audio.wav -ss 6.3 -to 9 $artifacts_dir/uac_connect_ws_server_audio.wav 2> /dev/null
+# Remove silence
+ffmpeg -y -i $artifacts_dir/uac_connect_ws_server_audio.wav -af silenceremove=1:0:-40dB,areverse,silenceremove=1:0:-50dB,areverse $artifacts_dir/uac_connect_trimmed_ws_server_audio.wav 2> /dev/null
+# Cut the play verb audio
+ffmpeg -y -i $artifacts_dir/uac_connect_full_audio.wav -ss 9 $artifacts_dir/uac_connect_play_verb_audio.wav 2> /dev/null
+# Remove silence
+ffmpeg -y -i $artifacts_dir/uac_connect_play_verb_audio.wav -af silenceremove=1:0:-40dB,areverse,silenceremove=1:0:-50dB,areverse $artifacts_dir/uac_connect_trimmed_play_verb_audio.wav 2> /dev/null
 
-actual_md5=$(md5sum $artifacts_dir/uac_connect_trimmed_callee_audio.wav | head -c 32)
-expected_md5="328489d203813f6e216a1d77c41b3ad9"
+ws_server_audio_md5=$(md5sum $artifacts_dir/uac_connect_trimmed_ws_server_audio.wav | head -c 32)
+expected_ws_server_audio_md5="328489d203813f6e216a1d77c41b3ad9"
 
-echo "Act MD5: $actual_md5"
-echo "Exp MD5: $expected_md5"
+play_verb_audio_md5=$(md5sum $artifacts_dir/uac_connect_trimmed_play_verb_audio.wav | head -c 32)
+expected_play_verb_audio_md5="1876af04af732feae7f5fac634314187"
 
-if [[ "$actual_md5" != "$expected_md5" ]]; then
+echo "Actual ws_server_audio_md5: $ws_server_audio_md5"
+echo "Expected ws_server_audio_md5: $expected_ws_server_audio_md5"
+echo "Actual play_verb_audio_md5: $play_verb_audio_md5"
+echo "Expected play_verb_audio_md5: $expected_play_verb_audio_md5"
+
+if [[ "$ws_server_audio_md5" != "$expected_ws_server_audio_md5" ]]; then
 	exit 1
 fi
-# Assert correct IP in SDP
 
+if [[ "$play_verb_audio_md5" != "$expected_play_verb_audio_md5" ]]; then
+	exit 1
+fi
+
+# Assert correct IP in SDP
 if ! assert_in_file $log_file "c=IN IP4 $media_server"; then
 	exit 1
 fi

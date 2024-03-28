@@ -137,6 +137,7 @@ services:
       AHN_CORE_HOST: freeswitch
       CALL_PLATFORM_STUB_RESPONSES: "true"
       CONNECT_WS_SERVER_URL: "ws://testing:3001"
+      AUDIO_FILE_URL: "http://testing:8000/tests/support/files/taunt.wav"
       AHN_CORE_HTTP_PORT: "8080"
       AWS_DEFAULT_REGION: "ap-southeast-1"
       REDIS_URL: "redis://redis:6379/1"
@@ -162,6 +163,7 @@ services:
       DATABASE_USERNAME: postgres
       FIFO_DIR: /opensips/fifo
       WS_SERVER_PORT: 3001
+      HTTP_SERVER_PORT: 8000
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
