@@ -17,6 +17,7 @@ module CallPlatform
               <Parameter name=\"aCustomParameter\" value=\"aCustomValue that was set in TwiML\" />
             </Stream>
           </Connect>
+          <Play>https://www2.cs.uic.edu/~i101/SoundFiles/taunt.wav</Play>
         </Response>
         TWIML
       end
