@@ -1,22 +1,67 @@
-const WebSocket = require("ws");
+const fs = require("fs");
+const path = require("path");
+var http = require("http");
+var HttpDispatcher = require("httpdispatcher");
+var WebSocketServer = require("websocket").server;
 const AudioTestStream = require("./audio_test_stream.js")
 
-const argv = require("minimist")(process.argv);
-const port = argv.port && parseInt(argv.port) ? parseInt(argv.port) : 3001;
+var dispatcher = new HttpDispatcher();
+var wsserver = http.createServer(handleRequest);
 
-const wss = new WebSocket.Server({
-  port,
-  handleProtocols: () => {
-    return "audio.somleng.org";
-  },
+const HTTP_SERVER_PORT = 8080;
+
+var mediaws = new WebSocketServer({
+  httpServer: wsserver,
+  autoAcceptConnections: true,
 });
 
-const audioStream = new AudioTestStream();
-wss.on("connection", (ws) => {
-  ws.on("message", (message) => {
-    console.log(`received message: ${message}`);
-    console.log(`message type: ${message.type}`);
+function log(message, ...args) {
+  console.log(new Date(), message, ...args);
+}
 
+function handleRequest(request, response) {
+  try {
+    dispatcher.dispatch(request, response);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+dispatcher.onPost("/connect", function (req, res) {
+  log("POST connect");
+
+  var filePath = path.join(__dirname + "/templates", "streams.xml");
+  var stat = fs.statSync(filePath);
+
+  res.writeHead(200, {
+    "Content-Type": "text/xml",
+    "Content-Length": stat.size,
+  });
+
+  var readStream = fs.createReadStream(filePath);
+  readStream.pipe(res);
+});
+
+mediaws.on("connect", function (connection) {
+  log("From Twilio: Connection accepted");
+  new MediaStream(connection);
+});
+
+class MediaStream {
+  constructor(connection) {
+    this.connection = connection;
+    connection.on("message", this.processMessage.bind(this));
+    connection.on("close", this.close.bind(this));
+    this.hasSeenMedia = false;
+    this.messages = [];
+    this.repeatCount = 0;
+
+    this.isRecord = true;
+    this.audioStream = new AudioTestStream();
+  }
+
+  processMessage(message) {
+    log(message)
     if (message.type === "utf8") {
       try {
         const data = JSON.parse(message.utf8Data);
@@ -25,33 +70,43 @@ wss.on("connection", (ws) => {
         }
         if (data.event === "start") {
           log("From Twilio: Start event received: ", data);
-          audioStream.initializeAudio(data['streamSid'])
+          this.isRecord = true;
+          this.audioStream.initializeAudio(data.streamSid)
+        }
+        if (data.event === 'dtmf') {
+          log(`Start sending stored data`);
+          this.isRecord = false
+          this.audioStream.streamStoredAudio(this.connection);
+          this.audioStream.markAudio(this.connection);
         }
         if (data.event === "media") {
-          log("From Twilio: Media event received: ", data);
-          const b64string = data['media']["payload"]
-            audioStream.appendAudio(Buffer.from(b64string, 'base64'))
-        }
-        if (data.event === "dtmf") {
-          log("From Twilio: DTMF event received: ", data);
-          audioStream.streamStoredAudio(ws);
+          const b64string = data.media.payload
+          if (this.isRecord)
+            this.audioStream.appendAudio(Buffer.from(b64string, 'base64'))
+
         }
         if (data.event === "mark") {
           log("From Twilio: Mark event received", data);
-          audioStream.streamStoredAudio(ws);
+          this.close();
         }
         if (data.event === "close") {
           log("From Twilio: Close event received: ", data);
-          ws.close();
+          this.close();
         }
       } catch (e) {
-        console.log(`received message <err>: ${message}`);
         console.log(e)
       }
+    } else if (message.type === "binary") {
+      log("From Twilio: binary message received (not supported)");
     }
-  });
+  }
 
-  ws.on("close", (code, reason) => {
-    console.log(`socket closed ${code}:${reason}`);
-  });
+  close() {
+    log("Server: Closed");
+    this.connection.close(1000, "Shutdown");
+  }
+}
+
+wsserver.listen(HTTP_SERVER_PORT, function () {
+  log("Server listening on: http://localhost", HTTP_SERVER_PORT);
 });

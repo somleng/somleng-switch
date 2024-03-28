@@ -32,13 +32,16 @@ kill $TCPDUMP_PID
 # extract audio
 tshark -n -r capture.pcap -2 -R rtp -T fields -e rtp.payload | tr -d '\n',':' | xxd -r -p >call.rtp
 sox -t al -r 8000 -c 1 call.rtp call.wav
+#trim silence
+#ffmpeg -y -i call.wav -af silenceremove=1:0:-40dB,areverse,silenceremove=1:0:-50dB,areverse trim.wav
+sox call.wav trim.wav silence 1 0.1 0.1% 1 0.5 0.1% 
 
 #asset md5hash of wav == expected wav file
 expectedFile=$current_dir/../../scenarios/files/expected.wav
 
 reset_db
 
-actual_md5=$(md5sum call.wav | head -c 32)
+actual_md5=$(md5sum trim.wav | head -c 32)
 expected_md5=$(md5sum $expectedFile | head -c 32)
 
 echo "Act MD5: $actual_md5"

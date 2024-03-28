@@ -24,6 +24,8 @@ func (nopLogger) Info(string) error    { return nil }
 func (nopLogger) Notice(string) error  { return nil }
 func (nopLogger) Warning(string) error { return nil }
 
+const modTwilioStreamPrefix = "mod_twilio_stream"
+
 // Formats the event as map and prints it out
 func logHeartbeat(eventStr string, connIdx int) {
 	// Format the event from string into Go's map type
@@ -32,35 +34,44 @@ func logHeartbeat(eventStr string, connIdx int) {
 	fmt.Println(string(jsonString))
 }
 
-func customEventHandler(ctx context.Context, rdb *redis.Client, eventStr string) {
+func processIncomingEvent(eventStr string) (string, string, error) {
 	eventMap := fsock.FSEventStrToMap(eventStr, []string{})
 
-	modTwilioStreamPrefix := "mod_twilio_stream"
 	eventName := eventMap["Event-Subclass"]
 
 	if !strings.HasPrefix(eventName, modTwilioStreamPrefix) {
 		fmt.Println("Unhandled Event Type: " + eventName)
-		return
+		return "", "", fmt.Errorf("Unhandled Event Type: " + eventName)
 	}
 
 	eventPayload := make(map[string]any)
 	parsePayloadError := json.Unmarshal([]byte(eventMap["Event-Payload"]), &eventPayload)
 	if parsePayloadError != nil {
 		fmt.Println("Failed to parse Event Payload: " + eventMap["Event-Payload"])
-		return
+		return "", "", fmt.Errorf("Failed to parse Event Payload: " + eventMap["Event-Payload"])
 	}
 
 	streamSid, streamSidExists := eventPayload["streamSid"].(string)
 	if !streamSidExists {
 		fmt.Println("Event does not contain streamSid: " + eventMap["Event-Payload"])
-		return
+		return "", "", fmt.Errorf("Event does not contain streamSid: " + eventMap["Event-Payload"])
 	}
 
 	fmt.Println("Publishing Event:" + eventMap["Event-Payload"])
 	redisChannel := modTwilioStreamPrefix + ":" + streamSid
-	redisError := rdb.Publish(ctx, redisChannel, eventMap["Event-Payload"]).Err()
+	return redisChannel, eventMap["Event-Payload"], nil
+}
+
+func customEventHandler(ctx context.Context, rdb *redis.Client, eventStr string) {
+	redisChannel, redisMsg, e := processIncomingEvent(eventStr)
+
+	if e != nil {
+		fmt.Println(" Error: " + e.Error())
+		return
+	}
+	redisError := rdb.Publish(ctx, redisChannel, redisMsg).Err()
 	if redisError != nil {
-		fmt.Println("Problem publishing to Redis channel: " + redisChannel + " Payload: " + eventMap["Event-Payload"] + " Error: " + redisError.Error())
+		fmt.Println("Problem publishing to Redis channel: " + redisChannel + " Payload: " + redisMsg + " Error: " + redisError.Error())
 	}
 }
 
