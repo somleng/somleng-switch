@@ -13,7 +13,7 @@ reset_db
 create_rtpengine_entry "udp:media_proxy:2223"
 reload_opensips_tables
 
-uas="$(dig +short testing)"
+uas="$(hostname -i)"
 client_gateway="$(dig +short client_gateway)"
 
 curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/calls \
@@ -39,7 +39,7 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
     "host": null,
     "username": "user1",
     "symmetric_latching": true,
-    "address": "+85512334667@testing;fs_path=sip:$client_gateway:5060"
+    "address": "+85512334667@$uas;fs_path=sip:$client_gateway:5060"
   },
   "test_headers": {
     "X-UAS-Contact-Ip": "100.65.107.153"
