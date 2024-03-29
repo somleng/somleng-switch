@@ -39,19 +39,19 @@ tshark -n -r $artifacts_dir/uac_connect.pcap -2 -R rtp -T fields -e rtp.payload 
 # Convert RTP to wav
 sox -t al -r 8000 -c 1 $artifacts_dir/uac_connect.rtp $artifacts_dir/uac_connect_full_audio.wav
 # Cut the audio from the ws server
-ffmpeg -y -i $artifacts_dir/uac_connect_full_audio.wav -ss 6.3 -to 9 $artifacts_dir/uac_connect_ws_server_audio.wav 2> /dev/null
+ffmpeg -y -i $artifacts_dir/uac_connect_full_audio.wav -ss 7.6 -to 10 $artifacts_dir/uac_connect_ws_server_audio.wav 2> /dev/null
 # Remove silence
-ffmpeg -y -i $artifacts_dir/uac_connect_ws_server_audio.wav -af silenceremove=1:0:-40dB,areverse,silenceremove=1:0:-50dB,areverse $artifacts_dir/uac_connect_trimmed_ws_server_audio.wav 2> /dev/null
+ffmpeg -y -i $artifacts_dir/uac_connect_ws_server_audio.wav -af silenceremove=1:0:-30dB,areverse,silenceremove=1:0:-30dB,areverse $artifacts_dir/uac_connect_trimmed_ws_server_audio.wav 2> /dev/null
 # Cut the play verb audio
-ffmpeg -y -i $artifacts_dir/uac_connect_full_audio.wav -ss 9 $artifacts_dir/uac_connect_play_verb_audio.wav 2> /dev/null
+ffmpeg -y -i $artifacts_dir/uac_connect_full_audio.wav -ss 11.7 -to 14.1 $artifacts_dir/uac_connect_play_verb_audio.wav 2> /dev/null
 # Remove silence
-ffmpeg -y -i $artifacts_dir/uac_connect_play_verb_audio.wav -af silenceremove=1:0:-40dB,areverse,silenceremove=1:0:-50dB,areverse $artifacts_dir/uac_connect_trimmed_play_verb_audio.wav 2> /dev/null
+ffmpeg -y -i $artifacts_dir/uac_connect_play_verb_audio.wav -af silenceremove=1:0:-30dB,areverse,silenceremove=1:0:-30dB,areverse $artifacts_dir/uac_connect_trimmed_play_verb_audio.wav 2> /dev/null
 
 ws_server_audio_md5=$(md5sum $artifacts_dir/uac_connect_trimmed_ws_server_audio.wav | head -c 32)
-expected_ws_server_audio_md5="328489d203813f6e216a1d77c41b3ad9"
+expected_ws_server_audio_md5="bf211933efe730d7cff4b2105f6dfb4a"
 
 play_verb_audio_md5=$(md5sum $artifacts_dir/uac_connect_trimmed_play_verb_audio.wav | head -c 32)
-expected_play_verb_audio_md5="bc95f79be89a5c2aee2965575af2e33d"
+expected_play_verb_audio_md5="bf211933efe730d7cff4b2105f6dfb4a"
 
 echo "Actual ws_server_audio_md5: $ws_server_audio_md5"
 echo "Expected ws_server_audio_md5: $expected_ws_server_audio_md5"

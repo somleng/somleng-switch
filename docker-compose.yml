@@ -137,7 +137,7 @@ services:
       AHN_CORE_HOST: freeswitch
       CALL_PLATFORM_STUB_RESPONSES: "true"
       CONNECT_WS_SERVER_URL: "ws://testing:3001"
-      AUDIO_FILE_URL: "http://testing:8000/scenarios/files/fridge.wav"
+      AUDIO_FILE_URL: "http://testing:8000/scenarios/files/tone.wav"
       AHN_CORE_HTTP_PORT: "8080"
       AWS_DEFAULT_REGION: "ap-southeast-1"
       REDIS_URL: "redis://redis:6379/1"
