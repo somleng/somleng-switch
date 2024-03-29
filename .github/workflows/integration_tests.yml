@@ -131,6 +131,6 @@ jobs:
 
       - name: Run ${{ inputs.context }} Tests
         run: |
-          docker-compose exec --no-TTY -i testing ls -lath
-          docker-compose exec --no-TTY -i testing cat ./tests.sh
-          docker-compose exec --no-TTY -i testing ./tests.sh ./tests/${{ inputs.context }}
+          docker-compose run --no-TTY -i testing ls -lath
+          docker-compose run --no-TTY -i testing cat ./tests.sh
+          docker-compose run --no-TTY -i testing ./tests.sh ./tests/${{ inputs.context }}
