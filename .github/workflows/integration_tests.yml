@@ -60,6 +60,16 @@ jobs:
           cache-from: type=gha,scope=integration-tests-freeswitch
           cache-to: type=gha,mode=max,scope=integration-tests-freeswitch
 
+      - name: Build FreeSWITCH Event Logger
+        uses: docker/build-push-action@v5
+        with:
+          push: false
+          load: true
+          context: components/freeswitch_event_logger
+          tags: freeswitch_event_logger:latest
+          cache-from: type=gha,scope=integration-tests-freeswitch-event-logger
+          cache-to: type=gha,mode=max,scope=integration-tests-freeswitch-event-logger
+
       - name: Build Public Gateway
         uses: docker/build-push-action@v5
         with:
