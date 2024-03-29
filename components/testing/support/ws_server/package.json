@@ -12,7 +12,6 @@
     "assert": "^2.1.0",
     "httpdispatcher": "^2.2.0",
     "minimist": "^1.2.8",
-    "wavefile": "^11.0.0",
     "ws": "^8.16.0"
   }
 }

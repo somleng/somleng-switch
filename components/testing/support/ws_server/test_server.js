@@ -1,8 +1,6 @@
 // Adapted From: https://github.com/twilio/media-streams/blob/master/node/connect-basic/server.js
 
 const WebSocket = require("ws");
-const AudioTestStream = require("./audio_test_stream.js")
-
 const argv = require("minimist")(process.argv.slice(2));
 const port = argv.port && parseInt(argv.port) ? parseInt(argv.port) : 3001;
 
@@ -15,6 +13,60 @@ const wss = new WebSocket.Server({
 
 function log(message, ...args) {
   console.log(new Date(), message, ...args);
+}
+
+class AudioTestStream {
+  audioData = Buffer.alloc(0);
+  streamSid = "";
+
+  initializeAudio(streamSid) {
+    this.audioData = Buffer.alloc(0);
+    this.streamSid = streamSid;
+  }
+
+  streamStoredAudio(ws) {
+    console.log(`streamStoredAudio start sending data LEN: ${this.audioData.length}`);
+    const base64Data = this.audioData.toString('base64');
+    const msg = this.makeOutboundSample(base64Data)
+
+    if (ws) {
+      console.log(`${JSON.stringify(msg)}`)
+      ws.send(JSON.stringify(msg))
+    }
+  }
+
+  markAudio(ws) {
+    const msg = this.makeMark()
+    if (ws) {
+      console.log(`${JSON.stringify(msg)}`)
+      ws.send(JSON.stringify(msg))
+    }
+  }
+
+  appendAudio(data) {
+    console.log(`Append audio ${this.audioData.length} -> ${data.length}`)
+    this.audioData = Buffer.concat([this.audioData, data])
+  }
+
+  makeOutboundSample(base64) {
+    return {
+      "event": "media",
+      "media": {
+        "payload": base64,
+      },
+      "streamSid": this.streamSid
+    }
+  }
+
+  makeMark() {
+    return {
+      "event": "mark",
+      "mark": {
+        "name": "audio"
+      },
+      "streamSid": this.streamSid
+    }
+  }
 }
 
 const audioStream = new AudioTestStream();
