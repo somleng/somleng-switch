@@ -131,6 +131,4 @@ jobs:
 
       - name: Run ${{ inputs.context }} Tests
         run: |
-          docker-compose run testing --no-TTY testing ls -lath
-          docker-compose run testing --no-TTY testing cat ./tests.sh
-          docker-compose run testing --no-TTY testing ./tests.sh ./tests/${{ inputs.context }}
+          docker-compose run -e UAS=true testing ./tests.sh ./tests/${{ inputs.context }}

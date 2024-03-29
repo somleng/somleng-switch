@@ -9,7 +9,7 @@ source $current_dir/../support/test_helpers.sh
 log_file=$(find . -type f -iname "uas_*_messages.log")
 cat /dev/null > $log_file
 
-uas="$(dig +short testing)"
+uas="$(hostname -i)"
 media_server="$(dig +short freeswitch)"
 
 curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/calls \
@@ -31,7 +31,7 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
     "dial_string_prefix": null,
     "plus_prefix": false,
     "national_dialing": false,
-    "host": "testing",
+    "host": "$uas",
     "username": null,
     "symmetric_latching": true
   },

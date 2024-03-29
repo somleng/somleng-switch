@@ -13,7 +13,7 @@ reset_db
 create_rtpengine_entry "udp:media_proxy:2223"
 reload_opensips_tables
 
-uas="$(dig +short testing)"
+uas="$(hostname -i)"
 client_gateway="$(dig +short client_gateway)"
 media_proxy="$(dig +short media_proxy)"
 
