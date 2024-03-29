@@ -40,7 +40,7 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
     "host": null,
     "username": "user1",
     "symmetric_latching": true,
-    "address": "+85512334667@testing;fs_path=sip:$client_gateway:5060"
+    "address": "+85512334667@$uas;fs_path=sip:$client_gateway:5060"
   },
   "test_headers": {
     "X-UAS-Contact-Ip": "$uas"
