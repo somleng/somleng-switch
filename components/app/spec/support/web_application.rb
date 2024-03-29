@@ -12,4 +12,3 @@ RSpec.configure do |config|
     config.include RequestHelpers
   end
 end
-

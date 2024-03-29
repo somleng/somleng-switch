@@ -1,55 +1,25 @@
 require:
-  - rubocop-performance
   - rubocop-rspec
+  - rubocop-performance
+
+# Omakase Ruby styling for Rails
+inherit_gem:
+  rubocop-rails-omakase: rubocop.yml
 
 AllCops:
   NewCops: enable
 
+Lint:
+  Enabled: true
+
 Style/FrozenStringLiteralComment:
   Enabled: false
 
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
-
-Layout/LineLength:
-  Max: 100
-  Exclude:
-    - app/views/**/*.html.haml
-
-Style/Documentation:
-  Enabled: false
-
-Style/ClassAndModuleChildren:
-  Enabled: false
-
-Metrics/BlockLength:
-  Enabled: true
-  Exclude:
-    - "**/spec/**/*.rb"
-
-Style/BlockDelimiters:
-  Enabled: true
-  Exclude:
-    - "**/spec/**/*.rb"
-
-Style/NumericLiterals:
-  Enabled: false
-
-Style/FormatStringToken:
-  Enabled: false
-
-RSpec/MultipleExpectations:
+RSpec/DescribedClass:
   Enabled: false
 
 RSpec/ExampleLength:
-  Max: 30
+  Enabled: false
 
-RSpec/DescribeClass:
-  Enabled: true
-  Exclude:
-    - "**/spec/system/**/*.rb"
-    - "**/spec/requests/**/*.rb"
-    - "**/spec/views/**/*.rb"
-
-RSpec/DescribedClass:
+RSpec/MultipleExpectations:
   Enabled: false

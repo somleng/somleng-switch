@@ -1,0 +1,202 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://api.lvh.me:3000/services/media_streams
+    body:
+      encoding: UTF-8
+      string: '{"phone_call_id":"6f362591-ab86-4d1a-b39b-40c87e7929fc","url":"wss://mystream.ngrok.io/audiostream","custom_parameters":{},"tracks":"inbound"}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.9.0
+      Authorization:
+      - Basic c2VydmljZXM6cGFzc3dvcmQ=
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/vnd.api+json; charset=utf-8
+      Etag:
+      - W/"302699c3096fb77ddd04182e45831fd4"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      X-Request-Id:
+      - 527316fc-9fa0-4f2d-9fe8-0c554789a667
+      X-Runtime:
+      - '0.236037'
+      Server-Timing:
+      - sql.active_record;dur=36.66, start_processing.action_controller;dur=0.00,
+        instantiation.active_record;dur=17.53, transaction.active_record;dur=7.59,
+        process_action.action_controller;dur=104.28
+      Content-Length:
+      - '162'
+    body:
+      encoding: UTF-8
+      string: '{"created_at":"2024-03-27T10:05:04Z","updated_at":"2024-03-27T10:05:04Z","sid":"0edc29ef-e45f-408a-89f2-3266ce3352b6","url":"wss://mystream.ngrok.io/audiostream"}'
+  recorded_at: Wed, 27 Mar 2024 10:05:04 GMT
+- request:
+    method: post
+    uri: http://api.lvh.me:3000/services/media_stream_events
+    body:
+      encoding: UTF-8
+      string: '{"media_stream_id":"0edc29ef-e45f-408a-89f2-3266ce3352b6","event":{"type":"connect"}}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.9.0
+      Authorization:
+      - Basic c2VydmljZXM6cGFzc3dvcmQ=
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/vnd.api+json
+      Cache-Control:
+      - no-cache
+      X-Request-Id:
+      - 0c2e6636-804a-403d-9e78-90e59e064750
+      X-Runtime:
+      - '0.061709'
+      Server-Timing:
+      - sql.active_record;dur=8.69, start_processing.action_controller;dur=0.00, instantiation.active_record;dur=0.18,
+        transaction.active_record;dur=4.89, process_action.action_controller;dur=39.13
+      Content-Length:
+      - '0'
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Wed, 27 Mar 2024 10:05:04 GMT
+- request:
+    method: post
+    uri: http://api.lvh.me:3000/services/media_stream_events
+    body:
+      encoding: UTF-8
+      string: '{"media_stream_id":"0edc29ef-e45f-408a-89f2-3266ce3352b6","event":{"type":"start"}}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.9.0
+      Authorization:
+      - Basic c2VydmljZXM6cGFzc3dvcmQ=
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/vnd.api+json
+      Cache-Control:
+      - no-cache
+      X-Request-Id:
+      - bfb621e4-4d86-4ebe-93fb-9a8f66e12871
+      X-Runtime:
+      - '0.013973'
+      Server-Timing:
+      - start_processing.action_controller;dur=0.00, sql.active_record;dur=2.40, instantiation.active_record;dur=0.15,
+        transaction.active_record;dur=2.25, process_action.action_controller;dur=5.24
+      Content-Length:
+      - '0'
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Wed, 27 Mar 2024 10:05:04 GMT
+- request:
+    method: post
+    uri: http://api.lvh.me:3000/services/media_stream_events
+    body:
+      encoding: UTF-8
+      string: '{"media_stream_id":"0edc29ef-e45f-408a-89f2-3266ce3352b6","event":{"type":"disconnect"}}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.9.0
+      Authorization:
+      - Basic c2VydmljZXM6cGFzc3dvcmQ=
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/vnd.api+json
+      Cache-Control:
+      - no-cache
+      X-Request-Id:
+      - 5407fbcd-5e1e-4545-ae50-233e70f0f2ea
+      X-Runtime:
+      - '0.012400'
+      Server-Timing:
+      - start_processing.action_controller;dur=0.00, sql.active_record;dur=2.39, instantiation.active_record;dur=0.09,
+        transaction.active_record;dur=1.82, process_action.action_controller;dur=4.88
+      Content-Length:
+      - '0'
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Wed, 27 Mar 2024 10:05:04 GMT
+recorded_with: VCR 6.2.0

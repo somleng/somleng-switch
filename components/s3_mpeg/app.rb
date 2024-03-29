@@ -31,7 +31,7 @@ module App
     private
 
     def tempfile(extension = nil, &block)
-      Tempfile.create([SecureRandom.uuid, extension].compact, &block)
+      Tempfile.create([ SecureRandom.uuid, extension ].compact, &block)
     end
 
     def convert_file(raw_file, converted_file)

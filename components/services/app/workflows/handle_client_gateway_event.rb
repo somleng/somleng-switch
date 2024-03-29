@@ -16,6 +16,6 @@ class HandleClientGatewayEvent < ApplicationWorkflow
   private
 
   def domain_manager
-    @domain_manager ||= ManageDomains.new(domains: [event.private_ip, event.public_ip])
+    @domain_manager ||= ManageDomains.new(domains: [ event.private_ip, event.public_ip ])
   end
 end

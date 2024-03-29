@@ -85,7 +85,7 @@ RSpec.describe CallController, type: :call_controller do
             </Response>
           TWIML
 
-          stub_twiml_request(controller, response: [first_response, second_response])
+          stub_twiml_request(controller, response: [ first_response, second_response ])
 
           controller.run
 
@@ -146,7 +146,7 @@ RSpec.describe CallController, type: :call_controller do
 
         it "falls through the the next verb in the TwiML document if no input is received" do
           controller = build_controller(
-            stub_voice_commands: [:play_audio, ask: build_input_result(nil)]
+            stub_voice_commands: [ :play_audio, { ask: build_input_result(nil) } ]
           )
 
           stub_twiml_request(controller, response: <<~TWIML)
@@ -187,7 +187,6 @@ RSpec.describe CallController, type: :call_controller do
           controller.run
 
           expect(WebMock).to have_requested(:get, %r{\Ahttps://www.example.com/gather_results.xml\?.+})
-
         end
       end
 
@@ -410,10 +409,11 @@ RSpec.describe CallController, type: :call_controller do
 
     describe "Nested Verbs" do
       it "handles nested <Play>" do
-        # "After the caller enters digits on the keypad,
-        # Twilio sends them in a request to the current URL.
-        # We also add a nested <Play> verb.
-        # This means that input can be gathered at any time during <Play>."
+        # From: https://www.twilio.com/docs/voice/twiml/gather#nest-other-verbs
+        # You can nest the following verbs within <Gather>:
+        # <Pause>
+        # <Play>
+        # <Say>
 
         controller = build_controller(
           stub_voice_commands: { ask: build_input_result(nil) },
@@ -440,6 +440,8 @@ RSpec.describe CallController, type: :call_controller do
       end
 
       it "handles nested <Say>" do
+        tts_event_request = stub_request(:post, "http://api.lvh.me:3000/services/tts_events")
+
         controller = build_controller(
           stub_voice_commands: { ask: build_input_result(nil) },
           call_properties: {
@@ -477,7 +479,9 @@ RSpec.describe CallController, type: :call_controller do
             expect(node.attributes.fetch("lang").value).to eq("en-US")
           end
         end
-      end
+
+         expect(tts_event_request).to have_been_requested.times(2)
+       end
     end
   end
 
@@ -485,7 +489,7 @@ RSpec.describe CallController, type: :call_controller do
     instance_spy(
       Adhearsion::CallController::Input::Result,
       status: utterance.present? ? :match : :noinput,
-      utterance: utterance
+      utterance:
     )
   end
 end

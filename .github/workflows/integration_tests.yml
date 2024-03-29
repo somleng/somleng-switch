@@ -60,6 +60,16 @@ jobs:
           cache-from: type=gha,scope=integration-tests-freeswitch
           cache-to: type=gha,mode=max,scope=integration-tests-freeswitch
 
+      - name: Build FreeSWITCH Event Logger
+        uses: docker/build-push-action@v5
+        with:
+          push: false
+          load: true
+          context: components/freeswitch_event_logger
+          tags: freeswitch_event_logger:latest
+          cache-from: type=gha,scope=integration-tests-freeswitch-event-logger
+          cache-to: type=gha,mode=max,scope=integration-tests-freeswitch-event-logger
+
       - name: Build Public Gateway
         uses: docker/build-push-action@v5
         with:
@@ -116,9 +126,9 @@ jobs:
       - name: Run docker-compose
         run: |
           docker-compose run -e DATABASE_NAME=opensips_${{ inputs.context }}_test gateway-bootstrap create_db ${{ inputs.context }}
-          docker-compose up -d client_gateway public_gateway media_proxy freeswitch switch-app testing
+          docker-compose up -d client_gateway public_gateway media_proxy freeswitch freeswitch_event_logger switch-app redis testing
           sleep 30
 
       - name: Run ${{ inputs.context }} Tests
         run: |
-          docker-compose run testing /tests.sh /tests/${{ inputs.context }}
+          docker-compose run -e UAS=true testing ./tests.sh ./tests/${{ inputs.context }}

@@ -10,6 +10,7 @@ vendor/ruby
 coverage
 
 .idea
+.vscode
 
 # terraform
 terraform.tfstate.d/
@@ -19,3 +20,7 @@ terraform.tfstate.*
 
 master.key
 examples.txt
+
+node_modules
+nohup.out
+.raw

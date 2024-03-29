@@ -11,6 +11,11 @@ volumes:
   opensips_fifo:
 
 services:
+  redis:
+    image: redis:alpine
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+
   gateway-bootstrap:
     build:
       context: components/gateway
@@ -88,9 +93,12 @@ services:
       context: components/freeswitch
     image: freeswitch:latest
     platform: linux/amd64
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
-      FS_EXTERNAL_RTP_IP: "13.250.230.15"
       FS_ALTERNATIVE_RTP_IP: "18.141.245.230"
+      FS_EVENT_SOCKET_PASSWORD: secret
+      FS_EVENT_SOCKET_PORT: 8021
     expose:
       - "5060/udp"
       - "5222/tcp"
@@ -103,16 +111,36 @@ services:
       timeout: 5s
       retries: 10
 
+  freeswitch_event_logger:
+    build:
+      context: components/freeswitch_event_logger
+    image: freeswitch_event_logger:latest
+    depends_on:
+      redis:
+        condition: service_healthy
+      freeswitch:
+        condition: service_healthy
+    environment:
+      EVENT_SOCKET_HOST: freeswitch:8021
+      EVENT_SOCKET_PASSWORD: secret
+      REDIS_URL: "redis://redis:6379/1"
+
   switch-app:
     build:
       context: components/app
     image: switch-app:latest
     platform: linux/amd64
+    depends_on:
+      redis:
+        condition: service_healthy
     environment:
       AHN_CORE_HOST: freeswitch
       CALL_PLATFORM_STUB_RESPONSES: "true"
+      CONNECT_WS_SERVER_URL: "ws://testing:3001"
+      AUDIO_FILE_URL: "http://testing:8000/scenarios/files/tone.wav"
       AHN_CORE_HTTP_PORT: "8080"
       AWS_DEFAULT_REGION: "ap-southeast-1"
+      REDIS_URL: "redis://redis:6379/1"
     healthcheck:
       test:
         [
@@ -129,12 +157,13 @@ services:
     build:
       context: components/testing
     image: testing:latest
-    command: sipp -sf /scenarios/uas.xml -trace_msg
     environment:
       DATABASE_HOST: host.docker.internal
       DATABASE_PORT: 5432
       DATABASE_USERNAME: postgres
       FIFO_DIR: /opensips/fifo
+      WS_SERVER_PORT: 3001
+      FILE_SERVER_PORT: 8000
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:

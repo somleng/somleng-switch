@@ -4,11 +4,13 @@ gem "adhearsion", github: "somleng/adhearsion", branch: "develop"
 gem "aws-sdk-lambda"
 gem "aws-sdk-polly"
 gem "blather", github: "adhearsion/blather", branch: "develop"
+gem "connection_pool"
 gem "faraday"
 gem "http"
 gem "okcomputer"
 gem "phony"
 gem "rackup"
+gem "redis"
 gem "reel", github: "somleng/reel", branch: "develop"
 gem "reel-rack", github: "somleng/reel-rack", branch: "develop"
 gem "sentry-ruby"
@@ -18,13 +20,14 @@ gem "skylight"
 gem "sucker_punch"
 gem "tts_voices", github: "somleng/tts_voices"
 
-group :development, :test do
-  gem "rubocop"
-  gem "rubocop-performance"
-  gem "rubocop-rspec"
+group :development do
+  gem "rubocop-rails-omakase", require: false
+  gem "rubocop-performance", require: false
+  gem "rubocop-rspec", require: false
 end
 
 group :test do
+  gem "mock_redis"
   gem "rack-test"
   gem "rspec"
   gem "simplecov", require: false
