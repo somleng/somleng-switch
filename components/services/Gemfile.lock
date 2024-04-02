@@ -31,7 +31,7 @@ GEM
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    rake (13.1.0)
+    rake (13.2.0)
     rexml (3.2.5)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
