@@ -84,7 +84,8 @@ void TwilioHelper::start(AudioPipe *pAudioPipe)
   json << R"("start": {)";
   json << R"("accountSid": ")" << m_account_sid << "\",";
   json << R"("callSid": ")" << m_call_sid << "\",";
-  json << R"("tracks": ["inbound","outbound"],)";
+  json << R"("streamSid": ")" << m_stream_sid << "\",";
+  json << R"("tracks": ["inbound"],)";
   json << R"("mediaFormat": {)";
   json << R"("encoding": "audio/x-mulaw",)";
   json << R"("sampleRate": 8000,)";
