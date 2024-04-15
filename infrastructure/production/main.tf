@@ -30,7 +30,7 @@ module "somleng_switch" {
   app_environment = "production"
 
   json_cdr_password_parameter_arn = data.aws_ssm_parameter.somleng_services_password.arn
-  json_cdr_url                    = "https://api.internal.somleng.org/services/call_data_records"
+  json_cdr_url                    = "https://api.somleng.org/services/call_data_records"
   external_sip_ip                 = data.terraform_remote_state.core_infrastructure.outputs.nlb_eips[0].public_ip
   external_rtp_ip                 = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
 

@@ -17,7 +17,7 @@ production: &production
   sentry_dsn: "<%= AppSettings.credentials.fetch('sentry_dsn') %>"
   ahn_core_password: "<%= ENV.fetch('AHN_CORE_PASSWORD') %>"
   ahn_http_password: "<%= AppSettings.credentials.fetch('ahn_http_password') %>"
-  call_platform_host: "https://api.internal.somleng.org"
+  call_platform_host: "https://api.somleng.org"
   call_platform_password: "<%= AppSettings.credentials.fetch('call_platform_password') %>"
 
 staging:
