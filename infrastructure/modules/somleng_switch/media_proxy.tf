@@ -1,15 +1,15 @@
 # Container Instances
-module media_proxy_container_instances {
+module "media_proxy_container_instances" {
   source = "../container_instances"
 
-  app_identifier = var.media_proxy_identifier
-  vpc = var.vpc
-  instance_subnets = var.vpc.public_subnets
+  app_identifier              = var.media_proxy_identifier
+  vpc                         = var.vpc
+  instance_subnets            = var.vpc.public_subnets
   associate_public_ip_address = true
-  cluster_name = aws_ecs_cluster.cluster.name
-  max_capacity = var.media_proxy_max_tasks * 2
-  architecture = "arm64"
-  instance_type = "t4g.small"
+  cluster_name                = aws_ecs_cluster.cluster.name
+  max_capacity                = var.media_proxy_max_tasks * 2
+  architecture                = "arm64"
+  instance_type               = "t4g.small"
   user_data = var.assign_media_proxy_eips ? [
     {
       path = "/opt/assign_eip.sh",
@@ -27,13 +27,13 @@ module media_proxy_container_instances {
 # EIP
 
 resource "aws_eip" "media_proxy" {
-  count = var.assign_media_proxy_eips ? var.media_proxy_max_tasks : 0
-  domain      = "vpc"
+  count  = var.assign_media_proxy_eips ? var.media_proxy_max_tasks : 0
+  domain = "vpc"
 
   tags = {
-    Name = "Media Proxy ${count.index + 1}"
+    Name                         = "Media Proxy ${count.index + 1}"
     (var.media_proxy_identifier) = "true"
-    Priority = count.index + 1
+    Priority                     = count.index + 1
   }
 }
 
@@ -44,7 +44,7 @@ resource "aws_ecs_capacity_provider" "media_proxy" {
   auto_scaling_group_provider {
     auto_scaling_group_arn         = module.media_proxy_container_instances.autoscaling_group.arn
     managed_termination_protection = "ENABLED"
-    managed_draining = "ENABLED"
+    managed_draining               = "ENABLED"
 
     managed_scaling {
       maximum_scaling_step_size = 1000
@@ -63,7 +63,7 @@ resource "aws_security_group_rule" "media_proxy_control" {
   protocol          = "udp"
   from_port         = var.media_proxy_ng_port
   security_group_id = module.media_proxy_container_instances.security_group.id
-  cidr_blocks = [var.vpc.vpc_cidr_block]
+  cidr_blocks       = [var.vpc.vpc_cidr_block]
 }
 
 resource "aws_security_group_rule" "media_proxy_media" {
@@ -72,7 +72,7 @@ resource "aws_security_group_rule" "media_proxy_media" {
   protocol          = "udp"
   from_port         = var.media_proxy_media_port_min
   security_group_id = module.media_proxy_container_instances.security_group.id
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "media_proxy_icmp" {
@@ -81,7 +81,7 @@ resource "aws_security_group_rule" "media_proxy_icmp" {
   protocol          = "icmp"
   from_port         = -1
   security_group_id = module.media_proxy_container_instances.security_group.id
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 # IAM
@@ -109,7 +109,7 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "media_proxy_container_instance_custom_policy" {
-  role = module.media_proxy_container_instances.iam_role.id
+  role       = module.media_proxy_container_instances.iam_role.id
   policy_arn = aws_iam_policy.media_proxy_container_instance_custom_policy.arn
 }
 
@@ -133,40 +133,63 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "media_proxy_task_execution_role_amazon_ecs_task_execution_role_policy" {
-  role = aws_iam_role.media_proxy_task_execution_role.id
+  role       = aws_iam_role.media_proxy_task_execution_role.id
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 # Log Groups
 resource "aws_cloudwatch_log_group" "media_proxy" {
-  name = var.media_proxy_identifier
+  name              = var.media_proxy_identifier
   retention_in_days = 7
 }
 
 # ECS
-data "template_file" "media_proxy" {
-  template = file("${path.module}/templates/media_proxy.json.tpl")
-
-  vars = {
-    media_proxy_image = var.media_proxy_image
-
-    logs_group = aws_cloudwatch_log_group.media_proxy.name
-    logs_group_region = var.aws_region
-    app_environment = var.app_environment
-
-    ng_port = var.media_proxy_ng_port
-    healthcheck_port = var.media_proxy_healthcheck_port
-    media_port_min = var.media_proxy_media_port_min
-    media_port_max = var.media_proxy_media_port_max
-  }
-}
 
 resource "aws_ecs_task_definition" "media_proxy" {
   family                   = var.media_proxy_identifier
   network_mode             = "host"
   requires_compatibilities = ["EC2"]
-  execution_role_arn = aws_iam_role.media_proxy_task_execution_role.arn
-  container_definitions = data.template_file.media_proxy.rendered
+  execution_role_arn       = aws_iam_role.media_proxy_task_execution_role.arn
+  container_definitions = jsonencode([
+    {
+      name  = "media_proxy",
+      image = "${var.media_proxy_image}:latest",
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.media_proxy.name,
+          awslogs-region        = var.aws_region,
+          awslogs-stream-prefix = var.app_environment
+        }
+      },
+      essential = true,
+      healthCheck = {
+        command  = ["CMD-SHELL", "nc -z -w 5 $(hostname -i) $HEALTHCHECK_PORT"],
+        interval = 10,
+        retries  = 10,
+        timeout  = 5
+      },
+      environment = [
+        {
+          name  = "NG_PORT",
+          value = tostring(var.media_proxy_ng_port)
+        },
+        {
+          name  = "MEDIA_PORT_MIN",
+          value = tostring(var.media_proxy_media_port_min)
+        },
+        {
+          name  = "MEDIA_PORT_MAX",
+          value = tostring(var.media_proxy_media_port_max)
+        },
+        {
+          name  = "HEALTHCHECK_PORT",
+          value = tostring(var.media_proxy_healthcheck_port)
+        }
+      ]
+    }
+  ])
+
   memory = module.media_proxy_container_instances.ec2_instance_type.memory_size - 512
 }
 
@@ -178,11 +201,11 @@ resource "aws_ecs_service" "media_proxy" {
 
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.media_proxy.name
-    weight = 1
+    weight            = 1
   }
 
   placement_constraints {
-    type       = "distinctInstance"
+    type = "distinctInstance"
   }
 
   depends_on = [
@@ -207,8 +230,8 @@ resource "aws_appautoscaling_policy" "media_proxy_policy" {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
 
-    target_value = 30
-    scale_in_cooldown = 300
+    target_value       = 30
+    scale_in_cooldown  = 300
     scale_out_cooldown = 60
   }
 }

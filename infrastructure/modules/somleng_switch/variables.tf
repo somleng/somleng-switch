@@ -17,14 +17,17 @@ variable "public_gateway_image" {}
 variable "client_gateway_image" {}
 variable "media_proxy_image" {}
 variable "freeswitch_event_logger_image" {}
-variable s3_mpeg_ecr_repository_url {}
-variable services_ecr_repository_url {}
+variable "s3_mpeg_ecr_repository_url" {}
+variable "services_ecr_repository_url" {}
 variable "load_balancer" {}
+variable "internal_load_balancer" {}
 variable "network_load_balancer" {}
-variable "listener_arn" {}
+variable "listener" {}
+variable "internal_listener" {}
 variable "switch_subdomain" {}
 variable "client_gateway_subdomain" {}
 variable "route53_zone" {}
+variable "internal_route53_zone" {}
 variable "recordings_bucket_name" {}
 variable "efs_cache_name" {}
 variable "container_insights_enabled" {
@@ -103,6 +106,26 @@ variable "sip_port" {
 
 variable "sip_alternative_port" {
   default = 5080
+}
+
+variable "switch_webserver_port" {
+  default = 80
+}
+
+variable "switch_appserver_port" {
+  default = 3000
+}
+
+variable "rayo_port" {
+  default = 5222
+}
+
+variable "redis_port" {
+  default = 6379
+}
+
+variable "opensips_fifo_name" {
+  default = "/var/opensips/opensips_fifo"
 }
 
 variable "public_gateway_db_name" {}

@@ -115,4 +115,3 @@ jobs:
           tags: |
             ${{ env.GATEWAY_ECR_REPOSITORY }}:bootstrap
             ${{ env.GATEWAY_GHCR_REPOSITORY }}:bootstrap
-
