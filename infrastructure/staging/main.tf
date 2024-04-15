@@ -47,10 +47,8 @@ module "somleng_switch_staging" {
   db_port                   = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.port
   db_security_group         = data.terraform_remote_state.core_infrastructure.outputs.db_security_group.id
 
-  load_balancer          = data.terraform_remote_state.core_infrastructure.outputs.application_load_balancer
   internal_load_balancer = data.terraform_remote_state.core_infrastructure.outputs.internal_application_load_balancer
   network_load_balancer  = data.terraform_remote_state.core_infrastructure.outputs.network_load_balancer
-  listener               = data.terraform_remote_state.core_infrastructure.outputs.https_listener
   internal_listener      = data.terraform_remote_state.core_infrastructure.outputs.internal_https_listener
 
   route53_zone          = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_somleng_org

@@ -714,12 +714,6 @@ resource "aws_ecs_service" "switch" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.switch_public_http.arn
-    container_name   = "nginx"
-    container_port   = var.switch_webserver_port
-  }
-
-  load_balancer {
     target_group_arn = aws_lb_target_group.switch_http.arn
     container_name   = "nginx"
     container_port   = var.switch_webserver_port
@@ -735,21 +729,6 @@ resource "aws_ecs_service" "switch" {
 }
 
 # Load Balancer
-resource "aws_lb_target_group" "switch_public_http" {
-  name                 = var.switch_identifier
-  port                 = var.switch_webserver_port
-  protocol             = "HTTP"
-  vpc_id               = var.vpc.vpc_id
-  target_type          = "ip"
-  deregistration_delay = 60
-
-  health_check {
-    protocol          = "HTTP"
-    path              = "/health_checks"
-    healthy_threshold = 3
-    interval          = 10
-  }
-}
 
 resource "aws_lb_target_group" "switch_http" {
   name                 = "${var.switch_identifier}-internal"
@@ -764,27 +743,6 @@ resource "aws_lb_target_group" "switch_http" {
     path              = "/health_checks"
     healthy_threshold = 3
     interval          = 10
-  }
-}
-
-resource "aws_lb_listener_rule" "switch_public_http" {
-  priority = var.app_environment == "production" ? 20 : 120
-
-  listener_arn = var.listener.arn
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.switch_public_http.id
-  }
-
-  condition {
-    host_header {
-      values = [aws_route53_record.switch_public.fqdn]
-    }
-  }
-
-  lifecycle {
-    ignore_changes = [action]
   }
 }
 
@@ -872,17 +830,6 @@ resource "aws_cloudwatch_log_metric_filter" "freeswitch_session_count" {
 }
 
 # Route53
-resource "aws_route53_record" "switch_public" {
-  zone_id = var.route53_zone.zone_id
-  name    = var.app_environment == "production" ? "ahn" : "switch-staging"
-  type    = "A"
-
-  alias {
-    name                   = var.load_balancer.dns_name
-    zone_id                = var.load_balancer.zone_id
-    evaluate_target_health = true
-  }
-}
 
 resource "aws_route53_record" "switch" {
   zone_id = var.internal_route53_zone.zone_id
