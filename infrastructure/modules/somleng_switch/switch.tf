@@ -460,6 +460,12 @@ resource "aws_ecs_service" "switch" {
   }
 
   load_balancer {
+    target_group_arn = aws_lb_target_group.switch_public_http.arn
+    container_name   = "nginx"
+    container_port   = 80
+  }
+
+  load_balancer {
     target_group_arn = aws_lb_target_group.switch_http.arn
     container_name   = "nginx"
     container_port   = 80
@@ -475,8 +481,24 @@ resource "aws_ecs_service" "switch" {
 }
 
 # Load Balancer
-resource "aws_lb_target_group" "switch_http" {
+resource "aws_lb_target_group" "switch_public_http" {
   name                 = var.switch_identifier
+  port                 = 80
+  protocol             = "HTTP"
+  vpc_id               = var.vpc.vpc_id
+  target_type          = "ip"
+  deregistration_delay = 60
+
+  health_check {
+    protocol          = "HTTP"
+    path              = "/health_checks"
+    healthy_threshold = 3
+    interval          = 10
+  }
+}
+
+resource "aws_lb_target_group" "switch_http" {
+  name                 = "${var.switch_identifier}-internal"
   port                 = 80
   protocol             = "HTTP"
   vpc_id               = var.vpc.vpc_id
@@ -494,11 +516,11 @@ resource "aws_lb_target_group" "switch_http" {
 resource "aws_lb_listener_rule" "switch_public_http" {
   priority = var.app_environment == "production" ? 20 : 120
 
-  listener_arn = var.listener_arn
+  listener_arn = var.listener.arn
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.switch_http.id
+    target_group_arn = aws_lb_target_group.switch_public_http.id
   }
 
   condition {
@@ -511,6 +533,28 @@ resource "aws_lb_listener_rule" "switch_public_http" {
     ignore_changes = [action]
   }
 }
+
+resource "aws_lb_listener_rule" "switch_http" {
+  priority = var.app_environment == "production" ? 20 : 120
+
+  listener_arn = var.internal_listener.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.switch_http.id
+  }
+
+  condition {
+    host_header {
+      values = [aws_route53_record.switch.fqdn]
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [action]
+  }
+}
+
 
 # Autoscaling
 resource "aws_appautoscaling_target" "switch_scale_target" {
@@ -576,7 +620,7 @@ resource "aws_cloudwatch_log_metric_filter" "freeswitch_session_count" {
 # Route53
 resource "aws_route53_record" "switch_public" {
   zone_id = var.route53_zone.zone_id
-  name    = var.switch_subdomain
+  name    = var.app_environment == "production" ? "ahn" : "switch-staging"
   type    = "A"
 
   alias {
@@ -586,14 +630,14 @@ resource "aws_route53_record" "switch_public" {
   }
 }
 
-# resource "aws_route53_record" "switch" {
-#   zone_id = var.route53_zone.zone_id
-#   name    = var.switch_subdomain
-#   type    = "A"
+resource "aws_route53_record" "switch" {
+  zone_id = var.internal_route53_zone.zone_id
+  name    = var.switch_subdomain
+  type    = "A"
 
-#   alias {
-#     name                   = var.load_balancer.dns_name
-#     zone_id                = var.load_balancer.zone_id
-#     evaluate_target_health = true
-#   }
-# }
+  alias {
+    name                   = var.internal_load_balancer.dns_name
+    zone_id                = var.internal_load_balancer.zone_id
+    evaluate_target_health = true
+  }
+}
