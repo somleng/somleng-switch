@@ -18,7 +18,7 @@ jobs:
           [
             {
               "identifier": "gateway-commons-staging",
-              "branch": "use_internal_endpoints",
+              "branch": "develop",
               "image_tag": "staging"
             },
             {
