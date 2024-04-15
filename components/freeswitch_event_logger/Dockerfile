@@ -1,4 +1,4 @@
-FROM golang:alpine AS builder
+FROM public.ecr.aws/docker/library/golang:alpine AS builder
 WORKDIR /app
 COPY . ./
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-s -w" .
