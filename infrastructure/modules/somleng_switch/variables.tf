@@ -19,10 +19,8 @@ variable "media_proxy_image" {}
 variable "freeswitch_event_logger_image" {}
 variable "s3_mpeg_ecr_repository_url" {}
 variable "services_ecr_repository_url" {}
-variable "load_balancer" {}
 variable "internal_load_balancer" {}
 variable "network_load_balancer" {}
-variable "listener" {}
 variable "internal_listener" {}
 variable "switch_subdomain" {}
 variable "client_gateway_subdomain" {}
