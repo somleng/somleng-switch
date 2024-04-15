@@ -1,12 +1,12 @@
 # Container Instances
-module public_gateway_container_instances {
+module "public_gateway_container_instances" {
   source = "../container_instances"
 
-  app_identifier = var.public_gateway_identifier
-  vpc = var.vpc
+  app_identifier   = var.public_gateway_identifier
+  vpc              = var.vpc
   instance_subnets = var.vpc.private_subnets
-  max_capacity = var.public_gateway_max_tasks * 2
-  cluster_name = aws_ecs_cluster.cluster.name
+  max_capacity     = var.public_gateway_max_tasks * 2
+  cluster_name     = aws_ecs_cluster.cluster.name
 }
 
 # Capacity Provider
@@ -16,7 +16,7 @@ resource "aws_ecs_capacity_provider" "public_gateway" {
   auto_scaling_group_provider {
     auto_scaling_group_arn         = module.public_gateway_container_instances.autoscaling_group.arn
     managed_termination_protection = "ENABLED"
-    managed_draining = "ENABLED"
+    managed_draining               = "ENABLED"
 
     managed_scaling {
       maximum_scaling_step_size = 1000
@@ -39,7 +39,7 @@ resource "aws_security_group_rule" "public_gateway_healthcheck" {
   protocol          = "tcp"
   from_port         = var.sip_port
   security_group_id = aws_security_group.public_gateway.id
-  cidr_blocks = [var.vpc.vpc_cidr_block]
+  cidr_blocks       = [var.vpc.vpc_cidr_block]
 }
 
 resource "aws_security_group_rule" "public_gateway_sip" {
@@ -48,7 +48,7 @@ resource "aws_security_group_rule" "public_gateway_sip" {
   protocol          = "udp"
   from_port         = var.sip_port
   security_group_id = aws_security_group.public_gateway.id
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "public_gateway_sip_alternative" {
@@ -57,7 +57,7 @@ resource "aws_security_group_rule" "public_gateway_sip_alternative" {
   protocol          = "udp"
   from_port         = var.sip_alternative_port
   security_group_id = aws_security_group.public_gateway.id
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "public_gateway_egress" {
@@ -66,7 +66,7 @@ resource "aws_security_group_rule" "public_gateway_egress" {
   protocol          = "-1"
   from_port         = 0
   security_group_id = aws_security_group.public_gateway.id
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 # IAM
@@ -130,52 +130,128 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "public_gateway_task_execution_custom_policy" {
-  role = aws_iam_role.public_gateway_task_execution_role.id
+  role       = aws_iam_role.public_gateway_task_execution_role.id
   policy_arn = aws_iam_policy.public_gateway_task_execution_custom_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "public_gateway_task_execution_role_amazon_ecs_task_execution_role_policy" {
-  role = aws_iam_role.public_gateway_task_execution_role.id
+  role       = aws_iam_role.public_gateway_task_execution_role.id
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 # Log Groups
 resource "aws_cloudwatch_log_group" "public_gateway" {
-  name = var.public_gateway_identifier
+  name              = var.public_gateway_identifier
   retention_in_days = 7
 }
 
 # ECS
-data "template_file" "public_gateway" {
-  template = file("${path.module}/templates/public_gateway.json.tpl")
-
-  vars = {
-    public_gateway_image = var.public_gateway_image
-    opensips_scheduler_image = var.opensips_scheduler_image
-
-    logs_group = aws_cloudwatch_log_group.public_gateway.name
-    logs_group_region = var.aws_region
-    app_environment = var.app_environment
-
-    sip_port = var.sip_port
-    sip_alternative_port = var.sip_alternative_port
-    sip_advertised_ip = var.external_sip_ip
-
-    database_password_parameter_arn = var.db_password_parameter_arn
-    database_name = var.public_gateway_db_name
-    database_username = var.db_username
-    database_host = var.db_host
-    database_port = var.db_port
-  }
-}
 
 resource "aws_ecs_task_definition" "public_gateway" {
   family                   = var.public_gateway_identifier
   network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
-  task_role_arn = aws_iam_role.public_gateway_task_role.arn
-  execution_role_arn = aws_iam_role.public_gateway_task_execution_role.arn
-  container_definitions = data.template_file.public_gateway.rendered
+  task_role_arn            = aws_iam_role.public_gateway_task_role.arn
+  execution_role_arn       = aws_iam_role.public_gateway_task_execution_role.arn
+  container_definitions = jsonencode([
+    {
+      name  = "public_gateway",
+      image = "${var.public_gateway_image}:latest",
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.public_gateway.name,
+          awslogs-region        = var.aws_region,
+          awslogs-stream-prefix = var.app_environment
+        }
+      },
+      essential = true,
+      portMappings = [
+        {
+          containerPort = var.sip_port,
+          protocol      = "udp"
+        },
+        {
+          containerPort = var.sip_alternative_port,
+          protocol      = "udp"
+        }
+      ],
+      mountPoints = [
+        {
+          sourceVolume  = "opensips",
+          containerPath = "/var/opensips"
+        }
+      ],
+      healthCheck = {
+        command  = ["CMD-SHELL", "nc -z -w 5 $(hostname -i) $SIP_PORT"],
+        interval = 10,
+        retries  = 10,
+        timeout  = 5
+      },
+      secrets = [
+        {
+          name      = "DATABASE_PASSWORD",
+          valueFrom = var.db_password_parameter_arn
+        }
+      ],
+      environment = [
+        {
+          name  = "FIFO_NAME",
+          value = var.opensips_fifo_name
+        },
+        {
+          name  = "DATABASE_NAME",
+          value = var.public_gateway_db_name
+        },
+        {
+          name  = "DATABASE_USERNAME",
+          value = var.db_username
+        },
+        {
+          name  = "DATABASE_HOST",
+          value = var.db_host
+        },
+        {
+          name  = "DATABASE_PORT",
+          value = tostring(var.db_port)
+        },
+        {
+          name  = "SIP_PORT",
+          value = tostring(var.sip_port)
+        },
+        {
+          name  = "SIP_ALTERNATIVE_PORT",
+          value = tostring(var.sip_alternative_port)
+        },
+        {
+          name  = "SIP_ADVERTISED_IP",
+          value = tostring(var.external_sip_ip)
+        }
+      ]
+    },
+    {
+      name      = "opensips_scheduler",
+      image     = "${var.opensips_scheduler_image}:latest",
+      essential = true,
+      mountPoints = [
+        {
+          sourceVolume  = "opensips",
+          containerPath = "/var/opensips"
+        }
+      ],
+      environment = [
+        {
+          name  = "FIFO_NAME",
+          value = var.opensips_fifo_name
+        },
+        {
+          name  = "MI_COMMANDS",
+          value = "lb_reload,address_reload"
+        }
+      ]
+    }
+  ])
+
   memory = module.public_gateway_container_instances.ec2_instance_type.memory_size - 512
 
   volume {
@@ -211,7 +287,7 @@ resource "aws_ecs_service" "public_gateway" {
 
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.public_gateway.name
-    weight = 1
+    weight            = 1
   }
 
   depends_on = [
@@ -234,10 +310,10 @@ resource "aws_lb_target_group" "sip" {
   connection_termination = true
 
   health_check {
-    protocol = "TCP"
-    port = var.sip_port
+    protocol          = "TCP"
+    port              = var.sip_port
     healthy_threshold = 3
-    interval = 10
+    interval          = 10
   }
 }
 
@@ -247,7 +323,7 @@ resource "aws_lb_listener" "sip" {
   protocol          = "UDP"
 
   default_action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_lb_target_group.sip.arn
   }
 }
@@ -262,10 +338,10 @@ resource "aws_lb_target_group" "sip_alternative" {
   connection_termination = true
 
   health_check {
-    protocol = "TCP"
-    port = var.sip_port
+    protocol          = "TCP"
+    port              = var.sip_port
     healthy_threshold = 3
-    interval = 10
+    interval          = 10
   }
 }
 
@@ -275,7 +351,7 @@ resource "aws_lb_listener" "sip_alternative" {
   protocol          = "UDP"
 
   default_action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_lb_target_group.sip_alternative.arn
   }
 }
@@ -293,8 +369,8 @@ resource "aws_appautoscaling_policy" "public_gateway_policy" {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
 
-    target_value = 30
-    scale_in_cooldown = 300
+    target_value       = 30
+    scale_in_cooldown  = 300
     scale_out_cooldown = 60
   }
 }

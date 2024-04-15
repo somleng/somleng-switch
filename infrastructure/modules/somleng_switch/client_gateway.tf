@@ -1,14 +1,14 @@
 # Container Instances
-module client_gateway_container_instances {
+module "client_gateway_container_instances" {
   source = "../container_instances"
 
-  app_identifier = var.client_gateway_identifier
-  vpc = var.vpc
-  instance_subnets = var.vpc.public_subnets
+  app_identifier              = var.client_gateway_identifier
+  vpc                         = var.vpc
+  instance_subnets            = var.vpc.public_subnets
   associate_public_ip_address = true
-  max_capacity = var.client_gateway_max_tasks * 2
-  cluster_name = aws_ecs_cluster.cluster.name
-  security_groups = [var.db_security_group]
+  max_capacity                = var.client_gateway_max_tasks * 2
+  cluster_name                = aws_ecs_cluster.cluster.name
+  security_groups             = [var.db_security_group]
   user_data = var.assign_client_gateway_eips ? [
     {
       path = "/opt/assign_eip.sh",
@@ -25,13 +25,13 @@ module client_gateway_container_instances {
 
 # EIP
 resource "aws_eip" "client_gateway" {
-  count = var.assign_client_gateway_eips ? var.client_gateway_max_tasks : 0
-  domain      = "vpc"
+  count  = var.assign_client_gateway_eips ? var.client_gateway_max_tasks : 0
+  domain = "vpc"
 
   tags = {
-    Name = "${var.client_gateway_identifier} ${count.index + 1}"
+    Name                            = "${var.client_gateway_identifier} ${count.index + 1}"
     (var.client_gateway_identifier) = "true"
-    Priority = count.index + 1
+    Priority                        = count.index + 1
   }
 }
 
@@ -42,7 +42,7 @@ resource "aws_ecs_capacity_provider" "client_gateway" {
   auto_scaling_group_provider {
     auto_scaling_group_arn         = module.client_gateway_container_instances.autoscaling_group.arn
     managed_termination_protection = "ENABLED"
-    managed_draining = "ENABLED"
+    managed_draining               = "ENABLED"
 
     managed_scaling {
       maximum_scaling_step_size = 1000
@@ -61,7 +61,7 @@ resource "aws_security_group_rule" "client_gateway_healthcheck" {
   protocol          = "tcp"
   from_port         = var.sip_port
   security_group_id = module.client_gateway_container_instances.security_group.id
-  cidr_blocks      = data.aws_ip_ranges.route53_healthchecks.cidr_blocks
+  cidr_blocks       = data.aws_ip_ranges.route53_healthchecks.cidr_blocks
 }
 
 resource "aws_security_group_rule" "client_gateway_sip" {
@@ -70,7 +70,7 @@ resource "aws_security_group_rule" "client_gateway_sip" {
   protocol          = "udp"
   from_port         = var.sip_port
   security_group_id = module.client_gateway_container_instances.security_group.id
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "client_gateway_icmp" {
@@ -79,7 +79,7 @@ resource "aws_security_group_rule" "client_gateway_icmp" {
   protocol          = "icmp"
   from_port         = -1
   security_group_id = module.client_gateway_container_instances.security_group.id
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 # IAM
@@ -107,7 +107,7 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "client_gateway_container_instance_custom_policy" {
-  role = module.client_gateway_container_instances.iam_role.id
+  role       = module.client_gateway_container_instances.iam_role.id
   policy_arn = aws_iam_policy.client_gateway_container_instance_custom_policy.arn
 }
 
@@ -152,49 +152,121 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "client_gateway_task_execution_custom_policy" {
-  role = aws_iam_role.client_gateway_task_execution_role.id
+  role       = aws_iam_role.client_gateway_task_execution_role.id
   policy_arn = aws_iam_policy.client_gateway_task_execution_custom_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "client_gateway_task_execution_role_amazon_ecs_task_execution_role_policy" {
-  role = aws_iam_role.client_gateway_task_execution_role.id
+  role       = aws_iam_role.client_gateway_task_execution_role.id
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 # Log Groups
 resource "aws_cloudwatch_log_group" "client_gateway" {
-  name = var.client_gateway_identifier
+  name              = var.client_gateway_identifier
   retention_in_days = 7
 }
 
 # ECS
-data "template_file" "client_gateway" {
-  template = file("${path.module}/templates/client_gateway.json.tpl")
-
-  vars = {
-    client_gateway_image = var.client_gateway_image
-    opensips_scheduler_image = var.opensips_scheduler_image
-
-    logs_group = aws_cloudwatch_log_group.client_gateway.name
-    logs_group_region = var.aws_region
-    app_environment = var.app_environment
-
-    sip_port = var.sip_port
-
-    database_password_parameter_arn = var.db_password_parameter_arn
-    database_name = var.client_gateway_db_name
-    database_username = var.db_username
-    database_host = var.db_host
-    database_port = var.db_port
-  }
-}
 
 resource "aws_ecs_task_definition" "client_gateway" {
   family                   = var.client_gateway_identifier
   network_mode             = "host"
   requires_compatibilities = ["EC2"]
-  execution_role_arn = aws_iam_role.client_gateway_task_execution_role.arn
-  container_definitions = data.template_file.client_gateway.rendered
+  execution_role_arn       = aws_iam_role.client_gateway_task_execution_role.arn
+  container_definitions = jsonencode([
+    {
+      name  = "client_gateway",
+      image = "${var.client_gateway_image}:latest",
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.client_gateway.name,
+          awslogs-region        = var.aws_region,
+          awslogs-stream-prefix = var.app_environment
+        }
+      },
+      essential = true,
+      portMappings = [
+        {
+          containerPort = var.sip_port,
+          hostPort      = var.sip_port,
+          protocol      = "udp"
+        },
+        {
+          containerPort = var.sip_port,
+          hostPort      = var.sip_port,
+          protocol      = "tcp"
+        }
+      ],
+      healthCheck = {
+        command  = ["CMD-SHELL", "nc -z -w 5 $(hostname -i) $SIP_PORT"],
+        interval = 10,
+        retries  = 10,
+        timeout  = 5
+      },
+      mountPoints = [
+        {
+          sourceVolume  = "opensips",
+          containerPath = "/var/opensips"
+        }
+      ],
+      secrets = [
+        {
+          name      = "DATABASE_PASSWORD",
+          valueFrom = var.db_password_parameter_arn
+        }
+      ],
+      environment = [
+        {
+          name  = "FIFO_NAME",
+          value = var.opensips_fifo_name,
+        },
+        {
+          name  = "DATABASE_NAME",
+          value = var.client_gateway_db_name
+        },
+        {
+          name  = "DATABASE_USERNAME",
+          value = var.db_username
+        },
+        {
+          name  = "DATABASE_HOST",
+          value = var.db_host
+        },
+        {
+          name  = "DATABASE_PORT",
+          value = tostring(var.db_port),
+        },
+        {
+          name  = "SIP_PORT",
+          value = tostring(var.sip_port)
+        }
+      ]
+    },
+    {
+      name      = "opensips_scheduler",
+      image     = "${var.opensips_scheduler_image}:latest",
+      essential = true,
+      mountPoints = [
+        {
+          sourceVolume  = "opensips",
+          containerPath = "/var/opensips"
+        }
+      ],
+      environment = [
+        {
+          name  = "FIFO_NAME",
+          value = var.opensips_fifo_name
+        },
+        {
+          name  = "MI_COMMANDS",
+          value = "lb_reload,domain_reload,rtpengine_reload"
+        }
+      ]
+    }
+  ])
+
   memory = module.client_gateway_container_instances.ec2_instance_type.memory_size - 512
 
   volume {
@@ -203,20 +275,20 @@ resource "aws_ecs_task_definition" "client_gateway" {
 }
 
 resource "aws_ecs_service" "client_gateway" {
-  name            = aws_ecs_task_definition.client_gateway.family
-  cluster         = aws_ecs_cluster.cluster.id
-  task_definition = aws_ecs_task_definition.client_gateway.arn
-  desired_count   = var.client_gateway_min_tasks
+  name                               = aws_ecs_task_definition.client_gateway.family
+  cluster                            = aws_ecs_cluster.cluster.id
+  task_definition                    = aws_ecs_task_definition.client_gateway.arn
+  desired_count                      = var.client_gateway_min_tasks
   deployment_minimum_healthy_percent = 50
-  deployment_maximum_percent = 100
+  deployment_maximum_percent         = 100
 
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.client_gateway.name
-    weight = 1
+    weight            = 1
   }
 
   placement_constraints {
-    type       = "distinctInstance"
+    type = "distinctInstance"
   }
 
   depends_on = [
@@ -241,8 +313,8 @@ resource "aws_appautoscaling_policy" "client_gateway_policy" {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
 
-    target_value = 30
-    scale_in_cooldown = 300
+    target_value       = 30
+    scale_in_cooldown  = 300
     scale_out_cooldown = 60
   }
 }
@@ -260,10 +332,10 @@ resource "aws_appautoscaling_target" "client_gateway_scale_target" {
 resource "aws_route53_health_check" "client_gateway" {
   for_each = { for index, eip in aws_eip.client_gateway : index => eip }
 
-  reference_name    = "${var.client_gateway_subdomain}-${each.key + 1}"
-  ip_address        = each.value.public_ip
-  port              = var.sip_port
-  type              = "TCP"
+  reference_name   = "${var.client_gateway_subdomain}-${each.key + 1}"
+  ip_address       = each.value.public_ip
+  port             = var.sip_port
+  type             = "TCP"
   request_interval = 30
 
   tags = {
@@ -273,19 +345,19 @@ resource "aws_route53_health_check" "client_gateway" {
 
 resource "aws_route53_record" "client_gateway" {
   for_each = aws_route53_health_check.client_gateway
-  zone_id = var.route53_zone.zone_id
-  name    = var.client_gateway_subdomain
-  type    = "A"
-  ttl     = 300
-  records = [each.value.ip_address]
+  zone_id  = var.route53_zone.zone_id
+  name     = var.client_gateway_subdomain
+  type     = "A"
+  ttl      = 300
+  records  = [each.value.ip_address]
 
   multivalue_answer_routing_policy = true
-  set_identifier = "${var.client_gateway_identifier}-${each.key + 1}"
-  health_check_id = each.value.id
+  set_identifier                   = "${var.client_gateway_identifier}-${each.key + 1}"
+  health_check_id                  = each.value.id
 }
 
 resource "aws_lambda_invocation" "create_domain" {
-  for_each = aws_route53_record.client_gateway
+  for_each      = aws_route53_record.client_gateway
   function_name = aws_lambda_function.services.function_name
 
   input = jsonencode({

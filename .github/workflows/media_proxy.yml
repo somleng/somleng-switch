@@ -23,7 +23,7 @@ jobs:
           [
             {
               "identifier": "media-proxy-staging",
-              "branch": "develop",
+              "branch": "use_internal_endpoints",
               "image_tag": "staging",
               "ecs_service": "media-proxy-staging",
               "ecs_cluster": "somleng-switch-staging"

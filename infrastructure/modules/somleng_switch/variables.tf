@@ -108,6 +108,26 @@ variable "sip_alternative_port" {
   default = 5080
 }
 
+variable "switch_webserver_port" {
+  default = 80
+}
+
+variable "switch_appserver_port" {
+  default = 3000
+}
+
+variable "rayo_port" {
+  default = 5222
+}
+
+variable "redis_port" {
+  default = 6379
+}
+
+variable "opensips_fifo_name" {
+  default = "/var/opensips/opensips_fifo"
+}
+
 variable "public_gateway_db_name" {}
 variable "client_gateway_db_name" {}
 variable "db_host" {}
