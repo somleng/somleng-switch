@@ -67,7 +67,7 @@ module "somleng_switch_staging" {
   switch_max_tasks           = 2
   public_gateway_min_tasks   = 1
   public_gateway_max_tasks   = 2
-  client_gateway_min_tasks   = 1
+  client_gateway_min_tasks   = 2
   client_gateway_max_tasks   = 2
   media_proxy_min_tasks      = 1
   media_proxy_max_tasks      = 2
