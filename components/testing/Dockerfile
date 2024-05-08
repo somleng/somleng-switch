@@ -1,6 +1,6 @@
 FROM public.ecr.aws/docker/library/alpine:latest
 
-RUN apk update && apk upgrade && apk add --update --no-cache python3 sipp curl postgresql-client bind-tools nodejs npm tshark sox ffmpeg tcpdump
+RUN apk update && apk upgrade && apk add --update --no-cache jq python3 sipp curl postgresql-client bind-tools nodejs npm tshark sox ffmpeg tcpdump
 
 WORKDIR /testing
 

@@ -58,10 +58,12 @@ module SomlengAdhearsion
 
       describe "PATCH /calls/:id" do
         it "Redirect an in progress Call to a new URL", :vcr, cassette: :update_call_with_new_url do
-          call = Adhearsion::Call.new
           call_id = SecureRandom.uuid
+          call = Adhearsion::Call.new
           allow(call).to receive(:id).and_return(call_id)
           allow(call).to receive(:hangup)
+          call.controllers << build_controller(call:)
+
           Adhearsion.active_calls << call
 
           basic_authorize "adhearsion", "password"

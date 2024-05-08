@@ -21,15 +21,11 @@ module SomlengAdhearsion
       end
 
       patch "/calls/:id" do
-        call = Adhearsion.active_calls[params[:id]]
-        return 404 if call.blank?
+        AppSettings.redis.with do |redis|
+          redis.set("call_updates:#{params[:id]}", JSON.parse(request.body.read), ex: 1.day.seconds)
+        end
 
-        call_params = JSON.parse(request.body.read)
-        call_properties = BuildCallProperties.call(call_params)
-
-        UpdateCallJob.perform_async(CallController.new(call, call_properties:))
-
-        status 204
+        return status(204)
       end
     end
   end

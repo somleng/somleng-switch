@@ -10,5 +10,6 @@ RSpec.configure do |config|
   config.before(web_application: true) do
     config.include Rack::Test::Methods
     config.include RequestHelpers
+    config.include CallControllerHelpers
   end
 end

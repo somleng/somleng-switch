@@ -12,7 +12,7 @@ volumes:
 
 services:
   redis:
-    image: redis:alpine
+    image: public.ecr.aws/docker/library/redis:alpine
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
 
@@ -89,9 +89,9 @@ services:
       - "2223/udp"
 
   freeswitch:
-    build:
-      context: components/freeswitch
-    image: freeswitch:latest
+    # build:
+    #   context: components/freeswitch
+    image: ghcr.io/somleng/freeswitch
     platform: linux/amd64
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -164,6 +164,7 @@ services:
       FIFO_DIR: /opensips/fifo
       WS_SERVER_PORT: 3001
       FILE_SERVER_PORT: 8000
+      UAS: true
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:

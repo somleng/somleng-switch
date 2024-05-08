@@ -1,83 +1,125 @@
 class FakeRedis < MockRedis
-  class DefaultSubscription
-    attr_accessor :channel
+  class Channel
+    attr_reader :messages
+    attr_accessor :name, :subscribed
 
-    def message(&)
-      sleep
+    def initialize(name:, messages: [])
+      @name = name
+      @messages = messages
+    end
+
+    def subscribed?
+      @subscribed
+    end
+  end
+
+  class Subscription
+    attr_accessor :channels
+
+    def initialize(*channel_names, **options)
+      @channels = []
+      @poll_for_messages = options.fetch(:poll_for_messages, true)
+      channel_names.each do |channel_name|
+        channels << Channel.new(name: channel_name)
+      end
     end
 
     def subscribe(&)
-      yield
+      channels.each do |channel|
+        yield(channel.name, channels.size)
+      end
     end
 
     def unsubscribe(&)
       yield
     end
 
-    def unsubscribe!; end
-  end
-
-  class Subscription < DefaultSubscription
-    attr_reader :messages
-
-    def initialize(channel)
-      super()
-      @channel = channel
-      @messages = []
-    end
-
     def message(&)
-      messages.each do |message|
-        yield(channel, message.respond_to?(:call) ? message.call(channel) : message)
+      channels.find_all(&:subscribed?).each do |channel|
+        channel.messages.each do |message|
+          yield(channel.name, message.respond_to?(:call) ? message.call(channel.name) : message)
+        end
       end
 
-      poll_for_messages
+      poll_for_messages if @poll_for_messages
     end
 
-    def publish(message)
-      messages << message
+    def publish(channel_name, message)
+      channel = find_channel(channel_name)
+      if channel.blank?
+        channel = Channel.new(name: channel_name)
+        channels << channel
+      end
+      channel.messages << message
     end
 
-    def unsubscribe!
-      @unsubscribed = true
+    def find_channel(channel_name)
+      channels.find { |channel| File.fnmatch(channel.name, channel_name) }
+    end
+
+    def subscribe!(*channel_names)
+      Array(channel_names).each do |channel_name|
+        channel = find_channel(channel_name)
+
+        if channel.blank?
+          channel = Channel.new(name: channel_name)
+          channels << channel
+        end
+
+        channel.name = channel_name
+        channel.subscribed = true
+      end
+    end
+
+    def unsubscribe!(*channel_names)
+      if Array(channel_names).empty?
+        channels.each do |channel|
+          channel.subscribed = false
+        end
+      else
+        Array(channel_names).each do |channel_name|
+          channel = find_channel(channel_name)
+          channel.subscribed = false if channel.present?
+        end
+      end
     end
 
     private
 
     def poll_for_messages
       loop do
-        break if unsubscribed?
+        break if channels.none?(&:subscribed?)
 
         sleep(1)
       end
     end
-
-    def unsubscribed?
-      @unsubscribed
-    end
   end
 
-  attr_reader :default_subscription
+  attr_reader :subscription_options
 
-  def initialize(default_subscription: DefaultSubscription.new)
+  def initialize(subscription_options: {})
     super()
-    @default_subscription = default_subscription
+    @subscription_options = subscription_options
   end
 
-  def subscribe(channel, &)
-    subscription = find_subscription(channel)
-    subscription.channel = channel
+  def subscribe(*channel_names, &)
+    subscription = find_or_initialize_subscription(*channel_names)
+    subscription.subscribe!(*channel_names)
     yield(subscription)
   end
 
-  def unsubscribe(channel)
-    find_subscription(channel).unsubscribe!
-    subscriptions.delete(channel)
+  def unsubscribe(*channel_names)
+    if Array(channel_names).empty?
+      subscriptions.each(&:unsubscribe!)
+    else
+      subscription = find_or_initialize_subscription(*channel_names)
+      subscription.unsubscribe!(*channel_names)
+    end
   end
 
-  def publish_later(channel, message)
-    subscriptions[channel] ||= Subscription.new(channel)
-    subscriptions[channel].publish(message)
+  def publish_later(channel_name, message)
+    subscription = find_or_initialize_subscription(channel_name)
+    subscription.publish(channel_name, message)
   end
 
   def flushall
@@ -88,11 +130,17 @@ class FakeRedis < MockRedis
   private
 
   def subscriptions
-    @subscriptions ||= {}
+    @subscriptions ||= []
   end
 
-  def find_subscription(channel)
-    subscriptions.find(-> { default_subscription }) { |k, v| return v if File.fnmatch(k, channel) }
+  def find_or_initialize_subscription(*channel_names)
+    result = subscriptions.find(-> { Subscription.new(*channel_names, **subscription_options) }) do |subscription|
+      Array(channel_names).each do |channel_name|
+        return subscription if subscription.find_channel(channel_name)
+      end
+    end
+    subscriptions << result unless subscriptions.include?(result)
+    result
   end
 end
 
