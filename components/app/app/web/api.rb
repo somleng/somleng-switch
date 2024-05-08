@@ -21,8 +21,14 @@ module SomlengAdhearsion
       end
 
       patch "/calls/:id" do
-        AppSettings.redis.with do |redis|
-          redis.set("call_updates:#{params[:id]}", JSON.parse(request.body.read), ex: 1.day.seconds)
+        AppSettings.redis.with do |connection|
+          event_handler = CallUpdateEventHandler.new
+          request_schema = UpdateCallRequestSchema.new(JSON.parse(request.body.read))
+
+          connection.publish(
+            event_handler.channel_for(params[:id]),
+            event_handler.build_event(call_id: params[:id], **request_schema.output).serialize
+          )
         end
 
         return status(204)

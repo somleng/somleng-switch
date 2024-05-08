@@ -14,10 +14,11 @@ class FakeRedis < MockRedis
   end
 
   class Subscription
-    attr_accessor :channels
+    attr_reader :channels, :messages
 
     def initialize(*channel_names, **options)
       @channels = []
+      @messages = []
       @poll_for_messages = options.fetch(:poll_for_messages, true)
       channel_names.each do |channel_name|
         channels << Channel.new(name: channel_name)
@@ -35,10 +36,10 @@ class FakeRedis < MockRedis
     end
 
     def message(&)
-      channels.find_all(&:subscribed?).each do |channel|
-        channel.messages.each do |message|
-          yield(channel.name, message.respond_to?(:call) ? message.call(channel.name) : message)
-        end
+      messages.each do |(channel, message)|
+        next unless channel.subscribed?
+
+        yield(channel.name, message.respond_to?(:call) ? message.call(channel.name) : message)
       end
 
       poll_for_messages if @poll_for_messages
@@ -51,6 +52,7 @@ class FakeRedis < MockRedis
         channels << channel
       end
       channel.messages << message
+      messages << [ channel, message ]
     end
 
     def find_channel(channel_name)
@@ -102,6 +104,11 @@ class FakeRedis < MockRedis
     @subscription_options = subscription_options
   end
 
+  def publish(channel_name, message)
+    subscription = find_or_initialize_subscription(channel_name)
+    subscription.publish(channel_name, message)
+  end
+
   def subscribe(*channel_names, &)
     subscription = find_or_initialize_subscription(*channel_names)
     subscription.subscribe!(*channel_names)
@@ -118,8 +125,7 @@ class FakeRedis < MockRedis
   end
 
   def publish_later(channel_name, message)
-    subscription = find_or_initialize_subscription(channel_name)
-    subscription.publish(channel_name, message)
+    publish(channel_name, message)
   end
 
   def flushall

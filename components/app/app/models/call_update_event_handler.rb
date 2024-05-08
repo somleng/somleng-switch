@@ -3,17 +3,34 @@ class CallUpdateEventHandler
   CHANNEL_PREFIX = "call_updates".freeze
 
   class Event
-    attr_reader :payload
+    attr_reader :call_id, :voice_url, :voice_method, :twiml
 
     def initialize(**params)
-      @payload = params.fetch(:payload)
+      @call_id = params.fetch(:call_id)
+      @voice_url = params[:voice_url]
+      @voice_method = params[:voice_method]
+      @twiml = params[:twiml]
     end
 
     def self.parse(payload)
       message = JSON.parse(payload)
 
       new(
-        payload: message
+        call_id: message.fetch("id"),
+        voice_url: message["voice_url"],
+        voice_method: message["voice_method"],
+        twiml: message["twiml"]
+      )
+    end
+
+    def serialize
+      JSON.generate(
+        {
+          id: call_id,
+          voice_url:,
+          voice_method:,
+          twiml:
+        }.compact
       )
     end
   end
@@ -36,11 +53,23 @@ class CallUpdateEventHandler
     Event.parse(message)
   end
 
+  def build_event(**)
+    Event.new(**)
+  end
+
   def perform_later(event)
     queue.push(event)
   end
 
   def perform_now(event)
+    throw(
+      :redirect,
+      {
+        url: event.voice_url,
+        http_method: event.voice_method,
+        twiml: event.twiml
+      }.compact
+    )
   end
 
   def perform_queued
@@ -51,7 +80,7 @@ class CallUpdateEventHandler
 
   def fake_event(**params)
     Event.new(
-      payload: {},
+      call_id: SecureRandom.uuid,
       **params
     )
   end

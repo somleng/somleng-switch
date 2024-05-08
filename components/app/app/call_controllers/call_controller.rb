@@ -13,12 +13,14 @@ class CallController < Adhearsion::CallController
     execute_twiml(twiml)
   end
 
-  def redirect(url = nil, http_method = nil, params = {})
-    twiml = request_twiml(
-      url,
-      http_method,
-      params.reverse_merge("CallStatus" => "in-progress")
-    )
+  def redirect(**options)
+    twiml = options.fetch(:twiml) do
+      request_twiml(
+        options.fetch(:url),
+        options[:http_method],
+        options.fetch(:params, {}).reverse_merge("CallStatus" => "in-progress")
+      )
+    end
 
     execute_twiml(twiml)
   end
