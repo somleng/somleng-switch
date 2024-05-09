@@ -52,6 +52,9 @@ module SomlengAdhearsion
 
           expect(last_response.status).to eq(200)
           expect(json_response["id"]).to eq(call_id)
+          expect(IPAddr.new(json_response["host"])).to have_attributes(
+            private?: true
+          )
         end
       end
 

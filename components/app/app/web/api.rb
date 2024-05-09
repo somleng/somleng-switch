@@ -10,7 +10,7 @@ module SomlengAdhearsion
       post "/calls" do
         call_params = JSON.parse(request.body.read)
         resource = OutboundCall.new(call_params).initiate
-        json(id: resource.id)
+        json(CallSerializer.new(resource).to_h)
       end
 
       delete "/calls/:id" do

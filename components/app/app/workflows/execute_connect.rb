@@ -6,7 +6,7 @@ class ExecuteConnect < ExecuteTwiMLVerb
   def initialize(verb, **options)
     super
     @redis_connection = options.fetch(:redis_connection) { -> { AppSettings.redis } }
-    @event_handler = options.fetch(:event_handler) { ConnectEventHandler.new }
+    @event_handler = options.fetch(:event_handler) { ConnectEventHandler.new(call_platform_client:) }
     @call_update_event_handler = options.fetch(:call_update_event_handler) { CallUpdateEventHandler.new }
   end
 

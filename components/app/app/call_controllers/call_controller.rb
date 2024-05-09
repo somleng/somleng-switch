@@ -42,10 +42,13 @@ class CallController < Adhearsion::CallController
   def build_call_properties
     return metadata[:call_properties] if metadata[:call_properties].present?
 
+    call_serializer = CallSerializer.new(call)
+
     response = call_platform_client.create_call(
       to: call.variables.fetch("variable_sip_h_x_somleng_callee_identity"),
       from: call.variables.fetch("variable_sip_h_x_somleng_caller_identity"),
-      external_id: call.id,
+      external_id: call_serializer.id,
+      host: call_serializer.host,
       source_ip: call.variables["variable_sip_h_x_src_ip"] || call.variables["variable_sip_via_host"],
       client_identifier: call.variables["variable_sip_h_x_somleng_client_identifier"],
       variables: {
