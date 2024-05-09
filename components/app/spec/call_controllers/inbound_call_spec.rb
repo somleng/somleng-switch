@@ -23,6 +23,14 @@ RSpec.describe CallController, type: :call_controller do
     )
     expect(controller).to have_received(:say)
     expect(controller).to have_received(:play_audio)
+    expect(WebMock).to(have_requested(:post, "http://api.lvh.me:3000/services/inbound_phone_calls").with { |request|
+      request_body = JSON.parse(request.body)
+      expect(request_body).to include(
+        "from" => "0715100960",
+        "external_id" => call.id,
+        "host" => be_present
+      )
+    })
   end
 
   it "handles inbound calls from client gateway", :vcr, cassette: :inbound_call do
@@ -43,8 +51,10 @@ RSpec.describe CallController, type: :call_controller do
     controller.run
 
     expect(WebMock).to(have_requested(:post, "http://api.lvh.me:3000/services/inbound_phone_calls").with { |request|
-      request_body = JSON.parse(request.body)
-      request_body.fetch("from") == "0715100960" && request_body.fetch("client_identifier") == "user1"
-    })
+    request_body = JSON.parse(request.body)
+    expect(request_body).to include(
+      "client_identifier" => "user1"
+    )
+  })
   end
 end

@@ -47,7 +47,7 @@ class ExecuteTwiML < ApplicationWorkflow
       false
     end
 
-    context.redirect(*redirect_args) if redirect_args.present?
+    context.redirect(**redirect_args) if redirect_args.present?
   rescue Errors::TwiMLError => e
     logger.error(e.message)
   end
