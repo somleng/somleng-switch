@@ -48,20 +48,16 @@ class FakeRedis < MockRedis
       if Array(channel_names).empty?
         subscribed_channels.each do |channel|
           channel.subscribed = false
-          next unless callbacks.key?(:unsubscribe)
-
-          callbacks.fetch(:unsubscribe).call(channel.name, subscribed_channels.size)
+          on_unsubscribe
         end
       else
         Array(channel_names).each do |channel_name|
           channel = find_channel(channel_name)
-          if channel.present?
-            next unless channel.subscribed?
-            channel.subscribed = false
-            next unless callbacks.key?(:unsubscribe)
+          next if channel.blank?
+          next unless channel.subscribed?
 
-            callbacks.fetch(:unsubscribe).call(channel.name, subscribed_channels.size)
-          end
+          channel.subscribed = false
+          on_unsubscribe
         end
       end
     end
@@ -89,8 +85,14 @@ class FakeRedis < MockRedis
       end
     end
 
+    private
+
     def subscribed_channels
       channels.find_all(&:subscribed?)
+    end
+
+    def on_unsubscribe
+      callbacks.fetch(:unsubscribe).call(channel.name, subscribed_channels.size) if callbacks.key?(:unsubscribe)
     end
   end
 

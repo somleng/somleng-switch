@@ -4,10 +4,6 @@ module Rayo
   module Command
     module TwilioStream
       RSpec.describe Start do
-        def parse_stanza(xml)
-          Nokogiri::XML.parse(xml, nil, nil, Nokogiri::XML::ParseOptions::NOBLANKS)
-        end
-
         describe "#to_xml" do
           it "serializes to Rayo XML" do
             metadata = {
