@@ -176,7 +176,7 @@ RSpec.describe CallController, type: :call_controller do
 
     AppSettings.redis.with do |connection|
       build_twilio_stream_events(Array(with_events), **options).each do |(channel, message)|
-        connection.publish_later(channel, message)
+        connection.publish_on_subscribe(channel, message)
       end
     end
   end

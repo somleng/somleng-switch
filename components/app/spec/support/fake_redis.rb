@@ -1,152 +1,156 @@
 class FakeRedis < MockRedis
-  class Channel
-    attr_reader :messages
-    attr_accessor :name, :subscribed
-
-    def initialize(name:, messages: [])
-      @name = name
-      @messages = messages
-    end
-
+  Channel = Struct.new(:name, :subscribed, keyword_init: true) do
     def subscribed?
-      @subscribed
+      subscribed
     end
   end
 
   class Subscription
-    attr_reader :channels, :messages
+    attr_reader :channels, :messages, :callbacks
 
-    def initialize(*channel_names, **options)
+    def initialize(**options)
       @channels = []
       @messages = []
+      @callbacks = {}
       @poll_for_messages = options.fetch(:poll_for_messages, true)
-      channel_names.each do |channel_name|
-        channels << Channel.new(name: channel_name)
-      end
     end
 
-    def subscribe(&)
-      channels.each do |channel|
-        yield(channel.name, channels.size)
-      end
+    def subscribe(&block)
+      callbacks[:subscribe] = block
     end
 
-    def unsubscribe(&)
-      yield
+    def unsubscribe(&block)
+      callbacks[:unsubscribe] = block
     end
 
-    def message(&)
-      messages.each do |(channel, message)|
-        next unless channel.subscribed?
-
-        yield(channel.name, message.respond_to?(:call) ? message.call(channel.name) : message)
-      end
-
-      poll_for_messages if @poll_for_messages
+    def message(&block)
+      callbacks[:message] = block
     end
 
     def publish(channel_name, message)
       channel = find_channel(channel_name)
-      if channel.blank?
-        channel = Channel.new(name: channel_name)
-        channels << channel
-      end
-      channel.messages << message
+      return if channel.blank?
+
       messages << [ channel, message ]
     end
 
     def find_channel(channel_name)
-      channels.find { |channel| File.fnmatch(channel.name, channel_name) }
+      channels.find { |channel| File.fnmatch(channel_name, channel.name) }
     end
 
     def subscribe!(*channel_names)
       Array(channel_names).each do |channel_name|
-        channel = find_channel(channel_name)
-
-        if channel.blank?
-          channel = Channel.new(name: channel_name)
-          channels << channel
-        end
-
-        channel.name = channel_name
-        channel.subscribed = true
+        channels << Channel.new(name: channel_name, subscribed: true)
       end
     end
 
     def unsubscribe!(*channel_names)
       if Array(channel_names).empty?
-        channels.each do |channel|
+        subscribed_channels.each do |channel|
           channel.subscribed = false
+          next unless callbacks.key?(:unsubscribe)
+
+          callbacks.fetch(:unsubscribe).call(channel.name, subscribed_channels.size)
         end
       else
         Array(channel_names).each do |channel_name|
           channel = find_channel(channel_name)
-          channel.subscribed = false if channel.present?
+          if channel.present?
+            next unless channel.subscribed?
+            channel.subscribed = false
+            next unless callbacks.key?(:unsubscribe)
+
+            callbacks.fetch(:unsubscribe).call(channel.name, subscribed_channels.size)
+          end
         end
       end
     end
 
-    private
+    def on_subscribe
+      return unless callbacks.key?(:subscribe)
+
+      subscribed_channels.each do |channel|
+        callbacks.fetch(:subscribe).call(channel.name, subscribed_channels.size)
+      end
+    end
 
     def poll_for_messages
-      loop do
-        break if channels.none?(&:subscribed?)
+      return unless @poll_for_messages
 
-        sleep(1)
+      loop do
+        break if subscribed_channels.empty?
+        next unless callbacks.key?(:message)
+
+        messages.each do |(channel, message)|
+          next unless channel.subscribed?
+
+          callbacks.fetch(:message).call(channel.name, message.respond_to?(:call) ? message.call(channel.name) : message)
+        end
       end
+    end
+
+    def subscribed_channels
+      channels.find_all(&:subscribed?)
     end
   end
 
-  attr_reader :subscription_options
+  attr_reader :subscription_options, :future_messages, :subscriptions
 
   def initialize(subscription_options: {})
     super()
     @subscription_options = subscription_options
+    @future_messages = []
+    @subscriptions = []
   end
 
   def publish(channel_name, message)
-    subscription = find_or_initialize_subscription(channel_name)
-    subscription.publish(channel_name, message)
+    find_subscription(channel_name)&.publish(channel_name, message)
   end
 
   def subscribe(*channel_names, &)
-    subscription = find_or_initialize_subscription(*channel_names)
+    subscription = build_subscription
     subscription.subscribe!(*channel_names)
     yield(subscription)
+
+    subscription.on_subscribe
+    future_messages.each do |(channel, message)|
+      subscription.publish(channel, message)
+    end
+    subscription.poll_for_messages
   end
 
   def unsubscribe(*channel_names)
     if Array(channel_names).empty?
       subscriptions.each(&:unsubscribe!)
     else
-      subscription = find_or_initialize_subscription(*channel_names)
-      subscription.unsubscribe!(*channel_names)
+      find_subscription(*channel_names)&.unsubscribe!(*channel_names)
     end
   end
 
-  def publish_later(channel_name, message)
-    publish(channel_name, message)
+  def publish_on_subscribe(channel_name, message)
+    future_messages << [ channel_name, message ]
   end
 
   def flushall
     subscriptions.clear
+    future_messages.clear
     super
   end
 
   private
 
-  def subscriptions
-    @subscriptions ||= []
-  end
-
-  def find_or_initialize_subscription(*channel_names)
-    result = subscriptions.find(-> { Subscription.new(*channel_names, **subscription_options) }) do |subscription|
+  def find_subscription(*channel_names)
+    subscriptions.find do |subscription|
       Array(channel_names).each do |channel_name|
         return subscription if subscription.find_channel(channel_name)
       end
     end
-    subscriptions << result unless subscriptions.include?(result)
-    result
+  end
+
+  def build_subscription
+    subscription = Subscription.new(**subscription_options)
+    subscriptions << subscription
+    subscription
   end
 end
 

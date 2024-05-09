@@ -106,7 +106,7 @@ RSpec.describe ExecuteConnect, type: :call_controller do
     fake_redis = FakeRedis.new(subscription_options: { poll_for_messages: })
     channels.each do |channel, messages|
       messages.each do |message|
-        fake_redis.publish_later(channel, message)
+        fake_redis.publish_on_subscribe(channel, message)
       end
     end
     fake_redis
