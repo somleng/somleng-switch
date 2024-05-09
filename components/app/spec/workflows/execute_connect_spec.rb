@@ -54,7 +54,7 @@ RSpec.describe ExecuteConnect, type: :call_controller do
   it "handles stream disconnects" do
     verb = build_verb
     call_platform_client = stub_call_platform_client(stream_sid: "stream-sid")
-    event_handler, disconnect_event = stub_event_handler(ExecuteConnect::EventHandler, disconnect: true)
+    event_handler, disconnect_event = stub_event_handler(ConnectEventHandler, disconnect: true)
     redis_connection = stub_fake_redis(
       channels: {
         event_handler.channel_for("stream-sid") => [ "message" ]
@@ -73,7 +73,7 @@ RSpec.describe ExecuteConnect, type: :call_controller do
   it "handles call updates" do
     verb = build_verb
     call_platform_client = stub_call_platform_client(stream_sid: "stream-sid")
-    event_handler, disconnect_event = stub_event_handler(ExecuteConnect::EventHandler, disconnect: true)
+    event_handler, disconnect_event = stub_event_handler(ConnectEventHandler, disconnect: true)
     call_update_event_handler, call_update_event = stub_event_handler(CallUpdateEventHandler)
     redis_connection = stub_fake_redis(
       channels: {
@@ -102,32 +102,6 @@ RSpec.describe ExecuteConnect, type: :call_controller do
     expect(controller).to have_received(:write_and_await_response).with(an_instance_of(Rayo::Command::TwilioStream::Stop))
   end
 
-  describe ExecuteConnect::EventHandler do
-    it "handles events" do
-      call_platform_client = stub_call_platform_client
-      event_handler = ExecuteConnect::EventHandler.new(call_platform_client:)
-      event = event_handler.fake_event(type: "connect_failed", stream_sid: "stream-sid")
-
-      event_handler.perform_now(event)
-
-      expect(call_platform_client).to have_received(
-        :notify_media_stream_event
-      ).with(media_stream_id: "stream-sid", event: { type: "connect_failed" })
-    end
-
-    it "parses events" do
-      event_payload = { event: "connect_failed", streamSid: "stream-sid" }.to_json
-
-      event = ExecuteConnect::EventHandler.new.parse_event(event_payload)
-
-      expect(event).to have_attributes(
-        type: "connect_failed",
-        disconnect?: true,
-        stream_sid: "stream-sid"
-      )
-    end
-  end
-
   def stub_fake_redis(channels: {}, poll_for_messages: true)
     fake_redis = FakeRedis.new(subscription_options: { poll_for_messages: })
     channels.each do |channel, messages|
@@ -141,8 +115,7 @@ RSpec.describe ExecuteConnect, type: :call_controller do
   def stub_call_platform_client(stream_sid: "stream-sid")
     instance_double(
       CallPlatform::Client,
-      create_media_stream: CallPlatform::Client::AudioStreamResponse.new(id: stream_sid),
-      notify_media_stream_event: nil
+      create_media_stream: CallPlatform::Client::AudioStreamResponse.new(id: stream_sid)
     )
   end
 

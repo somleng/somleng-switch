@@ -182,7 +182,7 @@ RSpec.describe CallController, type: :call_controller do
   end
 
   def build_twilio_stream_events(events, **options)
-    channel_name = options.fetch(:channel_name) { ExecuteConnect::EventHandler.new.channel_for("*") }
+    channel_name = options.fetch(:channel_name) { ConnectEventHandler.new.channel_for("*") }
     other_messages = options.fetch(:other_messages, {})
 
     result = []
