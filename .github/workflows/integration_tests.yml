@@ -149,4 +149,4 @@ jobs:
 
       - name: Run ${{ inputs.context }} Tests
         run: |
-          docker compose run -e UAS=true testing ./tests.sh ./tests/${{ inputs.context }}
+          docker compose exec testing ./tests.sh ./tests/${{ inputs.context }}

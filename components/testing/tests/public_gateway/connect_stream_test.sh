@@ -39,7 +39,6 @@ log_file="uac_connect_*_messages.log"
 rm -f $log_file
 
 media_server="$(dig +short freeswitch)"
-uac_server="$(dig +short testing)"
 
 reset_db
 create_load_balancer_entry "gw" "5060"
