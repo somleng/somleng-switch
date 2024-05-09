@@ -123,12 +123,11 @@ jobs:
           cache-from: type=gha,scope=integration-tests-testing
           cache-to: type=gha,mode=max,scope=integration-tests-testing
 
-      - name: Run docker-compose
+      - name: Run docker compose
         run: |
-          docker-compose run -e DATABASE_NAME=opensips_${{ inputs.context }}_test gateway-bootstrap create_db ${{ inputs.context }}
-          docker-compose up -d client_gateway public_gateway media_proxy freeswitch freeswitch_event_logger switch-app redis testing
-          sleep 30
+          docker compose run -e DATABASE_NAME=opensips_${{ inputs.context }}_test gateway-bootstrap create_db ${{ inputs.context }}
+          docker compose up --wait -d client_gateway public_gateway media_proxy freeswitch freeswitch_event_logger switch-app redis testing
 
       - name: Run ${{ inputs.context }} Tests
         run: |
-          docker-compose run -e UAS=true testing ./tests.sh ./tests/${{ inputs.context }}
+          docker compose run -e UAS=true testing ./tests.sh ./tests/${{ inputs.context }}
