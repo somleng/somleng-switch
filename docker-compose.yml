@@ -89,9 +89,9 @@ services:
       - "2223/udp"
 
   freeswitch:
-    # build:
-    #   context: components/freeswitch
-    image: ghcr.io/somleng/freeswitch
+    build:
+      context: components/freeswitch
+    image: freeswitch:latest
     platform: linux/amd64
     extra_hosts:
       - "host.docker.internal:host-gateway"
