@@ -14,7 +14,7 @@ GEM
     aws-sdk-ecs (1.147.0)
       aws-sdk-core (~> 3, >= 3.193.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-ssm (1.168.0)
+    aws-sdk-ssm (1.169.0)
       aws-sdk-core (~> 3, >= 3.193.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.8.0)
