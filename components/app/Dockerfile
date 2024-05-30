@@ -1,4 +1,5 @@
-FROM ruby:3.2-alpine AS build-env
+ARG RUBY_VERSION=3.3
+FROM public.ecr.aws/docker/library/ruby:$RUBY_VERSION-alpine AS build-image
 
 ARG APP_ROOT="/app"
 ENV BUNDLE_APP_CONFIG="/app/.bundle"
@@ -23,7 +24,7 @@ RUN mkdir -p tmp/pids
 RUN rm -rf vendor/bundle/ruby/*/cache/ && find vendor/ -name "*.o" -delete && find vendor/ -name "*.c"
 
 
-FROM ruby:3.2-alpine
+FROM public.ecr.aws/docker/library/ruby:$RUBY_VERSION-alpine
 
 ARG APP_ROOT="/app"
 ENV BUNDLE_APP_CONFIG="/app/.bundle"
@@ -35,6 +36,6 @@ RUN apk update && \
     apk add --update --no-cache build-base pcre-dev && \
     gem install bundler
 
-COPY --from=build-env $APP_ROOT $APP_ROOT
+COPY --from=build-image $APP_ROOT $APP_ROOT
 
 CMD ["bundle", "exec", "ahn", "start", "--no-console"]
