@@ -11,13 +11,25 @@ class ExecuteDial < ExecuteTwiMLVerb
 
   def call
     answer!
+    calls = create_calls
+    dial_to(calls)
+
     dial_status = context.dial(build_dial_strings)
+
     return if verb.action.blank?
 
     redirect(build_callback_params(dial_status))
   end
 
   private
+
+  def create_calls
+    verb.nested_nouns.each_with_object(Hash.new({})) do |nested_noun, result|
+      dial_string, from = build_dial_string(nested_noun)
+
+      result[dial_string.to_s] = { from:, for: verb.timeout.seconds }.compact
+    end
+  end
 
   def redirect(params)
     throw(
