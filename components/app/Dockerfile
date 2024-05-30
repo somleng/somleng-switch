@@ -38,4 +38,6 @@ RUN apk update && \
 
 COPY --from=build-image $APP_ROOT $APP_ROOT
 
+ENV RUBY_YJIT_ENABLE=true
+
 CMD ["bundle", "exec", "ahn", "start", "--no-console"]
