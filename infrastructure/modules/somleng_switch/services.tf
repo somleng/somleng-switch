@@ -12,7 +12,7 @@ resource "docker_image" "services" {
 }
 
 resource "docker_registry_image" "services" {
-  name = docker_image.services.name
+  name          = docker_image.services.name
   keep_remotely = true
 }
 
@@ -29,7 +29,7 @@ resource "aws_ssm_parameter" "services_application_master_key" {
 
 # IAM
 resource "aws_iam_role" "services" {
-  name = local.services_function_name
+  name               = local.services_function_name
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -116,41 +116,41 @@ resource "aws_security_group_rule" "services_egress" {
   protocol          = "-1"
   from_port         = 0
   security_group_id = aws_security_group.services.id
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_lambda_function" "services" {
   function_name = local.services_function_name
-  role = aws_iam_role.services.arn
-  package_type = "Image"
+  role          = aws_iam_role.services.arn
+  package_type  = "Image"
   architectures = ["arm64"]
-  image_uri = docker_registry_image.services.name
-  timeout = 300
-  memory_size = 512
+  image_uri     = docker_registry_image.services.name
+  timeout       = 300
+  memory_size   = 512
 
   vpc_config {
     security_group_ids = [aws_security_group.services.id, var.db_security_group]
-    subnet_ids = var.vpc.private_subnets
+    subnet_ids         = var.vpc.private_subnets
   }
 
   environment {
     variables = {
-      SWITCH_GROUP = "service:${var.switch_identifier}"
-      MEDIA_PROXY_GROUP = "service:${aws_ecs_task_definition.media_proxy.family}"
-      CLIENT_GATEWAY_GROUP = "service:${aws_ecs_task_definition.client_gateway.family}"
+      SWITCH_GROUP                                = "service:${var.switch_identifier}"
+      MEDIA_PROXY_GROUP                           = "service:${aws_ecs_task_definition.media_proxy.family}"
+      CLIENT_GATEWAY_GROUP                        = "service:${aws_ecs_task_definition.client_gateway.family}"
       FS_EVENT_SOCKET_PASSWORD_SSM_PARAMETER_NAME = aws_ssm_parameter.freeswitch_event_socket_password.name
-      FS_EVENT_SOCKET_PORT = var.freeswitch_event_socket_port
-      FS_SIP_PORT = var.sip_port
-      FS_SIP_ALTERNATIVE_PORT = var.sip_alternative_port
-      PUBLIC_GATEWAY_DB_NAME = var.public_gateway_db_name
-      CLIENT_GATEWAY_DB_NAME = var.client_gateway_db_name
-      MEDIA_PROXY_NG_PORT = var.media_proxy_ng_port
-      DB_PASSWORD_SSM_PARAMETER_NAME = data.aws_ssm_parameter.db_password.name
-      APP_MASTER_KEY_SSM_PARAMETER_NAME = aws_ssm_parameter.services_application_master_key.name
-      APP_ENV = var.app_environment
-      DB_HOST = var.db_host
-      DB_PORT = var.db_port
-      DB_USER = var.db_username
+      FS_EVENT_SOCKET_PORT                        = var.freeswitch_event_socket_port
+      FS_SIP_PORT                                 = var.sip_port
+      FS_SIP_ALTERNATIVE_PORT                     = var.sip_alternative_port
+      PUBLIC_GATEWAY_DB_NAME                      = var.public_gateway_db_name
+      CLIENT_GATEWAY_DB_NAME                      = var.client_gateway_db_name
+      MEDIA_PROXY_NG_PORT                         = var.media_proxy_ng_port
+      DB_PASSWORD_SSM_PARAMETER_NAME              = data.aws_ssm_parameter.db_password.name
+      APP_MASTER_KEY_SSM_PARAMETER_NAME           = aws_ssm_parameter.services_application_master_key.name
+      APP_ENV                                     = var.app_environment
+      DB_HOST                                     = var.db_host
+      DB_PORT                                     = var.db_port
+      DB_USER                                     = var.db_username
     }
   }
 
@@ -178,7 +178,7 @@ resource "aws_lambda_permission" "services" {
 }
 
 resource "aws_cloudwatch_event_rule" "services" {
-  name        = local.services_function_name
+  name = local.services_function_name
 
   event_pattern = <<EOF
 {
@@ -211,7 +211,7 @@ resource "aws_sqs_queue" "services" {
 }
 
 resource "aws_lambda_event_source_mapping" "services_sqs" {
-  event_source_arn = aws_sqs_queue.services.arn
-  function_name    = aws_lambda_function.services.arn
+  event_source_arn                   = aws_sqs_queue.services.arn
+  function_name                      = aws_lambda_function.services.arn
   maximum_batching_window_in_seconds = 0
 }
