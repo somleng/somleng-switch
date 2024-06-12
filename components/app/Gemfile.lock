@@ -195,7 +195,7 @@ GEM
       racc (~> 1.4)
     okcomputer (1.18.5)
     parallel (1.25.1)
-    parser (3.3.2.0)
+    parser (3.3.3.0)
       ast (~> 2.4.1)
       racc
     phony (2.20.12)
@@ -266,8 +266,8 @@ GEM
       rubocop-minitest
       rubocop-performance
       rubocop-rails
-    rubocop-rspec (3.0.0)
-      rubocop (~> 1.40)
+    rubocop-rspec (3.0.1)
+      rubocop (~> 1.61)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     ruby_ami (2.4.0)
