@@ -69,6 +69,33 @@ resource "aws_security_group_rule" "public_gateway_egress" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
+# Global Accelerator
+
+resource "aws_globalaccelerator_listener" "public_gateway" {
+  accelerator_arn = var.global_accelerator.id
+  protocol        = "UDP"
+
+  port_range {
+    from_port = var.sip_port
+    to_port   = var.sip_port
+  }
+
+  port_range {
+    from_port = var.sip_alternative_port
+    to_port   = var.sip_alternative_port
+  }
+}
+
+resource "aws_globalaccelerator_endpoint_group" "public_gateway" {
+  count        = var.public_gateway_min_tasks > 0 ? 1 : 0
+  listener_arn = aws_globalaccelerator_listener.public_gateway.id
+
+  endpoint_configuration {
+    endpoint_id                    = aws_lb.public_gateway_nlb[count.index].arn
+    client_ip_preservation_enabled = true
+  }
+}
+
 # IAM
 resource "aws_iam_role" "public_gateway_task_role" {
   name = "${var.public_gateway_identifier}-ecsTaskRole"
@@ -225,7 +252,7 @@ resource "aws_ecs_task_definition" "public_gateway" {
         },
         {
           name  = "SIP_ADVERTISED_IP",
-          value = tostring(var.external_sip_ip)
+          value = tostring(var.global_accelerator.ip_sets[0].ip_addresses[0])
         }
       ]
     },
@@ -252,7 +279,7 @@ resource "aws_ecs_task_definition" "public_gateway" {
     }
   ])
 
-  memory = module.public_gateway_container_instances.ec2_instance_type.memory_size - 512
+  memory = max((module.public_gateway_container_instances.ec2_instance_type.memory_size - 512), 128)
 
   volume {
     name = "opensips"
@@ -260,6 +287,7 @@ resource "aws_ecs_task_definition" "public_gateway" {
 }
 
 resource "aws_ecs_service" "public_gateway" {
+  count           = var.public_gateway_min_tasks > 0 ? 1 : 0
   name            = aws_ecs_task_definition.public_gateway.family
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.public_gateway.arn
@@ -300,6 +328,86 @@ resource "aws_ecs_service" "public_gateway" {
 }
 
 # Load Balancer
+
+resource "aws_security_group" "public_gateway_nlb" {
+  name   = "${var.public_gateway_identifier}-nlb"
+  vpc_id = var.vpc.vpc_id
+}
+
+resource "aws_security_group_rule" "public_gateway_nlb_sip_ingress" {
+  type        = "ingress"
+  from_port   = var.sip_port
+  to_port     = var.sip_port
+  protocol    = "udp"
+  cidr_blocks = ["0.0.0.0/0"]
+
+  security_group_id = aws_security_group.public_gateway_nlb.id
+}
+
+resource "aws_security_group_rule" "public_gateway_nlb_sip_alternative_ingress" {
+  type        = "ingress"
+  from_port   = var.sip_alternative_port
+  to_port     = var.sip_alternative_port
+  protocol    = "udp"
+  cidr_blocks = ["0.0.0.0/0"]
+
+  security_group_id = aws_security_group.public_gateway_nlb.id
+}
+
+resource "aws_security_group_rule" "public_gateway_nlb_udp_egress" {
+  type        = "egress"
+  from_port   = 0
+  to_port     = 65535
+  protocol    = "udp"
+  cidr_blocks = ["0.0.0.0/0"]
+
+  security_group_id = aws_security_group.public_gateway_nlb.id
+}
+
+resource "aws_security_group_rule" "public_gateway_nlb_tcp_egress" {
+  type        = "egress"
+  from_port   = 0
+  to_port     = 65535
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+
+  security_group_id = aws_security_group.public_gateway_nlb.id
+}
+
+resource "aws_eip" "public_gateway_nlb" {
+  count  = var.public_gateway_min_tasks > 0 ? length(var.vpc.public_subnets) : 0
+  domain = "vpc"
+
+  tags = {
+    Name = "Public Gateway NLB IP"
+  }
+}
+
+resource "aws_lb" "public_gateway_nlb" {
+  count                            = var.public_gateway_min_tasks > 0 ? 1 : 0
+  name                             = var.public_gateway_identifier
+  load_balancer_type               = "network"
+  enable_cross_zone_load_balancing = true
+
+  security_groups = [aws_security_group.public_gateway_nlb.id]
+
+  access_logs {
+    bucket  = var.logs_bucket.id
+    prefix  = var.public_gateway_identifier
+    enabled = true
+  }
+
+  dynamic "subnet_mapping" {
+    for_each = var.vpc.public_subnets
+    content {
+      subnet_id     = subnet_mapping.value
+      allocation_id = aws_eip.public_gateway_nlb.*.id[subnet_mapping.key]
+    }
+  }
+}
+
+# Target Groups
+
 resource "aws_lb_target_group" "sip" {
   name        = "${var.public_gateway_identifier}-sip"
   port        = var.sip_port
@@ -318,7 +426,8 @@ resource "aws_lb_target_group" "sip" {
 }
 
 resource "aws_lb_listener" "sip" {
-  load_balancer_arn = var.network_load_balancer.arn
+  count             = var.public_gateway_min_tasks > 0 ? 1 : 0
+  load_balancer_arn = aws_lb.public_gateway_nlb[count.index].arn
   port              = var.sip_port
   protocol          = "UDP"
 
@@ -346,7 +455,8 @@ resource "aws_lb_target_group" "sip_alternative" {
 }
 
 resource "aws_lb_listener" "sip_alternative" {
-  load_balancer_arn = var.network_load_balancer.arn
+  count             = var.public_gateway_min_tasks > 0 ? 1 : 0
+  load_balancer_arn = aws_lb.public_gateway_nlb[count.index].arn
   port              = var.sip_alternative_port
   protocol          = "UDP"
 
@@ -358,10 +468,11 @@ resource "aws_lb_listener" "sip_alternative" {
 
 # Autoscaling
 resource "aws_appautoscaling_policy" "public_gateway_policy" {
+  count              = var.public_gateway_min_tasks > 0 ? 1 : 0
   name               = var.public_gateway_identifier
-  service_namespace  = aws_appautoscaling_target.public_gateway_scale_target.service_namespace
-  resource_id        = aws_appautoscaling_target.public_gateway_scale_target.resource_id
-  scalable_dimension = aws_appautoscaling_target.public_gateway_scale_target.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.public_gateway_scale_target[count.index].service_namespace
+  resource_id        = aws_appautoscaling_target.public_gateway_scale_target[count.index].resource_id
+  scalable_dimension = aws_appautoscaling_target.public_gateway_scale_target[count.index].scalable_dimension
   policy_type        = "TargetTrackingScaling"
 
   target_tracking_scaling_policy_configuration {
@@ -376,8 +487,9 @@ resource "aws_appautoscaling_policy" "public_gateway_policy" {
 }
 
 resource "aws_appautoscaling_target" "public_gateway_scale_target" {
+  count              = var.public_gateway_min_tasks > 0 ? 1 : 0
   service_namespace  = "ecs"
-  resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.public_gateway.name}"
+  resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.public_gateway[count.index].name}"
   scalable_dimension = "ecs:service:DesiredCount"
   min_capacity       = var.public_gateway_min_tasks
   max_capacity       = var.public_gateway_max_tasks

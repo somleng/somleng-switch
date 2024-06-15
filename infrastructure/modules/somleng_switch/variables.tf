@@ -20,14 +20,16 @@ variable "freeswitch_event_logger_image" {}
 variable "s3_mpeg_ecr_repository_url" {}
 variable "services_ecr_repository_url" {}
 variable "internal_load_balancer" {}
-variable "network_load_balancer" {}
 variable "internal_listener" {}
 variable "switch_subdomain" {}
 variable "client_gateway_subdomain" {}
 variable "route53_zone" {}
 variable "internal_route53_zone" {}
 variable "recordings_bucket_name" {}
+variable "logs_bucket" {}
 variable "efs_cache_name" {}
+variable "global_accelerator" {}
+
 variable "container_insights_enabled" {
   default = false
 }
@@ -135,7 +137,6 @@ variable "db_username" {}
 variable "db_password_parameter_arn" {}
 
 variable "json_cdr_password_parameter_arn" {}
-variable "external_sip_ip" {}
 variable "external_rtp_ip" {}
 variable "alternative_sip_outbound_ip" {}
 variable "alternative_rtp_ip" {}
