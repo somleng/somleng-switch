@@ -145,7 +145,7 @@ jobs:
       - name: Run docker compose
         run: |
           docker compose run -e DATABASE_NAME=opensips_${{ inputs.context }}_test gateway-bootstrap create_db ${{ inputs.context }}
-          docker compose up --wait -d ${{ inputs.context }} media_proxy freeswitch freeswitch_event_logger switch-app redis testing || docker inspect somleng-switch-switch-app-1
+          docker compose up --wait -d ${{ inputs.context }} media_proxy freeswitch freeswitch_event_logger switch-app redis testing
 
       - name: Run ${{ inputs.context }} Tests
         run: |
