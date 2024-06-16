@@ -142,9 +142,6 @@ jobs:
           cache-from: type=gha,scope=integration-tests-testing
           cache-to: type=gha,mode=max,scope=integration-tests-testing
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-
       - name: Run docker compose
         run: |
           docker compose run -e DATABASE_NAME=opensips_${{ inputs.context }}_test gateway-bootstrap create_db ${{ inputs.context }}

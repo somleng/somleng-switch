@@ -5,7 +5,6 @@
 # Postgres is not included in this docker compose configuration
 # because of the complexity of adding code to wait for postgres to start.
 
-version: "3.9"
 volumes:
   workspace:
   opensips_fifo:
@@ -145,12 +144,11 @@ services:
       test:
         [
           "CMD-SHELL",
-          "wget --server-response --spider --quiet http://localhost:8080/health_checks 2>&1 | grep '200 OK' > /dev/null",
+          "wget --server-response --spider --quiet http://0.0.0.0:8080/health_checks 2>&1 | grep '200 OK' > /dev/null",
         ]
       interval: 30s
       timeout: 10s
       retries: 10
-      start_period: 60s
     expose:
       - "8080/tcp"
 
