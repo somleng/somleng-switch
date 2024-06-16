@@ -32,7 +32,6 @@ module "somleng_switch_staging" {
 
   json_cdr_password_parameter_arn = data.aws_ssm_parameter.somleng_services_password.arn
   json_cdr_url                    = "https://api-staging.internal.somleng.org/services/call_data_records"
-  external_sip_ip                 = data.terraform_remote_state.core_infrastructure.outputs.nlb_eips[0].public_ip
   external_rtp_ip                 = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
 
   alternative_sip_outbound_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
@@ -48,11 +47,13 @@ module "somleng_switch_staging" {
   db_security_group         = data.terraform_remote_state.core_infrastructure.outputs.db_security_group.id
 
   internal_load_balancer = data.terraform_remote_state.core_infrastructure.outputs.internal_application_load_balancer
-  network_load_balancer  = data.terraform_remote_state.core_infrastructure.outputs.network_load_balancer
   internal_listener      = data.terraform_remote_state.core_infrastructure.outputs.internal_https_listener
 
   route53_zone          = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_somleng_org
   internal_route53_zone = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_internal_somleng_org
+  global_accelerator    = data.terraform_remote_state.core_infrastructure.outputs.global_accelerator
+
+  logs_bucket = data.terraform_remote_state.core_infrastructure.outputs.logs_bucket
 
   switch_subdomain         = "switch-staging"
   client_gateway_subdomain = "sip-staging"
