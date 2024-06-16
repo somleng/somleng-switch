@@ -146,8 +146,8 @@ services:
           "CMD-SHELL",
           "wget --server-response --spider --quiet http://0.0.0.0:8080/health_checks 2>&1 | grep '200 OK' > /dev/null",
         ]
-      interval: 30s
-      timeout: 10s
+      interval: 10s
+      timeout: 5s
       retries: 10
     expose:
       - "8080/tcp"
