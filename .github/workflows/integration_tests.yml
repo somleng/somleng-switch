@@ -58,7 +58,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build Switch App
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: false
           load: true
@@ -68,7 +68,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=integration-tests-switch-app
 
       - name: Build FreeSWITCH
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: false
           load: true
@@ -80,7 +80,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=integration-tests-freeswitch
 
       - name: Build FreeSWITCH Event Logger
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: false
           load: true
@@ -90,7 +90,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=integration-tests-freeswitch-event-logger
 
       - name: Build Public Gateway
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: false
           load: true
@@ -101,7 +101,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=integration-tests-public-gateway
 
       - name: Build Client Gateway
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: false
           load: true
@@ -112,7 +112,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=integration-tests-client-gateway
 
       - name: Build Media Proxy
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: false
           load: true
@@ -122,7 +122,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=integration-tests-media-proxy
 
       - name: Build Gateway Bootstrap
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: false
           load: true
@@ -133,7 +133,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=integration-tests-gateway-bootstrap
 
       - name: Build Testing
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: false
           load: true
