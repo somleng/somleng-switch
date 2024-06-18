@@ -442,7 +442,7 @@ bool AudioPipe::lws_service_thread(unsigned int nServiceThread)
           protocolName.c_str(),
           AudioPipe::lws_callback,
           sizeof(void *),
-          1024,
+          16384,
       },
       {NULL, NULL, 0, 0}};
 
