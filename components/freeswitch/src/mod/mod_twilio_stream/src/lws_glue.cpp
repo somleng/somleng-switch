@@ -31,6 +31,8 @@ namespace
 
   static const char *requestedBufferSecs = std::getenv("MOD_TWILIO_STREAM_BUFFER_SECS");
   static int nAudioBufferSecs = std::max(1, std::min(requestedBufferSecs ? ::atoi(requestedBufferSecs) : 2, 5));
+  static const char *requestedBufferStartMSecs = std::getenv("MOD_TWILIO_STREAM_MIN_BUFFER_MILISECS");
+  static int nAudioBufferStartMSecs = std::max(0, std::min(requestedBufferStartMSecs ? ::atoi(requestedBufferStartMSecs) : 0, 0));
   static const char *requestedNumServiceThreads = std::getenv("MOD_TWILIO_STREAM_SERVICE_THREADS");
   static const char *mySubProtocolName = std::getenv("MOD_TWILIO_STREAM_SUBPROTOCOL_NAME") ? std::getenv("MOD_TWILIO_STREAM_SUBPROTOCOL_NAME") : "audio.somleng.org";
   static unsigned int nServiceThreads = std::max(1, std::min(requestedNumServiceThreads ? ::atoi(requestedNumServiceThreads) : 1, 5));
@@ -295,6 +297,7 @@ namespace
     tech_pvt->id = ++idxCallCount;
     tech_pvt->buffer_overrun_notified = 0;
     tech_pvt->audio_paused = 0;
+    tech_pvt->audio_playing = 0;
     tech_pvt->graceful_shutdown = 0;
 
     size_t buflen = LWS_PRE + (FRAME_SIZE_8000 * desiredSampling / 8000 * channels * 1000 / RTP_PACKETIZATION_PERIOD * nAudioBufferSecs);
@@ -722,8 +725,24 @@ extern "C"
     if (!tech_pvt || tech_pvt->audio_paused || tech_pvt->graceful_shutdown || !pAudioPipe)
       return SWITCH_TRUE;
 
-    if (pAudioPipe->binaryReadPtrCount() == 0)
+    int available = pAudioPipe->binaryReadPtrCount();
+    if (available <= 0)
+    {
+      tech_pvt->audio_playing = false;
       return SWITCH_TRUE;
+    }
+
+    int minBuffer = (tech_pvt->desiredSampling * 2 * tech_pvt->channels) * (nAudioBufferStartMSecs / 1000.0);
+
+    if (!tech_pvt->audio_playing && available < minBuffer)
+    {
+      switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_ERROR, "(%u) buffer not full (%d, %d)  \n",
+                        tech_pvt->id,
+                        available, minBuffer);
+      return SWITCH_TRUE;
+    }      switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_ERROR, "(%u) buffer full (%d, %d)  \n",
+                        tech_pvt->id,
+                        available, minBuffer);
 
     if (switch_mutex_trylock(tech_pvt->mutex) == SWITCH_STATUS_SUCCESS)
     {
@@ -750,6 +769,7 @@ extern "C"
         }
         if (num_samples > 0)
         {
+          tech_pvt->audio_playing = true;
           switch_core_media_bug_set_write_replace_frame(bug, frame);
 
           TwilioHelper *pTwilioHelper = static_cast<TwilioHelper *>(tech_pvt->pTwilioHelper);
