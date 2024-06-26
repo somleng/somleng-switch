@@ -86,6 +86,7 @@ ENV FS_LOG_DIRECTORY "/var/log/freeswitch"
 ENV FS_STORAGE_DIRECTORY "$FS_CACHE_DIRECTORY/freeswitch/storage"
 ENV FS_TTS_CACHE_DIRECTORY "$FS_CACHE_DIRECTORY/freeswitch/tts_cache"
 ENV MOD_TWILIO_STREAM_SUBPROTOCOL_NAME "audio.somleng.org"
+ENV MOD_TWILIO_STREAM_MIN_BUFFER_MILISECS "500"
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["freeswitch"]
