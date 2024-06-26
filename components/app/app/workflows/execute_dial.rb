@@ -11,10 +11,8 @@ class ExecuteDial < ExecuteTwiMLVerb
 
   def call
     answer!
-    calls = create_calls
-    dial_to(calls)
-
-    dial_status = context.dial(build_dial_strings)
+    phone_calls = create_outbound_calls
+    dial_status = context.dial(build_dial_params(phone_calls))
 
     return if verb.action.blank?
 
@@ -23,12 +21,27 @@ class ExecuteDial < ExecuteTwiMLVerb
 
   private
 
-  def create_calls
-    verb.nested_nouns.each_with_object(Hash.new({})) do |nested_noun, result|
-      dial_string, from = build_dial_string(nested_noun)
+  def build_dial_params(phone_calls)
+    phone_calls.each_with_object({}) do |phone_call, result|
+      dial_string, from = build_dial_string(phone_call)
 
-      result[dial_string.to_s] = { from:, for: verb.timeout.seconds }.compact
+      result[dial_string.to_s] = {
+        from:,
+        for: verb.timeout.seconds,
+        headers: SIPHeaders.new(
+          call_sid: phone_call.sid,
+          account_sid: phone_call.account_sid
+        ).to_h
+      }.compact
     end
+  end
+
+  def create_outbound_calls
+    call_platform_client.create_outbound_calls(
+      destinations: verb.nested_nouns.map { |nested_noun| nested_noun.content.strip },
+      parent_call_sid: call_properties.call_sid,
+      from: verb.caller_id
+    )
   end
 
   def redirect(params)
@@ -60,43 +73,12 @@ class ExecuteDial < ExecuteTwiMLVerb
     end
   end
 
-  def build_dial_strings
-    verb.nested_nouns.each_with_object(Hash.new({})) do |nested_noun, result|
-      dial_string, from = build_dial_string(nested_noun)
-
-      result[dial_string.to_s] = { from:, for: verb.timeout.seconds }.compact
+  def build_dial_string(phone_call_response)
+    if phone_call_response.address.present?
+      DialString.new(address: phone_call_response.address)
+    else
+      dial_string = DialString.new(phone_call_response.routing_parameters)
+      [ dial_string, dial_string.format_number(phone_call_response.from) ]
     end
-  end
-
-  def build_dial_string(nested_noun)
-    dial_content = nested_noun.content.strip
-
-    if dial_to_number?(nested_noun)
-      dial_string = DialString.new(build_routing_parameters(dial_content))
-      [ dial_string, dial_string.format_number(caller_id) ]
-    elsif dial_to_sip?(nested_noun)
-      DialString.new(address: dial_content.delete_prefix("sip:"))
-    end
-  end
-
-  def dial_to_number?(nested_noun)
-    nested_noun.text? || nested_noun.name == "Number"
-  end
-
-  def dial_to_sip?(nested_noun)
-    nested_noun.name == "Sip"
-  end
-
-  def caller_id
-    return verb.caller_id if verb.caller_id.present?
-
-    call_properties.inbound? ? call_properties.from : call_properties.to
-  end
-
-  def build_routing_parameters(number)
-    call_platform_client.build_routing_parameters(
-      phone_number: number,
-      account_sid: call_properties.account_sid
-    )
   end
 end

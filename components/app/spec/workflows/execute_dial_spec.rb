@@ -2,12 +2,9 @@ require "spec_helper"
 
 RSpec.describe ExecuteDial, type: :call_controller do
   it "creates a call" do
-
-    nested_nouns = #<struct TwiML::TwiMLNode name="Number", attributes={}, content="85516701721", text?=false>,
-    #<struct TwiML::TwiMLNode name="Number", attributes={}, content="855715100860", text?=false>,
-    #<struct TwiML::TwiMLNode name="Number", attributes={}, content="85510555777", text?=false>]
-
-    verb = build_verb(nested_nouns: build_nested_nouns("85516701721", "855715100860", "85510555777"))
+    verb = build_verb(
+      nested_nouns: build_nested_nouns("85516701721", "855715100860", "sip:example.com:5080")
+    )
     joined_outbound_call = build_outbound_call(id: "481f77b9-a95b-4c6a-bbb1-23afcc42c959")
     no_answer_outbound_call = build_outbound_call
 
@@ -35,9 +32,9 @@ RSpec.describe ExecuteDial, type: :call_controller do
     )
   end
 
-  def build_nested_nouns(numbers)
-    Array(numbers).map do |number|
-      TwiML::TwiMLNode.new(name: "Number", content: number)
+  def build_nested_nouns(*destinations)
+    Array(destinations).map do |destination|
+      TwiML::TwiMLNode.new(name: destination.start_with?("sip:") ? "Sip" : "Number", content: destination)
     end
   end
 
