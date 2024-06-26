@@ -44,7 +44,7 @@ class CallController < Adhearsion::CallController
 
     call_serializer = CallSerializer.new(call)
 
-    response = call_platform_client.create_call(
+    response = call_platform_client.create_inbound_call(
       to: call.variables.fetch("variable_sip_h_x_somleng_callee_identity"),
       from: call.variables.fetch("variable_sip_h_x_somleng_caller_identity"),
       external_id: call_serializer.id,

@@ -25,11 +25,12 @@ RSpec.describe CallController, type: :call_controller do
     # | <Queue>      | A nested XML element identifying a queue                          |
     # |              | that this call should be connected to.                            |
 
-    it "dials to plain text", :vcr, cassette: :build_routing_parameters do
+    it "dials to plain text", :vcr, cassette: :dial do
       controller = build_controller(
         stub_voice_commands: [ :play_audio, { dial: build_dial_status } ],
         call_properties: {
-          account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34",
+          account_sid: "96b4557a-341c-46b3-ba3c-a1793e9dae3c",
+          call_sid: "15f55641-7728-4cab-8e2e-8077c4b3c6b4",
           from: "855715100860",
           direction: "inbound"
         }
