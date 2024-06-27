@@ -59,7 +59,7 @@ jobs:
           [
             {
               "identifier": "switch-staging",
-              "branch": "set_min_buffer_on_mod_twilio_stream",
+              "branch": "develop",
               "image_tag": "staging",
               "ecs_service": "switch-staging",
               "ecs_cluster": "somleng-switch-staging"
