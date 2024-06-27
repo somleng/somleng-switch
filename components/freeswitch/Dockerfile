@@ -1,4 +1,4 @@
-FROM public.ecr.aws/debian/debian:bookworm-slim as freeswitch-build
+FROM public.ecr.aws/docker/library/debian:bookworm-slim as freeswitch-build
 ARG signalwire_token
 
 RUN apt update && apt install --no-install-recommends -yq cmake gcc g++ make cmake build-essential git libssl-dev libspeex-dev libspeexdsp-dev
@@ -6,6 +6,7 @@ RUN apt update && apt install --no-install-recommends -yq cmake gcc g++ make cma
 RUN apt-get update && apt-get install --no-install-recommends -yq gnupg2 wget ca-certificates lsb-release && \
     wget --http-user=signalwire --http-password=${signalwire_token} -O /usr/share/keyrings/signalwire-freeswitch-repo.gpg https://freeswitch.signalwire.com/repo/deb/debian-release/signalwire-freeswitch-repo.gpg && \
     echo "machine freeswitch.signalwire.com login signalwire password ${signalwire_token}" > /etc/apt/auth.conf && \
+    chmod 600 /etc/apt/auth.conf && \
     echo "deb [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" > /etc/apt/sources.list.d/freeswitch.list && \
     echo "deb-src [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" >> /etc/apt/sources.list.d/freeswitch.list && \
     apt-get update --allow-releaseinfo-change && \
@@ -22,13 +23,14 @@ RUN make install
 
 FROM public.ecr.aws/aws-cli/aws-cli as aws-cli
 
-FROM public.ecr.aws/debian/debian:bookworm-slim
+FROM public.ecr.aws/docker/library/debian:bookworm-slim
 
 ARG signalwire_token
 
 RUN apt-get update && apt-get install --no-install-recommends -yq libssl-dev libspeex-dev libspeexdsp-dev gnupg2 wget ca-certificates lsb-release && \
     wget --http-user=signalwire --http-password=${signalwire_token} -O /usr/share/keyrings/signalwire-freeswitch-repo.gpg https://freeswitch.signalwire.com/repo/deb/debian-release/signalwire-freeswitch-repo.gpg && \
     echo "machine freeswitch.signalwire.com login signalwire password ${signalwire_token}" > /etc/apt/auth.conf && \
+    chmod 600 /etc/apt/auth.conf && \
     echo "deb [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" > /etc/apt/sources.list.d/freeswitch.list && \
     echo "deb-src [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" >> /etc/apt/sources.list.d/freeswitch.list && \
     apt-get update --allow-releaseinfo-change && \
@@ -86,6 +88,7 @@ ENV FS_LOG_DIRECTORY "/var/log/freeswitch"
 ENV FS_STORAGE_DIRECTORY "$FS_CACHE_DIRECTORY/freeswitch/storage"
 ENV FS_TTS_CACHE_DIRECTORY "$FS_CACHE_DIRECTORY/freeswitch/tts_cache"
 ENV MOD_TWILIO_STREAM_SUBPROTOCOL_NAME "audio.somleng.org"
+ENV MOD_TWILIO_STREAM_MIN_BUFFER_MILISECS "500"
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["freeswitch"]
