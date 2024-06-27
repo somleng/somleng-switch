@@ -9,8 +9,6 @@ module "switch_container_instances" {
 
   app_identifier   = var.switch_identifier
   vpc              = var.vpc
-  architecture     = "arm64"
-  instance_type    = "t4g.small"
   instance_subnets = var.vpc.private_subnets
   cluster_name     = aws_ecs_cluster.cluster.name
   max_capacity     = var.switch_max_tasks * 2

@@ -21,7 +21,7 @@ RUN cmake ..
 RUN make
 RUN make install
 
-FROM public.ecr.aws/aws-cli/aws-cli:latest as aws-cli
+FROM public.ecr.aws/aws-cli/aws-cli as aws-cli
 
 FROM public.ecr.aws/docker/library/debian:bookworm-slim
 
