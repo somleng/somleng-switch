@@ -1,12 +1,12 @@
 # https://apt.opensips.org/packages.php?os=bookworm
 
-FROM public.ecr.aws/debian/debian:bookworm-slim AS bootstrap
+FROM public.ecr.aws/docker/library/debian:bookworm-slim AS bootstrap
 
 USER root
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ARG OPENSIPS_VERSION=3.3
+ARG OPENSIPS_VERSION=3.4
 ARG OPENSIPS_BUILD=releases
 
 RUN apt-get -y update -qq && apt-get -y install gnupg2 ca-certificates curl && \
@@ -30,13 +30,13 @@ CMD ["create_db"]
 
 # Build
 
-FROM public.ecr.aws/debian/debian:bookworm-slim AS build
+FROM public.ecr.aws/docker/library/debian:bookworm-slim AS build
 
 USER root
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ARG OPENSIPS_VERSION=3.3
+ARG OPENSIPS_VERSION=3.4
 ARG OPENSIPS_BUILD=releases
 
 RUN apt-get -y update -qq && apt-get -y install gnupg2 ca-certificates iproute2 curl netcat-traditional jq && \

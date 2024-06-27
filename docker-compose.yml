@@ -91,7 +91,6 @@ services:
     build:
       context: components/freeswitch
     image: freeswitch:latest
-    platform: linux/amd64
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
@@ -128,7 +127,6 @@ services:
     build:
       context: components/app
     image: switch-app:latest
-    platform: linux/amd64
     depends_on:
       redis:
         condition: service_healthy
