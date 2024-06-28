@@ -13,7 +13,7 @@
 #include "lockfree/lockfree.hpp"
 
 // 60s of L16 8Khz audio
-#define MAX_AUDIO_BUFFER 60 * 2 * 8000
+#define MAX_AUDIO_BUFFER 7 * 2 * 8000
 
 class AudioPipe
 {
