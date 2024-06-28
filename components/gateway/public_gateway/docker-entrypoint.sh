@@ -25,7 +25,7 @@ if [ "$1" = 'opensips' ]; then
   sed -i "s|LOCAL_IP|$LOCAL_IP|g" /etc/opensips/opensips.cfg
   sed -i "s|INTERFACE_NAME|$INTERFACE_NAME|g" /etc/opensips/opensips.cfg
 
-  exec "$OPENSIPS_CONTAINER_BINARY" -FE
+  exec "$OPENSIPS_CONTAINER_BINARY" -F
 fi
 
 exec "$@"
