@@ -147,6 +147,9 @@ jobs:
           docker compose run -e DATABASE_NAME=opensips_${{ inputs.context }}_test gateway-bootstrap create_db ${{ inputs.context }}
           docker compose up --wait -d ${{ inputs.context }} media_proxy freeswitch freeswitch_event_logger switch-app redis testing
 
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+
       - name: Run ${{ inputs.context }} Tests
         run: |
           docker compose exec testing ./tests.sh ./tests/${{ inputs.context }}
