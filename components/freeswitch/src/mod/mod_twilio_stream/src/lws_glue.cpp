@@ -184,6 +184,7 @@ namespace
         }
         else if (0 == type.compare("clear"))
         {
+          switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "(%u) clearing audio \n", tech_pvt->id);
           AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
           TwilioHelper *pTwilioHelper = static_cast<TwilioHelper *>(tech_pvt->pTwilioHelper);
           if (pAudioPipe != nullptr && pTwilioHelper != nullptr)
@@ -740,9 +741,7 @@ extern "C"
                         tech_pvt->id,
                         available, minBuffer);
       return SWITCH_TRUE;
-    }      switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_ERROR, "(%u) buffer full (%d, %d)  \n",
-                        tech_pvt->id,
-                        available, minBuffer);
+    }    
 
     if (switch_mutex_trylock(tech_pvt->mutex) == SWITCH_STATUS_SUCCESS)
     {
@@ -775,7 +774,11 @@ extern "C"
           TwilioHelper *pTwilioHelper = static_cast<TwilioHelper *>(tech_pvt->pTwilioHelper);
           if (pTwilioHelper)
           {
+
             auto marks = pAudioPipe->clearExpiredMarks();
+            switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_INFO, "(%u) buffer clearExpiredMarks (%d)  \n",
+            tech_pvt->id,
+            marks.size());
             for (int i = 0; i < marks.size(); i++)
             {
               pTwilioHelper->mark(pAudioPipe, marks[i]);
