@@ -149,3 +149,7 @@ jobs:
           service: ${{ matrix.ecs_service }}
           cluster: ${{ matrix.ecs_cluster }}
           wait-for-service-stability: true
+          
+      - name: Collect Docker Logs
+        uses: jwalton/gh-docker-logs@v2.2.2
+            
