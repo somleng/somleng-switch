@@ -150,3 +150,7 @@ jobs:
       - name: Run ${{ inputs.context }} Tests
         run: |
           docker compose exec testing ./tests.sh ./tests/${{ inputs.context }}
+
+      - name: Collect Docker Logs
+        if: always()
+        uses: jwalton/gh-docker-logs@v2.2.2
