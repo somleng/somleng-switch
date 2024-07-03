@@ -7,7 +7,6 @@
 #include "g711.h"
 #include "base64.hpp"
 
-#include "lockfree/lockfree.hpp"
 
 using namespace std::chrono;
 

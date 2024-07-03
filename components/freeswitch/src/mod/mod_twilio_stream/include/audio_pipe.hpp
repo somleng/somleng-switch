@@ -10,10 +10,6 @@
 
 #include <libwebsockets.h>
 
-#include "lockfree/lockfree.hpp"
-
-// 60s of L16 8Khz audio
-#define MAX_AUDIO_BUFFER 30 * 2 * 8000
 
 class AudioPipe
 {
@@ -51,7 +47,7 @@ public:
 
   // constructor
   AudioPipe(const char *uuid, const char *host, unsigned int port, const char *path, int sslFlags,
-            size_t bufLen, size_t minFreespace, const char *username, const char *password, const char *bugname, notifyHandler_t callback);
+            size_t bufLen, size_t bufInLen, size_t minFreespace, const char *username, const char *password, const char *bugname, notifyHandler_t callback);
   ~AudioPipe();
 
   LwsState_t getLwsState(void) { return m_state; }
@@ -81,11 +77,11 @@ public:
 
   size_t binaryReadSpaceAvailable(void)
   {
-    return m_audio_buffer_in.GetFree();
+    return m_audio_buffer_in_max_len - m_audio_buffer_in_len;
   }
   size_t binaryReadPtrCount(void)
   {
-    return m_audio_buffer_in.GetAvailable();
+    return m_audio_buffer_in_len;
   }
 
   void binaryReadPush(uint8_t *data, size_t len);
@@ -177,7 +173,11 @@ private:
   size_t m_audio_buffer_out_min_freespace;
 
   // Stores data coming from the external socket server
-  lockfree::spsc::RingBuf<uint8_t, MAX_AUDIO_BUFFER> m_audio_buffer_in;
+  uint8_t *m_audio_buffer_in;
+  size_t m_audio_buffer_in_max_len;
+  size_t m_audio_buffer_in_write_offset;
+  size_t m_audio_buffer_in_len;
+
   std::vector<audio_mark_t> m_marks;
 
   uint8_t *m_recv_buf;
