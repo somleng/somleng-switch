@@ -13,8 +13,7 @@ RUN apt-get update && apt-get install --no-install-recommends -yq gnupg2 wget ca
     apt-get -y install --no-install-recommends libfreeswitch-dev
 
 COPY src/mod/mod_twilio_stream /usr/src/mod_twilio_stream
-WORKDIR /usr/src/mod_twilio_stream/libs
-RUN git clone https://github.com/DNedic/lockfree.git
+
 RUN  mkdir -p /usr/src/mod_twilio_stream/build
 WORKDIR /usr/src/mod_twilio_stream/build
 RUN cmake ..
