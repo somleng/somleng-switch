@@ -175,6 +175,7 @@ private:
   // Stores data coming from the external socket server
   uint8_t *m_audio_buffer_in;
   size_t m_audio_buffer_in_max_len;
+  size_t m_audio_buffer_in_read_offset;
   size_t m_audio_buffer_in_write_offset;
   size_t m_audio_buffer_in_len;
 

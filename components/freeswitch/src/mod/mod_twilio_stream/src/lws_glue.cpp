@@ -304,8 +304,8 @@ namespace
     tech_pvt->graceful_shutdown = 0;
 
     size_t buflen = LWS_PRE + (FRAME_SIZE_8000 * desiredSampling / 8000 * channels * 1000 / RTP_PACKETIZATION_PERIOD * nAudioBufferSecs);
-    size_t bufInlen = LWS_PRE + (FRAME_SIZE_8000 * channels * nAudioInBufferSecs);
-    
+    size_t bufInlen = (desiredSampling * channels * nAudioInBufferSecs);
+
     AudioPipe *ap = new AudioPipe(tech_pvt->sessionId, host, port, path, sslFlags,
                                   buflen, bufInlen, read_impl.decoded_bytes_per_packet, username, password, bugname, eventCallback);
     if (!ap)
@@ -745,7 +745,7 @@ extern "C"
                         tech_pvt->id,
                         available, minBuffer);
       return SWITCH_TRUE;
-    }    
+    }
 
     if (switch_mutex_trylock(tech_pvt->mutex) == SWITCH_STATUS_SUCCESS)
     {
@@ -780,9 +780,6 @@ extern "C"
           {
 
             auto marks = pAudioPipe->clearExpiredMarks();
-            switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_INFO, "(%u) buffer clearExpiredMarks (%d)  \n",
-            tech_pvt->id,
-            marks.size());
             for (int i = 0; i < marks.size(); i++)
             {
               pTwilioHelper->mark(pAudioPipe, marks[i]);

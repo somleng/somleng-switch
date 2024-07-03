@@ -542,6 +542,7 @@ AudioPipe::AudioPipe(const char *uuid,
                                                  m_audio_buffer_out_min_freespace(minFreespace),
                                                  m_audio_buffer_out_max_len(bufLen),
                                                  m_audio_buffer_in_max_len(bufInLen),
+                                                 m_audio_buffer_in_read_offset(0),
                                                  m_audio_buffer_in_write_offset(0),
                                                  m_audio_buffer_in_len(0),
                                                  m_gracefulShutdown(false),
@@ -633,40 +634,42 @@ void AudioPipe::do_graceful_shutdown()
 }
 void AudioPipe::binaryReadPush(uint8_t *data, size_t len)
 {
-  auto avail = m_audio_buffer_in_max_len - m_audio_buffer_in_write_offset;
-  auto ptr = m_audio_buffer_in + m_audio_buffer_in_write_offset;
+  uint32_t avail = m_audio_buffer_in_max_len - m_audio_buffer_in_write_offset;
+  uint8_t *ptr = m_audio_buffer_in + m_audio_buffer_in_write_offset;
+
   if (len <= avail)
   {
     memcpy(ptr, data, len);
-    m_audio_buffer_in_write_offset += len;
+    m_audio_buffer_in_write_offset = (m_audio_buffer_in_write_offset + len) % m_audio_buffer_in_max_len;
   }
   else
   {
     // Wrapping case
     memcpy(ptr, data, avail);
     memcpy(m_audio_buffer_in, &data[avail], len - avail);
-    m_audio_buffer_in_write_offset = len - avail;
+    m_audio_buffer_in_write_offset = (len - avail) % m_audio_buffer_in_max_len;
   }
   m_audio_buffer_in_len += len;
 }
+
 size_t AudioPipe::binaryReadPop(uint8_t *data, size_t data_len)
 {
   size_t len = std::min(data_len, m_audio_buffer_in_len);
   if (len > 0)
   {
-   auto ptr = m_audio_buffer_in + m_audio_buffer_in_write_offset;
-
-    if (m_audio_buffer_in_write_offset >= len)
+    uint32_t avail = m_audio_buffer_in_max_len - m_audio_buffer_in_read_offset;
+    uint8_t *ptr = m_audio_buffer_in + m_audio_buffer_in_read_offset;
+    if (len <= avail)
     {
-      memcpy(data, ptr - len, len);
-      m_audio_buffer_in_write_offset -= len;
+      memcpy(data, ptr, len);
+      m_audio_buffer_in_read_offset = (m_audio_buffer_in_read_offset + len) % m_audio_buffer_in_max_len;
     }
     else
     {
-      auto end_segment = len - m_audio_buffer_in_write_offset;
-      memcpy(&data[end_segment], m_audio_buffer_in, m_audio_buffer_in_write_offset);
-      memcpy(data, m_audio_buffer_in + m_audio_buffer_in_max_len - end_segment, end_segment);
-      m_audio_buffer_in_write_offset = m_audio_buffer_in_max_len - end_segment;
+      // Wrapping case
+      memcpy(data, ptr, avail);
+      memcpy(&data[avail], m_audio_buffer_in, len - avail);
+      m_audio_buffer_in_read_offset = (len - avail) % m_audio_buffer_in_max_len;
     }
     m_audio_buffer_in_len -= len;
 
@@ -682,6 +685,7 @@ size_t AudioPipe::binaryReadPop(uint8_t *data, size_t data_len)
 
 void AudioPipe::binaryReadClear()
 {
+  m_audio_buffer_in_read_offset = 0;
   m_audio_buffer_in_write_offset = 0;
   m_audio_buffer_in_len = 0;
   for (int i = 0; i < m_marks.size(); i++)
