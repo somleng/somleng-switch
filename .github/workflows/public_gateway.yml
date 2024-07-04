@@ -149,3 +149,4 @@ jobs:
           service: ${{ matrix.ecs_service }}
           cluster: ${{ matrix.ecs_cluster }}
           wait-for-service-stability: true
+

@@ -529,6 +529,7 @@ AudioPipe::AudioPipe(const char *uuid,
                      const char *path,
                      int sslFlags,
                      size_t bufLen,
+                     size_t bufInLen,
                      size_t minFreespace,
                      const char *username,
                      const char *password,
@@ -540,6 +541,10 @@ AudioPipe::AudioPipe(const char *uuid,
                                                  m_sslFlags(sslFlags),
                                                  m_audio_buffer_out_min_freespace(minFreespace),
                                                  m_audio_buffer_out_max_len(bufLen),
+                                                 m_audio_buffer_in_max_len(bufInLen),
+                                                 m_audio_buffer_in_read_offset(0),
+                                                 m_audio_buffer_in_write_offset(0),
+                                                 m_audio_buffer_in_len(0),
                                                  m_gracefulShutdown(false),
                                                  m_audio_buffer_out_write_offset(LWS_PRE),
                                                  m_recv_buf(nullptr), m_recv_buf_ptr(nullptr), m_bugname(bugname),
@@ -553,11 +558,14 @@ AudioPipe::AudioPipe(const char *uuid,
   }
 
   m_audio_buffer_out = new uint8_t[m_audio_buffer_out_max_len];
+  m_audio_buffer_in = new uint8_t[m_audio_buffer_in_max_len];
 }
 AudioPipe::~AudioPipe()
 {
   if (m_audio_buffer_out)
     delete[] m_audio_buffer_out;
+  if (m_audio_buffer_in)
+    delete[] m_audio_buffer_in;
   if (m_recv_buf)
     delete[] m_recv_buf;
 }
@@ -626,28 +634,60 @@ void AudioPipe::do_graceful_shutdown()
 }
 void AudioPipe::binaryReadPush(uint8_t *data, size_t len)
 {
-  m_audio_buffer_in.Write(data, len);
-}
-size_t AudioPipe::binaryReadPop(uint8_t *data, size_t len)
-{
-  size_t olen = std::min(len, m_audio_buffer_in.GetAvailable());
-  if (olen > 0)
+  uint32_t avail = m_audio_buffer_in_max_len - m_audio_buffer_in_write_offset;
+  uint8_t *ptr = m_audio_buffer_in + m_audio_buffer_in_write_offset;
+
+  if (len <= avail)
   {
-    m_audio_buffer_in.Read(data, olen);
+    memcpy(ptr, data, len);
+    m_audio_buffer_in_write_offset = (m_audio_buffer_in_write_offset + len) % m_audio_buffer_in_max_len;
+  }
+  else
+  {
+    // Wrapping case
+    memcpy(ptr, data, avail);
+    memcpy(m_audio_buffer_in, &data[avail], len - avail);
+    m_audio_buffer_in_write_offset = (len - avail) % m_audio_buffer_in_max_len;
+  }
+  m_audio_buffer_in_len += len;
+}
+
+size_t AudioPipe::binaryReadPop(uint8_t *data, size_t data_len)
+{
+  size_t len = std::min(data_len, m_audio_buffer_in_len);
+  if (len > 0)
+  {
+    uint32_t avail = m_audio_buffer_in_max_len - m_audio_buffer_in_read_offset;
+    uint8_t *ptr = m_audio_buffer_in + m_audio_buffer_in_read_offset;
+    if (len <= avail)
+    {
+      memcpy(data, ptr, len);
+      m_audio_buffer_in_read_offset = (m_audio_buffer_in_read_offset + len) % m_audio_buffer_in_max_len;
+    }
+    else
+    {
+      // Wrapping case
+      memcpy(data, ptr, avail);
+      memcpy(&data[avail], m_audio_buffer_in, len - avail);
+      m_audio_buffer_in_read_offset = (len - avail) % m_audio_buffer_in_max_len;
+    }
+    m_audio_buffer_in_len -= len;
 
     for (int i = 0; i < m_marks.size(); i++)
     {
-      m_marks[i].buffer_index -= olen;
+      m_marks[i].buffer_index -= len;
       if (m_marks[i].buffer_index < 0)
         m_marks[i].buffer_index = 0;
     }
   }
-  return olen;
+  return len;
 }
 
 void AudioPipe::binaryReadClear()
 {
-  m_audio_buffer_in.Skip(m_audio_buffer_in.GetAvailable());
+  m_audio_buffer_in_read_offset = 0;
+  m_audio_buffer_in_write_offset = 0;
+  m_audio_buffer_in_len = 0;
   for (int i = 0; i < m_marks.size(); i++)
   {
     m_marks[i].buffer_index = 0;
@@ -658,7 +698,7 @@ void AudioPipe::binaryReadMark(std::string name)
 {
   audio_mark_t mark;
   mark.name = name;
-  mark.buffer_index = m_audio_buffer_in.GetAvailable();
+  mark.buffer_index = m_audio_buffer_in_len;
   m_marks.push_back(mark);
 }
 

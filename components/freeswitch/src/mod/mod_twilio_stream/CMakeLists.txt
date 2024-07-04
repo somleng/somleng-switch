@@ -41,7 +41,6 @@ target_include_directories(
   PRIVATE
   include
   ${FREESWITCH_INCLUDE_DIR}
-  libs/lockfree
 )
 
 target_include_directories(mod_twilio_stream PRIVATE  )
