@@ -28,7 +28,7 @@ jobs:
           [
             {
               "identifier": "public-gateway-staging",
-              "branch": "fix_deploy_on_staging",
+              "branch": "develop",
               "image_tag": "staging",
               "ecs_service": "public-gateway-staging",
               "ecs_cluster": "somleng-switch-staging",
