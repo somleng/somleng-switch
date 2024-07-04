@@ -17,6 +17,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
       matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
+      deploy: ${{ steps.set-deployment-matrix.outputs.deploy }}
 
     steps:
       - name: Set Deployment Matrix
@@ -31,7 +32,7 @@ jobs:
               "image_tag": "staging",
               "ecs_service": "public-gateway-staging",
               "ecs_cluster": "somleng-switch-staging",
-              "deploy": "true"
+              "deploy": true
 
             },
             {
@@ -40,7 +41,7 @@ jobs:
               "image_tag": "latest",
               "ecs_service": "public-gateway",
               "ecs_cluster": "somleng-switch",
-              "deploy": "true"
+              "deploy": true
             }
           ]
           EOF
@@ -48,6 +49,7 @@ jobs:
           matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
           echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
           echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
+          echo "deploy=$(echo $matrix | jq '.[0].deploy')" >> $GITHUB_OUTPUT
 
   build_packages:
     name: Build Packages
@@ -127,7 +129,7 @@ jobs:
       - build
       - build_packages
 
-    if: needs.build.outputs.matrix.deploy == 'true'
+    if: needs.build.outputs.deploy == 'true'
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
