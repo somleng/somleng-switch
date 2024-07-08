@@ -139,8 +139,9 @@ GEM
     drb (2.2.1)
     equalizer (0.0.11)
     eventmachine (1.2.7)
-    faraday (2.9.2)
+    faraday (2.10.0)
       faraday-net_http (>= 2.0, < 3.2)
+      logger
     faraday-net_http (3.1.0)
       net-http
     ffi (1.16.3)
@@ -172,6 +173,7 @@ GEM
     llhttp-ffi (0.5.0)
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
+    logger (1.6.0)
     logging (2.3.1)
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
