@@ -1,0 +1,54 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://api.lvh.me:3000/services/outbound_phone_calls
+    body:
+      encoding: UTF-8
+      string: '{"destinations":["85516701721","855715100860","85510555777"],"parent_call_sid":"15f55641-7728-4cab-8e2e-8077c4b3c6b4","from":"85523238265"}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.10.0
+      Authorization:
+      - Basic c2VydmljZXM6cGFzc3dvcmQ=
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/vnd.api+json; charset=utf-8
+      Etag:
+      - W/"324c73376115215abece5d60d7a737a0"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      X-Request-Id:
+      - 0f3587c8-8b2a-4644-8ba9-c351be8a8cac
+      X-Runtime:
+      - '0.036188'
+      Server-Timing:
+      - start_processing.action_controller;dur=0.00, sql.active_record;dur=8.08, instantiation.active_record;dur=0.45,
+        transaction.active_record;dur=8.83, process_action.action_controller;dur=20.12
+      Content-Length:
+      - '1416'
+    body:
+      encoding: UTF-8
+      string: '{"phone_calls":[{"created_at":"2024-07-09T06:54:28Z","updated_at":"2024-07-09T06:54:28Z","sid":"c95a70b5-cd82-41f3-b4f7-fcc7177fe1be","parent_call_sid":"15f55641-7728-4cab-8e2e-8077c4b3c6b4","account_sid":"96b4557a-341c-46b3-ba3c-a1793e9dae3c","from":"+85523238265","routing_parameters":{"destination":"+85516701721","dial_string_prefix":null,"plus_prefix":false,"national_dialing":false,"host":"host.docker.internal:5061","username":null,"symmetric_latching":true},"address":null},{"created_at":"2024-07-09T06:54:28Z","updated_at":"2024-07-09T06:54:28Z","sid":"56e87b91-a5cc-4fda-a0f4-7db3a259c0d7","parent_call_sid":"15f55641-7728-4cab-8e2e-8077c4b3c6b4","account_sid":"96b4557a-341c-46b3-ba3c-a1793e9dae3c","from":"+85523238265","routing_parameters":{"destination":"+855715100860","dial_string_prefix":null,"plus_prefix":false,"national_dialing":true,"host":"host.docker.internal:5061","username":null,"symmetric_latching":false},"address":null},{"created_at":"2024-07-09T06:54:28Z","updated_at":"2024-07-09T06:54:28Z","sid":"43daf827-46f6-4957-aad4-a09f2723653e","parent_call_sid":"15f55641-7728-4cab-8e2e-8077c4b3c6b4","account_sid":"96b4557a-341c-46b3-ba3c-a1793e9dae3c","from":"+85523238265","routing_parameters":{"destination":"+85510555777","dial_string_prefix":null,"plus_prefix":false,"national_dialing":false,"host":"host.docker.internal:5061","username":null,"symmetric_latching":true},"address":null}]}'
+  recorded_at: Tue, 09 Jul 2024 06:54:28 GMT
+recorded_with: VCR 6.2.0

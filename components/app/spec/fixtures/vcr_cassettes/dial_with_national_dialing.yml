@@ -1,0 +1,55 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://api.lvh.me:3000/services/outbound_phone_calls
+    body:
+      encoding: UTF-8
+      string: '{"destinations":["85516701721"],"parent_call_sid":"15f55641-7728-4cab-8e2e-8077c4b3c6b4"}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.10.0
+      Authorization:
+      - Basic c2VydmljZXM6cGFzc3dvcmQ=
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/vnd.api+json; charset=utf-8
+      Etag:
+      - W/"9b5b99a3361bc4c3d59f2dc553e4960a"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      X-Request-Id:
+      - 8c1aab6d-e48c-4a23-8e2e-df896516769f
+      X-Runtime:
+      - '0.357902'
+      Server-Timing:
+      - sql.active_record;dur=55.00, start_processing.action_controller;dur=0.00,
+        instantiation.active_record;dur=21.18, transaction.active_record;dur=14.93,
+        process_action.action_controller;dur=250.55
+      Content-Length:
+      - '483'
+    body:
+      encoding: UTF-8
+      string: '{"phone_calls":[{"created_at":"2024-07-09T06:27:40Z","updated_at":"2024-07-09T06:27:40Z","sid":"c843486f-1d7b-4ec9-960d-7944cc501ee5","parent_call_sid":"15f55641-7728-4cab-8e2e-8077c4b3c6b4","account_sid":"96b4557a-341c-46b3-ba3c-a1793e9dae3c","from":"+855715100678","routing_parameters":{"destination":"+85516701721","dial_string_prefix":null,"plus_prefix":false,"national_dialing":true,"host":"host.docker.internal:5061","username":null,"symmetric_latching":true},"address":null}]}'
+  recorded_at: Tue, 09 Jul 2024 06:27:40 GMT
+recorded_with: VCR 6.2.0

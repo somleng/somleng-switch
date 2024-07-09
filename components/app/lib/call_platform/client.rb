@@ -59,10 +59,6 @@ module CallPlatform
       notify_request("/services/media_stream_events", params)
     end
 
-    def build_routing_parameters(params)
-      make_request("/services/routing_parameters", params: params)
-    end
-
     def create_inbound_call(params)
       json_response = make_request("/services/inbound_phone_calls", params: params)
       InboundPhoneCallResponse.new(

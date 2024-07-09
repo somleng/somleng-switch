@@ -12,14 +12,24 @@ class ExecuteDial < ExecuteTwiMLVerb
   def call
     answer!
     phone_calls = create_outbound_calls
-    dial_status = context.dial(build_dial_params(phone_calls))
+    dial_params = build_dial_params(phone_calls)
+    dial_status = context.dial(dial_params)
 
     return if verb.action.blank?
 
-    redirect(build_callback_params(dial_status))
+    callback_params = build_callback_params(dial_status)
+    redirect(callback_params)
   end
 
   private
+
+  def create_outbound_calls
+    call_platform_client.create_outbound_calls(
+      destinations: verb.nested_nouns.map { |nested_noun| nested_noun.content.strip },
+      parent_call_sid: call_properties.call_sid,
+      from: verb.caller_id
+    )
+  end
 
   def build_dial_params(phone_calls)
     phone_calls.each_with_object({}) do |phone_call, result|
@@ -36,12 +46,13 @@ class ExecuteDial < ExecuteTwiMLVerb
     end
   end
 
-  def create_outbound_calls
-    call_platform_client.create_outbound_calls(
-      destinations: verb.nested_nouns.map { |nested_noun| nested_noun.content.strip },
-      parent_call_sid: call_properties.call_sid,
-      from: verb.caller_id
-    )
+  def build_dial_string(phone_call_response)
+    if phone_call_response.address.present?
+      DialString.new(address: phone_call_response.address)
+    else
+      dial_string = DialString.new(phone_call_response.routing_parameters)
+      [ dial_string, dial_string.format_number(phone_call_response.from) ]
+    end
   end
 
   def redirect(params)
@@ -70,15 +81,6 @@ class ExecuteDial < ExecuteTwiMLVerb
   def find_joined_call(dial_status)
     dial_status.joins.find do |outbound_call, join_status|
       return outbound_call if join_status.result == :joined
-    end
-  end
-
-  def build_dial_string(phone_call_response)
-    if phone_call_response.address.present?
-      DialString.new(address: phone_call_response.address)
-    else
-      dial_string = DialString.new(phone_call_response.routing_parameters)
-      [ dial_string, dial_string.format_number(phone_call_response.from) ]
     end
   end
 end

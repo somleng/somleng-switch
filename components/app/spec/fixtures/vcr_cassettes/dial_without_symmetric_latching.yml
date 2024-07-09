@@ -1,0 +1,54 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://api.lvh.me:3000/services/outbound_phone_calls
+    body:
+      encoding: UTF-8
+      string: '{"destinations":["85516701721"],"parent_call_sid":"15f55641-7728-4cab-8e2e-8077c4b3c6b4"}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.10.0
+      Authorization:
+      - Basic c2VydmljZXM6cGFzc3dvcmQ=
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/vnd.api+json; charset=utf-8
+      Etag:
+      - W/"ad3df94476f9a2757680cc062e82f553"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      X-Request-Id:
+      - a6fa45a1-beb1-4142-a5e4-ebd714f7edf9
+      X-Runtime:
+      - '0.039109'
+      Server-Timing:
+      - start_processing.action_controller;dur=0.00, sql.active_record;dur=3.28, instantiation.active_record;dur=0.23,
+        transaction.active_record;dur=2.19, process_action.action_controller;dur=7.74
+      Content-Length:
+      - '484'
+    body:
+      encoding: UTF-8
+      string: '{"phone_calls":[{"created_at":"2024-07-09T06:32:09Z","updated_at":"2024-07-09T06:32:09Z","sid":"88f1c78b-716b-4308-83db-047b6e0e1be7","parent_call_sid":"15f55641-7728-4cab-8e2e-8077c4b3c6b4","account_sid":"96b4557a-341c-46b3-ba3c-a1793e9dae3c","from":"+855715100678","routing_parameters":{"destination":"+85516701721","dial_string_prefix":null,"plus_prefix":false,"national_dialing":true,"host":"host.docker.internal:5061","username":null,"symmetric_latching":false},"address":null}]}'
+  recorded_at: Tue, 09 Jul 2024 06:32:09 GMT
+recorded_with: VCR 6.2.0
