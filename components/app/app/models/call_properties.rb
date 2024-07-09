@@ -12,8 +12,4 @@ CallProperties = Struct.new(
   :sip_headers,
   :default_tts_voice,
   keyword_init: true
-) do
-  def inbound?
-    direction == "inbound"
-  end
-end
+)
