@@ -38,7 +38,7 @@ module CallPlatform
       ConnectTestNumberWithTwiMLResponse.new(number: "2222")
     ].freeze
 
-    def create_call(params)
+    def create_inbound_call(params)
       validate_gateway_headers(params)
 
       test_number = find_test_number(params.fetch(:to))

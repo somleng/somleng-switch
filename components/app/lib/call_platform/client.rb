@@ -19,6 +19,16 @@ module CallPlatform
       keyword_init: true
     )
 
+    OutboundPhoneCallResponse = Struct.new(
+      :sid,
+      :from,
+      :account_sid,
+      :parent_call_sid,
+      :routing_parameters,
+      :address,
+      keyword_init: true
+    )
+
     RecordingResponse = Struct.new(
       :id,
       :url,
@@ -49,11 +59,7 @@ module CallPlatform
       notify_request("/services/media_stream_events", params)
     end
 
-    def build_routing_parameters(params)
-      make_request("/services/routing_parameters", params: params)
-    end
-
-    def create_call(params)
+    def create_inbound_call(params)
       json_response = make_request("/services/inbound_phone_calls", params: params)
       InboundPhoneCallResponse.new(
         voice_url: json_response.fetch("voice_url"),
@@ -68,6 +74,21 @@ module CallPlatform
         api_version: json_response.fetch("api_version"),
         default_tts_voice: json_response.fetch("default_tts_voice")
       )
+    end
+
+    def create_outbound_calls(params)
+      json_response = make_request("/services/outbound_phone_calls", params: params.compact)
+
+      json_response.fetch("phone_calls").map do |phone_call_response|
+        OutboundPhoneCallResponse.new(
+          sid: phone_call_response.fetch("sid"),
+          parent_call_sid: phone_call_response.fetch("parent_call_sid"),
+          account_sid: phone_call_response.fetch("account_sid"),
+          from: phone_call_response.fetch("from"),
+          routing_parameters: phone_call_response.fetch("routing_parameters"),
+          address: phone_call_response.fetch("address")
+        )
+      end
     end
 
     def create_recording(params)

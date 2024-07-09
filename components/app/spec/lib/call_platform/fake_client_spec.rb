@@ -2,11 +2,11 @@ require "spec_helper"
 
 module CallPlatform
   RSpec.describe FakeClient do
-    describe "#create_call" do
+    describe "#create_inbound_call" do
       it "returns a mock <Play> response by default" do
         client = FakeClient.new
 
-        response = client.create_call(
+        response = client.create_inbound_call(
           to: "+85512345678",
           from: "+855715200987"
         )
@@ -23,7 +23,7 @@ module CallPlatform
       it "returns a mock <Say> response" do
         client = FakeClient.new
 
-        response = client.create_call(
+        response = client.create_inbound_call(
           to: "1111",
           from: "+855715200987"
         )
@@ -36,7 +36,7 @@ module CallPlatform
       it "returns a mock <Connect> response" do
         client = FakeClient.new
 
-        response = client.create_call(
+        response = client.create_inbound_call(
           to: "2222",
           from: "+855715200987"
         )

@@ -2,6 +2,8 @@ require "spec_helper"
 
 RSpec.describe CallController, type: :call_controller do
   describe "<Dial>" do
+    let(:parent_call_sid) { "15f55641-7728-4cab-8e2e-8077c4b3c6b4" } # From VCR cassette
+
     # From: https://www.twilio.com/docs/api/twiml/dial
 
     # The <Dial> verb connects the current caller to another phone.
@@ -25,13 +27,11 @@ RSpec.describe CallController, type: :call_controller do
     # | <Queue>      | A nested XML element identifying a queue                          |
     # |              | that this call should be connected to.                            |
 
-    it "dials to plain text", :vcr, cassette: :build_routing_parameters do
+    it "dials to plain text", :vcr, cassette: :dial do
       controller = build_controller(
         stub_voice_commands: [ :play_audio, { dial: build_dial_status } ],
         call_properties: {
-          account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34",
-          from: "855715100860",
-          direction: "inbound"
+          call_sid: parent_call_sid
         }
       )
 
@@ -47,19 +47,24 @@ RSpec.describe CallController, type: :call_controller do
 
       expect(controller).to have_received(:dial).with(
         include(
-          dial_string("85516701721") => { for: 30.seconds, from: "855715100860" }
+          dial_string("85516701721") => hash_including(
+            for: 30.seconds,
+            from: match(/\A855/),
+            headers: hash_including(
+              "X-Somleng-CallSid" => be_present,
+              "X-Somleng-AccountSid" => be_present
+            )
+          )
         )
       )
       expect(controller).to have_received(:play_audio).with("foo.mp3")
     end
 
-    it "handles national dialing", :vcr, cassette: :build_routing_parameters_with_national_dialing do
+    it "handles national dialing", :vcr, cassette: :dial_with_national_dialing do
       controller = build_controller(
         stub_voice_commands: [ :play_audio, { dial: build_dial_status } ],
         call_properties: {
-          account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34",
-          to: "855715100860",
-          direction: "outbound-api"
+          call_sid: parent_call_sid
         }
       )
 
@@ -74,16 +79,16 @@ RSpec.describe CallController, type: :call_controller do
 
       expect(controller).to have_received(:dial).with(
         include(
-          dial_string("016701721") => hash_including(from: "0715100860")
+          dial_string("016701721") => hash_including(from: match(/\A0/))
         )
       )
     end
 
-    it "handles numbers without symmetric latching support", :vcr, cassette: :build_routing_parameters_without_symmetric_latching do
+    it "handles numbers without symmetric latching support", :vcr, cassette: :dial_without_symmetric_latching do
       controller = build_controller(
         stub_voice_commands: [ { dial: build_dial_status } ],
         call_properties: {
-          account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34"
+          call_sid: parent_call_sid
         }
       )
 
@@ -103,13 +108,11 @@ RSpec.describe CallController, type: :call_controller do
       )
     end
 
-    it "dials to <Number>", :vcr, cassette: :build_multiple_routing_parameters do
+    it "dials to <Number>", :vcr, cassette: :dial_multiple do
       controller = build_controller(
         stub_voice_commands: { dial: build_dial_status },
         call_properties: {
-          account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34",
-          from: "855715200860",
-          direction: "inbound"
+          call_sid: parent_call_sid
         }
       )
 
@@ -128,19 +131,19 @@ RSpec.describe CallController, type: :call_controller do
 
       expect(controller).to have_received(:dial).with(
         include(
-          dial_string("85516701721") => hash_including(from: "855715200860"),
-          dial_string("0715100860", profile: "alternative-outbound") => hash_including(from: "0715200860"),
-          dial_string("85510555777") => hash_including(from: "855715200860")
+          dial_string("85516701721") => hash_including(from: match(/\A855/),),
+          dial_string("0715100860", profile: "alternative-outbound") => hash_including(from: match(/\A0/)),
+          dial_string("85510555777") => hash_including(from: match(/\A855/))
         ),
         any_args
       )
     end
 
-    it "dials to <Sip>" do
+    it "dials to <Sip>", :vcr, cassette: :dial_sip do
       controller = build_controller(
         stub_voice_commands: { dial: build_dial_status },
         call_properties: {
-          account_sid: "ea471a9f-d4b3-4035-966e-f507b8da6d34"
+          call_sid: parent_call_sid
         }
       )
 
@@ -157,14 +160,17 @@ RSpec.describe CallController, type: :call_controller do
 
       expect(controller).to have_received(:dial).with(
         include(
-          "sofia/external/alice@sip.example.com" => { for: 30.seconds }
+          "sofia/external/alice@sip.example.com" => hash_including(for: 30.seconds, headers: be_a_kind_of(Hash))
         )
       )
     end
 
-    it "supports callerId", :vcr, cassette: :build_multiple_routing_parameters do
+    it "supports callerId", :vcr, cassette: :dial_multiple_with_caller_id do
       controller = build_controller(
-        stub_voice_commands: { dial: build_dial_status }
+        stub_voice_commands: { dial: build_dial_status },
+        call_properties: {
+          call_sid: parent_call_sid
+        }
       )
 
       stub_twiml_request(controller, response: <<~TWIML)
@@ -250,7 +256,7 @@ RSpec.describe CallController, type: :call_controller do
       # |           | a properly formatted but non-existent phone number.                       |
       # | canceled  | The call was canceled via the REST API before it was answered.            |
 
-      it "POSTS to the action url", :vcr, cassette: :build_routing_parameters do
+      it "POSTS to the action url", :vcr, cassette: :dial do
         outbound_call = build_outbound_call(id: "481f77b9-a95b-4c6a-bbb1-23afcc42c959")
         joins_status = build_dial_join_status(:joined, duration: 23.7)
 
@@ -283,7 +289,7 @@ RSpec.describe CallController, type: :call_controller do
         })
       end
 
-      it "handles multiple calls", :vcr, cassette: :build_multiple_routing_parameters do
+      it "handles multiple calls", :vcr, cassette: :dial_multiple do
         joined_outbound_call = build_outbound_call(id: "481f77b9-a95b-4c6a-bbb1-23afcc42c959")
         no_answer_outbound_call = build_outbound_call
 
@@ -333,7 +339,7 @@ RSpec.describe CallController, type: :call_controller do
       # This attribute is modeled after the HTML form 'method' attribute.
       # 'POST' is the default value.
 
-      it "executes a GET request", :vcr, cassette: :build_routing_parameters do
+      it "executes a GET request", :vcr, cassette: :dial do
         controller = build_controller(
           stub_voice_commands: { dial: build_dial_status }
         )
@@ -388,15 +394,18 @@ RSpec.describe CallController, type: :call_controller do
       # | callerId  | a valid phone number, or client identifier | Caller's callerId |
       # |           | if you are dialing a <Client>.             |                   |
 
-      it "sets the callerId", :vcr, cassette: :build_routing_parameters do
+      it "sets the callerId", :vcr, cassette: :dial_with_caller_id do
         controller = build_controller(
-          stub_voice_commands: { dial: build_dial_status }
+          stub_voice_commands: { dial: build_dial_status },
+          call_properties: {
+            call_sid: parent_call_sid
+          }
         )
 
         stub_twiml_request(controller, response: <<~TWIML)
           <?xml version="1.0" encoding="UTF-8" ?>
           <Response>
-            <Dial callerId="2442">+85516701721</Dial>
+            <Dial callerId="85523238265">+85516701721</Dial>
           </Response>
         TWIML
 
@@ -404,14 +413,14 @@ RSpec.describe CallController, type: :call_controller do
 
         expect(controller).to have_received(:dial).with(
           include(
-            dial_string("85516701721") => hash_including(from: "2442")
+            dial_string("85516701721") => hash_including(from: "85523238265")
           )
         )
       end
     end
 
     describe "timeout" do
-      it "handles timeout", :vcr, cassette: :build_multiple_routing_parameters do
+      it "handles timeout", :vcr, cassette: :dial_multiple do
         controller = build_controller(
           stub_voice_commands: { dial: build_dial_status }
         )
@@ -434,16 +443,17 @@ RSpec.describe CallController, type: :call_controller do
     end
   end
 
-  def build_dial_status(result = :answer, joins: {})
-    instance_double(Adhearsion::CallController::DialStatus, result:, joins:)
+  def build_dial_status(result = :answer, joins: {}, calls: Set.new)
+    calls << build_outbound_call if calls.empty?
+    instance_double(Adhearsion::CallController::DialStatus, result:, joins:, calls:)
   end
 
   def build_dial_join_status(result = :joined, options = {})
     instance_double(Adhearsion::CallController::Dial::JoinStatus, result:, **options)
   end
 
-  def build_outbound_call(options = {})
-    instance_double(Adhearsion::OutboundCall, options)
+  def build_outbound_call(**options)
+    instance_double(Adhearsion::OutboundCall, id: SecureRandom.uuid, **options)
   end
 
   def dial_string(number, profile: :external)
