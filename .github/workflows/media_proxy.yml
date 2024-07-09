@@ -90,7 +90,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build and push Media Proxy
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: components/media_proxy
           push: true

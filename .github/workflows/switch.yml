@@ -38,7 +38,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.21.x"
+          go-version: "1.22.x"
 
       - name: Run tests
         working-directory: components/freeswitch_event_logger
@@ -135,14 +135,11 @@ jobs:
         run: |
           components/freeswitch/bin/export_tts_voices > components/freeswitch/conf/autoload_configs/tts_voices.xml
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Build and push Nginx
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: components/nginx
           push: true
@@ -155,7 +152,7 @@ jobs:
             ${{ env.NGINX_GHCR_REPOSITORY_URI }}:${{ matrix.image_tag }}
 
       - name: Build and push FreeSWITCH
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: components/freeswitch
           build-args:
@@ -170,7 +167,7 @@ jobs:
             ${{ env.FREESWITCH_GHCR_REPOSITORY_URI }}:${{ matrix.image_tag }}
 
       - name: Build and push FreeSWITCH Event Logger
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: components/freeswitch_event_logger
           push: true
@@ -183,7 +180,7 @@ jobs:
             ${{ env.FREESWITCH_EVENT_LOGGER_GHCR_REPOSITORY_URI }}:${{ matrix.image_tag }}
 
       - name: Build and push App
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: components/app
           push: true

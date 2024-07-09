@@ -1,4 +1,4 @@
-FROM public.ecr.aws/debian/debian:bookworm-slim
+FROM public.ecr.aws/docker/library/debian:bookworm-slim
 
 USER root
 
