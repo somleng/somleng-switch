@@ -60,11 +60,13 @@ jobs:
           [
             {
               "identifier": "switch-services-staging",
+              "environment": "staging",
               "branch": "develop",
               "image_tag": "staging"
             },
             {
               "identifier": "switch-services",
+              "environment": "production",
               "branch": "master",
               "image_tag": "latest"
             }
@@ -99,6 +101,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Create Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: somleng
+          SENTRY_PROJECT: somleng-switch-services
+        with:
+          environment: ${{ matrix.environment }}
 
       - name: Configure AWS credentials
         id: aws-login
