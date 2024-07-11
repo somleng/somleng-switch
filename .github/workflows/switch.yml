@@ -59,6 +59,7 @@ jobs:
           [
             {
               "identifier": "switch-staging",
+              "environment": "staging",
               "branch": "develop",
               "image_tag": "staging",
               "ecs_service": "switch-staging",
@@ -66,6 +67,7 @@ jobs:
             },
             {
               "identifier": "switch",
+              "environment": "production",
               "branch": "master",
               "image_tag": "latest",
               "ecs_service": "switch",
@@ -102,6 +104,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Create Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: somleng
+          SENTRY_PROJECT: somleng-switch
+        with:
+          environment: ${{ matrix.environment }}
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
