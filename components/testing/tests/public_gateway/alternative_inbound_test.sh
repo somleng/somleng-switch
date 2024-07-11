@@ -9,7 +9,7 @@ source $current_dir/../support/test_helpers.sh
 scenario=$current_dir/../../scenarios/zamtel_inbound.xml
 
 log_file="zamtel_inbound_*_messages.log"
-rm -f "$log_file"
+rm -f $log_file
 
 reset_db
 create_load_balancer_entry "gwalt" "5080"
