@@ -14,4 +14,4 @@ read -p "3. Start TCP dump. In another terminal run the following: sudo docker r
 log_file="uac_*_messages.log"
 rm -f $log_file
 
-sipp -sf scenarios/uac.xml 15.197.218.231:5080 -d 20000 -mi "$AWS_PUBLIC_IP" --key username "+855715100850" -s 1234 -m 1 -min_rtp_port 10000 -max_rtp_port 50000 -trace_msg > /dev/null
+sipp -sf scenarios/uac.xml 15.197.218.231:5080 -d 20000 -mi "$AWS_PUBLIC_IP" --key username "+855715100850" --key advertised_ip "$AWS_PUBLIC_IP" -s 1234 -m 1 -min_rtp_port 10000 -max_rtp_port 50000 -trace_msg > /dev/null
