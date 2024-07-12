@@ -1,5 +1,6 @@
 .tool-versions
 Dockerfile
+infrastructure
 **/node_modules
 **/nohup.out
 **/.prettierrc

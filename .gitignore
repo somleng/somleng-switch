@@ -24,3 +24,4 @@ examples.txt
 node_modules
 nohup.out
 .raw
+*.zip
