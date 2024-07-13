@@ -2,6 +2,8 @@
 
 This directory contains infrastructure and end-to-end tests for testing Somleng.
 
+It is useful for load testing and recording SIP traces from the customer side.
+
 ## Setup
 
 1. Run `terraform apply`
