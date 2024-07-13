@@ -12,4 +12,4 @@ service docker start
 
 unzip /opt/testing/test_files.zip -d /opt/testing/tests
 docker build -t "testing:latest" /opt/testing
-docker run --rm -d testing:latest tail -f /dev/null
+docker run --rm --net=host -d testing:latest tail -f /dev/null
