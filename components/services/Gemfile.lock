@@ -50,7 +50,7 @@ GEM
     sentry-ruby (5.18.2)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
-    sequel (5.83.0)
+    sequel (5.83.1)
       bigdecimal
     simplecov (0.22.0)
       docile (~> 1.1)
