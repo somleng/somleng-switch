@@ -49,7 +49,3 @@ variable "sip_alternative_port" {
 variable "freeswitch_event_socket_port" {
   default = 8021
 }
-
-variable "media_proxy_ng_port" {
-  default = 2223
-}

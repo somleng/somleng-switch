@@ -2,9 +2,8 @@ data "aws_ip_ranges" "route53_healthchecks" {
   services = ["route53_healthchecks"]
 }
 
-
 # Container Instances
-module "client_gateway_container_instances" {
+module "container_instances" {
   source = "../container_instances"
 
   app_identifier              = var.identifier
@@ -45,7 +44,7 @@ resource "aws_ecs_capacity_provider" "client_gateway" {
   name = var.identifier
 
   auto_scaling_group_provider {
-    auto_scaling_group_arn         = module.client_gateway_container_instances.autoscaling_group.arn
+    auto_scaling_group_arn         = module.container_instances.autoscaling_group.arn
     managed_termination_protection = "ENABLED"
     managed_draining               = "ENABLED"
 
@@ -65,7 +64,7 @@ resource "aws_security_group_rule" "client_gateway_healthcheck" {
   to_port           = var.sip_port
   protocol          = "tcp"
   from_port         = var.sip_port
-  security_group_id = module.client_gateway_container_instances.security_group.id
+  security_group_id = module.container_instances.security_group.id
   cidr_blocks       = data.aws_ip_ranges.route53_healthchecks.cidr_blocks
 }
 
@@ -74,7 +73,7 @@ resource "aws_security_group_rule" "client_gateway_sip" {
   to_port           = var.sip_port
   protocol          = "udp"
   from_port         = var.sip_port
-  security_group_id = module.client_gateway_container_instances.security_group.id
+  security_group_id = module.container_instances.security_group.id
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
@@ -83,7 +82,7 @@ resource "aws_security_group_rule" "client_gateway_icmp" {
   to_port           = -1
   protocol          = "icmp"
   from_port         = -1
-  security_group_id = module.client_gateway_container_instances.security_group.id
+  security_group_id = module.container_instances.security_group.id
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
@@ -112,7 +111,7 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "client_gateway_container_instance_custom_policy" {
-  role       = module.client_gateway_container_instances.iam_role.id
+  role       = module.container_instances.iam_role.id
   policy_arn = aws_iam_policy.client_gateway_container_instance_custom_policy.arn
 }
 
@@ -272,7 +271,7 @@ resource "aws_ecs_task_definition" "client_gateway" {
     }
   ])
 
-  memory = module.client_gateway_container_instances.ec2_instance_type.memory_size - 512
+  memory = module.container_instances.ec2_instance_type.memory_size - 512
 
   volume {
     name = "opensips"

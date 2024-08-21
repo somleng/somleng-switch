@@ -133,16 +133,6 @@ resource "aws_ssm_parameter" "rayo_password" {
   }
 }
 
-resource "aws_ssm_parameter" "freeswitch_event_socket_password" {
-  name  = "somleng-switch.${var.app_environment}.freeswitch_event_socket_password"
-  type  = "SecureString"
-  value = "change-me"
-
-  lifecycle {
-    ignore_changes = [value]
-  }
-}
-
 resource "aws_ssm_parameter" "recordings_bucket_access_key_id" {
   name  = "somleng-switch.${var.app_environment}.recordings_bucket_access_key_id"
   type  = "SecureString"
@@ -265,8 +255,8 @@ resource "aws_iam_policy" "task_execution_custom_policy" {
       "Resource": [
         "${aws_ssm_parameter.switch_application_master_key.arn}",
         "${aws_ssm_parameter.rayo_password.arn}",
-        "${aws_ssm_parameter.freeswitch_event_socket_password.arn}",
-        "${var.json_cdr_password_parameter_arn}",
+        "${var.freeswitch_event_socket_password_parameter.arn}",
+        "${var.json_cdr_password_parameter.arn}",
         "${aws_ssm_parameter.recordings_bucket_access_key_id.arn}",
         "${aws_ssm_parameter.recordings_bucket_secret_access_key.arn}"
       ]
@@ -533,7 +523,7 @@ resource "aws_ecs_task_definition" "switch" {
         },
         {
           name      = "FS_MOD_JSON_CDR_PASSWORD",
-          valueFrom = var.json_cdr_password_parameter_arn
+          valueFrom = var.json_cdr_password_parameter.arn
         },
         {
           name      = "FS_RECORDINGS_BUCKET_ACCESS_KEY_ID",
@@ -545,7 +535,7 @@ resource "aws_ecs_task_definition" "switch" {
         },
         {
           name      = "FS_EVENT_SOCKET_PASSWORD",
-          valueFrom = aws_ssm_parameter.freeswitch_event_socket_password.arn
+          valueFrom = var.freeswitch_event_socket_password_parameter.arn
         }
       ],
       environment = [
@@ -651,7 +641,7 @@ resource "aws_ecs_task_definition" "switch" {
       secrets = [
         {
           name      = "EVENT_SOCKET_PASSWORD",
-          valueFrom = aws_ssm_parameter.freeswitch_event_socket_password.arn
+          valueFrom = var.freeswitch_event_socket_password_parameter.arn
         }
       ],
       dependsOn = [
