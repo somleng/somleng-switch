@@ -297,7 +297,7 @@ resource "aws_ecs_service" "public_gateway" {
     subnets = var.vpc.private_subnets
     security_groups = [
       aws_security_group.public_gateway.id,
-      var.db_security_group
+      var.db_security_group.id
     ]
   }
 

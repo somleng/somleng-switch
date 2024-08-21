@@ -2,61 +2,162 @@ data "aws_ssm_parameter" "somleng_services_password" {
   name = "somleng.production.services_password"
 }
 
-module "somleng_switch" {
-  source = "../modules/somleng_switch"
+resource "aws_ecs_cluster" "this" {
+  name = "somleng-switch"
+}
 
-  cluster_name              = "somleng-switch"
-  switch_identifier         = "switch"
-  services_identifier       = "switch-services"
-  s3_mpeg_identifier        = "s3-mpeg"
-  public_gateway_identifier = "public-gateway"
-  client_gateway_identifier = "client-gateway"
-  media_proxy_identifier    = "media-proxy"
+resource "aws_ecs_cluster_capacity_providers" "this" {
+  cluster_name = aws_ecs_cluster.this.name
 
-  switch_app_image              = data.terraform_remote_state.core.outputs.switch_ecr_repository.repository_uri
+  capacity_providers = [
+    module.switch.capacity_provider.name,
+    module.public_gateway.capacity_provider.name,
+    module.client_gateway.capacity_provider.name,
+    module.media_proxy.capacity_provider.name
+  ]
+}
+
+resource "aws_ssm_parameter" "freeswitch_event_socket_password" {
+  name  = "somleng-switch.production.freeswitch_event_socket_password"
+  type  = "SecureString"
+  value = "change-me"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+module "switch" {
+  source = "../modules/switch"
+
+  identifier             = var.switch_identifier
+  app_environment        = var.app_environment
+  json_cdr_url           = "https://api.internal.somleng.org/services/call_data_records"
+  subdomain              = "switch"
+  efs_cache_name         = "somleng-switch-cache"
+  recordings_bucket_name = "raw-recordings.somleng.org"
+
+  max_tasks = 10
+
+  vpc                                        = data.terraform_remote_state.core_infrastructure.outputs.vpc
+  ecs_cluster                                = aws_ecs_cluster.this
+  sip_port                                   = var.sip_port
+  sip_alternative_port                       = var.sip_alternative_port
+  freeswitch_event_socket_port               = var.freeswitch_event_socket_port
+  json_cdr_password_parameter                = data.aws_ssm_parameter.somleng_services_password
+  freeswitch_event_socket_password_parameter = aws_ssm_parameter.freeswitch_event_socket_password
+  services_function                          = module.services.function
+  internal_route53_zone                      = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_internal_somleng_org
+  internal_load_balancer                     = data.terraform_remote_state.core_infrastructure.outputs.internal_application_load_balancer
+  internal_listener                          = data.terraform_remote_state.core_infrastructure.outputs.internal_https_listener
+  aws_region                                 = var.aws_region
+
+  app_image                     = data.terraform_remote_state.core.outputs.switch_ecr_repository.repository_uri
   nginx_image                   = data.terraform_remote_state.core.outputs.nginx_ecr_repository.repository_uri
   freeswitch_image              = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository.repository_uri
   freeswitch_event_logger_image = data.terraform_remote_state.core.outputs.freeswitch_event_logger_ecr_repository.repository_uri
-  public_gateway_image          = data.terraform_remote_state.core.outputs.public_gateway_ecr_repository.repository_uri
-  client_gateway_image          = data.terraform_remote_state.core.outputs.client_gateway_ecr_repository.repository_uri
-  media_proxy_image             = data.terraform_remote_state.core.outputs.media_proxy_ecr_repository.repository_uri
-  opensips_scheduler_image      = data.terraform_remote_state.core.outputs.opensips_scheduler_ecr_repository.repository_uri
-  s3_mpeg_ecr_repository_url    = data.terraform_remote_state.core.outputs.s3_mpeg_ecr_repository.repository_url
-  services_ecr_repository_url   = data.terraform_remote_state.core.outputs.services_ecr_repository.repository_url
+  external_rtp_ip               = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
+  alternative_sip_outbound_ip   = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
+  alternative_rtp_ip            = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
+}
 
-  vpc = data.terraform_remote_state.core_infrastructure.outputs.vpc
+module "services" {
+  source = "../modules/services"
 
+  identifier             = var.services_identifier
+  app_environment        = var.app_environment
+  switch_group           = var.switch_identifier
+  media_proxy_group      = var.media_proxy_identifier
+  client_gateway_group   = var.client_gateway_identifier
+  public_gateway_db_name = var.public_gateway_db_name
+  client_gateway_db_name = var.client_gateway_db_name
+
+  vpc       = data.terraform_remote_state.core_infrastructure.outputs.vpc
+  app_image = data.terraform_remote_state.core.outputs.services_ecr_repository.repository_url
+
+  db_password_parameter                      = data.terraform_remote_state.core_infrastructure.outputs.db_master_password_parameter
+  freeswitch_event_socket_password_parameter = aws_ssm_parameter.freeswitch_event_socket_password
+
+  db_security_group            = data.terraform_remote_state.core_infrastructure.outputs.db_security_group
+  db_username                  = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.master_username
+  db_host                      = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.endpoint
+  db_port                      = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.port
+  sip_port                     = var.sip_port
+  sip_alternative_port         = var.sip_alternative_port
+  freeswitch_event_socket_port = var.freeswitch_event_socket_port
+  media_proxy_ng_port          = module.media_proxy.ng_port
+  ecs_cluster                  = aws_ecs_cluster.this
+}
+
+module "s3_mpeg" {
+  source = "../modules/s3_mpeg"
+
+  identifier        = var.s3_mpeg_identifier
+  app_image         = data.terraform_remote_state.core.outputs.s3_mpeg_ecr_repository.repository_url
+  recordings_bucket = module.switch.recordings_bucket
+}
+
+module "public_gateway" {
+  source = "../modules/public_gateway"
+
+  identifier      = var.public_gateway_identifier
+  app_environment = var.app_environment
+
+  aws_region  = var.aws_region
+  vpc         = data.terraform_remote_state.core_infrastructure.outputs.vpc
+  ecs_cluster = aws_ecs_cluster.this
+
+  app_image       = data.terraform_remote_state.core.outputs.public_gateway_ecr_repository.repository_uri
+  scheduler_image = data.terraform_remote_state.core.outputs.opensips_scheduler_ecr_repository.repository_uri
+
+  sip_port             = var.sip_port
+  sip_alternative_port = var.sip_alternative_port
+
+  db_security_group     = data.terraform_remote_state.core_infrastructure.outputs.db_security_group
+  db_password_parameter = data.terraform_remote_state.core_infrastructure.outputs.db_master_password_parameter
+  db_name               = var.public_gateway_db_name
+  db_username           = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.master_username
+  db_host               = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.endpoint
+  db_port               = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.port
+  global_accelerator    = data.terraform_remote_state.core_infrastructure.outputs.global_accelerator
+  logs_bucket           = data.terraform_remote_state.core_infrastructure.outputs.logs_bucket
+}
+
+module "client_gateway" {
+  source = "../modules/client_gateway"
+
+  subdomain = "sip"
+
+  identifier      = var.client_gateway_identifier
+  app_environment = var.app_environment
+
+  aws_region   = var.aws_region
+  vpc          = data.terraform_remote_state.core_infrastructure.outputs.vpc
+  ecs_cluster  = aws_ecs_cluster.this
+  route53_zone = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_somleng_org
+
+  app_image       = data.terraform_remote_state.core.outputs.client_gateway_ecr_repository.repository_uri
+  scheduler_image = data.terraform_remote_state.core.outputs.opensips_scheduler_ecr_repository.repository_uri
+
+  db_security_group = data.terraform_remote_state.core_infrastructure.outputs.db_security_group
+  sip_port          = var.sip_port
+
+  db_password_parameter = data.terraform_remote_state.core_infrastructure.outputs.db_master_password_parameter
+  db_name               = var.client_gateway_db_name
+  db_username           = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.master_username
+  db_host               = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.endpoint
+  db_port               = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.port
+  services_function     = module.services.function
+}
+
+module "media_proxy" {
+  source = "../modules/media_proxy"
+
+  identifier      = var.media_proxy_identifier
+  app_environment = var.app_environment
   aws_region      = var.aws_region
-  app_environment = "production"
 
-  json_cdr_password_parameter_arn = data.aws_ssm_parameter.somleng_services_password.arn
-  json_cdr_url                    = "https://api.internal.somleng.org/services/call_data_records"
-  external_rtp_ip                 = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
-
-  alternative_sip_outbound_ip = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
-  alternative_rtp_ip          = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
-
-  efs_cache_name            = "somleng-switch-cache"
-  public_gateway_db_name    = "opensips_public_gateway"
-  client_gateway_db_name    = "opensips_client_gateway"
-  db_username               = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.master_username
-  db_password_parameter_arn = data.terraform_remote_state.core_infrastructure.outputs.db_master_password_parameter.arn
-  db_host                   = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.endpoint
-  db_port                   = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.port
-  db_security_group         = data.terraform_remote_state.core_infrastructure.outputs.db_security_group.id
-
-  internal_load_balancer = data.terraform_remote_state.core_infrastructure.outputs.internal_application_load_balancer
-  internal_listener      = data.terraform_remote_state.core_infrastructure.outputs.internal_https_listener
-  global_accelerator     = data.terraform_remote_state.core_infrastructure.outputs.global_accelerator
-
-  logs_bucket = data.terraform_remote_state.core_infrastructure.outputs.logs_bucket
-
-  route53_zone          = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_somleng_org
-  internal_route53_zone = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_internal_somleng_org
-
-  switch_subdomain         = "switch"
-  client_gateway_subdomain = "sip"
-
-  recordings_bucket_name = "raw-recordings.somleng.org"
-  switch_max_tasks       = 10
+  vpc         = data.terraform_remote_state.core_infrastructure.outputs.vpc
+  ecs_cluster = aws_ecs_cluster.this
+  app_image   = data.terraform_remote_state.core.outputs.media_proxy_ecr_repository.repository_uri
 }

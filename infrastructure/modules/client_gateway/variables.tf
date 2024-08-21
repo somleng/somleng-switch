@@ -21,11 +21,11 @@ variable "opensips_fifo_name" {
 }
 
 variable "max_tasks" {
-  default = 4
+  default = 2
 }
 
 variable "min_tasks" {
-  default = 1
+  default = 2
 }
 
 variable "assign_eips" {
