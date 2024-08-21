@@ -406,6 +406,30 @@ resource "aws_lb" "public_gateway_nlb" {
   }
 }
 
+# Flow Logs
+
+data "aws_network_interface" "public_gateway_load_balancer" {
+  filter {
+    name   = "association.allocation-id"
+    values = aws_lb.public_gateway_nlb[0].subnets.*.allocation_id
+  }
+}
+
+resource "aws_cloudwatch_log_group" "public_gateway_load_balancer" {
+  name              = "${var.public_gateway_identifier}-load-balancer"
+  retention_in_days = 7
+}
+
+resource "aws_flow_log" "public_gateway_load_balancer" {
+  iam_role_arn    = var.flow_logs_role.arn
+  log_destination = aws_cloudwatch_log_group.public_gateway_load_balancer.arn
+  traffic_type    = "ALL"
+  eni_id          = data.aws_network_interface.public_gateway_load_balancer.id
+  tags = {
+    Name = "Public Gateway"
+  }
+}
+
 # Target Groups
 
 resource "aws_lb_target_group" "sip" {
