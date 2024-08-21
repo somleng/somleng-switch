@@ -23,7 +23,7 @@ EOF
 
 # Used by the CloudWatch agent to publish metrics
 resource "aws_iam_role_policy_attachment" "ecs_cwagent_daemon_service_task_role_cloudwatch_agent_server_policy" {
-  role = aws_iam_role.ecs_cwagent_daemon_service_task_role.id
+  role       = aws_iam_role.ecs_cwagent_daemon_service_task_role.id
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
@@ -48,18 +48,18 @@ EOF
 
 # Used by Amazon ECS agent to launch the CloudWatch agent
 resource "aws_iam_role_policy_attachment" "ecs_cwagent_daemon_service_task_execution_role_cloudwatch_agent_server_policy" {
-  role = aws_iam_role.ecs_cwagent_daemon_service_task_execution_role.id
+  role       = aws_iam_role.ecs_cwagent_daemon_service_task_execution_role.id
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_cwagent_daemon_service_task_execution_role_amazon_ecs_task_execution_role_policy" {
-  role = aws_iam_role.ecs_cwagent_daemon_service_task_execution_role.id
+  role       = aws_iam_role.ecs_cwagent_daemon_service_task_execution_role.id
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 # Log Group
 resource "aws_cloudwatch_log_group" "ecs_cwagent_daemon_service" {
-  name = "/ecs/ecs-cwagent-daemon-service/${var.switch_identifier}"
+  name              = "/ecs/ecs-cwagent-daemon-service/${var.switch_identifier}"
   retention_in_days = 7
 }
 
@@ -70,13 +70,13 @@ resource "aws_ecs_task_definition" "ecs_cwagent_daemon_service" {
   family                   = "ecs-cwagent-daemon-service-${var.switch_identifier}"
   network_mode             = "bridge"
   requires_compatibilities = ["EC2"]
-  task_role_arn = aws_iam_role.ecs_cwagent_daemon_service_task_role.arn
-  execution_role_arn = aws_iam_role.ecs_cwagent_daemon_service_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_cwagent_daemon_service_task_role.arn
+  execution_role_arn       = aws_iam_role.ecs_cwagent_daemon_service_task_execution_role.arn
 
-  cpu = 128
+  cpu    = 128
   memory = 64
 
-  container_definitions    = <<CONTAINER_DEFINITIONS
+  container_definitions = <<CONTAINER_DEFINITIONS
 [
   {
     "name": "cloudwatch-agent",
@@ -133,22 +133,22 @@ resource "aws_ecs_task_definition" "ecs_cwagent_daemon_service" {
 CONTAINER_DEFINITIONS
 
   volume {
-    name = "proc"
+    name      = "proc"
     host_path = "/proc"
   }
 
   volume {
-    name = "dev"
+    name      = "dev"
     host_path = "/dev"
   }
 
   volume {
-    name = "al1_cgroup"
+    name      = "al1_cgroup"
     host_path = "/cgroup"
   }
 
   volume {
-    name = "al2_cgroup"
+    name      = "al2_cgroup"
     host_path = "/sys/fs/cgroup"
   }
 }
@@ -156,8 +156,8 @@ CONTAINER_DEFINITIONS
 resource "aws_ecs_service" "ecs_cwagent_daemon_service" {
   count = var.container_insights_enabled ? 1 : 0
 
-  name            = aws_ecs_task_definition.ecs_cwagent_daemon_service.family
-  cluster         = aws_ecs_cluster.cluster.id
-  task_definition = aws_ecs_task_definition.ecs_cwagent_daemon_service.arn
+  name                = aws_ecs_task_definition.ecs_cwagent_daemon_service.family
+  cluster             = var.ecs_cluster.id
+  task_definition     = aws_ecs_task_definition.ecs_cwagent_daemon_service.arn
   scheduling_strategy = "DAEMON"
 }

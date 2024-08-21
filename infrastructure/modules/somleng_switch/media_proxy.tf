@@ -6,7 +6,7 @@ module "media_proxy_container_instances" {
   vpc                         = var.vpc
   instance_subnets            = var.vpc.public_subnets
   associate_public_ip_address = true
-  cluster_name                = aws_ecs_cluster.cluster.name
+  cluster_name                = var.ecs_cluster.name
   max_capacity                = var.media_proxy_max_tasks * 2
   architecture                = "arm64"
   instance_type               = "t4g.small"
@@ -195,7 +195,7 @@ resource "aws_ecs_task_definition" "media_proxy" {
 
 resource "aws_ecs_service" "media_proxy" {
   name            = aws_ecs_task_definition.media_proxy.family
-  cluster         = aws_ecs_cluster.cluster.id
+  cluster         = var.ecs_cluster.id
   task_definition = aws_ecs_task_definition.media_proxy.arn
   desired_count   = var.media_proxy_min_tasks
 
@@ -238,7 +238,7 @@ resource "aws_appautoscaling_policy" "media_proxy_policy" {
 
 resource "aws_appautoscaling_target" "media_proxy_scale_target" {
   service_namespace  = "ecs"
-  resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.media_proxy.name}"
+  resource_id        = "service/${var.ecs_cluster.name}/${aws_ecs_service.media_proxy.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   min_capacity       = var.media_proxy_min_tasks
   max_capacity       = var.media_proxy_max_tasks

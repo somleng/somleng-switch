@@ -1,6 +1,6 @@
 locals {
-  s3_mpeg_function_name = "${var.s3_mpeg_identifier}"
-  s3_filter_suffix = ".wav"
+  s3_mpeg_function_name = var.s3_mpeg_identifier
+  s3_filter_suffix      = ".wav"
 }
 
 resource "docker_image" "s3_mpeg" {
@@ -11,7 +11,7 @@ resource "docker_image" "s3_mpeg" {
 }
 
 resource "docker_registry_image" "s3_mpeg" {
-  name = docker_image.s3_mpeg.name
+  name          = docker_image.s3_mpeg.name
   keep_remotely = true
 }
 
@@ -37,12 +37,12 @@ EOF
 
 resource "aws_lambda_function" "s3_mpeg" {
   function_name = local.s3_mpeg_function_name
-  role = aws_iam_role.s3_mpeg.arn
-  package_type = "Image"
+  role          = aws_iam_role.s3_mpeg.arn
+  package_type  = "Image"
   architectures = ["arm64"]
-  image_uri = docker_registry_image.s3_mpeg.name
-  timeout = 300
-  memory_size = 1024
+  image_uri     = docker_registry_image.s3_mpeg.name
+  timeout       = 300
+  memory_size   = 1024
 
   depends_on = [
     aws_iam_role_policy_attachment.s3_mpeg,
@@ -75,7 +75,7 @@ resource "aws_iam_policy" "s3_mpeg" {
         "s3:PutObject"
       ],
       "Resource": [
-        "${aws_s3_bucket.recordings.arn}/*"
+        "${var.recordings_bucket.arn}/*"
       ]
     }
   ]
@@ -97,11 +97,11 @@ resource "aws_lambda_permission" "s3_mpeg" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.s3_mpeg.arn
   principal     = "s3.amazonaws.com"
-  source_arn    = aws_s3_bucket.recordings.arn
+  source_arn    = var.recordings_bucket.arn
 }
 
 resource "aws_s3_bucket_notification" "s3_mpeg" {
-  bucket = aws_s3_bucket.recordings.id
+  bucket = var.recordings_bucket.id
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.s3_mpeg.arn

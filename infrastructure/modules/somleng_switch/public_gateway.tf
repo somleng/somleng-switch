@@ -6,7 +6,7 @@ module "public_gateway_container_instances" {
   vpc              = var.vpc
   instance_subnets = var.vpc.private_subnets
   max_capacity     = var.public_gateway_max_tasks * 2
-  cluster_name     = aws_ecs_cluster.cluster.name
+  cluster_name     = var.ecs_cluster.name
 }
 
 # Capacity Provider
@@ -289,7 +289,7 @@ resource "aws_ecs_task_definition" "public_gateway" {
 resource "aws_ecs_service" "public_gateway" {
   count           = var.public_gateway_min_tasks > 0 ? 1 : 0
   name            = aws_ecs_task_definition.public_gateway.family
-  cluster         = aws_ecs_cluster.cluster.id
+  cluster         = var.ecs_cluster.id
   task_definition = aws_ecs_task_definition.public_gateway.arn
   desired_count   = var.public_gateway_min_tasks
 
@@ -489,7 +489,7 @@ resource "aws_appautoscaling_policy" "public_gateway_policy" {
 resource "aws_appautoscaling_target" "public_gateway_scale_target" {
   count              = var.public_gateway_min_tasks > 0 ? 1 : 0
   service_namespace  = "ecs"
-  resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.public_gateway[count.index].name}"
+  resource_id        = "service/${var.ecs_cluster.name}/${aws_ecs_service.public_gateway[count.index].name}"
   scalable_dimension = "ecs:service:DesiredCount"
   min_capacity       = var.public_gateway_min_tasks
   max_capacity       = var.public_gateway_max_tasks

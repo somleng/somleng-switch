@@ -1,7 +1,7 @@
 
 variable "aws_region" {}
 variable "vpc" {}
-variable "cluster_name" {}
+variable "ecs_cluster" {}
 variable "switch_identifier" {}
 variable "services_identifier" {}
 variable "s3_mpeg_identifier" {}
@@ -29,6 +29,7 @@ variable "recordings_bucket_name" {}
 variable "logs_bucket" {}
 variable "efs_cache_name" {}
 variable "global_accelerator" {}
+variable "recordings_bucket" {}
 
 variable "container_insights_enabled" {
   default = false
