@@ -1,12 +1,14 @@
 module "switch" {
   source = "../modules/switch"
 
-  identifier             = var.switch_identifier
-  app_environment        = var.app_environment
-  json_cdr_url           = "https://api.internal.somleng.org/services/call_data_records"
-  subdomain              = "switch"
-  efs_cache_name         = "somleng-switch-cache"
-  recordings_bucket_name = "raw-recordings.somleng.org"
+  identifier                                         = var.switch_identifier
+  app_environment                                    = var.app_environment
+  json_cdr_url                                       = "https://api.internal.somleng.org/services/call_data_records"
+  subdomain                                          = "switch"
+  efs_cache_name                                     = "somleng-switch-cache"
+  recordings_bucket_name                             = "raw-recordings.somleng.org"
+  recordings_bucket_access_key_id_parameter_name     = "somleng-switch.${var.app_environment}.recordings_bucket_access_key_id"
+  recordings_bucket_secret_access_key_parameter_name = "somleng-switch.${var.app_environment}.recordings_bucket_secret_access_key"
 
   max_tasks = 10
 

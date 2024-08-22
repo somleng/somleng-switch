@@ -1,12 +1,14 @@
 module "switch" {
   source = "../modules/switch"
 
-  identifier             = var.switch_identifier
-  app_environment        = var.app_environment
-  json_cdr_url           = "https://api-staging.internal.somleng.org/services/call_data_records"
-  subdomain              = "switch-staging"
-  efs_cache_name         = "switch-staging-cache"
-  recordings_bucket_name = "raw-recordings-staging.somleng.org"
+  identifier                                         = var.switch_identifier
+  app_environment                                    = var.app_environment
+  json_cdr_url                                       = "https://api-staging.internal.somleng.org/services/call_data_records"
+  subdomain                                          = "switch-staging"
+  efs_cache_name                                     = "switch-staging-cache"
+  recordings_bucket_name                             = "raw-recordings-staging.somleng.org"
+  recordings_bucket_access_key_id_parameter_name     = "somleng-switch.${var.app_environment}.recordings_bucket_access_key_id"
+  recordings_bucket_secret_access_key_parameter_name = "somleng-switch.${var.app_environment}.recordings_bucket_secret_access_key"
 
   min_tasks = 0
   max_tasks = 2
@@ -35,12 +37,14 @@ module "switch" {
 # module "helium_switch" {
 #   source = "../modules/switch"
 
-#   identifier             = var.switch_identifier
-#   app_environment        = var.app_environment
-#   json_cdr_url           = "https://api-staging.internal.somleng.org/services/call_data_records"
-#   subdomain              = "switch-staging"
-#   efs_cache_name         = "switch-staging-cache"
-#   recordings_bucket_name = "raw-recordings-staging.somleng.org"
+#   identifier                                    = var.switch_identifier
+#   app_environment                               = var.app_environment
+#   json_cdr_url                                  = "https://api-staging.internal.somleng.org/services/call_data_records"
+#   subdomain                                     = "switch-staging"
+#   efs_cache_name                                = "switch-staging-cache"
+#   recordings_bucket                             = module.switch.recordings_bucket
+#   recordings_bucket_access_key_id_parameter     = module.switch.recordings_bucket_access_key_id_parameter
+#   recordings_bucket_secret_access_key_parameter = module.switch.recordings_bucket_secret_access_key_parameter
 
 #   min_tasks = 0
 #   max_tasks = 2

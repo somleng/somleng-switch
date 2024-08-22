@@ -3,13 +3,24 @@ variable "aws_region" {}
 variable "vpc" {}
 variable "ecs_cluster" {}
 variable "app_environment" {}
-variable "recordings_bucket_name" {}
+
+variable "recordings_bucket_name" {
+  default = null
+}
 
 variable "recordings_bucket" {
   default = null
 }
 
+variable "recordings_bucket_access_key_id_parameter_name" {
+  default = null
+}
+
 variable "recordings_bucket_access_key_id_parameter" {
+  default = null
+}
+
+variable "recordings_bucket_secret_access_key_parameter_name" {
   default = null
 }
 
