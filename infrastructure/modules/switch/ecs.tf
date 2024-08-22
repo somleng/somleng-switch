@@ -186,7 +186,7 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name      = "FS_EVENT_SOCKET_PASSWORD",
-          valueFrom = var.freeswitch_event_socket_password_parameter.arn
+          valueFrom = aws_ssm_parameter.freeswitch_event_socket_password.arn
         }
       ],
       environment = [
@@ -292,7 +292,7 @@ resource "aws_ecs_task_definition" "this" {
       secrets = [
         {
           name      = "EVENT_SOCKET_PASSWORD",
-          valueFrom = var.freeswitch_event_socket_password_parameter.arn
+          valueFrom = aws_ssm_parameter.freeswitch_event_socket_password.arn
         }
       ],
       dependsOn = [

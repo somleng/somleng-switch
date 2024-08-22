@@ -5,7 +5,6 @@ variable "ecs_cluster" {}
 variable "app_environment" {}
 variable "recordings_bucket_name" {}
 variable "json_cdr_password_parameter" {}
-variable "freeswitch_event_socket_password_parameter" {}
 variable "services_function" {}
 variable "efs_cache_name" {}
 variable "internal_route53_zone" {}

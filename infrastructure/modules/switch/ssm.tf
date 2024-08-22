@@ -29,3 +29,13 @@ resource "aws_ssm_parameter" "recordings_bucket_secret_access_key" {
   type  = "SecureString"
   value = aws_iam_access_key.recordings.secret
 }
+
+resource "aws_ssm_parameter" "freeswitch_event_socket_password" {
+  name  = "somleng-switch.${var.app_environment}.freeswitch_event_socket_password"
+  type  = "SecureString"
+  value = "change-me"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
