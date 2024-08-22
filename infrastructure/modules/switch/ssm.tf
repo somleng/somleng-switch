@@ -21,13 +21,13 @@ resource "aws_ssm_parameter" "rayo_password" {
 resource "aws_ssm_parameter" "recordings_bucket_access_key_id" {
   name  = "somleng-switch.${var.app_environment}.recordings_bucket_access_key_id"
   type  = "SecureString"
-  value = aws_iam_access_key.recordings.id
+  value = module.recordings_bucket.access_key_id
 }
 
 resource "aws_ssm_parameter" "recordings_bucket_secret_access_key" {
   name  = "somleng-switch.${var.app_environment}.recordings_bucket_secret_access_key"
   type  = "SecureString"
-  value = aws_iam_access_key.recordings.secret
+  value = module.recordings_bucket.secret_access_key
 }
 
 resource "aws_ssm_parameter" "freeswitch_event_socket_password" {

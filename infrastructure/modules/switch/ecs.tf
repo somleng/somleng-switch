@@ -232,11 +232,11 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name  = "FS_RECORDINGS_BUCKET_NAME",
-          value = aws_s3_bucket.recordings.id
+          value = module.recordings_bucket.this.id
         },
         {
           name  = "FS_RECORDINGS_BUCKET_REGION",
-          value = aws_s3_bucket.recordings.region
+          value = module.recordings_bucket.this.region
         },
         {
           name  = "FS_EVENT_SOCKET_PORT",

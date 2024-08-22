@@ -3,5 +3,5 @@ output "capacity_provider" {
 }
 
 output "recordings_bucket" {
-  value = aws_s3_bucket.recordings
+  value = module.recordings_bucket
 }

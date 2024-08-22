@@ -1,0 +1,4 @@
+{"@level":"info","@message":"Terraform 1.9.0","@module":"terraform.ui","@timestamp":"2024-08-22T19:41:10.976937+07:00","terraform":"1.9.0","type":"version","ui":"1.2"}
+{"@level":"info","@message":"\nInterrupt received.\nPlease wait for Terraform to exit or data loss may occur.\nGracefully shutting down...\n","@module":"terraform.ui","@timestamp":"2024-08-22T19:41:11.622882+07:00","type":"log"}
+{"@level":"info","@message":"\nTwo interrupts received. Exiting immediately. Note that data loss may have occurred.\n","@module":"terraform.ui","@timestamp":"2024-08-22T19:41:12.276071+07:00","type":"log"}
+{"@level":"error","@message":"Error: operation canceled","@module":"terraform.ui","@timestamp":"2024-08-22T19:41:13.307402+07:00","diagnostic":{"severity":"error","summary":"operation canceled","detail":""},"type":"diagnostic"}
