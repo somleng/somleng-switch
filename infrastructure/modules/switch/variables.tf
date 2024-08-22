@@ -52,6 +52,10 @@ variable "freeswitch_event_socket_password_parameter" {
   default = null
 }
 
+variable "container_instance_profile" {
+  default = null
+}
+
 variable "json_cdr_password_parameter" {}
 variable "services_function" {}
 variable "efs_cache_name" {}

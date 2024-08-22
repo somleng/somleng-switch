@@ -25,3 +25,7 @@ output "rayo_password_parameter" {
 output "freeswitch_event_socket_password_parameter" {
   value = local.freeswitch_event_socket_password_parameter
 }
+
+output "container_instances" {
+  value = module.container_instances
+}

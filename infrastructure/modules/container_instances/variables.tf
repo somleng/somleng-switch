@@ -15,6 +15,9 @@ variable "app_identifier" {}
 variable "vpc" {}
 variable "instance_subnets" {}
 variable "cluster_name" {}
+variable "iam_instance_profile" {
+  default = null
+}
 
 variable "max_capacity" {
   default = 10
@@ -23,7 +26,7 @@ variable "security_groups" {
   default = []
 }
 
-variable associate_public_ip_address {
+variable "associate_public_ip_address" {
   default = false
 }
 
@@ -31,8 +34,8 @@ variable "user_data" {
   type = list(
     object(
       {
-        path = string,
-        content = string,
+        path        = string,
+        content     = string,
         permissions = string
       }
     )

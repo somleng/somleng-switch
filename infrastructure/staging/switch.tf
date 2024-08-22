@@ -51,6 +51,7 @@ module "switch_helium" {
   application_master_key_parameter              = module.switch.application_master_key_parameter
   rayo_password_parameter                       = module.switch.rayo_password_parameter
   freeswitch_event_socket_password_parameter    = module.switch.freeswitch_event_socket_password_parameter
+  container_instance_profile                    = module.switch.container_instances.iam_instance_profile
 
   min_tasks = 0
   max_tasks = 2

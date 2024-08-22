@@ -11,5 +11,9 @@ output "security_group" {
 }
 
 output "iam_role" {
-  value = aws_iam_role.this
+  value = data.aws_iam_role.this
+}
+
+output "iam_instance_profile" {
+  value = local.iam_instance_profile
 }
