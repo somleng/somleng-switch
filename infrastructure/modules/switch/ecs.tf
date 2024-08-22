@@ -178,11 +178,11 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name      = "FS_RECORDINGS_BUCKET_ACCESS_KEY_ID",
-          valueFrom = aws_ssm_parameter.recordings_bucket_access_key_id.arn
+          valueFrom = local.recordings_bucket_access_key_id_parameter.arn
         },
         {
           name      = "FS_RECORDINGS_BUCKET_SECRET_ACCESS_KEY",
-          valueFrom = aws_ssm_parameter.recordings_bucket_secret_access_key.arn
+          valueFrom = local.recordings_bucket_secret_access_key_parameter.arn
         },
         {
           name      = "FS_EVENT_SOCKET_PASSWORD",
@@ -232,11 +232,11 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name  = "FS_RECORDINGS_BUCKET_NAME",
-          value = module.recordings_bucket.this.id
+          value = local.recordings_bucket.id
         },
         {
           name  = "FS_RECORDINGS_BUCKET_REGION",
-          value = module.recordings_bucket.this.region
+          value = local.recordings_bucket.region
         },
         {
           name  = "FS_EVENT_SOCKET_PORT",

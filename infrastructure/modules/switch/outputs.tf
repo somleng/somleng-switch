@@ -3,5 +3,5 @@ output "capacity_provider" {
 }
 
 output "recordings_bucket" {
-  value = module.recordings_bucket
+  value = local.recordings_bucket
 }
