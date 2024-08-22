@@ -74,9 +74,9 @@ module "switch_helium" {
   nginx_image                   = data.terraform_remote_state.core.outputs.nginx_ecr_repository.repository_uri
   freeswitch_image              = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository.repository_uri
   freeswitch_event_logger_image = data.terraform_remote_state.core.outputs.freeswitch_event_logger_ecr_repository.repository_uri
-  external_rtp_ip               = data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]
-  alternative_sip_outbound_ip   = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
-  alternative_rtp_ip            = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
+  external_rtp_ip               = data.terraform_remote_state.core_infrastructure.outputs.vpc_helium.nat_public_ips[0]
+  alternative_sip_outbound_ip   = data.terraform_remote_state.core_infrastructure.outputs.vpc_helium.nat_public_ips[0]
+  alternative_rtp_ip            = data.terraform_remote_state.core_infrastructure.outputs.vpc_helium.nat_public_ips[0]
 
   providers = {
     aws = aws.helium
