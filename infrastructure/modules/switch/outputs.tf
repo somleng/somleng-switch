@@ -29,3 +29,11 @@ output "freeswitch_event_socket_password_parameter" {
 output "container_instances" {
   value = module.container_instances
 }
+
+output "iam_task_role" {
+  value = local.iam_task_role
+}
+
+output "iam_task_execution_role" {
+  value = local.iam_task_execution_role
+}

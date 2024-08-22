@@ -318,8 +318,8 @@ resource "aws_ecs_task_definition" "this" {
     }
   ])
 
-  task_role_arn      = aws_iam_role.ecs_task_role.arn
-  execution_role_arn = aws_iam_role.task_execution_role.arn
+  task_role_arn      = local.iam_task_role.arn
+  execution_role_arn = local.iam_task_execution_role.arn
   memory             = module.container_instances.ec2_instance_type.memory_size - 512
 
   volume {
