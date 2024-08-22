@@ -79,11 +79,11 @@ resource "aws_ecs_task_definition" "this" {
       secrets = [
         {
           name      = "APP_MASTER_KEY",
-          valueFrom = aws_ssm_parameter.application_master_key.arn
+          valueFrom = local.application_master_key_parameter.arn
         },
         {
           name      = "AHN_CORE_PASSWORD",
-          valueFrom = aws_ssm_parameter.rayo_password.arn
+          valueFrom = local.rayo_password_parameter.arn
         }
       ],
       environment = [
@@ -170,7 +170,7 @@ resource "aws_ecs_task_definition" "this" {
       secrets = [
         {
           name      = "FS_MOD_RAYO_PASSWORD",
-          valueFrom = aws_ssm_parameter.rayo_password.arn
+          valueFrom = local.rayo_password_parameter.arn
         },
         {
           name      = "FS_MOD_JSON_CDR_PASSWORD",
@@ -186,7 +186,7 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name      = "FS_EVENT_SOCKET_PASSWORD",
-          valueFrom = aws_ssm_parameter.freeswitch_event_socket_password.arn
+          valueFrom = local.freeswitch_event_socket_password_parameter.arn
         }
       ],
       environment = [
@@ -292,7 +292,7 @@ resource "aws_ecs_task_definition" "this" {
       secrets = [
         {
           name      = "EVENT_SOCKET_PASSWORD",
-          valueFrom = aws_ssm_parameter.freeswitch_event_socket_password.arn
+          valueFrom = local.freeswitch_event_socket_password_parameter.arn
         }
       ],
       dependsOn = [

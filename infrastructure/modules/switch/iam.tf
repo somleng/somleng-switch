@@ -49,9 +49,9 @@ resource "aws_iam_policy" "task_execution_custom_policy" {
         "ssm:GetParameters"
       ],
       "Resource": [
-        "${aws_ssm_parameter.application_master_key.arn}",
-        "${aws_ssm_parameter.rayo_password.arn}",
-        "${aws_ssm_parameter.freeswitch_event_socket_password.arn}",
+        "${local.application_master_key_parameter.arn}",
+        "${local.rayo_password_parameter.arn}",
+        "${local.freeswitch_event_socket_password_parameter.arn}",
         "${var.json_cdr_password_parameter.arn}",
         "${local.recordings_bucket_access_key_id_parameter.arn}",
         "${local.recordings_bucket_secret_access_key_parameter.arn}"

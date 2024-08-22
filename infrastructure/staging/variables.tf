@@ -1,5 +1,13 @@
-variable "aws_region" {
+variable "aws_default_region" {
   default = "ap-southeast-1"
+}
+
+variable "aws_helium_region" {
+  default = "us-east-1"
+}
+
+variable "ecs_cluster_name" {
+  default = "somleng-switch-staging"
 }
 
 variable "app_environment" {

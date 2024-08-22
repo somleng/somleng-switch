@@ -7,11 +7,15 @@ module "switch" {
   subdomain                                          = "switch"
   efs_cache_name                                     = "somleng-switch-cache"
   recordings_bucket_name                             = "raw-recordings.somleng.org"
+  application_master_key_parameter_name              = "somleng-switch.${var.app_environment}.application_master_key"
+  rayo_password_parameter_name                       = "somleng-switch.${var.app_environment}.rayo_password"
+  freeswitch_event_socket_password_parameter_name    = "somleng-switch.${var.app_environment}.freeswitch_event_socket_password"
   recordings_bucket_access_key_id_parameter_name     = "somleng-switch.${var.app_environment}.recordings_bucket_access_key_id"
   recordings_bucket_secret_access_key_parameter_name = "somleng-switch.${var.app_environment}.recordings_bucket_secret_access_key"
 
   max_tasks = 10
 
+  aws_region                   = var.aws_default_region
   vpc                          = data.terraform_remote_state.core_infrastructure.outputs.vpc
   ecs_cluster                  = aws_ecs_cluster.this
   sip_port                     = var.sip_port
@@ -22,7 +26,6 @@ module "switch" {
   internal_route53_zone        = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_internal_somleng_org
   internal_load_balancer       = data.terraform_remote_state.core_infrastructure.outputs.internal_application_load_balancer
   internal_listener            = data.terraform_remote_state.core_infrastructure.outputs.internal_https_listener
-  aws_region                   = var.aws_region
 
   app_image                     = data.terraform_remote_state.core.outputs.switch_ecr_repository.repository_uri
   nginx_image                   = data.terraform_remote_state.core.outputs.nginx_ecr_repository.repository_uri

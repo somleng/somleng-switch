@@ -8,7 +8,12 @@ terraform {
 }
 
 provider "aws" {
-  region = var.aws_region
+  region = var.aws_default_region
+}
+
+provider "aws" {
+  region = var.aws_helium_region
+  alias  = "helium"
 }
 
 data "terraform_remote_state" "core" {
@@ -17,7 +22,7 @@ data "terraform_remote_state" "core" {
   config = {
     bucket = "infrastructure.somleng.org"
     key    = "somleng_switch_core.tfstate"
-    region = var.aws_region
+    region = var.aws_default_region
   }
 }
 
@@ -27,6 +32,6 @@ data "terraform_remote_state" "core_infrastructure" {
   config = {
     bucket = "infrastructure.somleng.org"
     key    = "core.tfstate"
-    region = var.aws_region
+    region = var.aws_default_region
   }
 }

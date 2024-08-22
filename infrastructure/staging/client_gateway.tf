@@ -6,7 +6,7 @@ module "client_gateway" {
   identifier      = var.client_gateway_identifier
   app_environment = var.app_environment
 
-  aws_region   = var.aws_region
+  aws_region   = var.aws_default_region
   vpc          = data.terraform_remote_state.core_infrastructure.outputs.vpc
   ecs_cluster  = aws_ecs_cluster.this
   route53_zone = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_somleng_org

@@ -28,6 +28,30 @@ variable "recordings_bucket_secret_access_key_parameter" {
   default = null
 }
 
+variable "application_master_key_parameter_name" {
+  default = null
+}
+
+variable "application_master_key_parameter" {
+  default = null
+}
+
+variable "rayo_password_parameter_name" {
+  default = null
+}
+
+variable "rayo_password_parameter" {
+  default = null
+}
+
+variable "freeswitch_event_socket_password_parameter_name" {
+  default = null
+}
+
+variable "freeswitch_event_socket_password_parameter" {
+  default = null
+}
+
 variable "json_cdr_password_parameter" {}
 variable "services_function" {}
 variable "efs_cache_name" {}
