@@ -355,7 +355,7 @@ resource "aws_ecs_service" "this" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.http.arn
+    target_group_arn = aws_lb_target_group.this.arn
     container_name   = "nginx"
     container_port   = var.webserver_port
   }

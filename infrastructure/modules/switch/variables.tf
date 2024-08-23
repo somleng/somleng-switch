@@ -4,6 +4,18 @@ variable "vpc" {}
 variable "ecs_cluster" {}
 variable "app_environment" {}
 
+variable "region_alias" {
+  default = null
+}
+
+variable "lb_region_rule_index" {
+  default = null
+}
+
+variable "lb_default_rule_index" {
+  default = null
+}
+
 variable "recordings_bucket_name" {
   default = null
 }
@@ -75,7 +87,9 @@ variable "cache_security_group_name" {
 variable "cache_file_system" {
   default = null
 }
-variable "internal_route53_zone" {}
+variable "internal_route53_zone" {
+  default = null
+}
 variable "internal_load_balancer" {}
 variable "internal_listener" {}
 variable "app_image" {}
@@ -86,7 +100,12 @@ variable "external_rtp_ip" {}
 variable "alternative_sip_outbound_ip" {}
 variable "alternative_rtp_ip" {}
 variable "json_cdr_url" {}
-variable "subdomain" {}
+variable "subdomain" {
+  default = null
+}
+variable "route53_record" {
+  default = null
+}
 variable "sip_port" {}
 variable "sip_alternative_port" {}
 

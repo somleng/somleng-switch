@@ -41,3 +41,71 @@ output "iam_task_execution_role" {
 output "cache_file_system" {
   value = local.cache_file_system
 }
+
+output "route53_record" {
+  value = local.route53_record
+}
+
+output "identifier" {
+  value = var.identifier
+}
+
+output "app_environment" {
+  value = var.app_environment
+}
+
+output "json_cdr_url" {
+  value = var.json_cdr_url
+}
+
+output "min_tasks" {
+  value = var.min_tasks
+}
+
+output "max_tasks" {
+  value = var.max_tasks
+}
+
+output "sip_port" {
+  value = var.sip_port
+}
+
+output "sip_alternative_port" {
+  value = var.sip_alternative_port
+}
+
+output "freeswitch_event_socket_port" {
+  value = var.freeswitch_event_socket_port
+}
+
+output "json_cdr_password_parameter" {
+  value = var.json_cdr_password_parameter
+}
+
+output "services_function" {
+  value = var.services_function
+}
+
+output "internal_load_balancer" {
+  value = var.internal_load_balancer
+}
+
+output "internal_listener" {
+  value = var.internal_listener
+}
+
+output "app_image" {
+  value = var.app_image
+}
+
+output "nginx_image" {
+  value = var.nginx_image
+}
+
+output "freeswitch_image" {
+  value = var.freeswitch_image
+}
+
+output "freeswitch_event_logger_image" {
+  value = var.freeswitch_event_logger_image
+}

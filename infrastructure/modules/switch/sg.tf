@@ -16,6 +16,8 @@ resource "aws_security_group_rule" "ingress_http" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
+# TODO: this might be wrong for new VPC
+
 resource "aws_security_group_rule" "ingress_freeswitch_event_socket" {
   type              = "ingress"
   to_port           = 8021
