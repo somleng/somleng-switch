@@ -66,7 +66,15 @@ variable "iam_task_execution_role" {
 
 variable "json_cdr_password_parameter" {}
 variable "services_function" {}
-variable "efs_cache_name" {}
+variable "cache_name" {
+  default = null
+}
+variable "cache_security_group_name" {
+  default = null
+}
+variable "cache_file_system" {
+  default = null
+}
 variable "internal_route53_zone" {}
 variable "internal_load_balancer" {}
 variable "internal_listener" {}

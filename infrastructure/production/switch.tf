@@ -5,7 +5,8 @@ module "switch" {
   app_environment                                    = var.app_environment
   json_cdr_url                                       = "https://api.internal.somleng.org/services/call_data_records"
   subdomain                                          = "switch"
-  efs_cache_name                                     = "somleng-switch-cache"
+  cache_name                                         = "somleng-switch-cache"
+  cache_security_group_name                          = "switch-efs-cache"
   recordings_bucket_name                             = "raw-recordings.somleng.org"
   application_master_key_parameter_name              = "somleng-switch.${var.app_environment}.application_master_key"
   rayo_password_parameter_name                       = "somleng-switch.${var.app_environment}.rayo_password"

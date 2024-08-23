@@ -326,7 +326,7 @@ resource "aws_ecs_task_definition" "this" {
     name = "cache"
 
     efs_volume_configuration {
-      file_system_id     = aws_efs_file_system.cache.id
+      file_system_id     = local.cache_file_system.id
       transit_encryption = "ENABLED"
     }
   }

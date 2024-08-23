@@ -37,3 +37,7 @@ output "iam_task_role" {
 output "iam_task_execution_role" {
   value = local.iam_task_execution_role
 }
+
+output "cache_file_system" {
+  value = local.cache_file_system
+}

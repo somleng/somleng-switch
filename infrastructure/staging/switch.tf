@@ -5,7 +5,8 @@ module "switch" {
   app_environment                                    = var.app_environment
   json_cdr_url                                       = "https://api-staging.internal.somleng.org/services/call_data_records"
   subdomain                                          = "switch-staging"
-  efs_cache_name                                     = "switch-staging-cache"
+  cache_name                                         = "switch-staging-cache"
+  cache_security_group_name                          = "switch-staging-efs-cache"
   recordings_bucket_name                             = "raw-recordings-staging.somleng.org"
   application_master_key_parameter_name              = "somleng-switch.${var.app_environment}.application_master_key"
   rayo_password_parameter_name                       = "somleng-switch.${var.app_environment}.rayo_password"
@@ -44,7 +45,7 @@ module "switch_helium" {
   app_environment                               = var.app_environment
   json_cdr_url                                  = "https://api-staging.internal.somleng.org/services/call_data_records"
   subdomain                                     = "switch-staging"
-  efs_cache_name                                = "switch-staging-cache"
+  cache_security_group_name                     = "switch-staging-efs-cache"
   recordings_bucket                             = module.switch.recordings_bucket
   recordings_bucket_access_key_id_parameter     = module.switch.recordings_bucket_access_key_id_parameter
   recordings_bucket_secret_access_key_parameter = module.switch.recordings_bucket_secret_access_key_parameter
@@ -54,6 +55,7 @@ module "switch_helium" {
   container_instance_profile                    = module.switch.container_instances.iam_instance_profile
   iam_task_role                                 = module.switch.iam_task_role
   iam_task_execution_role                       = module.switch.iam_task_execution_role
+  cache_file_system                             = module.switch.cache_file_system
 
   min_tasks = 0
   max_tasks = 2
