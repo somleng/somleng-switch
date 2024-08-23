@@ -1,5 +1,5 @@
 locals {
-  security_group_name = var.security_group_name == null ? var.name : var.security_group_name
+  security_group_name = var.security_group_name == null ? (var.name == null ? var.file_system.name : var.name) : var.security_group_name
 }
 
 resource "aws_efs_mount_target" "this" {

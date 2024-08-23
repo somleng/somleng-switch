@@ -45,7 +45,6 @@ module "switch_helium" {
   app_environment                               = var.app_environment
   json_cdr_url                                  = "https://api-staging.internal.somleng.org/services/call_data_records"
   subdomain                                     = "switch-staging"
-  cache_security_group_name                     = "switch-staging-efs-cache"
   recordings_bucket                             = module.switch.recordings_bucket
   recordings_bucket_access_key_id_parameter     = module.switch.recordings_bucket_access_key_id_parameter
   recordings_bucket_secret_access_key_parameter = module.switch.recordings_bucket_secret_access_key_parameter
