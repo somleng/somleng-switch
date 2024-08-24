@@ -1,11 +1,11 @@
 locals {
-  security_group_name = var.security_group_name == null ? (var.name == null ? var.file_system.name : var.name) : var.security_group_name
+  security_group_name = var.security_group_name == null ? var.name : var.security_group_name
 }
 
 resource "aws_efs_mount_target" "this" {
   for_each = toset(var.vpc.intra_subnets)
 
-  file_system_id  = local.efs_file_system.id
+  file_system_id  = aws_efs_file_system.this.id
   subnet_id       = each.value
   security_groups = [aws_security_group.this.id]
 }

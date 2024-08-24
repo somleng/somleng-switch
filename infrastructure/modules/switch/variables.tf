@@ -1,16 +1,12 @@
 variable "identifier" {}
 variable "aws_region" {}
 variable "vpc" {}
+variable "default_vpc" {}
 variable "ecs_cluster" {}
 variable "app_environment" {}
 
-variable "region_alias" {
-  default = null
-}
-
-variable "lb_region_rule_index" {
-  default = null
-}
+variable "region_alias" {}
+variable "lb_region_rule_index" {}
 
 variable "lb_default_rule_index" {
   default = null
@@ -82,9 +78,6 @@ variable "cache_name" {
   default = null
 }
 variable "cache_security_group_name" {
-  default = null
-}
-variable "cache_file_system" {
   default = null
 }
 variable "internal_route53_zone" {

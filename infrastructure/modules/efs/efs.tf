@@ -1,10 +1,4 @@
-locals {
-  create_efs_file_system = var.file_system == null
-  efs_file_system        = local.create_efs_file_system ? aws_efs_file_system.this[0] : var.file_system
-}
-
 resource "aws_efs_file_system" "this" {
-  count          = local.create_efs_file_system ? 1 : 0
   creation_token = var.name
   encrypted      = true
 
@@ -22,9 +16,7 @@ resource "aws_efs_file_system" "this" {
 }
 
 resource "aws_efs_backup_policy" "this" {
-  count = local.create_efs_file_system ? 1 : 0
-
-  file_system_id = aws_efs_file_system.this[0].id
+  file_system_id = aws_efs_file_system.this.id
 
   backup_policy {
     status = "DISABLED"

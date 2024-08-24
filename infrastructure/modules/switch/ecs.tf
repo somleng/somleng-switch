@@ -326,7 +326,7 @@ resource "aws_ecs_task_definition" "this" {
     name = "cache"
 
     efs_volume_configuration {
-      file_system_id     = local.cache_file_system.id
+      file_system_id     = module.cache.file_system.id
       transit_encryption = "ENABLED"
     }
   }
@@ -355,9 +355,19 @@ resource "aws_ecs_service" "this" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.this.arn
+    target_group_arn = aws_lb_target_group.regional.arn
     container_name   = "nginx"
     container_port   = var.webserver_port
+  }
+
+  dynamic "load_balancer" {
+    for_each = aws_lb_target_group.default
+
+    content {
+      target_group_arn = load_balancer.value.arn
+      container_name   = "nginx"
+      container_port   = var.webserver_port
+    }
   }
 
   lifecycle {

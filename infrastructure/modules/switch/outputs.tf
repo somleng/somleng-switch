@@ -38,10 +38,6 @@ output "iam_task_execution_role" {
   value = local.iam_task_execution_role
 }
 
-output "cache_file_system" {
-  value = local.cache_file_system
-}
-
 output "route53_record" {
   value = local.route53_record
 }
@@ -68,6 +64,10 @@ output "max_tasks" {
 
 output "sip_port" {
   value = var.sip_port
+}
+
+output "cache_name" {
+  value = var.cache_name
 }
 
 output "sip_alternative_port" {
