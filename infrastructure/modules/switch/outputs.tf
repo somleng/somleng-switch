@@ -38,10 +38,6 @@ output "iam_task_execution_role" {
   value = local.iam_task_execution_role
 }
 
-output "route53_record" {
-  value = local.route53_record
-}
-
 output "identifier" {
   value = var.identifier
 }
@@ -86,14 +82,6 @@ output "services_function" {
   value = var.services_function
 }
 
-output "internal_load_balancer" {
-  value = var.internal_load_balancer
-}
-
-output "internal_listener" {
-  value = var.internal_listener
-}
-
 output "app_image" {
   value = var.app_image
 }
@@ -108,4 +96,12 @@ output "freeswitch_image" {
 
 output "freeswitch_event_logger_image" {
   value = var.freeswitch_event_logger_image
+}
+
+output "internal_route53_zone" {
+  value = var.internal_route53_zone
+}
+
+output "target_group" {
+  value = aws_lb_target_group.this
 }

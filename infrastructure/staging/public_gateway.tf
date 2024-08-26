@@ -5,7 +5,7 @@ module "public_gateway" {
   app_environment = var.app_environment
 
   aws_region = var.aws_default_region
-  vpc        = data.terraform_remote_state.core_infrastructure.outputs.vpc
+  vpc        = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc
 
   ecs_cluster = aws_ecs_cluster.this
 
@@ -24,5 +24,5 @@ module "public_gateway" {
   db_host               = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.endpoint
   db_port               = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.port
   global_accelerator    = data.terraform_remote_state.core_infrastructure.outputs.global_accelerator
-  logs_bucket           = data.terraform_remote_state.core_infrastructure.outputs.logs_bucket
+  logs_bucket           = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.logs_bucket
 }

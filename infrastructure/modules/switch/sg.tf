@@ -1,6 +1,6 @@
 resource "aws_security_group" "this" {
   name   = var.identifier
-  vpc_id = var.vpc.vpc_id
+  vpc_id = var.region.vpc.vpc_id
 
   tags = {
     "Name" = var.identifier
@@ -24,7 +24,7 @@ resource "aws_security_group_rule" "ingress_freeswitch_event_socket" {
   protocol          = "TCP"
   from_port         = 8021
   security_group_id = aws_security_group.this.id
-  cidr_blocks       = [var.vpc.vpc_cidr_block]
+  cidr_blocks       = [var.region.vpc.vpc_cidr_block]
 }
 
 resource "aws_security_group_rule" "ingress_sip" {
@@ -33,7 +33,7 @@ resource "aws_security_group_rule" "ingress_sip" {
   protocol          = "UDP"
   from_port         = var.sip_port
   security_group_id = aws_security_group.this.id
-  cidr_blocks       = [var.vpc.vpc_cidr_block]
+  cidr_blocks       = [var.region.vpc.vpc_cidr_block]
 }
 
 resource "aws_security_group_rule" "ingress_sip_alternative" {
@@ -42,7 +42,7 @@ resource "aws_security_group_rule" "ingress_sip_alternative" {
   protocol          = "UDP"
   from_port         = var.sip_alternative_port
   security_group_id = aws_security_group.this.id
-  cidr_blocks       = [var.vpc.vpc_cidr_block]
+  cidr_blocks       = [var.region.vpc.vpc_cidr_block]
 }
 
 resource "aws_security_group_rule" "egress" {

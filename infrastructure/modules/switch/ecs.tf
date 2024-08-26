@@ -27,7 +27,7 @@ resource "aws_ecs_task_definition" "this" {
         logDriver = "awslogs",
         options = {
           awslogs-group         = aws_cloudwatch_log_group.nginx.name,
-          awslogs-region        = var.aws_region,
+          awslogs-region        = var.region.aws_region,
           awslogs-stream-prefix = var.app_environment
         }
       },
@@ -52,7 +52,7 @@ resource "aws_ecs_task_definition" "this" {
         logDriver = "awslogs",
         options = {
           awslogs-group         = aws_cloudwatch_log_group.app.name,
-          awslogs-region        = var.aws_region,
+          awslogs-region        = var.region.aws_region,
           awslogs-stream-prefix = var.app_environment
         }
       },
@@ -101,7 +101,7 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name  = "AWS_DEFAULT_REGION",
-          value = var.aws_region
+          value = var.region.aws_region
         },
         {
           name  = "AHN_CORE_HTTP_PORT",
@@ -128,7 +128,7 @@ resource "aws_ecs_task_definition" "this" {
         logDriver = "awslogs",
         options = {
           awslogs-group         = aws_cloudwatch_log_group.freeswitch.name,
-          awslogs-region        = var.aws_region,
+          awslogs-region        = var.region.aws_region,
           awslogs-stream-prefix = var.app_environment
         }
       },
@@ -192,7 +192,7 @@ resource "aws_ecs_task_definition" "this" {
       environment = [
         {
           name  = "AWS_DEFAULT_REGION",
-          value = var.aws_region
+          value = var.region.aws_region
         },
         {
           name  = "FS_CACHE_DIRECTORY",
@@ -259,7 +259,7 @@ resource "aws_ecs_task_definition" "this" {
         logDriver = "awslogs",
         options = {
           awslogs-group         = aws_cloudwatch_log_group.redis.name,
-          awslogs-region        = var.aws_region,
+          awslogs-region        = var.region.aws_region,
           awslogs-stream-prefix = var.app_environment
         }
       },
@@ -283,7 +283,7 @@ resource "aws_ecs_task_definition" "this" {
         logDriver = "awslogs",
         options = {
           awslogs-group         = aws_cloudwatch_log_group.freeswitch_event_logger.name,
-          awslogs-region        = var.aws_region,
+          awslogs-region        = var.region.aws_region,
           awslogs-stream-prefix = var.app_environment
         }
       },
@@ -339,7 +339,7 @@ resource "aws_ecs_service" "this" {
   desired_count   = var.min_tasks
 
   network_configuration {
-    subnets = var.vpc.private_subnets
+    subnets = var.region.vpc.private_subnets
     security_groups = [
       aws_security_group.this.id
     ]
@@ -355,19 +355,9 @@ resource "aws_ecs_service" "this" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.regional.arn
+    target_group_arn = aws_lb_target_group.this.arn
     container_name   = "nginx"
     container_port   = var.webserver_port
-  }
-
-  dynamic "load_balancer" {
-    for_each = aws_lb_target_group.default
-
-    content {
-      target_group_arn = load_balancer.value.arn
-      container_name   = "nginx"
-      container_port   = var.webserver_port
-    }
   }
 
   lifecycle {

@@ -1,14 +1,10 @@
 variable "identifier" {}
-variable "aws_region" {}
-variable "vpc" {}
-variable "default_vpc" {}
 variable "ecs_cluster" {}
 variable "app_environment" {}
+variable "lb_rule_index" {}
+variable "region" {}
 
-variable "region_alias" {}
-variable "lb_region_rule_index" {}
-
-variable "lb_default_rule_index" {
+variable "target_group_name" {
   default = null
 }
 
@@ -80,11 +76,7 @@ variable "cache_name" {
 variable "cache_security_group_name" {
   default = null
 }
-variable "internal_route53_zone" {
-  default = null
-}
-variable "internal_load_balancer" {}
-variable "internal_listener" {}
+variable "internal_route53_zone" {}
 variable "app_image" {}
 variable "nginx_image" {}
 variable "freeswitch_image" {}
@@ -93,9 +85,6 @@ variable "external_rtp_ip" {}
 variable "alternative_sip_outbound_ip" {}
 variable "alternative_rtp_ip" {}
 variable "json_cdr_url" {}
-variable "subdomain" {
-  default = null
-}
 variable "route53_record" {
   default = null
 }

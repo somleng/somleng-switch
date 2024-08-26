@@ -10,7 +10,7 @@ data "archive_file" "test_files" {
 
 resource "aws_security_group" "this" {
   name   = "somleng-switch-testing"
-  vpc_id = data.terraform_remote_state.core_infrastructure.outputs.vpc.vpc_id
+  vpc_id = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc.vpc_id
 }
 
 resource "aws_security_group_rule" "ingress" {
@@ -21,7 +21,7 @@ resource "aws_security_group_rule" "ingress" {
   security_group_id = aws_security_group.this.id
   cidr_blocks = [
     "${data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip}/32",
-    "${data.terraform_remote_state.core_infrastructure.outputs.vpc.nat_public_ips[0]}/32",
+    "${data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc.nat_public_ips[0]}/32",
   ]
 }
 
@@ -42,7 +42,7 @@ data "aws_network_interface" "nat_instance" {
 }
 
 resource "aws_route" "nat_instance" {
-  route_table_id         = data.terraform_remote_state.core_infrastructure.outputs.vpc.private_route_table_ids[0]
+  route_table_id         = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc.private_route_table_ids[0]
   destination_cidr_block = "${aws_instance.this.public_ip}/32"
   network_interface_id   = data.aws_network_interface.nat_instance.id
 }
@@ -51,7 +51,7 @@ resource "aws_instance" "this" {
   ami                         = data.aws_ssm_parameter.arm64_ami.value
   instance_type               = "t4g.small"
   vpc_security_group_ids      = [aws_security_group.this.id]
-  subnet_id                   = element(data.terraform_remote_state.core_infrastructure.outputs.vpc.public_subnets, 0)
+  subnet_id                   = element(data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc.public_subnets, 0)
   associate_public_ip_address = true
   iam_instance_profile        = aws_iam_instance_profile.this.id
   user_data_replace_on_change = true

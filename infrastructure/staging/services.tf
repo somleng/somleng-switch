@@ -9,7 +9,7 @@ module "services" {
   public_gateway_db_name = var.public_gateway_db_name
   client_gateway_db_name = var.client_gateway_db_name
 
-  vpc       = data.terraform_remote_state.core_infrastructure.outputs.vpc
+  vpc       = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc
   app_image = data.terraform_remote_state.core.outputs.services_ecr_repository.repository_url
 
   db_password_parameter                      = data.terraform_remote_state.core_infrastructure.outputs.db_master_password_parameter
