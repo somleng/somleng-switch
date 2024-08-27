@@ -54,15 +54,13 @@ resource "aws_lambda_permission" "this" {
 resource "aws_cloudwatch_event_rule" "this" {
   name = var.identifier
 
-  event_pattern = <<EOF
-{
-  "source": ["aws.ecs"],
-  "detail-type": ["ECS Task State Change"],
-  "detail": {
-    "clusterArn": ["${var.ecs_cluster.arn}"]
-  }
-}
-EOF
+  event_pattern = jsonencode({
+    source      = ["aws.ecs"],
+    detail-type = ["ECS Task State Change"],
+    detail = {
+      clusterArn = [var.ecs_cluster.arn]
+    }
+  })
 }
 
 resource "aws_cloudwatch_event_target" "this" {
