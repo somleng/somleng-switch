@@ -1,6 +1,6 @@
 locals {
-  subdomain         = "${var.identifier}-${var.region.alias}"
-  target_group_name = var.target_group_name == null ? local.subdomain : var.target_group_name
+  subdomain         = "${var.identifier}.${var.region.alias}"
+  target_group_name = var.target_group_name == null ? "${var.identifier}-${var.region.alias}" : var.target_group_name
 }
 
 resource "aws_lb_target_group" "this" {
