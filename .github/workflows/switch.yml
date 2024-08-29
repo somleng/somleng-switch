@@ -282,6 +282,9 @@ jobs:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Create Sentry release
         uses: getsentry/action-release@v1
         env:
