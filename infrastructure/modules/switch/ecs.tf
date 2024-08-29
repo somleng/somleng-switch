@@ -364,6 +364,11 @@ resource "aws_ecs_service" "this" {
     container_port   = var.webserver_port
   }
 
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
+
   lifecycle {
     ignore_changes = [task_definition, desired_count]
   }

@@ -111,6 +111,17 @@ RSpec.describe ECSEventParser do
     )
   end
 
+  it "requests to the correct regional endpoint" do
+    ecs_client, ec2_client = stub_aws_clients(region: "ap-southeast-1")
+    event = build_ecs_event_payload(region: "us-east-1")
+    parser = ECSEventParser.new(event, ecs_client:, ec2_client:)
+
+    parser.parse_event
+
+    expect(ecs_client.api_requests.first.fetch(:context).client.config.region).to eq("us-east-1")
+    expect(ec2_client.api_requests.first.fetch(:context).client.config.region).to eq("us-east-1")
+  end
+
   it "handles public instances" do
     ecs_client, ec2_client = stub_aws_clients(private_ip_address: "10.0.0.1", public_ip_address: "54.251.92.249")
     event = build_ecs_event_payload
@@ -126,6 +137,7 @@ RSpec.describe ECSEventParser do
 
   def stub_aws_clients(options = {})
     ecs_client = Aws::ECS::Client.new(
+      region: options.fetch(:region, "ap-southeast-1"),
       stub_responses: {
         describe_container_instances: {
           container_instances: [
@@ -138,6 +150,7 @@ RSpec.describe ECSEventParser do
     )
 
     ec2_client = Aws::EC2::Client.new(
+      region: options.fetch(:region, "ap-southeast-1"),
       stub_responses: {
         describe_instances: {
           reservations: [

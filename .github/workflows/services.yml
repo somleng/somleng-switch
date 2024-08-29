@@ -61,7 +61,7 @@ jobs:
             {
               "identifier": "switch-services-staging",
               "environment": "staging",
-              "branch": "develop",
+              "branch": "modularize_infrastructure",
               "image_tag": "staging"
             },
             {
@@ -74,8 +74,8 @@ jobs:
           EOF
           )
           matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
-          echo ::set-output name=matrix::{\"include\":$(echo $matrix)}\"
-          echo ::set-output name=matrixLength::$(echo $matrix | jq length)
+          echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+          echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
 
   deploy:
     name: Deploy
@@ -101,15 +101,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Create Sentry release
-        uses: getsentry/action-release@v1
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: somleng
-          SENTRY_PROJECT: somleng-switch-services
-        with:
-          environment: ${{ matrix.environment }}
 
       - name: Configure AWS credentials
         id: aws-login
@@ -160,3 +151,12 @@ jobs:
                                           --image-uri ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
                                           --architectures "arm64" \
                                           --publish
+
+      - name: Create Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: somleng
+          SENTRY_PROJECT: somleng-switch-services
+        with:
+          environment: ${{ matrix.environment }}
