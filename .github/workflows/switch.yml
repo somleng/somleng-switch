@@ -275,6 +275,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     needs:
+      - build
       - deploy
 
     strategy:
