@@ -105,3 +105,7 @@ output "internal_route53_zone" {
 output "target_group" {
   value = aws_lb_target_group.this
 }
+
+output "target_event_bus" {
+  value = var.target_event_bus == null ? var.region.event_bus : var.target_event_bus
+}

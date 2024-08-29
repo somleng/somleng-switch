@@ -27,7 +27,7 @@ resource "aws_route53_record" "client_gateway" {
 
 resource "aws_lambda_invocation" "create_domain" {
   for_each      = aws_route53_record.client_gateway
-  function_name = var.services_function.function_name
+  function_name = var.services_function.this.function_name
 
   input = jsonencode({
     serviceAction = "CreateDomain",

@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "ecs_task_policy" {
   statement {
     effect    = "Allow"
     actions   = ["lambda:InvokeFunction"]
-    resources = [var.services_function.arn]
+    resources = [var.services_function.this.arn]
   }
 }
 

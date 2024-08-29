@@ -22,7 +22,7 @@ module "switch" {
   sip_alternative_port                               = var.sip_alternative_port
   freeswitch_event_socket_port                       = var.freeswitch_event_socket_port
   json_cdr_password_parameter                        = data.aws_ssm_parameter.somleng_services_password
-  services_function                                  = module.services.function
+  services_function                                  = module.services
   internal_route53_zone                              = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_internal_somleng_org
   app_image                                          = data.terraform_remote_state.core.outputs.switch_ecr_repository.repository_uri
   nginx_image                                        = data.terraform_remote_state.core.outputs.nginx_ecr_repository.repository_uri
@@ -67,6 +67,7 @@ module "switch_helium" {
   freeswitch_image                              = module.switch.freeswitch_image
   freeswitch_event_logger_image                 = module.switch.freeswitch_event_logger_image
   internal_route53_zone                         = module.switch.internal_route53_zone
+  target_event_bus                              = module.switch.target_event_bus
 
   providers = {
     aws = aws.helium

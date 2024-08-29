@@ -25,5 +25,5 @@ module "client_gateway" {
   db_username           = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.master_username
   db_host               = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.endpoint
   db_port               = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.port
-  services_function     = module.services.function
+  services_function     = module.services
 }

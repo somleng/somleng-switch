@@ -68,6 +68,10 @@ variable "iam_task_execution_role" {
   default = null
 }
 
+variable "target_event_bus" {
+  default = null
+}
+
 variable "json_cdr_password_parameter" {}
 variable "services_function" {}
 variable "cache_name" {

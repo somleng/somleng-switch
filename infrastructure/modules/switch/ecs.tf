@@ -113,7 +113,7 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name  = "SERVICES_FUNCTION_ARN",
-          value = var.services_function.arn
+          value = var.services_function.this.arn
         },
         {
           name  = "REDIS_URL",
@@ -193,6 +193,10 @@ resource "aws_ecs_task_definition" "this" {
         {
           name  = "AWS_DEFAULT_REGION",
           value = var.region.aws_region
+        },
+        {
+          name  = "SERVICES_FUNCTION_REGION",
+          value = var.services_function.aws_region
         },
         {
           name  = "FS_CACHE_DIRECTORY",
