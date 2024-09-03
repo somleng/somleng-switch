@@ -1,5 +1,5 @@
 default: &default
-  region_data: "<%= ENV.fetch('REGION_DATA', '{}') %>"
+  region_data: '<%= ENV.fetch("REGION_DATA", "{}") %>'
   stub_regions: false
 
 production: &production
