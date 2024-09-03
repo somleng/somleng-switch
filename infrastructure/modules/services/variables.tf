@@ -6,7 +6,6 @@ variable "switch_group" {}
 variable "media_proxy_group" {}
 variable "client_gateway_group" {}
 variable "db_password_parameter" {}
-variable "region_data_parameter" {}
 variable "freeswitch_event_socket_password_parameter" {}
 variable "db_security_group" {}
 variable "freeswitch_event_socket_port" {}

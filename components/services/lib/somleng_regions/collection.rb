@@ -8,6 +8,10 @@ module SomlengRegions
       @regions = regions
     end
 
+    def all
+      regions
+    end
+
     def find_by(attributes)
       regions.find do |region|
         attributes.all? { |key, value| region[key] == value }

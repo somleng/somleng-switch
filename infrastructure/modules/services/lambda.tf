@@ -26,7 +26,7 @@ resource "aws_lambda_function" "this" {
       MEDIA_PROXY_NG_PORT                         = var.media_proxy_ng_port
       DB_PASSWORD_SSM_PARAMETER_NAME              = var.db_password_parameter.name
       APP_MASTER_KEY_SSM_PARAMETER_NAME           = aws_ssm_parameter.application_master_key.name
-      REGION_DATA_SSM_PARAMETER_NAME              = var.region_data_parameter.name
+      REGION_DATA_SSM_PARAMETER_NAME              = data.aws_ssm_parameter.region_data.name
       APP_ENV                                     = var.app_environment
       DB_HOST                                     = var.db_host
       DB_PORT                                     = var.db_port

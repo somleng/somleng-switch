@@ -14,7 +14,6 @@ module "services" {
 
   db_password_parameter                      = data.terraform_remote_state.core_infrastructure.outputs.db_master_password_parameter
   freeswitch_event_socket_password_parameter = data.aws_ssm_parameter.freeswitch_event_socket_password
-  region_data_parameter                      = data.aws_ssm_parameter.region_data
 
   db_security_group            = data.terraform_remote_state.core_infrastructure.outputs.db_security_group
   db_username                  = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.master_username
