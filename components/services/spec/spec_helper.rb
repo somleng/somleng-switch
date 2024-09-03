@@ -32,6 +32,21 @@ ENV["FS_EVENT_SOCKET_PORT"] = "8021"
 ENV["PUBLIC_GATEWAY_DB_NAME"] = "opensips_public_gateway_test"
 ENV["CLIENT_GATEWAY_DB_NAME"] = "opensips_client_gateway_test"
 ENV["MEDIA_PROXY_NG_PORT"] = "2223"
+ENV["REGION_DATA"] = [
+  {
+    "alias" => "hydrogen",
+    "identifier" => "ap-southeast-1",
+    "human_name" => "Asia",
+    "group_id" => 1
+  },
+  {
+    "alias" => "helium",
+    "identifier" => "us-east-1",
+    "human_name" => "North America",
+    "group_id" => 2
+  }
+].to_json
+
 
 require_relative "../app"
 

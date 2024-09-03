@@ -12,6 +12,7 @@ class ECSEventParser
     :public_ip,
     :group,
     :event_type,
+    :region,
     keyword_init: true
   )
 
@@ -33,7 +34,8 @@ class ECSEventParser
       eni_private_ip:,
       private_ip:,
       public_ip:,
-      group:
+      group:,
+      region:
     )
   end
 

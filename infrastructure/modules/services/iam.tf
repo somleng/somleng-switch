@@ -35,7 +35,8 @@ resource "aws_iam_policy" "custom_policy" {
       "Resource": [
         "${var.freeswitch_event_socket_password_parameter.arn}",
         "${aws_ssm_parameter.application_master_key.arn}",
-        "${var.db_password_parameter.arn}"
+        "${var.db_password_parameter.arn}",
+        "${var.region_data_parameter.arn}"
       ]
     },
     {
