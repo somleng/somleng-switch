@@ -2,12 +2,12 @@ class ApplicationRecord
   class << self
     attr_accessor :table_name
 
-    def exists?(database_connection:, **query)
-      where(database_connection:, **query).count.positive?
+    def exists?(**)
+      where(**).count.positive?
     end
 
-    def where(database_connection:, **query)
-      table(database_connection:).where(query)
+    def where(database_connection:, **)
+      table(database_connection:).where(**)
     end
 
     private
