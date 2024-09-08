@@ -21,6 +21,8 @@ reload_opensips_tables () {
 
 create_address_entry () {
   ip="$1"
+  grp="$2"
+  grp="${grp:=1}"
 
-  psql -q $DATABASE_URL -c "INSERT INTO address (ip) VALUES('$ip');"
+  psql -q $DATABASE_URL -c "INSERT INTO address (ip, grp) VALUES('$ip', '$grp');"
 }

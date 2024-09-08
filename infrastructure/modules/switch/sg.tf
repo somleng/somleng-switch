@@ -16,15 +16,13 @@ resource "aws_security_group_rule" "ingress_http" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
-# TODO: this might be wrong for new VPC
-
 resource "aws_security_group_rule" "ingress_freeswitch_event_socket" {
   type              = "ingress"
   to_port           = 8021
   protocol          = "TCP"
   from_port         = 8021
   security_group_id = aws_security_group.this.id
-  cidr_blocks       = [var.region.vpc.vpc_cidr_block]
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "ingress_sip" {
@@ -33,7 +31,7 @@ resource "aws_security_group_rule" "ingress_sip" {
   protocol          = "UDP"
   from_port         = var.sip_port
   security_group_id = aws_security_group.this.id
-  cidr_blocks       = [var.region.vpc.vpc_cidr_block]
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "ingress_sip_alternative" {
@@ -42,7 +40,16 @@ resource "aws_security_group_rule" "ingress_sip_alternative" {
   protocol          = "UDP"
   from_port         = var.sip_alternative_port
   security_group_id = aws_security_group.this.id
-  cidr_blocks       = [var.region.vpc.vpc_cidr_block]
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "icmp" {
+  type              = "ingress"
+  to_port           = -1
+  protocol          = "icmp"
+  from_port         = -1
+  security_group_id = aws_security_group.this.id
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "egress" {

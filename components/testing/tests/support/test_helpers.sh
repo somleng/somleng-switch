@@ -5,8 +5,10 @@ set -e
 create_load_balancer_entry () {
   gateway_identifier="$1"
   port="$2"
+  group_id="$3"
+  group_id="${group_id:=1}"
   psql -q $DATABASE_URL \
-  -c "INSERT INTO load_balancer (group_id, dst_uri, resources, probe_mode) VALUES('1', 'sip:freeswitch:$port', '$gateway_identifier=fs://:secret@freeswitch:8021', 2);"
+  -c "INSERT INTO load_balancer (group_id, dst_uri, resources, probe_mode) VALUES('$group_id', 'sip:freeswitch:$port', '$gateway_identifier=fs://:secret@freeswitch:8021', 2);"
 }
 
 assert_in_file () {
