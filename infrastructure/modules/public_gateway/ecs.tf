@@ -159,6 +159,11 @@ resource "aws_ecs_service" "public_gateway" {
     weight            = 1
   }
 
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
+
   depends_on = [
     aws_iam_role.task_role
   ]
