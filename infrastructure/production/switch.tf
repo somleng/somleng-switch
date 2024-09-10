@@ -20,7 +20,7 @@ module "switch" {
   sip_alternative_port                               = var.sip_alternative_port
   freeswitch_event_socket_port                       = var.freeswitch_event_socket_port
   json_cdr_password_parameter                        = data.aws_ssm_parameter.somleng_services_password
-  services_function                                  = module.services.function
+  services_function                                  = module.services
   internal_route53_zone                              = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_internal_somleng_org
   lb_rule_index                                      = 20
   app_image                                          = data.terraform_remote_state.core.outputs.switch_ecr_repository.repository_uri
@@ -28,10 +28,9 @@ module "switch" {
   freeswitch_image                                   = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository.repository_uri
   freeswitch_event_logger_image                      = data.terraform_remote_state.core.outputs.freeswitch_event_logger_ecr_repository.repository_uri
   external_rtp_ip                                    = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc.nat_public_ips[0]
-  alternative_sip_outbound_ip                        = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
-  alternative_rtp_ip                                 = data.terraform_remote_state.core_infrastructure.outputs.nat_instance_ip
+  alternative_sip_outbound_ip                        = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.nat_instance.public_ip
+  alternative_rtp_ip                                 = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.nat_instance.public_ip
 }
-
 
 resource "aws_route53_record" "switch_legacy" {
   zone_id = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_internal_somleng_org_old.zone_id

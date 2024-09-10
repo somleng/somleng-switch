@@ -11,7 +11,7 @@ module "public_gateway" {
 
   app_image       = data.terraform_remote_state.core.outputs.public_gateway_ecr_repository.repository_uri
   scheduler_image = data.terraform_remote_state.core.outputs.opensips_scheduler_ecr_repository.repository_uri
-  min_tasks       = 1
+  min_tasks       = 0
   max_tasks       = 2
 
   sip_port             = var.sip_port
