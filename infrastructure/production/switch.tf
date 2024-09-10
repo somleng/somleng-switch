@@ -1,7 +1,7 @@
 module "switch" {
   source = "../modules/switch"
 
-  json_cdr_url                                       = "https://api.internal.somleng.org/services/call_data_records"
+  json_cdr_url                                       = "https://api.somleng.org/services/call_data_records"
   target_group_name                                  = "switch-internal"
   cache_name                                         = "somleng-switch-cache"
   cache_security_group_name                          = "switch-efs-cache"
