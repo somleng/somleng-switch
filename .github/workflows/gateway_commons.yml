@@ -18,7 +18,7 @@ jobs:
           [
             {
               "identifier": "gateway-commons-staging",
-              "branch": "develop",
+              "branch": "modularize_infrastructure",
               "image_tag": "staging"
             },
             {
