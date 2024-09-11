@@ -11,18 +11,19 @@ default: &default
   redis_url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } %>
   redis_pool_size: <%= ENV.fetch('DB_POOL') { 250 } %>
   services_function_arn: <%= ENV.fetch('SERVICES_FUNCTION_ARN') { "arn:aws:lambda:ap-southeast-1:12345:function:function-name" } %>
+  services_function_region: <%= ENV.fetch('SERVICES_FUNCTION_REGION') { "ap-southeast-1" } %>
 
 production: &production
   <<: *default
   sentry_dsn: "<%= AppSettings.credentials.fetch('sentry_dsn') %>"
   ahn_core_password: "<%= ENV.fetch('AHN_CORE_PASSWORD') %>"
   ahn_http_password: "<%= AppSettings.credentials.fetch('ahn_http_password') %>"
-  call_platform_host: "https://api.internal.somleng.org"
+  call_platform_host: "https://api.somleng.org"
   call_platform_password: "<%= AppSettings.credentials.fetch('call_platform_password') %>"
 
 staging:
   <<: *production
-  call_platform_host: "https://api-staging.internal.somleng.org"
+  call_platform_host: "https://api-staging.somleng.org"
 
 development: &development
   <<: *default

@@ -25,6 +25,7 @@ module EventHelpers
 
   def build_ecs_event_payload(data = {})
     data = {
+      region: "us-west-2",
       eni_private_ip: "10.0.0.1",
       eni_status: "ATTACHED",
       last_status: "RUNNING",
@@ -51,6 +52,7 @@ module EventHelpers
     payload = JSON.parse(file_fixture("task_state_change_event.json").read)
 
     overrides = {
+      "region" => data.fetch(:region),
       "detail" => {
         "attachments" => data.fetch(:attachments),
         "lastStatus" => data.fetch(:last_status),

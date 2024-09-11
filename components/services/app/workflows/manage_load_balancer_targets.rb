@@ -5,11 +5,11 @@ class ManageLoadBalancerTargets < ApplicationWorkflow
     @ip_address = ip_address
   end
 
-  def create_targets
+  def create_targets(**)
     gateway_databases.each do |database_connection|
       database_connection.transaction do
         load_balancer_targets.each do |load_balancer_target|
-          create_opensips_load_balancer_target!(load_balancer_target:, database_connection:)
+          create_opensips_load_balancer_target!(load_balancer_target:, database_connection:, **)
         end
       end
     end
@@ -26,7 +26,7 @@ class ManageLoadBalancerTargets < ApplicationWorkflow
 
   private
 
-  def create_opensips_load_balancer_target!(load_balancer_target:, database_connection:)
+  def create_opensips_load_balancer_target!(load_balancer_target:, database_connection:, **attributes)
     return if OpenSIPSLoadBalancerTarget.exists?(dst_uri: load_balancer_target.dst_uri, database_connection:)
 
     OpenSIPSLoadBalancerTarget.new(
@@ -34,7 +34,8 @@ class ManageLoadBalancerTargets < ApplicationWorkflow
       resources: load_balancer_target.resources,
       group_id: 1,
       probe_mode: 2,
-      database_connection:
+      database_connection:,
+      **attributes
     ).save!
   end
 

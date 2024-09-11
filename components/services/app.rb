@@ -38,7 +38,7 @@ module App
     def handle_ecs_event(event)
       case event.group
       when ENV.fetch("SWITCH_GROUP")
-        HandleSwitchEvent.call(event:)
+        HandleSwitchEvent.call(event:, regions: SomlengRegion::Region)
       when ENV.fetch("MEDIA_PROXY_GROUP")
         HandleMediaProxyEvent.call(event:)
       when ENV.fetch("CLIENT_GATEWAY_GROUP")

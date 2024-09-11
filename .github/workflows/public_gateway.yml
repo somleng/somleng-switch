@@ -33,7 +33,6 @@ jobs:
               "ecs_service": "public-gateway-staging",
               "ecs_cluster": "somleng-switch-staging",
               "deploy": false
-
             },
             {
               "identifier": "public-gateway",

@@ -15,8 +15,8 @@ media_server="$(dig +short freeswitch)"
 public_gateway="$(dig +short public_gateway)"
 
 reset_db
-create_load_balancer_entry "gw" "5060"
-create_address_entry $(hostname -i)
+create_load_balancer_entry "gw" "5060" "2"
+create_address_entry "$(hostname -i)" "2"
 reload_opensips_tables
 
 sipp -sf $scenario public_gateway:5060 -s 1234 -m 1 -trace_msg > /dev/null

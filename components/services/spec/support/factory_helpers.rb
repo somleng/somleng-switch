@@ -4,8 +4,8 @@ module FactoryHelpers
     client_gateway_database_connection.table(:load_balancer).insert(dst_uri:, resources:)
   end
 
-  def create_address(ip:)
-    public_gateway_database_connection.table(:address).insert(ip:)
+  def create_address(**)
+    public_gateway_database_connection.table(:address).insert(**)
   end
 
   def create_rtpengine_target(socket:)

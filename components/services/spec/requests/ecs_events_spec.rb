@@ -4,6 +4,7 @@ RSpec.describe "Handle ECS Events", :public_gateway, :client_gateway do
   it "handles switch events" do
     stub_env("SWITCH_GROUP" => "service:somleng-switch")
     payload = build_ecs_event_payload(
+      region: "us-east-1",
       group: "service:somleng-switch",
       eni_private_ip: "10.1.1.100",
       eni_status: "ATTACHED",
@@ -14,6 +15,9 @@ RSpec.describe "Handle ECS Events", :public_gateway, :client_gateway do
 
     expect(public_gateway_load_balancer.count).to eq(2)
     expect(client_gateway_load_balancer.count).to eq(2)
+    expect(public_gateway_load_balancer.first).to include(
+      group_id: 2
+    )
   end
 
   it "handles client gateway events" do

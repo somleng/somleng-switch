@@ -6,7 +6,7 @@ RSpec.describe "Handles SQS Message" do
       event_source_arn: "arn:aws:sqs:us-east-2:123456789012:somleng-switch-permissions",
       body: {
         "job_class" => "CreateOpenSIPSPermissionJob",
-        "job_args" => [ "165.57.32.1" ]
+        "job_args" => [ "165.57.32.1", { "group_id" => 1 } ]
       }.to_json
     )
 
@@ -16,7 +16,7 @@ RSpec.describe "Handles SQS Message" do
     expect(result.count).to eq(1)
     expect(result[0]).to include(
       ip: "165.57.32.1",
-      grp: 0,
+      grp: 1,
       mask: 32,
       port: 0,
       proto: "any"
@@ -37,6 +37,27 @@ RSpec.describe "Handles SQS Message" do
     invoke_lambda(payload:)
 
     expect(address.count).to eq(0)
+  end
+
+  it "updates an address message", :public_gateway do
+    create_address(ip: "165.57.32.1", grp: 2)
+
+    payload = build_sqs_message_event_payload(
+      event_source_arn: "arn:aws:sqs:us-east-2:123456789012:somleng-switch-permissions",
+      body: {
+        "job_class" => "UpdateOpenSIPSPermissionJob",
+        "job_args" => [ "165.57.32.1", { "group_id" => 1 } ]
+      }.to_json
+    )
+
+    invoke_lambda(payload:)
+
+    result = address.all
+    expect(result.count).to eq(1)
+    expect(result[0]).to include(
+      ip: "165.57.32.1",
+      grp: 1
+    )
   end
 
   it "adds a subscriber record", :client_gateway do

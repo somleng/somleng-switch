@@ -12,6 +12,7 @@ class ECSEventParser
     :public_ip,
     :group,
     :event_type,
+    :region,
     keyword_init: true
   )
 
@@ -33,7 +34,8 @@ class ECSEventParser
       eni_private_ip:,
       private_ip:,
       public_ip:,
-      group:
+      group:,
+      region:
     )
   end
 
@@ -73,6 +75,7 @@ class ECSEventParser
 
   def private_ip
     return eni_private_ip unless eni_private_ip.nil?
+
     ec2_instance_private_ip unless container_instance_arn.nil?
   end
 
@@ -104,13 +107,19 @@ class ECSEventParser
     detail.fetch("clusterArn")
   end
 
+  def region
+    event.fetch("region")
+  end
+
   def container_instance_details
-    @container_instance_details ||= ecs_client.describe_container_instances(
-      cluster: cluster_arn,
-      container_instances: [
-        container_instance_arn
-      ]
-    ).to_h
+    @container_instance_details ||= with_aws_client(ecs_client, region:) do |client|
+      client.describe_container_instances(
+        cluster: cluster_arn,
+        container_instances: [
+          container_instance_arn
+        ]
+      ).to_h
+    end
   end
 
   def ec2_instance_id
@@ -118,9 +127,11 @@ class ECSEventParser
   end
 
   def ec2_instance_details
-    @ec2_instance_details ||= ec2_client.describe_instances(
-      instance_ids: [ ec2_instance_id ]
-    ).to_h
+    @ec2_instance_details ||= with_aws_client(ec2_client, region:) do |client|
+      client.describe_instances(
+        instance_ids: [ ec2_instance_id ]
+      ).to_h
+    end
   end
 
   def ec2_instance_private_ip
@@ -129,5 +140,10 @@ class ECSEventParser
 
   def ec2_instance_public_ip
     ec2_instance_details.dig(:reservations, 0, :instances, 0, :public_ip_address)
+  end
+
+  def with_aws_client(client, region:)
+    client.config.region = region
+    yield(client)
   end
 end
