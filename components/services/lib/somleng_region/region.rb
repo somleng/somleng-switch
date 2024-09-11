@@ -9,13 +9,15 @@ module SomlengRegion
         identifier: "ap-southeast-1",
         alias: "hydrogen",
         group_id: 1,
-        human_name: "South East Asia (Singapore)"
+        human_name: "South East Asia (Singapore)",
+        nat_ip: "13.250.230.15"
       ),
       new(
         identifier: "us-east-1",
         alias: "helium",
         group_id: 2,
-        human_name: "North America (Virginia, US)"
+        human_name: "North America (N. Virginia, USA)",
+        nat_ip: "52.4.242.134"
       )
     ]
 
