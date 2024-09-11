@@ -72,35 +72,3 @@ module "switch_helium" {
     aws = aws.helium
   }
 }
-
-resource "aws_route53_record" "switch_legacy" {
-  zone_id = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_internal_somleng_org_old.zone_id
-  name    = "switch"
-  type    = "A"
-
-  alias {
-    name                   = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.internal_load_balancer.this.dns_name
-    zone_id                = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.internal_load_balancer.this.zone_id
-    evaluate_target_health = true
-  }
-}
-
-resource "aws_lb_listener_rule" "switch_legacy" {
-  priority     = 30
-  listener_arn = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.internal_load_balancer.https_listener.arn
-
-  action {
-    type             = "forward"
-    target_group_arn = module.switch.target_group.id
-  }
-
-  condition {
-    host_header {
-      values = [aws_route53_record.switch_legacy.fqdn]
-    }
-  }
-
-  lifecycle {
-    ignore_changes = [action]
-  }
-}
