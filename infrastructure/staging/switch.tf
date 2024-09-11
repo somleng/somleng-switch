@@ -36,13 +36,13 @@ module "switch" {
 module "switch_helium" {
   source = "../modules/switch"
 
-  lb_rule_index                                 = 121
   region                                        = data.terraform_remote_state.core_infrastructure.outputs.helium_region
   ecs_cluster                                   = aws_ecs_cluster.helium
   external_rtp_ip                               = data.terraform_remote_state.core_infrastructure.outputs.helium_region.vpc.nat_public_ips[0]
   alternative_sip_outbound_ip                   = data.terraform_remote_state.core_infrastructure.outputs.helium_region.vpc.nat_public_ips[0]
   alternative_rtp_ip                            = data.terraform_remote_state.core_infrastructure.outputs.helium_region.vpc.nat_public_ips[0]
   identifier                                    = module.switch.identifier
+  lb_rule_index                                 = module.switch.lb_rule_index
   app_environment                               = module.switch.app_environment
   json_cdr_url                                  = module.switch.json_cdr_url
   cache_name                                    = module.switch.cache_name

@@ -20,7 +20,7 @@ resource "aws_ecs_cluster" "helium" {
 }
 
 resource "aws_ecs_cluster_capacity_providers" "helium" {
-  cluster_name = aws_ecs_cluster.this.name
+  cluster_name = aws_ecs_cluster.helium.name
 
   capacity_providers = [
     module.switch_helium.capacity_provider.name

@@ -109,3 +109,7 @@ output "target_group" {
 output "target_event_bus" {
   value = var.target_event_bus == null ? var.region.event_bus : var.target_event_bus
 }
+
+output "lb_rule_index" {
+  value = var.lb_rule_index
+}

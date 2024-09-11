@@ -17,4 +17,3 @@ variable "sip_alternative_port" {}
 variable "public_gateway_db_name" {}
 variable "client_gateway_db_name" {}
 variable "media_proxy_ng_port" {}
-variable "ecs_cluster" {}

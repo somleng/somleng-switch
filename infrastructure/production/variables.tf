@@ -10,6 +10,10 @@ variable "app_environment" {
   default = "production"
 }
 
+variable "ecs_cluster_name" {
+  default = "somleng-switch"
+}
+
 variable "switch_identifier" {
   default = "switch"
 }

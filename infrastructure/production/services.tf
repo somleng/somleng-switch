@@ -23,5 +23,4 @@ module "services" {
   sip_alternative_port         = var.sip_alternative_port
   freeswitch_event_socket_port = var.freeswitch_event_socket_port
   media_proxy_ng_port          = module.media_proxy.ng_port
-  ecs_cluster                  = aws_ecs_cluster.this
 }

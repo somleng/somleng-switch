@@ -61,7 +61,7 @@ jobs:
             {
               "identifier": "switch-services-staging",
               "environment": "staging",
-              "branch": "modularize_infrastructure",
+              "branch": "develop",
               "image_tag": "staging"
             },
             {

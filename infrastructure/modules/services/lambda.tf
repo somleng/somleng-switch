@@ -45,30 +45,6 @@ resource "aws_lambda_function" "this" {
   }
 }
 
-resource "aws_lambda_permission" "this" {
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.this.arn
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.this.arn
-}
-
-resource "aws_cloudwatch_event_rule" "this" {
-  name = var.identifier
-
-  event_pattern = jsonencode({
-    source      = ["aws.ecs"],
-    detail-type = ["ECS Task State Change"],
-    detail = {
-      clusterArn = [var.ecs_cluster.arn]
-    }
-  })
-}
-
-resource "aws_cloudwatch_event_target" "this" {
-  arn  = aws_lambda_function.this.arn
-  rule = aws_cloudwatch_event_rule.this.id
-}
-
 resource "aws_lambda_event_source_mapping" "sqs" {
   event_source_arn                   = aws_sqs_queue.this.arn
   function_name                      = aws_lambda_function.this.arn
