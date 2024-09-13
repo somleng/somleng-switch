@@ -1,10 +1,9 @@
 ARG FUNCTION_DIR="/function"
 ARG RUBY_VERSION=3.3
-FROM public.ecr.aws/docker/library/ruby:$RUBY_VERSION-alpine AS build-image
+FROM public.ecr.aws/lambda/ruby:$RUBY_VERSION AS build-image
 
-RUN apk update && \
-    apk upgrade && \
-    apk add --update --no-cache build-base postgresql-dev
+RUN dnf update && \
+    dnf -y install postgresql-devel openssl-devel gcc make
 
 RUN gem install bundler
 
@@ -28,9 +27,9 @@ COPY app/ ${FUNCTION_DIR}/app/
 COPY config/ ${FUNCTION_DIR}/config/
 COPY lib/ ${FUNCTION_DIR}/lib/
 
-#############################
+# #############################
 
-FROM public.ecr.aws/docker/library/ruby:$RUBY_VERSION-alpine
+FROM public.ecr.aws/lambda/ruby:$RUBY_VERSION
 
 ARG FUNCTION_DIR
 WORKDIR ${FUNCTION_DIR}
@@ -38,13 +37,9 @@ WORKDIR ${FUNCTION_DIR}
 ENV BUNDLE_APP_CONFIG="${FUNCTION_DIR}/.bundle"
 COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
 
-RUN apk update && \
-    apk upgrade && \
-    apk add --update --no-cache postgresql-dev && \
-    gem install bundler && \
-    gem install aws_lambda_ric
+RUN dnf update && \
+    dnf -y install postgresql-devel
 
 ENV RUBY_YJIT_ENABLE=true
 
-ENTRYPOINT [ "/usr/local/bundle/bin/aws_lambda_ric" ]
 CMD [ "app.App::Handler.process" ]

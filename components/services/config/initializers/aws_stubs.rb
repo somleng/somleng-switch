@@ -1,3 +1,5 @@
+require "aws-sdk-core"
+
 if %w[development test].include?(AppSettings.env)
   Aws.config[:ssm] = {
     stub_responses: {

@@ -2,6 +2,7 @@ require "yaml"
 require "tempfile"
 require "openssl"
 require "base64"
+require "pathname"
 
 module EncryptedCredentials
   class EncryptedFile

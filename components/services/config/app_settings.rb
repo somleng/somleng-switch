@@ -1,5 +1,6 @@
 require "yaml"
 require "erb"
+require "pathname"
 
 class AppSettings
   DEFAULT_SETTINGS_PATH = Pathname(File.expand_path("app_settings.yml", __dir__))
