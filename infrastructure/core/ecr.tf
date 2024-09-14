@@ -117,14 +117,6 @@ resource "aws_ecr_repository" "s3_mpeg" {
   }
 }
 
-resource "aws_ecr_repository" "services_legacy" {
-  name = "somleng-switch-services"
-
-  image_scanning_configuration {
-    scan_on_push = true
-  }
-}
-
 resource "aws_ecr_repository" "services" {
   name = "switch-services"
 

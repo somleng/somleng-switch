@@ -72,7 +72,7 @@ jobs:
             {
               "identifier": "switch-services",
               "environment": "production",
-              "branch": "use_official_aws_lambda_images",
+              "branch": "master",
               "friendly_image_tag": "latest",
               "image_tag": "prod-${{ github.sha }}"
             }
