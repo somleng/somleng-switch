@@ -65,14 +65,14 @@ jobs:
             {
               "identifier": "switch-services-staging",
               "environment": "staging",
-              "branch": "use_official_aws_lambda_images",
+              "branch": "develop",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}"
             },
             {
               "identifier": "switch-services",
               "environment": "production",
-              "branch": "master",
+              "branch": "use_official_aws_lambda_images",
               "friendly_image_tag": "latest",
               "image_tag": "prod-${{ github.sha }}"
             }
