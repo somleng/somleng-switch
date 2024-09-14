@@ -14,7 +14,6 @@ jobs:
     outputs:
       matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
       matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
-      packageMatrix: ${{ steps.set-deployment-matrix.outputs.packageMatrix }}
 
     defaults:
       run:
@@ -83,7 +82,6 @@ jobs:
           matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
           echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
           echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
-          echo "packageMatrix={\"platform\":[\"arm64\"],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
 
   build-packages:
     name: Build Packages
@@ -91,8 +89,7 @@ jobs:
     if: needs.build.outputs.matrixLength > 0
 
     strategy:
-      matrix: ${{fromJSON(needs.build.outputs.packageMatrix)}}
-      fail-fast: false
+      matrix: ${{fromJson(needs.build.outputs.matrix)}}
 
     needs:
       - build
@@ -111,7 +108,7 @@ jobs:
       - name: Build image
         uses: aws-actions/aws-codebuild-run-build@v1
         with:
-          project-name: somleng-switch-${{ matrix.platform }}
+          project-name: somleng-switch-arm64
           buildspec-override:   |
             version: 0.2
             phases:
@@ -122,7 +119,7 @@ jobs:
                       cd components/services
                       aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
                       export DOCKER_BUILDKIT=1
-                      docker buildx build --cache-from ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --tag ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --push .
+                      docker buildx build --cache-from ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --tag ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --tag ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}-${{ matrix.platform }} --push .
                       docker buildx imagetools create -t ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} -t ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }} ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64
 
   publish_images:
@@ -207,7 +204,7 @@ jobs:
       - name: Deploy Lambda
         run: |
           aws lambda update-function-code --function-name ${{ matrix.identifier }} \
-                                          --image-uri ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }} \
+                                          --image-uri ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}-arm64 \
                                           --architectures "arm64" \
                                           --publish
 
