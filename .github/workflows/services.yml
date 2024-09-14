@@ -166,7 +166,7 @@ jobs:
         run: |
           docker image pull ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64
           docker tag ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64 ${{ env.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64
-          docker push ${{ env.GHCR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ matrix.friendly_image_tag }}-arm64
+          docker push ${{ env.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64
           docker buildx imagetools create -t ${{ env.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} "${{ env.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64"
 
   deploy:
@@ -207,7 +207,7 @@ jobs:
       - name: Deploy Lambda
         run: |
           aws lambda update-function-code --function-name ${{ matrix.identifier }} \
-                                          --image-uri ${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }} \
+                                          --image-uri ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }} \
                                           --architectures "arm64" \
                                           --publish
 
