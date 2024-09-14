@@ -5,7 +5,7 @@ env:
   CI: true
   ECR_REGISTRY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com
   GHCR_REGISTRY: ghcr.io/somleng
-  REPOSITORY_NAME: somleng-switch-services
+  REPOSITORY_NAME: switch-services
 
 jobs:
   build:

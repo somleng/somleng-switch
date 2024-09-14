@@ -1,92 +1,92 @@
 resource "aws_ecrpublic_repository" "switch" {
   repository_name = "somleng-switch"
-  provider = aws.us-east-1
+  provider        = aws.us-east-1
 
   catalog_data {
-    about_text        = "Somleng Switch"
-    architectures     = ["Linux"]
-    description       = "SomlengSWITCH is the switch layer for Somleng. It includes an open source TwiML interpreter"
+    about_text    = "Somleng Switch"
+    architectures = ["Linux"]
+    description   = "SomlengSWITCH is the switch layer for Somleng. It includes an open source TwiML interpreter"
   }
 }
 
 resource "aws_ecrpublic_repository" "nginx" {
   repository_name = "somleng-switch-nginx"
-  provider = aws.us-east-1
+  provider        = aws.us-east-1
 
   catalog_data {
-    about_text        = "Somleng Switch Nginx"
-    architectures     = ["Linux"]
+    about_text    = "Somleng Switch Nginx"
+    architectures = ["Linux"]
   }
 }
 
 resource "aws_ecrpublic_repository" "freeswitch" {
   repository_name = "somleng-switch-freeswitch"
-  provider = aws.us-east-1
+  provider        = aws.us-east-1
 
   catalog_data {
-    about_text        = "Somleng Switch FreeSWITCH"
-    architectures     = ["Linux"]
-    description       = "FreeSWITCH configuration optimized for Somleng"
+    about_text    = "Somleng Switch FreeSWITCH"
+    architectures = ["Linux"]
+    description   = "FreeSWITCH configuration optimized for Somleng"
   }
 }
 
 resource "aws_ecrpublic_repository" "freeswitch_event_logger" {
   repository_name = "somleng-switch-freeswitch-event-logger"
-  provider = aws.us-east-1
+  provider        = aws.us-east-1
 
   catalog_data {
-    about_text        = "Somleng Switch FreeSWITCH Event Logger"
-    architectures     = ["Linux"]
+    about_text    = "Somleng Switch FreeSWITCH Event Logger"
+    architectures = ["Linux"]
   }
 }
 
 resource "aws_ecrpublic_repository" "public_gateway" {
   repository_name = "public-gateway"
-  provider = aws.us-east-1
+  provider        = aws.us-east-1
 
   catalog_data {
-    about_text        = "Somleng Public Gateway"
-    architectures     = ["Linux"]
+    about_text    = "Somleng Public Gateway"
+    architectures = ["Linux"]
   }
 }
 
 resource "aws_ecrpublic_repository" "client_gateway" {
   repository_name = "client-gateway"
-  provider = aws.us-east-1
+  provider        = aws.us-east-1
 
   catalog_data {
-    about_text        = "Somleng Client Gateway"
-    architectures     = ["Linux"]
+    about_text    = "Somleng Client Gateway"
+    architectures = ["Linux"]
   }
 }
 
 resource "aws_ecrpublic_repository" "media_proxy" {
   repository_name = "media-proxy"
-  provider = aws.us-east-1
+  provider        = aws.us-east-1
 
   catalog_data {
-    about_text        = "Somleng Media Proxy"
-    architectures     = ["Linux"]
+    about_text    = "Somleng Media Proxy"
+    architectures = ["Linux"]
   }
 }
 
 resource "aws_ecrpublic_repository" "opensips_scheduler" {
   repository_name = "opensips-scheduler"
-  provider = aws.us-east-1
+  provider        = aws.us-east-1
 
   catalog_data {
-    about_text        = "Somleng OpenSIPS Scheduler"
-    architectures     = ["Linux"]
+    about_text    = "Somleng OpenSIPS Scheduler"
+    architectures = ["Linux"]
   }
 }
 
 resource "aws_ecrpublic_repository" "gateway" {
   repository_name = "gateway"
-  provider = aws.us-east-1
+  provider        = aws.us-east-1
 
   catalog_data {
-    about_text        = "Somleng Gateway"
-    architectures     = ["Linux"]
+    about_text    = "Somleng Gateway"
+    architectures = ["Linux"]
 
     usage_text = <<EOF
   # How to use this image
@@ -117,10 +117,66 @@ resource "aws_ecr_repository" "s3_mpeg" {
   }
 }
 
-resource "aws_ecr_repository" "services" {
+resource "aws_ecr_repository" "services_legacy" {
   name = "somleng-switch-services"
 
   image_scanning_configuration {
     scan_on_push = true
   }
+}
+
+resource "aws_ecr_repository" "services" {
+  name = "switch-services"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
+resource "aws_ecr_lifecycle_policy" "services" {
+  repository = aws_ecr_repository.services.name
+
+  policy = jsonencode({
+    rules = [
+      {
+        rulePriority = 1
+        description  = "Expire untagged images"
+        selection = {
+          tagStatus   = "untagged"
+          countType   = "sinceImagePushed"
+          countUnit   = "days"
+          countNumber = 1
+        }
+        action = {
+          type = "expire"
+        }
+      },
+      {
+        rulePriority = 2
+        description  = "Expire old production images",
+        selection = {
+          tagStatus     = "tagged"
+          tagPrefixList = ["prod"]
+          countType     = "imageCountMoreThan"
+          countNumber   = 5
+        }
+        action = {
+          type = "expire"
+        }
+      },
+      {
+        rulePriority = 3
+        description  = "Expire old staging images",
+        selection = {
+          tagStatus     = "tagged"
+          tagPrefixList = ["stag"]
+          countType     = "imageCountMoreThan"
+          countNumber   = 5
+        }
+        action = {
+          type = "expire"
+        }
+      }
+    ]
+  })
 }
