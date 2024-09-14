@@ -4,5 +4,4 @@ terraform {
       source = "kreuzwerker/docker"
     }
   }
-  required_version = ">= 0.13"
 }
