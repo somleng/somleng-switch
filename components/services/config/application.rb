@@ -1,3 +1,6 @@
+require "bundler"
+Bundler.require
+
 require_relative "app_settings"
 require_relative "initializers/aws_stubs"
 
