@@ -1,43 +1,47 @@
 resource "aws_iam_role" "this" {
   name = var.identifier
 
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
       },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
+    ]
+  })
 }
 
 resource "aws_iam_policy" "this" {
   name = var.identifier
 
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:GetObject",
-        "s3:PutObject"
-      ],
-      "Resource": [
-        "${var.recordings_bucket.arn}/*"
-      ]
-    }
-  ]
-}
-EOF
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ssm:GetParameters",
+        ]
+        Effect = "Allow"
+        Resource = [
+          aws_ssm_parameter.application_master_key.arn,
+        ]
+      },
+      {
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject"
+        ]
+        Effect = "Allow"
+        Resource = [
+          "${var.recordings_bucket.arn}/*"
+        ]
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "aws_lambda_basic_execution_role" {
