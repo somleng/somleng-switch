@@ -32,7 +32,7 @@ module EncryptedCredentials
 
         system("#{ENV['EDITOR']} #{tmp_file.path}")
 
-        updated_contents = tmp_file.read
+        updated_contents = File.read(tmp_file)
         encrypted_content = encrypt(updated_contents)
 
         IO.binwrite("#{file_path}.tmp", Base64.strict_encode64(encrypted_content))
