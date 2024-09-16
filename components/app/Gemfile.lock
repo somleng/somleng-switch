@@ -182,7 +182,7 @@ GEM
       multi_json (~> 1.14)
     method_source (1.1.0)
     minitest (5.25.1)
-    mock_redis (0.44.0)
+    mock_redis (0.45.0)
     multi_json (1.15.0)
     mustermann (3.0.3)
       ruby2_keywords (~> 0.0.1)
