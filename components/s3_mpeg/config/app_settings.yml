@@ -1,0 +1,15 @@
+default: &default
+
+production: &production
+  <<: *default
+  sentry_dsn: "<%= AppSettings.credentials.fetch('sentry_dsn') %>"
+
+staging:
+  <<: *production
+
+development: &development
+  <<: *default
+  stub_regions: true
+
+test:
+  <<: *development

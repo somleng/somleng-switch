@@ -6,6 +6,13 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem "aws-sdk-s3"
 gem "ox" # XML parser. required by aws-sdk-s3
+gem "stackprof"
+gem "sentry-ruby"
+gem "base64"
+
+group :development do
+  gem "rake"
+end
 
 group :test do
   gem "rspec"

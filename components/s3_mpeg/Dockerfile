@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.7-labs
+
 ARG FUNCTION_DIR="/app"
 ARG RUBY_VERSION=3.3
 FROM public.ecr.aws/docker/library/ruby:$RUBY_VERSION-alpine AS build-image
@@ -24,6 +26,8 @@ RUN bundle install --jobs 20 --retry 5
 RUN rm -rf vendor/bundle/ruby/*/cache/ && find vendor/ -name "*.o" -delete && find vendor/ -name "*.c"
 
 COPY app.rb ${FUNCTION_DIR}
+COPY --exclude=*.key config/ ${FUNCTION_DIR}/config/
+COPY lib/ ${FUNCTION_DIR}/lib/
 
 #############################
 
@@ -43,5 +47,5 @@ RUN apk update && \
 
 ENV RUBY_YJIT_ENABLE=true
 
-ENTRYPOINT [ "/usr/local/bundle/bin/aws_lambda_ric" ]
-CMD [ "app.App::Handler.process" ]
+# ENTRYPOINT [ "/usr/local/bundle/bin/aws_lambda_ric" ]
+# CMD [ "app.App::Handler.process" ]

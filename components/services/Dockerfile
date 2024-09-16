@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.7-labs
+
 ARG FUNCTION_DIR="/function"
 ARG RUBY_VERSION=3.3
 FROM public.ecr.aws/lambda/ruby:$RUBY_VERSION AS build-image
@@ -22,7 +24,7 @@ RUN rm -rf vendor/bundle/ruby/*/cache/ && find vendor/ -name "*.o" -delete && fi
 
 COPY app.rb ${FUNCTION_DIR}
 COPY app/ ${FUNCTION_DIR}/app/
-COPY config/ ${FUNCTION_DIR}/config/
+COPY --exclude=*.key config/ ${FUNCTION_DIR}/config/
 COPY lib/ ${FUNCTION_DIR}/lib/
 
 # #############################
