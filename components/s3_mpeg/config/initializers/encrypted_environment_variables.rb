@@ -1,0 +1,4 @@
+require "encrypted_credentials/encrypted_environment_variables"
+
+encrypted_environment_variables = EncryptedCredentials::EncryptedEnvironmentVariables.new
+encrypted_environment_variables.decrypt

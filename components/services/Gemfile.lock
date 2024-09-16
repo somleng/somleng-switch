@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/somleng/encrypted_credentials.git
+  revision: 7b4e4b4244f86f9aaa8340684fb4f7a8b2134b55
+  specs:
+    encrypted_credentials (0.1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -70,6 +76,7 @@ DEPENDENCIES
   aws-sdk-ecs
   aws-sdk-ssm
   base64
+  encrypted_credentials!
   ox
   pg
   pry

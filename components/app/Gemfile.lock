@@ -42,6 +42,12 @@ GIT
       virtus (~> 1.0)
 
 GIT
+  remote: https://github.com/somleng/encrypted_credentials.git
+  revision: 7b4e4b4244f86f9aaa8340684fb4f7a8b2134b55
+  specs:
+    encrypted_credentials (0.1.0)
+
+GIT
   remote: https://github.com/somleng/reel-rack.git
   revision: 2cc60ca964efc837ac16616a5a972275b43c270f
   branch: develop
@@ -346,6 +352,7 @@ DEPENDENCIES
   aws-sdk-polly
   blather!
   connection_pool
+  encrypted_credentials!
   faraday
   http
   mock_redis
