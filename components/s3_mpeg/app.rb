@@ -19,6 +19,14 @@ module App
     end
 
     def process
+      begin
+        1 / 0
+      rescue ZeroDivisionError => exception
+        Sentry.capture_exception(exception)
+      end
+
+      Sentry.capture_message("test message")
+
       tempfile do |raw_file|
         s3_client.get_object(bucket:, key:, response_target: raw_file.path)
 

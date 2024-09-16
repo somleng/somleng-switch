@@ -1,18 +1,12 @@
 # syntax=docker/dockerfile:1.7-labs
 
-ARG FUNCTION_DIR="/function"
 ARG RUBY_VERSION=3.3
 FROM public.ecr.aws/lambda/ruby:$RUBY_VERSION AS build-image
 
 RUN dnf update && \
     dnf -y install postgresql-devel openssl-devel gcc make
 
-ARG FUNCTION_DIR
-RUN mkdir -p ${FUNCTION_DIR}
-COPY Gemfile Gemfile.lock ${FUNCTION_DIR}/
-WORKDIR ${FUNCTION_DIR}
-
-ENV BUNDLE_APP_CONFIG="${FUNCTION_DIR}/.bundle"
+COPY Gemfile Gemfile.lock ${LAMBDA_TASK_ROOT}/
 
 RUN gem install bundler && \
     bundle config --local deployment true && \
@@ -22,20 +16,16 @@ RUN gem install bundler && \
 
 RUN rm -rf vendor/bundle/ruby/*/cache/ && find vendor/ -name "*.o" -delete && find vendor/ -name "*.c"
 
-COPY app.rb ${FUNCTION_DIR}
-COPY app/ ${FUNCTION_DIR}/app/
-COPY --exclude=*.key config/ ${FUNCTION_DIR}/config/
-COPY lib/ ${FUNCTION_DIR}/lib/
+COPY app.rb ${LAMBDA_TASK_ROOT}/
+COPY app/ ${LAMBDA_TASK_ROOT}/app/
+COPY --exclude=*.key config/ ${LAMBDA_TASK_ROOT}/config/
+COPY lib/ ${LAMBDA_TASK_ROOT}/lib/
 
 # #############################
 
 FROM public.ecr.aws/lambda/ruby:$RUBY_VERSION
 
-ARG FUNCTION_DIR
-WORKDIR ${FUNCTION_DIR}
-
-ENV BUNDLE_APP_CONFIG="${FUNCTION_DIR}/.bundle"
-COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
+COPY --from=build-image ${LAMBDA_TASK_ROOT} ${LAMBDA_TASK_ROOT}
 
 RUN dnf update && \
     dnf -y install postgresql-devel
