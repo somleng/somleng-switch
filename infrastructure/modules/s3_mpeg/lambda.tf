@@ -7,6 +7,13 @@ resource "aws_lambda_function" "this" {
   timeout       = 300
   memory_size   = 1024
 
+  environment {
+    variables = {
+      APP_MASTER_KEY_SSM_PARAMETER_NAME = aws_ssm_parameter.application_master_key.name
+      APP_ENV                           = var.app_environment
+    }
+  }
+
   depends_on = [
     aws_iam_role_policy_attachment.this,
     aws_cloudwatch_log_group.this

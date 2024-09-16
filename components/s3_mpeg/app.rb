@@ -2,6 +2,8 @@ require "aws-sdk-s3"
 require "open3"
 require "securerandom"
 
+require_relative "config/application"
+
 module App
   class Handler
     attr_reader :event, :context, :s3_client

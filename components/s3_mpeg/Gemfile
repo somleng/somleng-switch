@@ -5,6 +5,7 @@ source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem "aws-sdk-s3"
+gem "aws-sdk-ssm"
 gem "ox" # XML parser. required by aws-sdk-s3
 gem "stackprof"
 gem "sentry-ruby"

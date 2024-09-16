@@ -48,7 +48,7 @@ jobs:
             {
               "identifier": "s3-mpeg-staging",
               "environment": "staging",
-              "branch": "develop",
+              "branch": "fix_s3mpeg_lambda",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}"
             },
