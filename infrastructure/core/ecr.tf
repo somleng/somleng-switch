@@ -1,49 +1,3 @@
-locals {
-  lifecycle_policy = jsonencode({
-    rules = [
-      {
-        rulePriority = 1
-        description  = "Expire untagged images"
-        selection = {
-          tagStatus   = "untagged"
-          countType   = "sinceImagePushed"
-          countUnit   = "days"
-          countNumber = 1
-        }
-        action = {
-          type = "expire"
-        }
-      },
-      {
-        rulePriority = 2
-        description  = "Expire old production images",
-        selection = {
-          tagStatus     = "tagged"
-          tagPrefixList = ["prod"]
-          countType     = "imageCountMoreThan"
-          countNumber   = 5
-        }
-        action = {
-          type = "expire"
-        }
-      },
-      {
-        rulePriority = 3
-        description  = "Expire old staging images",
-        selection = {
-          tagStatus     = "tagged"
-          tagPrefixList = ["stag"]
-          countType     = "imageCountMoreThan"
-          countNumber   = 5
-        }
-        action = {
-          type = "expire"
-        }
-      }
-    ]
-  })
-}
-
 resource "aws_ecrpublic_repository" "switch" {
   repository_name = "somleng-switch"
   provider        = aws.us-east-1
@@ -155,30 +109,32 @@ resource "aws_ecrpublic_repository" "gateway" {
   }
 }
 
-resource "aws_ecr_repository" "s3_mpeg" {
-  name = "s3-mpeg"
-
-  image_scanning_configuration {
-    scan_on_push = true
-  }
+module "app_ecr_repository" {
+  source = "../modules/ecr_repository"
+  name   = "switch-app"
 }
 
-resource "aws_ecr_lifecycle_policy" "s3_mpeg" {
-  repository = aws_ecr_repository.s3_mpeg.name
-
-  policy = local.lifecycle_policy
+module "webserver_ecr_repository" {
+  source = "../modules/ecr_repository"
+  name   = "switch-webserver"
 }
 
-resource "aws_ecr_repository" "services" {
-  name = "switch-services"
-
-  image_scanning_configuration {
-    scan_on_push = true
-  }
+module "freeswitch_ecr_repository" {
+  source = "../modules/ecr_repository"
+  name   = "freeswitch"
 }
 
-resource "aws_ecr_lifecycle_policy" "services" {
-  repository = aws_ecr_repository.services.name
+module "freeswitch_event_logger_ecr_repository" {
+  source = "../modules/ecr_repository"
+  name   = "freeswitch-events"
+}
 
-  policy = local.lifecycle_policy
+module "s3_mpeg_ecr_repository" {
+  source = "../modules/ecr_repository"
+  name   = "s3-mpeg"
+}
+
+module "services_ecr_repository" {
+  source = "../modules/ecr_repository"
+  name   = "switch-services"
 }
