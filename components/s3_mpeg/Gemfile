@@ -6,6 +6,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem "aws-sdk-s3"
 gem "aws-sdk-ssm"
+gem "encrypted_credentials", github: "somleng/encrypted_credentials"
 gem "ox" # XML parser. required by aws-sdk-s3
 gem "stackprof"
 gem "sentry-ruby"

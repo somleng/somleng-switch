@@ -8,6 +8,7 @@ gem "aws-sdk-ec2"
 gem "aws-sdk-ecs"
 gem "aws-sdk-ssm"
 gem "base64"
+gem "encrypted_credentials", github: "somleng/encrypted_credentials"
 gem "ox" # XML parser. required by aws-sdk-s3
 gem "pg"
 gem "sentry-ruby"

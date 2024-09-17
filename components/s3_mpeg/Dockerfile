@@ -4,7 +4,7 @@ ARG RUBY_VERSION=3.3
 FROM public.ecr.aws/lambda/ruby:$RUBY_VERSION AS build-image
 
 RUN dnf update && \
-    dnf -y install openssl-devel gcc make tar xz wget && \
+    dnf -y install git openssl-devel gcc make tar xz wget && \
     cd /usr/local/bin/ && \
     wget https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linuxarm64-gpl.tar.xz && \
     tar -xf ffmpeg-master-latest-linuxarm64-gpl.tar.xz && \
@@ -22,7 +22,6 @@ RUN rm -rf vendor/bundle/ruby/*/cache/ && find vendor/ -name "*.o" -delete && fi
 
 COPY app.rb ${LAMBDA_TASK_ROOT}/
 COPY --exclude=*.key config/ ${LAMBDA_TASK_ROOT}/config/
-COPY lib/ ${LAMBDA_TASK_ROOT}/lib/
 
 #############################
 

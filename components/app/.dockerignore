@@ -2,6 +2,7 @@
 .github
 .bundle
 coverage
+**/*.key
 deploy
 docs
 docker
