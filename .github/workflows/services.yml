@@ -65,7 +65,7 @@ jobs:
             {
               "identifier": "switch-services-staging",
               "environment": "staging",
-              "branch": "develop",
+              "branch": "refactor_encrypted_credentials",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}"
             },
