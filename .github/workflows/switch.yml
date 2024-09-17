@@ -61,7 +61,7 @@ jobs:
             {
               "identifier": "switch-staging",
               "environment": "staging",
-              "branch": "refactor_encrypted_credentials",
+              "branch": "develop",
               "image_tag": "staging",
               "ecs_service": "switch-staging",
               "ecs_cluster": "somleng-switch-staging"
