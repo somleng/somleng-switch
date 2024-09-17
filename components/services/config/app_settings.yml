@@ -4,7 +4,7 @@ default: &default
 
 production: &production
   <<: *default
-  sentry_dsn: "<%= AppSettings.credentials.fetch('sentry_dsn') %>"
+  sentry_dsn: "<%= app_settings.credentials.fetch('sentry_dsn') %>"
 
 staging:
   <<: *production
