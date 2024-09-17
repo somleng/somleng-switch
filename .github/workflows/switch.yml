@@ -1,6 +1,15 @@
 on: push
 name: Switch
 
+env:
+  CI: true
+  ECR_REGISTRY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com
+  GHCR_REGISTRY: ghcr.io/somleng
+  APP_REPOSITORY_NAME: switch-app
+  WEBSERVER_REPOSITORY_NAME: switch-webserver
+  FREESWITCH_REPOSITORY_NAME: freeswitch
+  FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME: freeswitch-events
+
 jobs:
   build:
     name: Build
@@ -9,19 +18,13 @@ jobs:
       matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
       matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
       deployMatrix: ${{ steps.set-deployment-matrix.outputs.deployMatrix }}
+
     defaults:
       run:
         working-directory: components/app
 
     env:
       AHN_ENV: test
-      CI: true
-      ECR_REGISTRY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com
-      GHCR_REGISTRY: ghcr.io/somleng
-      APP_REPOSITORY_NAME: switch-app
-      WEBSERVER_REPOSITORY_NAME: switch-webserver
-      FREESWITCH_REPOSITORY_NAME: freeswitch
-      FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME: freeswitch-events
 
     steps:
       - name: Checkout
