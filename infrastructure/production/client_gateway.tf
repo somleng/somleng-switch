@@ -11,8 +11,8 @@ module "client_gateway" {
   ecs_cluster  = aws_ecs_cluster.this
   route53_zone = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_somleng_org
 
-  app_image       = data.terraform_remote_state.core.outputs.client_gateway_ecr_repository.repository_uri
-  scheduler_image = data.terraform_remote_state.core.outputs.opensips_scheduler_ecr_repository.repository_uri
+  app_image       = data.terraform_remote_state.core.outputs.client_gateway_ecr_repository.this.repository_url
+  scheduler_image = data.terraform_remote_state.core.outputs.gateway_scheduler_ecr_repository.this.repository_url
 
   db_security_group = data.terraform_remote_state.core_infrastructure.outputs.db_security_group
   sip_port          = var.sip_port

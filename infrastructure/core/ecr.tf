@@ -67,6 +67,26 @@ resource "aws_ecrpublic_repository" "gateway" {
   }
 }
 
+module "public_gateway_ecr_repository" {
+  source = "../modules/ecr_repository"
+  name   = "public-gateway"
+}
+
+module "client_gateway_ecr_repository" {
+  source = "../modules/ecr_repository"
+  name   = "client-gateway"
+}
+
+module "media_proxy_ecr_repository" {
+  source = "../modules/ecr_repository"
+  name   = "media-proxy"
+}
+
+module "gateway_scheduler_ecr_repository" {
+  source = "../modules/ecr_repository"
+  name   = "gateway-scheduler"
+}
+
 module "app_ecr_repository" {
   source = "../modules/ecr_repository"
   name   = "switch-app"

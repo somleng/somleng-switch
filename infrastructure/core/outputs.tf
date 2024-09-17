@@ -1,17 +1,17 @@
 output "public_gateway_ecr_repository" {
-  value = aws_ecrpublic_repository.public_gateway
+  value = module.public_gateway_ecr_repository
 }
 
 output "client_gateway_ecr_repository" {
-  value = aws_ecrpublic_repository.client_gateway
+  value = module.client_gateway_ecr_repository
 }
 
 output "media_proxy_ecr_repository" {
-  value = aws_ecrpublic_repository.media_proxy
+  value = module.media_proxy_ecr_repository
 }
 
-output "opensips_scheduler_ecr_repository" {
-  value = aws_ecrpublic_repository.opensips_scheduler
+output "gateway_scheduler_ecr_repository" {
+  value = module.gateway_scheduler_ecr_repository
 }
 
 output "app_ecr_repository" {

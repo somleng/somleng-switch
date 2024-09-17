@@ -7,7 +7,7 @@ module "media_proxy" {
   aws_region  = var.aws_default_region
   vpc         = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc
   ecs_cluster = aws_ecs_cluster.this
-  app_image   = data.terraform_remote_state.core.outputs.media_proxy_ecr_repository.repository_uri
+  app_image   = data.terraform_remote_state.core.outputs.media_proxy_ecr_repository.this.repository_url
 
   min_tasks = 0
   max_tasks = 2

@@ -7,5 +7,5 @@ module "media_proxy" {
 
   vpc         = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc
   ecs_cluster = aws_ecs_cluster.this
-  app_image   = data.terraform_remote_state.core.outputs.media_proxy_ecr_repository.repository_uri
+  app_image   = data.terraform_remote_state.core.outputs.media_proxy_ecr_repository.this.repository_url
 }
