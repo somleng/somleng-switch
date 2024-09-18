@@ -21,7 +21,7 @@ jobs:
           [
             {
               "identifier": "media-proxy-staging",
-              "branch": "ecr_private_for_gateways",
+              "branch": "develop",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "media-proxy-staging",
