@@ -1,0 +1,74 @@
+name: Cleanup Packages
+
+on: push
+
+jobs:
+  cleanup_packages:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: 's3-mpeg'
+          package-type: 'container'
+          delete-only-untagged-versions: 'true'
+
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'switch-services'
+          package-type: 'container'
+          delete-only-untagged-versions: 'true'
+
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'media-proxy'
+          package-type: 'container'
+          delete-only-untagged-versions: 'true'
+
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'client-gateway'
+          package-type: 'container'
+          delete-only-untagged-versions: 'true'
+
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'public-gateway'
+          package-type: 'container'
+          delete-only-untagged-versions: 'true'
+
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'gateway'
+          package-type: 'container'
+          delete-only-untagged-versions: 'true'
+
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'gateway-scheduler'
+          package-type: 'container'
+          delete-only-untagged-versions: 'true'
+
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'switch-app'
+          package-type: 'container'
+          delete-only-untagged-versions: 'true'
+
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'switch-webserver'
+          package-type: 'container'
+          delete-only-untagged-versions: 'true'
+
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'freeswitch'
+          package-type: 'container'
+          delete-only-untagged-versions: 'true'
+
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'freeswitch-events'
+          package-type: 'container'
+          delete-only-untagged-versions: 'true'
