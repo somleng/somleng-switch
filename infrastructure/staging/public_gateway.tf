@@ -9,8 +9,8 @@ module "public_gateway" {
 
   ecs_cluster = aws_ecs_cluster.this
 
-  app_image       = data.terraform_remote_state.core.outputs.public_gateway_ecr_repository.repository_uri
-  scheduler_image = data.terraform_remote_state.core.outputs.opensips_scheduler_ecr_repository.repository_uri
+  app_image       = data.terraform_remote_state.core.outputs.public_gateway_ecr_repository.this.repository_url
+  scheduler_image = data.terraform_remote_state.core.outputs.gateway_scheduler_ecr_repository.this.repository_url
   min_tasks       = 0
   max_tasks       = 2
 

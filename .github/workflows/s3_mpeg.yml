@@ -3,8 +3,6 @@ name: S3 MPEG
 
 env:
   CI: true
-  ECR_REGISTRY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com
-  GHCR_REGISTRY: ghcr.io/somleng
   REPOSITORY_NAME: s3-mpeg
 
 jobs:
@@ -100,10 +98,9 @@ jobs:
                   - name: Build
                     run: |
                       cd components/s3_mpeg
-                      aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
+                      aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
                       export DOCKER_BUILDKIT=1
-                      docker buildx build --cache-from ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64 --tag ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64 --tag ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}-arm64 --push .
-                      docker buildx imagetools create -t ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} -t ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }} ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64
+                      docker buildx build --cache-from ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64 --tag ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64 --tag ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}-arm64 --push .
   publish_images:
     name: Publish Images
     runs-on: ubuntu-latest
@@ -139,14 +136,14 @@ jobs:
       - name: Login to ECR
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.ECR_REGISTRY }}
+          registry: ${{ secrets.ECR_REGISTRY }}
 
       - name: Publish Images
         run: |
-          docker image pull ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64
-          docker tag ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64 ${{ env.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64
-          docker push ${{ env.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64
-          docker buildx imagetools create -t ${{ env.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} "${{ env.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64"
+          docker image pull ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64
+          docker tag ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64 ${{ secrets.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64
+          docker push ${{ secrets.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64
+          docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} "${{ secrets.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64"
 
   deploy:
     name: Deploy
@@ -154,19 +151,8 @@ jobs:
     needs:
       - build
       - build-packages
-    if: needs.build.outputs.matrixLength > 0
-    defaults:
-      run:
-        working-directory: components/s3_mpeg
 
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: ap-southeast-1
-      ECR_REGISTRY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com
-      ECR_REPOSITORY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com/s3-mpeg
-      GHCR_REPOSITORY: ghcr.io/somleng/s3-mpeg
-      IMAGE_TAG: ${{ github.sha }}
+    if: needs.build.outputs.matrixLength > 0
 
     strategy:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
@@ -189,7 +175,7 @@ jobs:
       - name: Deploy Lambda
         run: |
           aws lambda update-function-code --function-name ${{ matrix.identifier }} \
-                                          --image-uri ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}-arm64 \
+                                          --image-uri ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}-arm64 \
                                           --architectures "arm64" \
                                           --publish
       - name: Create Sentry release

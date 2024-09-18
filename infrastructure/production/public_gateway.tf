@@ -8,8 +8,8 @@ module "public_gateway" {
   vpc         = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc
   ecs_cluster = aws_ecs_cluster.this
 
-  app_image       = data.terraform_remote_state.core.outputs.public_gateway_ecr_repository.repository_uri
-  scheduler_image = data.terraform_remote_state.core.outputs.opensips_scheduler_ecr_repository.repository_uri
+  app_image       = data.terraform_remote_state.core.outputs.public_gateway_ecr_repository.this.repository_url
+  scheduler_image = data.terraform_remote_state.core.outputs.gateway_scheduler_ecr_repository.this.repository_url
 
   sip_port             = var.sip_port
   sip_alternative_port = var.sip_alternative_port

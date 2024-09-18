@@ -3,6 +3,8 @@ name: Public Gateway
 
 env:
   CI: true
+  GATEWAY_REPOSITORY_NAME: public-gateway
+  GATEWAY_SCHEDULER_REPOSITORY_NAME: gateway-scheduler
 
 jobs:
   integration_tests:
@@ -29,7 +31,8 @@ jobs:
             {
               "identifier": "public-gateway-staging",
               "branch": "develop",
-              "image_tag": "staging",
+              "friendly_image_tag": "beta",
+              "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "public-gateway-staging",
               "ecs_cluster": "somleng-switch-staging",
               "deploy": false
@@ -37,7 +40,8 @@ jobs:
             {
               "identifier": "public-gateway",
               "branch": "master",
-              "image_tag": "latest",
+              "friendly_image_tag": "latest",
+              "image_tag": "prod-${{ github.sha }}",
               "ecs_service": "public-gateway",
               "ecs_cluster": "somleng-switch",
               "deploy": true
@@ -58,19 +62,6 @@ jobs:
       - build
 
     if: needs.build.outputs.matrixLength > 0
-    defaults:
-      run:
-        working-directory: components/gateway
-
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: ap-southeast-1
-      ECR_PUBLIC_REGISTRY: public.ecr.aws
-      ECR_REPOSITORY: public.ecr.aws/somleng/public-gateway
-      GHCR_REPOSITORY: ghcr.io/somleng/public-gateway
-      OPENSIPS_SCHEDULER_ECR_REPOSITORY: public.ecr.aws/somleng/opensips-scheduler
-      IMAGE_TAG: ${{ github.sha }}
 
     strategy:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
@@ -90,12 +81,8 @@ jobs:
           role-duration-seconds: 3600
           aws-region: ap-southeast-1
 
-      - name: Login to AWS Public ECR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.ECR_PUBLIC_REGISTRY }}
-        env:
-          AWS_REGION: us-east-1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -104,8 +91,10 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Login to ECR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ECR_REGISTRY }}
 
       - name: Build and push Public Gateway
         uses: docker/build-push-action@v6
@@ -117,9 +106,8 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.identifier }}
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
           tags: |
-            ${{ env.ECR_REPOSITORY }}:${{ matrix.image_tag }}
-            ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-            ${{ env.GHCR_REPOSITORY }}:${{ matrix.image_tag }}
+            ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
 
   deploy:
     name: Deploy
@@ -129,13 +117,6 @@ jobs:
       - build_packages
 
     if: needs.build.outputs.deploy == 'true'
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: ap-southeast-1
-      ECR_REPOSITORY: public.ecr.aws/somleng/public-gateway
-      OPENSIPS_SCHEDULER_ECR_REPOSITORY: public.ecr.aws/somleng/opensips-scheduler
-      IMAGE_TAG: ${{ github.sha }}
 
     strategy:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
@@ -156,13 +137,13 @@ jobs:
         run: |
           aws ecs describe-task-definition --task-definition "${{ matrix.identifier }}" --query 'taskDefinition' > task-definition.json
 
-      - name: Prepare task definition with OpenSIPS scheduler
+      - name: Prepare task definition with Gateway Scheduler
         id: render-opensips-scheduler-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
           container-name: opensips_scheduler
-          image: ${{ env.OPENSIPS_SCHEDULER_ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_SCHEDULER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
 
       - name: Prepare task definition
         id: render-task-def
@@ -170,7 +151,7 @@ jobs:
         with:
           task-definition: ${{ steps.render-opensips-scheduler-task-def.outputs.task-definition }}
           container-name: public_gateway
-          image: ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.image_tag }}
 
       - name: Deploy
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2

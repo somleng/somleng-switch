@@ -3,8 +3,6 @@ name: Switch
 
 env:
   CI: true
-  ECR_REGISTRY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com
-  GHCR_REGISTRY: ghcr.io/somleng
   APP_REPOSITORY_NAME: switch-app
   WEBSERVER_REPOSITORY_NAME: switch-webserver
   FREESWITCH_REPOSITORY_NAME: freeswitch
@@ -134,7 +132,7 @@ jobs:
       - name: Login to ECR
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.ECR_REGISTRY }}
+          registry: ${{ secrets.ECR_REGISTRY }}
 
       - name: Export Polly Voices
         run: |
@@ -149,9 +147,8 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.identifier }}-nginx
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-nginx
           tags: |
-            ${{ env.ECR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ env.ECR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
-            ${{ env.GHCR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
+            ${{ secrets.ECR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
 
       - name: Build and push FreeSWITCH
         uses: docker/build-push-action@v6
@@ -164,9 +161,8 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.identifier }}-freeswitch
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-freeswitch
           tags: |
-            ${{ env.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ env.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
-            ${{ env.GHCR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
+            ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
 
       - name: Build and push FreeSWITCH Event Logger
         uses: docker/build-push-action@v6
@@ -177,9 +173,8 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.identifier }}-freeswitch-event-logger
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-freeswitch-event-logger
           tags: |
-            ${{ env.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ env.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
-            ${{ env.GHCR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
+            ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
 
       - name: Build and push Switch App
         uses: docker/build-push-action@v6
@@ -190,9 +185,8 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.identifier }}
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
           tags: |
-            ${{ env.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ env.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
-            ${{ env.GHCR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
+            ${{ secrets.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
 
   deploy:
     name: Deploy
@@ -229,7 +223,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: nginx
-          image: ${{ env.ECR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
 
       - name: Prepare FreeSWITCH task definition
         id: render-freeswitch-task-def
@@ -237,7 +231,7 @@ jobs:
         with:
           task-definition: ${{ steps.render-nginx-task-def.outputs.task-definition }}
           container-name: freeswitch
-          image: ${{ env.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.image_tag }}
 
       - name: Prepare FreeSWITCH event logger task definition
         id: render-freeswitch-event-logger-task-def
@@ -245,7 +239,7 @@ jobs:
         with:
           task-definition: ${{ steps.render-freeswitch-task-def.outputs.task-definition }}
           container-name: freeswitch-event-logger
-          image: ${{ env.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
 
       - name: Prepare App task definition
         id: render-app-task-def
@@ -253,7 +247,7 @@ jobs:
         with:
           task-definition: ${{ steps.render-freeswitch-event-logger-task-def.outputs.task-definition }}
           container-name: app
-          image: ${{ env.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.image_tag }}
 
       - name: Deploy Switch
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
