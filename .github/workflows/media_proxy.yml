@@ -2,8 +2,6 @@ name: Media Proxy
 on: push
 
 env:
-  ECR_REGISTRY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com
-  GHCR_REGISTRY: ghcr.io/somleng
   REPOSITORY_NAME: media-proxy
 
 jobs:
@@ -82,7 +80,7 @@ jobs:
       - name: Login to ECR
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.ECR_REGISTRY }}
+          registry: ${{ secrets.ECR_REGISTRY }}
 
       - name: Build and push Media Proxy
         uses: docker/build-push-action@v6
@@ -93,8 +91,8 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ env.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
+            ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
 
   deploy:
     name: Deploy
@@ -130,7 +128,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: media_proxy
-          image: ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}
 
       - name: Deploy
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2

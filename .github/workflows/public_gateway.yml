@@ -3,8 +3,6 @@ name: Public Gateway
 
 env:
   CI: true
-  ECR_REGISTRY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com
-  GHCR_REGISTRY: ghcr.io/somleng
   GATEWAY_REPOSITORY_NAME: public-gateway
   GATEWAY_SCHEDULER_REPOSITORY_NAME: gateway-scheduler
 
@@ -96,7 +94,7 @@ jobs:
       - name: Login to ECR
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.ECR_REGISTRY }}
+          registry: ${{ secrets.ECR_REGISTRY }}
 
       - name: Build and push Public Gateway
         uses: docker/build-push-action@v6
@@ -108,8 +106,8 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.identifier }}
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
           tags: |
-            ${{ env.ECR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ env.GHCR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
+            ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
 
   deploy:
     name: Deploy
@@ -145,7 +143,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: opensips_scheduler
-          image: ${{ env.ECR_REGISTRY }}/${{ env.GATEWAY_SCHEDULER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_SCHEDULER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
 
       - name: Prepare task definition
         id: render-task-def
@@ -153,7 +151,7 @@ jobs:
         with:
           task-definition: ${{ steps.render-opensips-scheduler-task-def.outputs.task-definition }}
           container-name: public_gateway
-          image: ${{ env.ECR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.image_tag }}
 
       - name: Deploy
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
