@@ -86,8 +86,8 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.identifier }}-gateway-scheduler
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-gateway-scheduler
           tags: |
-            ${{ env.ECR_REGISTRY }}/${{ env.PUBLIC_GATEWAY_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ env.GHCR_REGISTRY }}/${{ env.PUBLIC_GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
+            ${{ env.ECR_REGISTRY }}/${{ env.GATEWAY_SCHEDULER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+            ${{ env.GHCR_REGISTRY }}/${{ env.GATEWAY_SCHEDULER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
 
       - name: Build and push Gateway
         uses: docker/build-push-action@v6
