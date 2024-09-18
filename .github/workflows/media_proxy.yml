@@ -2,9 +2,9 @@ name: Media Proxy
 on: push
 
 env:
-  IMAGE_TAG: ${{ github.sha }}
   ECR_REGISTRY: public.ecr.aws/somleng
   GHCR_REGISTRY: ghcr.io/somleng
+  ECR_REPOSITORY: media-proxy
 
 jobs:
   build:
@@ -23,15 +23,17 @@ jobs:
           [
             {
               "identifier": "media-proxy-staging",
-              "branch": "develop",
-              "image_tag": "staging",
+              "branch": "ecr_private_for_gateways",
+              "friendly_image_tag": "beta",
+              "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "media-proxy-staging",
               "ecs_cluster": "somleng-switch-staging"
             },
             {
               "identifier": "media-proxy",
               "branch": "master",
-              "image_tag": "latest",
+              "friendly_image_tag": "latest",
+              "image_tag": "prod-${{ github.sha }}",
               "ecs_service": "media-proxy",
               "ecs_cluster": "somleng-switch"
             }
@@ -47,16 +49,11 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.build.outputs.matrixLength > 0
 
-    defaults:
-      run:
-        working-directory: components/media_proxy
-
     needs:
       - build
 
     strategy:
       matrix: ${{fromJSON(needs.build.outputs.matrix)}}
-      fail-fast: false
 
     steps:
       - name: Checkout
@@ -72,12 +69,8 @@ jobs:
           role-duration-seconds: 3600
           aws-region: ap-southeast-1
 
-      - name: Login to AWS Public ECR
-        uses: docker/login-action@v3
-        with:
-          registry: public.ecr.aws
-        env:
-          AWS_REGION: us-east-1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -86,8 +79,10 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Login to ECR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.ECR_REGISTRY }}
 
       - name: Build and push Media Proxy
         uses: docker/build-push-action@v6
@@ -98,9 +93,8 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ env.ECR_REGISTRY }}/media-proxy:${{ matrix.image_tag }}
-            ${{ env.ECR_REGISTRY }}/media-proxy:${{ env.IMAGE_TAG }}
-            ${{ env.GHCR_REGISTRY }}/media-proxy:${{ matrix.image_tag }}
+            ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}
+            ${{ env.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
 
   deploy:
     name: Deploy
@@ -136,7 +130,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: media_proxy
-          image: ${{ env.ECR_REGISTRY }}/media-proxy:${{ env.IMAGE_TAG }}
+          image: ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}
 
       - name: Deploy
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2

@@ -150,7 +150,6 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-nginx
           tags: |
             ${{ env.ECR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ env.ECR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
             ${{ env.GHCR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
 
       - name: Build and push FreeSWITCH
@@ -165,7 +164,6 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-freeswitch
           tags: |
             ${{ env.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ env.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
             ${{ env.GHCR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
 
       - name: Build and push FreeSWITCH Event Logger
@@ -178,7 +176,6 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-freeswitch-event-logger
           tags: |
             ${{ env.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ env.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
             ${{ env.GHCR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
 
       - name: Build and push Switch App
@@ -191,7 +188,6 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
           tags: |
             ${{ env.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ env.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
             ${{ env.GHCR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
 
   deploy:
