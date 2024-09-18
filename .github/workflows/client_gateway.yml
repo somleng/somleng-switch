@@ -117,7 +117,7 @@ jobs:
     strategy:
       matrix: ${{fromJson(needs.build.outputs.matrix)}}
 
-     steps:
+    steps:
       - name: Configure AWS credentials
         id: aws-login
         uses: aws-actions/configure-aws-credentials@v4
