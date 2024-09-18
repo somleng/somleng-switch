@@ -65,7 +65,7 @@ jobs:
             {
               "identifier": "switch-services-staging",
               "environment": "staging",
-              "branch": "develop",
+              "branch": "ecr_private_for_gateways",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}"
             },
