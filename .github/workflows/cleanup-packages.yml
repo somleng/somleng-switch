@@ -1,6 +1,8 @@
 name: Cleanup Packages
 
-on: push
+on:
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
   cleanup_packages:
