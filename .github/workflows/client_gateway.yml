@@ -3,6 +3,7 @@ on: push
 
 env:
   CI: true
+  ECR_REGISTRY: 324279636507.dkr.ecr.ap-southeast-1.amazonaws.com
   GATEWAY_REPOSITORY_NAME: client-gateway
   GATEWAY_SCHEDULER_REPOSITORY_NAME: gateway-scheduler
 
