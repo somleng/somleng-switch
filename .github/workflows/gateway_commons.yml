@@ -21,7 +21,7 @@ jobs:
           [
             {
               "identifier": "gateway-commons-staging",
-              "branch": "develop",
+              "branch": "fix_docker_build",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}"
             },
@@ -83,11 +83,12 @@ jobs:
         with:
           context: components/opensips_scheduler
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           cache-from: type=gha,scope=${{ matrix.identifier }}-gateway-scheduler
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-gateway-scheduler
           tags: |
             ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_SCHEDULER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_SCHEDULER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-amd64
             ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_SCHEDULER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
 
       - name: Build and push Gateway
@@ -100,4 +101,5 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.identifier }}-gateway
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-gateway
           tags: |
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:bootstrap-amd64
             ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:bootstrap

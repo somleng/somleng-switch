@@ -106,13 +106,9 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.identifier }}
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
           tags: |
-            ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-amd64
+            ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.image_tag }}
             ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-amd64
-
-      - name: Build Manifest
-        run: |
-          docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.image_tag }} -t ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-amd64
-          docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-amd64
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
 
   deploy:
     name: Deploy
