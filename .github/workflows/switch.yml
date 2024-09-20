@@ -183,6 +183,7 @@ jobs:
             platform_tag="${platforms[@]}"
             [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ] && platform_tag="amd64"
             source_images=$(printf "${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-%s " "$platform_tag")
+            echo "docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} $source_images"
             docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} $source_images
           done
 
