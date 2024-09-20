@@ -180,11 +180,12 @@ jobs:
           declare -a components=("${{ env.APP_REPOSITORY_NAME }}" "${{ env.WEBSERVER_REPOSITORY_NAME }} ${{ env.FREESWITCH_REPOSITORY_NAME }} ${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}")
           for component in "${components[@]}"
           do
-            platform_tag="${platforms[@]}"
-            [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ] && platform_tag="amd64"
-            source_images=$(printf "${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-%s " "$platform_tag")
-            echo "docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} $source_images"
-            docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} $source_images
+            if [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ]; then
+              docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} "${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-amd64"
+            else
+              source_images=$(printf "${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-%s " "${platforms[@]}")
+              docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} $source_images
+            fi
           done
 
   publish_images:
