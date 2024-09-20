@@ -181,13 +181,9 @@ jobs:
           for component in "${components[@]}"
           do
             if [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ]; then
-              echo "Building manifiest for: $component"
-              echo "docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-amd64"
               docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-amd64
             else
-              echo "Building manifiest for: $component" with source images
               source_images=$(printf "${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-%s " "${platforms[@]}")
-              echo "docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} $source_images"
               docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} $source_images
             fi
           done
@@ -229,25 +225,24 @@ jobs:
         run: |
           declare -a platforms=("amd64" "arm64")
           declare -a components=("${{ env.APP_REPOSITORY_NAME }}" "${{ env.WEBSERVER_REPOSITORY_NAME }}" "${{ env.FREESWITCH_REPOSITORY_NAME }}" "${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}")
-
           for platform in "${platforms[@]}"
           do
             for component in "${components[@]}"
             do
-              [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ] && [ "$platform" = "arm64" ] && continue
-              docker image pull ${{ secrets.ECR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }}-$platform
-              docker tag ${{ secrets.ECR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }}-$platform ${{ secrets.GHCR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }}-$platform
-              docker push ${{ secrets.GHCR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }}-$platform
+              [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ] && [ $platform = "arm64" ] && continue
+              docker image pull ${{ env.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform
+              docker tag ${{ env.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform ${{ env.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform
+              docker push ${{ env.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform
             done
           done
 
           for component in "${components[@]}"
           do
             if [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ]; then
-              docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }} "${{ secrets.GHCR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }}-amd64
+              docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} ${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-amd64
             else
-              source_images=$(printf "${{ secrets.GHCR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }}-%s " "${platforms[@]}")
-              docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }} $source_images
+              source_images=$(printf "${{ env.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-%s " "${platforms[@]}")
+              docker buildx imagetools create -t ${{ env.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} $source_images
             fi
           done
 
