@@ -129,7 +129,9 @@ jobs:
       matrix: ${{fromJSON(needs.build.outputs.matrix)}}
 
     needs:
+      - build
       - build-packages
+
 
     steps:
       - name: Configure AWS credentials
