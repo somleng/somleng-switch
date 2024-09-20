@@ -224,23 +224,34 @@ jobs:
       - name: Publish Images
         run: |
           declare -a platforms=("amd64" "arm64")
+          echo "HERE1"
           declare -a components=("${{ env.APP_REPOSITORY_NAME }}" "${{ env.WEBSERVER_REPOSITORY_NAME }}" "${{ env.FREESWITCH_REPOSITORY_NAME }}" "${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}")
+          echo "HERE2"
+
           for platform in "${platforms[@]}"
           do
+            echo "HERE3 $platform"
             for component in "${components[@]}"
             do
+              echo "HERE4 $component"
               [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ] && [ $platform = "arm64" ] && continue
+               echo "HERE5 $component"
               docker image pull ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform
+              echo "HERE6 $component"
               docker tag ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform
+              echo "HERE7 $component"
               docker push ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform
             done
           done
 
           for component in "${components[@]}"
           do
+            echo "HERE8 $component"
             if [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ]; then
+              echo "HERE9 $component"
               docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} ${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-amd64
             else
+              echo "HERE10 $component"
               source_images=$(printf "${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-%s " "${platforms[@]}")
               docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} $source_images
             fi
