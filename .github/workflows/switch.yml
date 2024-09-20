@@ -230,7 +230,7 @@ jobs:
           do
             for component in "${components[@]}"
             do
-              [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ] && $platform="arm64" && continue
+              [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ] && [ "$platform" = "arm64" ] && continue
               docker image pull ${{ secrets.ECR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }}-$platform
               docker tag ${{ secrets.ECR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }}-$platform ${{ secrets.GHCR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }}-$platform
               docker push ${{ secrets.GHCR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }}-$platform
@@ -239,10 +239,12 @@ jobs:
 
           for component in "${components[@]}"
           do
-            platform_tag="${platforms[@]}"
-            [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ] && platform_tag="amd64"
-            source_images=$(printf "${{ secrets.GHCR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }}-%s " "$platform_tag")
-            docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }} $source_images
+            if [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ]; then
+              docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }} "${{ secrets.GHCR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }}-amd64
+            else
+              source_images=$(printf "${{ secrets.GHCR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }}-%s " "${platforms[@]}")
+              docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/$component:${{ env.IMAGE_ALIAS }} $source_images
+            fi
           done
 
   deploy:
