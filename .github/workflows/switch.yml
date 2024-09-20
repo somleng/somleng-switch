@@ -247,8 +247,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     needs:
-      - build
-      - build-packages
+      - build-manifest
 
     strategy:
       matrix: ${{fromJSON(needs.build.outputs.deployMatrix)}}
