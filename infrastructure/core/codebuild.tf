@@ -35,6 +35,14 @@ data "aws_iam_policy_document" "codebuild" {
       "logs:PutLogEvents"
     ]
   }
+
+  statement {
+    effect    = "Allow"
+    resources = ["*"]
+    actions = [
+      "polly:DescribeVoices"
+    ]
+  }
 }
 
 resource "aws_iam_role_policy" "codebuild" {
