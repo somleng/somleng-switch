@@ -30,7 +30,7 @@ jobs:
           [
             {
               "identifier": "public-gateway-staging",
-              "branch": "develop",
+              "branch": "fix_docker_build",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "public-gateway-staging",
@@ -106,8 +106,12 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.identifier }}
           cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
           tags: |
-            ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
+            ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-amd64
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-amd64
+
+      - name: Build Manifest
+        run: |
+          docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }} -t ${{ secrets.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} ${{ secrets.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-amd64
 
   deploy:
     name: Deploy
