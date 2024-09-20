@@ -111,7 +111,7 @@ jobs:
 
       - name: Build Manifest
         run: |
-          docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }} -t ${{ secrets.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} ${{ secrets.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-amd64
+          docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.image_tag }} -t ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-amd64
 
   deploy:
     name: Deploy
