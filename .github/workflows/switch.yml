@@ -177,7 +177,7 @@ jobs:
       - name: Build Manifest
         run: |
           declare -a platforms=("amd64" "arm64")
-          declare -a components=("${{ env.APP_REPOSITORY_NAME }}" "${{ env.WEBSERVER_REPOSITORY_NAME }}" "${{ env.FREESWITCH_REPOSITORY_NAME }}" "${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}")
+          declare -a components=(${{ env.APP_REPOSITORY_NAME }} ${{ env.WEBSERVER_REPOSITORY_NAME }} ${{ env.FREESWITCH_REPOSITORY_NAME }} ${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }})
           for component in "${components[@]}"
           do
             if [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ]; then
@@ -226,7 +226,7 @@ jobs:
       - name: Publish Images
         run: |
           declare -a platforms=("amd64" "arm64")
-          declare -a components=("${{ env.APP_REPOSITORY_NAME }}" "${{ env.WEBSERVER_REPOSITORY_NAME }}" "${{ env.FREESWITCH_REPOSITORY_NAME }}" "${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}")
+          declare -a components=(${{ env.APP_REPOSITORY_NAME }} ${{ env.WEBSERVER_REPOSITORY_NAME }} ${{ env.FREESWITCH_REPOSITORY_NAME }} ${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }})
 
           for platform in "${platforms[@]}"
           do
