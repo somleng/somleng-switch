@@ -236,7 +236,7 @@ jobs:
             do
               echo "HERE4 $component"
               [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ] && [ $platform = "arm64" ] && continue
-               echo "HERE5 $component"
+              echo "HERE5 $component"
               docker image pull ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform
               echo "HERE6 $component"
               docker tag ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform
