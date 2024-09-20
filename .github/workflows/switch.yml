@@ -181,9 +181,13 @@ jobs:
           for component in "${components[@]}"
           do
             if [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ]; then
-              docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} "${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-amd64"
+              echo "Building manifiest for: $component"
+              echo "docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-amd64"
+              docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-amd64
             else
+              echo "Building manifiest for: $component" with source images
               source_images=$(printf "${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-%s " "${platforms[@]}")
+              echo "docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} $source_images"
               docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} $source_images
             fi
           done
