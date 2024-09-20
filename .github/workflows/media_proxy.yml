@@ -13,7 +13,6 @@ jobs:
       matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
       packageMatrix: ${{ steps.set-deployment-matrix.outputs.packageMatrix }}
 
-
     steps:
       - name: Set Deployment Matrix
         id: set-deployment-matrix
@@ -54,7 +53,7 @@ jobs:
       - build
 
     strategy:
-      matrix: ${{fromJSON(needs.build.outputs.matrix)}}
+      matrix: ${{fromJSON(needs.build.outputs.packageMatrix)}}
 
     steps:
       - name: Checkout
