@@ -21,7 +21,7 @@ jobs:
           [
             {
               "identifier": "gateway-commons-staging",
-              "branch": "fix_docker_build",
+              "branch": "develop",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}"
             },

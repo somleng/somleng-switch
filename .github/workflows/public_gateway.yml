@@ -30,7 +30,7 @@ jobs:
           [
             {
               "identifier": "public-gateway-staging",
-              "branch": "fix_docker_build",
+              "branch": "develop",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "public-gateway-staging",
