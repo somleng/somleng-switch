@@ -327,7 +327,7 @@ jobs:
       - deploy
 
     strategy:
-      matrix: ${{fromJson(needs.build.outputs.matrix)}}
+      matrix: ${{fromJson(needs.build.outputs.deployMatrix)}}
 
     steps:
       - name: Checkout
