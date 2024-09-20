@@ -16,6 +16,7 @@ jobs:
       matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
       matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
       deployMatrix: ${{ steps.set-deployment-matrix.outputs.deployMatrix }}
+      packageMatrix: ${{ steps.set-deployment-matrix.outputs.packageMatrix }}
 
     defaults:
       run:
@@ -90,16 +91,19 @@ jobs:
           echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
           echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
           echo "deployMatrix={\"region\":[\"ap-southeast-1\",\"us-east-1\"],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+          echo "packageMatrix={\"platform\":[\"amd64\",\"arm64\"],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
 
   build-packages:
     name: Build Packages
     runs-on: ubuntu-latest
     needs:
       - build
+
     if: needs.build.outputs.matrixLength > 0
 
     strategy:
-      matrix: ${{fromJson(needs.build.outputs.matrix)}}
+      matrix: ${{fromJSON(needs.build.outputs.packageMatrix)}}
+      fail-fast: false
 
     steps:
       - name: Checkout
@@ -110,6 +114,93 @@ jobs:
 
       - name: Configure AWS credentials
         id: aws-login
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-skip-session-tagging: true
+          role-duration-seconds: 3600
+          aws-region: ap-southeast-1
+
+      - name: Build images
+        uses: aws-actions/aws-codebuild-run-build@v1
+        with:
+          project-name: somleng-switch-${{ matrix.platform }}
+          buildspec-override:   |
+            version: 0.2
+            phases:
+              build:
+                steps:
+                  - name: Build
+                    run: |
+                      aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+                      export DOCKER_BUILDKIT=1
+                      docker buildx build --cache-from ${{ secrets.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --tag ${{ secrets.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --push components/app
+                      docker buildx build --cache-from ${{ secrets.ECR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --tag ${{ secrets.ECR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --push components/nginx
+                      docker buildx build --cache-from ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --tag ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --push components/freeswitch_event_logger
+                      if [ "${{ matrix.platform }}" = "amd64" ]; then
+                        components/freeswitch/bin/export_tts_voices > components/freeswitch/conf/autoload_configs/tts_voices.xml
+                        docker buildx build --build-arg signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }} --cache-from ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --tag ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --push components/freeswitch
+                      fi
+
+  build-manifest:
+    name: Build Manifest
+    runs-on: ubuntu-latest
+
+    needs:
+      - build
+      - build-packages
+
+    strategy:
+      matrix: ${{fromJSON(needs.build.outputs.matrix)}}
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-skip-session-tagging: true
+          role-duration-seconds: 3600
+          aws-region: ap-southeast-1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to ECR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ECR_REGISTRY }}
+
+      - name: Build Manifest
+        run: |
+          declare -a platforms=("amd64" "arm64")
+          declare -a components=("${{ env.APP_REPOSITORY_NAME }}" "${{ env.WEBSERVER_REPOSITORY_NAME }}" "${{ env.FREESWITCH_REPOSITORY_NAME }}" "${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}")
+          for component in "${components[@]}"
+          do
+            if [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ]; then
+              docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-amd64
+            else
+              source_images=$(printf "${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-%s " "${platforms[@]}")
+              docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} $source_images
+            fi
+          done
+
+  publish_images:
+    name: Publish Images
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix: ${{fromJSON(needs.build.outputs.matrix)}}
+
+    needs:
+      - build
+      - build-packages
+
+    steps:
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -134,66 +225,37 @@ jobs:
         with:
           registry: ${{ secrets.ECR_REGISTRY }}
 
-      - name: Export Polly Voices
+      - name: Publish Images
         run: |
-          components/freeswitch/bin/export_tts_voices > components/freeswitch/conf/autoload_configs/tts_voices.xml
+          declare -a platforms=("amd64" "arm64")
+          declare -a components=("${{ env.APP_REPOSITORY_NAME }}" "${{ env.WEBSERVER_REPOSITORY_NAME }}" "${{ env.FREESWITCH_REPOSITORY_NAME }}" "${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}")
+          for platform in "${platforms[@]}"
+          do
+            for component in "${components[@]}"
+            do
+              [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ] && [ $platform = "arm64" ] && continue
+              docker image pull ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform
+              docker tag ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform ${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform
+              docker push ${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform
+            done
+          done
 
-      - name: Build and push Nginx
-        uses: docker/build-push-action@v6
-        with:
-          context: components/nginx
-          push: true
-          platforms: linux/amd64,linux/arm64
-          cache-from: type=gha,scope=${{ matrix.identifier }}-nginx
-          cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-nginx
-          tags: |
-            ${{ secrets.ECR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ secrets.GHCR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
-
-      - name: Build and push FreeSWITCH
-        uses: docker/build-push-action@v6
-        with:
-          context: components/freeswitch
-          build-args:
-            signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
-          push: true
-          platforms: linux/amd64
-          cache-from: type=gha,scope=${{ matrix.identifier }}-freeswitch
-          cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-freeswitch
-          tags: |
-            ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ secrets.GHCR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
-
-      - name: Build and push FreeSWITCH Event Logger
-        uses: docker/build-push-action@v6
-        with:
-          context: components/freeswitch_event_logger
-          push: true
-          platforms: linux/amd64,linux/arm64
-          cache-from: type=gha,scope=${{ matrix.identifier }}-freeswitch-event-logger
-          cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-freeswitch-event-logger
-          tags: |
-            ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ secrets.GHCR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
-
-      - name: Build and push Switch App
-        uses: docker/build-push-action@v6
-        with:
-          context: components/app
-          push: true
-          platforms: linux/amd64
-          cache-from: type=gha,scope=${{ matrix.identifier }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
-          tags: |
-            ${{ secrets.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ secrets.GHCR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
+          for component in "${components[@]}"
+          do
+            if [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ]; then
+              docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} ${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-amd64
+            else
+              source_images=$(printf "${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-%s " "${platforms[@]}")
+              docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} $source_images
+            fi
+          done
 
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
     needs:
       - build
-      - build-packages
+      - build-manifest
 
     strategy:
       matrix: ${{fromJSON(needs.build.outputs.deployMatrix)}}
@@ -265,7 +327,7 @@ jobs:
       - deploy
 
     strategy:
-      matrix: ${{fromJson(needs.build.outputs.matrix)}}
+      matrix: ${{fromJson(needs.build.outputs.deployMatrix)}}
 
     steps:
       - name: Checkout
