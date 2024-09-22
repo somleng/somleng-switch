@@ -35,16 +35,19 @@ data "aws_iam_policy_document" "codebuild" {
       "logs:PutLogEvents"
     ]
   }
+
+  statement {
+    effect    = "Allow"
+    resources = ["*"]
+    actions = [
+      "polly:DescribeVoices"
+    ]
+  }
 }
 
 resource "aws_iam_role_policy" "codebuild" {
   role   = aws_iam_role.codebuild.name
   policy = data.aws_iam_policy_document.codebuild.json
-}
-
-resource "aws_iam_role_policy_attachment" "codebuild_ecr_public" {
-  role       = aws_iam_role.codebuild.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicPowerUser"
 }
 
 resource "aws_iam_role_policy_attachment" "codebuild_ecr" {
@@ -67,7 +70,7 @@ resource "aws_codebuild_project" "amd64" {
   }
 
   environment {
-    compute_type    = "BUILD_GENERAL1_SMALL"
+    compute_type    = "BUILD_GENERAL1_LARGE"
     image           = "aws/codebuild/amazonlinux2-x86_64-standard:5.0"
     type            = "LINUX_CONTAINER"
     privileged_mode = true
@@ -94,7 +97,7 @@ resource "aws_codebuild_project" "arm64" {
   }
 
   environment {
-    compute_type    = "BUILD_GENERAL1_SMALL"
+    compute_type    = "BUILD_GENERAL1_LARGE"
     image           = "aws/codebuild/amazonlinux2-aarch64-standard:3.0"
     type            = "ARM_CONTAINER"
     privileged_mode = true
