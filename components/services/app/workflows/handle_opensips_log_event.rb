@@ -12,6 +12,8 @@ class HandleOpenSIPSLogEvent < ApplicationWorkflow
   end
 
   def call
+    p "handling event: #{event}"
+    p "load_balancer_response_errors: #{load_balancer_response_errors}"
     if load_balancer_response_errors.any?
       error_messages = load_balancer_response_errors.map do |error|
         "Error detected on load balancer: #{error.target_ip} - #{error.code}"
@@ -31,13 +33,15 @@ class HandleOpenSIPSLogEvent < ApplicationWorkflow
   end
 
   def load_balancer_response_errors
-    errors = opensips_logs.select do |log|
-      log.message.match?(LOAD_BALANCER_RESPONSE_ERROR_PATTERN)
-    end
+    @load_balancer_response_errors ||= begin
+      errors = opensips_logs.select do |log|
+        log.message.match?(LOAD_BALANCER_RESPONSE_ERROR_PATTERN)
+      end
 
-    errors.map do |log|
-      code, ip, = LOAD_BALANCER_RESPONSE_ERROR_PATTERN.match(log.message).captures
-      LoadBalancerError.new(target_ip: IPAddr.new(ip), code:)
+      errors.map do |log|
+        code, ip, = LOAD_BALANCER_RESPONSE_ERROR_PATTERN.match(log.message).captures
+        LoadBalancerError.new(target_ip: IPAddr.new(ip), code:)
+      end
     end
   end
 

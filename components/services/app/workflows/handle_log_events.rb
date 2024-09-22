@@ -1,7 +1,3 @@
-require "zlib"
-require "base64"
-require "stringio"
-
 class HandleLogEvents < ApplicationWorkflow
   attr_reader :event
 
@@ -10,6 +6,9 @@ class HandleLogEvents < ApplicationWorkflow
   end
 
   def call
+    p "handling event: #{event}"
+    p "opensips_log_groups: #{opensips_log_groups}"
+
     if opensips_log_groups.include?(event.log_group)
       HandleOpenSIPSLogEvent.call(event:)
     end
