@@ -18,12 +18,16 @@ class HandleOpenSIPSLogEvent < ApplicationWorkflow
       error_messages = load_balancer_response_errors.map do |error|
         "Error detected on load balancer: #{error.target_ip} - #{error.code}"
       end
+      p error_messages.join("\n")
+      p "error_tracking_client: #{error_tracking_client}"
       error_tracking_client.capture_message(error_messages.join("\n"))
     else
       error_messages = opensips_logs.each do |log|
         log.message
       end
 
+      p error_messages.join("\n")
+      p "error_tracking_client: #{error_tracking_client}"
       error_tracking_client.capture_message(error_messages.join("\n"))
     end
   end
