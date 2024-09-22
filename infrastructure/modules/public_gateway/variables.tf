@@ -15,6 +15,7 @@ variable "db_host" {}
 variable "db_port" {}
 variable "global_accelerator" {}
 variable "logs_bucket" {}
+variable "services_function" {}
 
 variable "opensips_fifo_name" {
   default = "/var/opensips/opensips_fifo"
