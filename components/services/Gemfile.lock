@@ -9,6 +9,7 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
+    ast (2.4.2)
     aws-eventstream (1.3.0)
     aws-partitions (1.976.0)
     aws-sdk-core (3.206.0)
@@ -34,14 +35,23 @@ GEM
     diff-lcs (1.5.1)
     docile (1.4.1)
     jmespath (1.6.2)
+    json (2.7.2)
+    language_server-protocol (3.17.0.3)
     method_source (1.1.0)
     ostruct (0.6.0)
     ox (2.14.18)
+    parallel (1.26.3)
+    parser (3.3.5.0)
+      ast (~> 2.4.1)
+      racc
     pg (1.5.8)
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
+    racc (1.8.1)
+    rainbow (3.1.1)
     rake (13.2.1)
+    regexp_parser (2.9.2)
     rexml (3.3.7)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
@@ -56,6 +66,24 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.1)
+    rubocop (1.66.1)
+      json (~> 2.3)
+      language_server-protocol (>= 3.17.0)
+      parallel (~> 1.10)
+      parser (>= 3.3.0.2)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 2.4, < 3.0)
+      rubocop-ast (>= 1.32.2, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 2.4.0, < 3.0)
+    rubocop-ast (1.32.3)
+      parser (>= 3.3.1.0)
+    rubocop-performance (1.22.1)
+      rubocop (>= 1.48.1, < 2.0)
+      rubocop-ast (>= 1.31.1, < 2.0)
+    rubocop-rspec (3.0.5)
+      rubocop (~> 1.61)
+    ruby-progressbar (1.13.0)
     sentry-ruby (5.19.0)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
@@ -70,6 +98,7 @@ GEM
       simplecov (~> 0.19)
     simplecov-html (0.13.1)
     simplecov_json_formatter (0.1.4)
+    unicode-display_width (2.6.0)
 
 PLATFORMS
   ruby
@@ -85,6 +114,9 @@ DEPENDENCIES
   pry
   rake
   rspec
+  rubocop
+  rubocop-performance
+  rubocop-rspec
   sentry-ruby
   sequel
   simplecov

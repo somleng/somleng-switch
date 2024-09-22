@@ -12,6 +12,8 @@ class EventParser
                SQSMessageEventParser
     elsif service_action?
                ServiceActionParser
+    elsif cloudwatch_log_event?
+               CloudWatchLogEventParser
     end
 
     parser.new(event).parse_event
@@ -29,5 +31,9 @@ class EventParser
 
   def service_action?
     event.key?("serviceAction")
+  end
+
+  def cloudwatch_log_event?
+    event.keys.size == 1 && event.key?("awslogs")
   end
 end

@@ -5,6 +5,7 @@ module "services" {
   app_environment        = var.app_environment
   switch_group           = var.switch_identifier
   media_proxy_group      = var.media_proxy_identifier
+  public_gateway_group   = var.public_gateway_identifier
   client_gateway_group   = var.client_gateway_identifier
   public_gateway_db_name = var.public_gateway_db_name
   client_gateway_db_name = var.client_gateway_db_name

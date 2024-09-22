@@ -4,6 +4,7 @@ variable "app_image" {}
 variable "vpc" {}
 variable "switch_group" {}
 variable "media_proxy_group" {}
+variable "public_gateway_group" {}
 variable "client_gateway_group" {}
 variable "db_password_parameter" {}
 variable "freeswitch_event_socket_password_parameter" {}

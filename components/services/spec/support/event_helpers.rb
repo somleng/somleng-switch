@@ -1,6 +1,48 @@
 require "json"
 
 module EventHelpers
+  def build_cloudwatch_log_event(data = {})
+    data = {
+      id: SecureRandom.random_number(10**56).to_s.rjust(56, "0"),
+      timestamp: Time.now.to_i * 1000,
+      message: "log-message"
+    }.merge(data)
+
+    {
+      "id" => data.fetch(:id),
+      "timestamp" => data.fetch(:timestamp),
+      "message" => data.fetch(:message)
+    }
+  end
+
+  def build_cloudwatch_log_event_payload(data = {})
+    data = {
+      log_group: "testing",
+      log_events: [
+        build_cloudwatch_log_event
+      ]
+    }.merge(data)
+
+    payload = JSON.parse(file_fixture("cloudwatch_log_event.json").read)
+    data_message = JSON.parse(Zlib::GzipReader.new(StringIO.new(Base64.decode64(payload.dig("awslogs", "data")))).read)
+
+    overrides = {
+      "logGroup" => data.fetch(:log_group),
+      "logEvents" => data.fetch(:log_events)
+    }
+
+    compressed_data_message = StringIO.new
+    gz = Zlib::GzipWriter.new(compressed_data_message)
+    gz.write(data_message.merge(overrides).to_json)
+    gz.close
+
+    {
+      "awslogs" => {
+        "data" => Base64.encode64(compressed_data_message.string)
+      }
+    }
+  end
+
   def build_sqs_message_event_payload(data = {})
     data = {
       event_source_arn: "arn:aws:sqs:us-east-2:123456789012:somleng-switch-permissions",

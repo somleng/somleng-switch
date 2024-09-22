@@ -10,7 +10,6 @@ module App
       logger = Logger.new($stdout)
       logger.info("## Processing Event")
       logger.info(event)
-      logger.info(context)
 
       new(event:, context:).process
     rescue Exception => e
@@ -31,6 +30,8 @@ module App
         HandleSQSMessageEvent.call(event:)
       when :service_action
         event.service_action.call(**event.parameters)
+      when :cloudwatch_log_event
+        HandleLogEvents.call(event:)
       end
     end
 
