@@ -28,6 +28,7 @@ class HandleOpenSIPSLogEvent < ApplicationWorkflow
 
       p error_messages.join("\n")
       p "error_tracking_client: #{error_tracking_client}"
+      p AppSettings[:sentry_dsn]
       error_tracking_client.capture_message(error_messages.join("\n"))
     end
   end
