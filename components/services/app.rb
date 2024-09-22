@@ -10,6 +10,7 @@ module App
       logger = Logger.new($stdout)
       logger.info("## Processing Event")
       logger.info(event)
+      logger.info(context)
 
       new(event:, context:).process
     rescue Exception => e
