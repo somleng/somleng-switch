@@ -20,17 +20,13 @@ class HandleOpenSIPSLogEvent < ApplicationWorkflow
       end
       p error_messages.join("\n")
       p "error_tracking_client: #{error_tracking_client}"
+      p "AppSettings[:sentry_dsn]: #{AppSettings[:sentry_dsn]}"
+      p "AppSettings.env: #{AppSettings.env}"
       error_tracking_client.capture_message(error_messages.join("\n"))
     else
       error_messages = opensips_logs.each do |log|
         log.message
       end
-
-      p error_messages.join("\n")
-      p "error_tracking_client: #{error_tracking_client}"
-      p AppSettings[:sentry_dsn]
-      p AppSettings.credentials
-      p AppSettings.env
       error_tracking_client.capture_message(error_messages.join("\n"))
     end
   end
