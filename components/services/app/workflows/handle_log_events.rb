@@ -6,11 +6,8 @@ class HandleLogEvents < ApplicationWorkflow
   end
 
   def call
-    p "handling event: #{event}"
-    p "opensips_log_groups: #{opensips_log_groups}"
-
     if opensips_log_groups.include?(event.log_group)
-      HandleOpenSIPSLogEvent.call(event:)
+      HandleOpenSIPSLogEvent.call(event: OpenSIPSLogEventParser.new(event).parse_event)
     end
   end
 

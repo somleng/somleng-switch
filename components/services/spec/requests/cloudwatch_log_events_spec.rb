@@ -13,6 +13,12 @@ RSpec.describe "Handle CloudWatch Log Events" do
     )
 
     invoke_lambda(payload:)
+
+    stop_task_requests = aws_requests(:stop_task)
+    expect(stop_task_requests.size).to eq(1)
+    stop_task_request = stop_task_requests[0]
+    expect(stop_task_request.context.params.keys).to contain_exactly(:cluster, :task, :reason)
+    expect(stop_task_request.context.params.fetch(:task)).to include("ap-southeast-1")
   end
 
   def build_opensips_message(data = {})
@@ -29,5 +35,9 @@ RSpec.describe "Handle CloudWatch Log Events" do
       "level" => data.fetch(:level),
       "message" => data.fetch(:message)
     }.to_json
+  end
+
+  def aws_requests(operation_name)
+    AWSRequests.select { |request| request[:operation_name] == operation_name }
   end
 end

@@ -31,7 +31,6 @@ module App
       when :service_action
         event.service_action.call(**event.parameters)
       when :cloudwatch_log_event
-        p "handling event: #{event}"
         HandleLogEvents.call(event:)
       end
     end
