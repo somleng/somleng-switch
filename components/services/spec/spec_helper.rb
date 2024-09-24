@@ -24,8 +24,6 @@ if ENV.key?("CI")
   SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
 end
 
-ENV["PUBLIC_GATEWAY_LOG_GROUP"] = "public-gateway"
-ENV["CLIENT_GATEWAY_LOG_GROUP"] = "client-gateway"
 ENV["SWITCH_GROUP"] = "service:somleng-switch"
 ENV["MEDIA_PROXY_GROUP"] = "service:media-proxy"
 ENV["CLIENT_GATEWAY_GROUP"] = "service:client-gateway"

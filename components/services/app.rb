@@ -30,8 +30,6 @@ module App
         HandleSQSMessageEvent.call(event:)
       when :service_action
         event.service_action.call(**event.parameters)
-      when :cloudwatch_log_event
-        HandleLogEvents.call(event:)
       end
     end
 

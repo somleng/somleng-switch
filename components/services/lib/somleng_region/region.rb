@@ -10,16 +10,14 @@ module SomlengRegion
         alias: "hydrogen",
         group_id: 1,
         human_name: "South East Asia (Singapore)",
-        nat_ip: "13.250.230.15",
-        vpc_cidr: "10.10.0.0/22"
+        nat_ip: "13.250.230.15"
       ),
       new(
         identifier: "us-east-1",
         alias: "helium",
         group_id: 2,
         human_name: "North America (N. Virginia, USA)",
-        nat_ip: "52.4.242.134",
-        vpc_cidr: "10.20.0.0/20"
+        nat_ip: "52.4.242.134"
       )
     ]
 
