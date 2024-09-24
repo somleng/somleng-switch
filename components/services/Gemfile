@@ -16,6 +16,9 @@ gem "sequel"
 
 group :development do
   gem "rake"
+  gem "rubocop"
+  gem "rubocop-rspec"
+  gem "rubocop-performance"
 end
 
 group :test do

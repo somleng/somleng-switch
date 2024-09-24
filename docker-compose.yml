@@ -128,7 +128,6 @@ services:
     build:
       context: components/app
     image: switch-app:latest
-    platform: linux/amd64
     depends_on:
       redis:
         condition: service_healthy

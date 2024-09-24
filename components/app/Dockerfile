@@ -33,7 +33,7 @@ WORKDIR $APP_ROOT
 
 RUN apk update && \
     apk upgrade && \
-    apk add --update --no-cache build-base pcre-dev && \
+    apk add --update --no-cache build-base pcre-dev gcompat && \
     gem install bundler
 
 COPY --from=build-image $APP_ROOT $APP_ROOT
