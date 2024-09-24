@@ -63,7 +63,7 @@ jobs:
             {
               "identifier": "switch-services-staging",
               "environment": "staging",
-              "branch": "handle_freeswitch_gw_timeouts",
+              "branch": "develop",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}"
             },
