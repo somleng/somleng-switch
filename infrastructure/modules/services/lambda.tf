@@ -14,8 +14,6 @@ resource "aws_lambda_function" "this" {
 
   environment {
     variables = {
-      PUBLIC_GATEWAY_LOG_GROUP                    = var.public_gateway_group
-      CLIENT_GATEWAY_LOG_GROUP                    = var.client_gateway_group
       SWITCH_GROUP                                = "service:${var.switch_group}"
       MEDIA_PROXY_GROUP                           = "service:${var.media_proxy_group}"
       CLIENT_GATEWAY_GROUP                        = "service:${var.client_gateway_group}"

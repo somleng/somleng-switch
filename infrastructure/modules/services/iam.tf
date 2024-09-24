@@ -51,11 +51,7 @@ resource "aws_iam_policy" "custom_policy" {
       {
         Action = [
           "ec2:DescribeInstances",
-          "ecs:DescribeContainerInstances",
-          "ecs:ListClusters",
-          "ecs:ListTasks",
-          "ecs:DescribeTasks",
-          "ecs:StopTask"
+          "ecs:DescribeContainerInstances"
         ]
         Effect = "Allow"
         Resource = [
