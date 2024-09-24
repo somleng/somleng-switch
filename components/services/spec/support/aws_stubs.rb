@@ -1,4 +1,4 @@
-AWSRequests = Class.new(Array).new
+AWSRequests = Array.new
 AWSRequest = Struct.new(:context, :operation_name, keyword_init: true)
 
 Aws.config[:ecs] = {
