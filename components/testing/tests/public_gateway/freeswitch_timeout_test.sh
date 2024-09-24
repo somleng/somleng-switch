@@ -4,7 +4,7 @@
 # It creates a load balancer entry to the the a SIPp server running on port 5061 which simulates
 # the timeout by not sending a 200 OK response to the gateway before the timeout period.
 # The gateway then sends a Cancel request to the SIPp server and returns a 500 to the UAC.
-# This test is useful to test the  behavior of the gateway when this scenario happens.
+# This test is useful to test the behavior of the gateway when this scenario happens.
 
 set -e
 
