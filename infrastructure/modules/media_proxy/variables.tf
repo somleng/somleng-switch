@@ -4,6 +4,7 @@ variable "aws_region" {}
 variable "vpc" {}
 variable "ecs_cluster" {}
 variable "app_image" {}
+variable "services_function" {}
 
 variable "ng_port" {
   default = 2223
