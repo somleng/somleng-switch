@@ -37,7 +37,7 @@ GEM
     ostruct (0.6.0)
     ox (2.14.18)
     rake (13.2.1)
-    rexml (3.3.7)
+    rexml (3.3.9)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
