@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/somleng/encrypted_credentials.git
-  revision: dc61ac39dffcddaee1c4ffa43d0aeace06f65201
+  revision: 0944c58b5fa8bee2ef953e384f025da059ff612c
   specs:
     encrypted_credentials (0.1.0)
       base64
@@ -38,7 +38,7 @@ GEM
     json (2.7.5)
     language_server-protocol (3.17.0.3)
     method_source (1.1.0)
-    ostruct (0.6.0)
+    ostruct (0.6.1)
     ox (2.14.18)
     parallel (1.26.3)
     parser (3.3.5.0)
