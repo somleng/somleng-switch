@@ -29,6 +29,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install native dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get libpcre3 libpcre3-dev
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
