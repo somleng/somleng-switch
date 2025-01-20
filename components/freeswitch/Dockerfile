@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/debian:bookworm-slim as freeswitch-build
+FROM public.ecr.aws/docker/library/debian:bookworm-slim AS freeswitch-build
 ARG signalwire_token
 
 RUN apt update && apt install --no-install-recommends -yq cmake gcc g++ make cmake build-essential git libssl-dev libspeex-dev libspeexdsp-dev
@@ -20,7 +20,7 @@ RUN cmake ..
 RUN make
 RUN make install
 
-FROM public.ecr.aws/aws-cli/aws-cli as aws-cli
+FROM public.ecr.aws/aws-cli/aws-cli AS aws-cli
 
 FROM public.ecr.aws/docker/library/debian:bookworm-slim
 
