@@ -78,11 +78,17 @@ class ExecuteConnect < ExecuteTwiMLVerb
         }
       )
     )
+    context.write_and_await_response(
+      Rayo::Command::UpdateCallProgress.new(status: :in_progress)
+    )
   end
 
   def stop_stream!
     context.write_and_await_response(
       Rayo::Command::TwilioStream::Stop.new(uuid: phone_call.id)
+    )
+    context.write_and_await_response(
+      Rayo::Command::UpdateCallProgress.new(status: :stopped)
     )
   end
 end
