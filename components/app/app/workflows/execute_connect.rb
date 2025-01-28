@@ -33,7 +33,12 @@ class ExecuteConnect < ExecuteTwiMLVerb
 
         on.message do |channel, message|
           if event_handler.handle_events_for?(channel, stream_sid)
-            handle_stream_event(message) { |event| connection.unsubscribe if event.disconnect? }
+            handle_stream_event(message) do |event|
+              next unless event.disconnect?
+
+              connection.unsubscribe
+              DisconnectTwilioStream.call(context)
+            end
           elsif call_update_event_handler.handle_events_for?(channel, phone_call.id)
             handle_call_update_event(message) { connection.unsubscribe(channel) }
           end
@@ -66,23 +71,10 @@ class ExecuteConnect < ExecuteTwiMLVerb
   end
 
   def start_stream!(url:, stream_sid:, custom_parameters:)
-    context.write_and_await_response(
-      Rayo::Command::TwilioStream::Start.new(
-        uuid: phone_call.id,
-        url:,
-        metadata: {
-          call_sid: call_properties.call_sid,
-          account_sid: call_properties.account_sid,
-          stream_sid:,
-          custom_parameters:
-        }
-      )
-    )
+    StartTwilioStream.call(context, url:, stream_sid:, call_properties:, custom_parameters:)
   end
 
   def stop_stream!
-    context.write_and_await_response(
-      Rayo::Command::TwilioStream::Stop.new(uuid: phone_call.id)
-    )
+    StopTwilioStream.call(context)
   end
 end

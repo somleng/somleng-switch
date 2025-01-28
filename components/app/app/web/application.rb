@@ -7,6 +7,8 @@ module SomlengAdhearsion
       set :root, __dir__
       enable :logging
 
+      set :host_authorization, { permitted_hosts: [] }
+
       configure :development do
         require "sinatra/reloader"
 
