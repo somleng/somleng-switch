@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM public.ecr.aws/docker/library/nginx:alpine
 
 RUN apk update
 
