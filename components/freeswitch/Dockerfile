@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/debian:bookworm-slim as freeswitch-build
+FROM public.ecr.aws/docker/library/debian:bookworm-slim AS freeswitch-build
 ARG signalwire_token
 
 RUN apt update && apt install --no-install-recommends -yq cmake gcc g++ make cmake build-essential git libssl-dev libspeex-dev libspeexdsp-dev autoconf automake libtool pkg-config libpcre3-dev libpcre3
@@ -31,7 +31,7 @@ RUN ./configure
 RUN make
 RUN make install
 
-FROM public.ecr.aws/aws-cli/aws-cli as aws-cli
+FROM public.ecr.aws/aws-cli/aws-cli AS aws-cli
 
 FROM public.ecr.aws/docker/library/debian:bookworm-slim
 
@@ -49,6 +49,7 @@ RUN apt-get update && apt-get install --no-install-recommends -yq libssl-dev lib
             freeswitch-mod-console \
             freeswitch-mod-event-socket \
             freeswitch-mod-logfile \
+            freeswitch-mod-ssml \
             freeswitch-mod-sofia \
             freeswitch-mod-dialplan-xml \
             freeswitch-mod-commands \
@@ -97,6 +98,8 @@ ENV FS_CACHE_DIRECTORY "/var/cache"
 ENV FS_LOG_DIRECTORY "/var/log/freeswitch"
 ENV FS_STORAGE_DIRECTORY "$FS_CACHE_DIRECTORY/freeswitch/storage"
 ENV FS_TTS_CACHE_DIRECTORY "$FS_CACHE_DIRECTORY/freeswitch/tts_cache"
+ENV FS_MOD_RAYO_MAX_IDLE_SECS "300"
+ENV FS_LOG_LEVEL "info"
 ENV MOD_TWILIO_STREAM_SUBPROTOCOL_NAME "audio.somleng.org"
 ENV MOD_TWILIO_STREAM_MIN_BUFFER_MILISECS "500"
 

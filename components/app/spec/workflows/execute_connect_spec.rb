@@ -9,9 +9,9 @@ RSpec.describe ExecuteConnect, type: :call_controller do
         "bar" => "baz"
       }
     )
-    call_platform_client = stub_call_platform_client(stream_sid: "stream-sid")
+    call_platform_client = stub_call_platform_client
+    allow(StartTwilioStream).to receive(:call)
     controller = build_controller(
-      stub_voice_commands: :write_and_await_response,
       call: build_fake_call(id: "call-id")
     )
 
@@ -21,7 +21,7 @@ RSpec.describe ExecuteConnect, type: :call_controller do
       **build_workflow_options(
         context: controller,
         call_platform_client:,
-        call_properties: { call_sid: "call-sid", account_sid: "account-sid" }
+        call_properties: { call_sid: "call-sid" }
       )
     )
 
@@ -34,21 +34,7 @@ RSpec.describe ExecuteConnect, type: :call_controller do
         "bar" => "baz"
       }
     )
-    expect(controller).to have_received(:write_and_await_response) do |command|
-      expect(command).to have_attributes(
-        uuid: "call-id",
-        url: "wss://example.com/audio",
-        metadata: {
-          call_sid: "call-sid",
-          account_sid: "account-sid",
-          stream_sid: "stream-sid",
-          custom_parameters: {
-            "foo" => "bar",
-            "bar" => "baz"
-          }
-        }
-      )
-    end
+    expect(StartTwilioStream).to have_received(:call)
   end
 
   it "handles stream disconnects" do
@@ -60,14 +46,17 @@ RSpec.describe ExecuteConnect, type: :call_controller do
         event_handler.channel_for("stream-sid") => [ "message" ]
       }
     )
+    allow(DisconnectTwilioStream).to receive(:call)
+    controller = build_controller
 
     ExecuteConnect.call(
       verb,
       redis_connection: -> { redis_connection },
-      **build_workflow_options(call_platform_client:, event_handler:)
+      **build_workflow_options(context: controller, call_platform_client:, event_handler:)
     )
 
     expect(event_handler.handled_events).to match_array([ disconnect_event ])
+    expect(DisconnectTwilioStream).to have_received(:call)
   end
 
   it "handles call updates" do
@@ -81,6 +70,7 @@ RSpec.describe ExecuteConnect, type: :call_controller do
         event_handler.channel_for("stream-sid") => [ "message" ]
       }
     )
+    allow(StopTwilioStream).to receive(:call)
     controller = build_controller(
       stub_voice_commands: :write_and_await_response,
       call: build_fake_call(id: "call-id")
@@ -99,7 +89,7 @@ RSpec.describe ExecuteConnect, type: :call_controller do
 
     expect(event_handler.handled_events).to match_array([ disconnect_event ])
     expect(call_update_event_handler.handled_events).to match_array([ call_update_event ])
-    expect(controller).to have_received(:write_and_await_response).with(an_instance_of(Rayo::Command::TwilioStream::Stop))
+    expect(StopTwilioStream).to have_received(:call)
   end
 
   def stub_fake_redis(channels: {}, poll_for_messages: true)
