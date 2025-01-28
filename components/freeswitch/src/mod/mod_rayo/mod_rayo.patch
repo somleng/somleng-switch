@@ -1,0 +1,105 @@
+diff --git a/mod_rayo.c b/mod_rayo.c
+index 537f4f9..8bc1e7a 100644
+--- a/mod_rayo.c
++++ b/mod_rayo.c
+@@ -137,6 +137,8 @@ struct rayo_call {
+ 	switch_time_t idle_start_time;
+ 	/** true if fax is in progress */
+ 	int faxing;
++	/** true if call is in progress */
++	int call_progress;
+ 	/** 1 if joined to call, 2 if joined to mixer */
+ 	int joined;
+ 	/** pending join */
+@@ -1286,6 +1288,26 @@ void rayo_call_set_faxing(struct rayo_call *call, int faxing)
+ 	call->faxing = faxing;
+ }
+ 
++/**
++ * Set progress flag - indicates the call is in progress 
++ * useful when a call should stay open even if it isn't joined or faxing
++ * @param call the call to flag
++ * @param in_progress true if call is in progress is in progress
++ */
++void rayo_call_set_call_progress(struct rayo_call *call, int call_progress)
++{
++	call->call_progress = call_progress;
++}
++
++/**
++ * @param call to check if call is in progress
++ * @return true if call is in progress
++ */
++int rayo_call_is_call_progress(struct rayo_call *call)
++{
++	return call->call_progress;
++}
++
+ #define RAYO_MIXER_LOCATE(mixer_name) rayo_mixer_locate(mixer_name, __FILE__, __LINE__)
+ /**
+  * Get access to Rayo mixer data.
+@@ -2503,6 +2525,33 @@ static iks *on_rayo_unjoin(struct rayo_actor *call, struct rayo_message *msg, vo
+ 	return response;
+ }
+ 
++/**
++ * Handle <iq><call_progress> 
++ * request expects flag value = to zero or one ie. <iq><call_progress flag="0">
++ * @param call the Rayo call
++ * @param session the session
++ * @param node the <iq> node
++ */
++/**
++ * Speed up execution of output component
++ */
++static iks *on_rayo_call_progress(struct rayo_actor *call, struct rayo_message *msg, void *data)
++{
++	iks *node = msg->payload;	
++	iks *response = NULL;
++	iks *call_progress_node = iks_find(node, "call_progress");
++	char *flag = iks_find_attrib(call_progress_node, "flag");
++
++	if (zstr(flag)) {
++		response = iks_new_error_detailed(node, STANZA_ERROR_BAD_REQUEST, "Missing flag to attrib");
++	} else {
++		int call_progress = strncmp("1", flag, 1) ? 1 : 0;
++		rayo_call_set_call_progress(RAYO_CALL(call), call_progress);
++		response = iks_new_iq_result(node);
++	}
++	return response;
++}
++
+ /**
+  * @return 1 if display name is valid
+  */
+@@ -3883,7 +3932,7 @@ static switch_status_t rayo_call_on_read_frame(switch_core_session_t *session, s
+ 		switch_time_t idle_start = call->idle_start_time;
+ 		int idle_duration_ms = (now - idle_start) / 1000;
+ 		/* detect idle session (rayo-client has stopped controlling call) and terminate call */
+-		if (rayo_call_is_joined(call) || rayo_call_is_faxing(call) || RAYO_ACTOR(call)->ref_count > 1) {
++		if (rayo_call_is_joined(call) || rayo_call_is_faxing(call) || rayo_call_is_call_progress(call) || RAYO_ACTOR(call)->ref_count > 1) {
+ 			call->idle_start_time = now;
+ 		} else if (idle_duration_ms > globals.max_idle_ms) {
+ 			switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_WARNING, "Ending abandoned call.  idle_duration_ms = %i ms\n", idle_duration_ms);
+@@ -5303,6 +5352,8 @@ SWITCH_MODULE_LOAD_FUNCTION(mod_rayo_load)
+ 	rayo_actor_command_handler_add(RAT_CALL, "", "set:"RAYO_NS":join", on_rayo_join);
+ 	rayo_actor_command_handler_add(RAT_CALL, "", "set:"RAYO_NS":unjoin", on_rayo_unjoin);
+ 
++	rayo_actor_command_handler_add(RAT_CALL, "", "set:"RAYO_NS":call_progress", on_rayo_call_progress);
++
+ 	switch_event_bind(modname, SWITCH_EVENT_CHANNEL_ORIGINATE, NULL, route_call_event, NULL);
+ 	switch_event_bind(modname, SWITCH_EVENT_CHANNEL_PROGRESS_MEDIA, NULL, route_call_event, NULL);
+ 	switch_event_bind(modname, SWITCH_EVENT_CHANNEL_PROGRESS, NULL, route_call_event, NULL);
+diff --git a/mod_rayo.h b/mod_rayo.h
+index 2d066c4..4ea616e 100644
+--- a/mod_rayo.h
++++ b/mod_rayo.h
+@@ -159,6 +159,8 @@ SWITCH_DECLARE(void) rayo_actor_destroy(struct rayo_actor *actor, const char *fi
+ SWITCH_DECLARE(int) rayo_call_is_joined(struct rayo_call *call);
+ SWITCH_DECLARE(int) rayo_call_is_faxing(struct rayo_call *call);
+ SWITCH_DECLARE(void) rayo_call_set_faxing(struct rayo_call *call, int faxing);
++SWITCH_DECLARE(int) rayo_call_is_call_progress(struct rayo_call *call);
++SWITCH_DECLARE(void) rayo_call_set_call_progress(struct rayo_call *call, int call_progress);
+ SWITCH_DECLARE(const char *) rayo_call_get_dcp_jid(struct rayo_call *call);
+ 
+ #define rayo_mixer_get_name(mixer) RAYO_ID(mixer)
