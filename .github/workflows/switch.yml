@@ -232,7 +232,6 @@ jobs:
           do
             for component in "${components[@]}"
             do
-              [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ] && [ $platform = "arm64" ] && continue
               docker image pull ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform
               docker tag ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform ${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform
               docker push ${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-$platform
