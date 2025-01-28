@@ -1,7 +1,7 @@
 FROM public.ecr.aws/docker/library/debian:bookworm-slim AS freeswitch-build
 ARG signalwire_token
 
-RUN apt update && apt install --no-install-recommends -yq cmake gcc g++ make cmake build-essential git libssl-dev libspeex-dev libspeexdsp-dev
+RUN apt update && apt install --no-install-recommends -yq cmake gcc g++ make cmake build-essential git libssl-dev libspeex-dev libspeexdsp-dev autoconf automake libtool pkg-config libpcre3-dev libpcre3
 
 RUN apt-get update && apt-get install --no-install-recommends -yq gnupg2 wget ca-certificates lsb-release && \
     wget --http-user=signalwire --http-password=${signalwire_token} -O /usr/share/keyrings/signalwire-freeswitch-repo.gpg https://freeswitch.signalwire.com/repo/deb/debian-release/signalwire-freeswitch-repo.gpg && \
@@ -17,6 +17,17 @@ COPY src/mod/mod_twilio_stream /usr/src/mod_twilio_stream
 RUN  mkdir -p /usr/src/mod_twilio_stream/build
 WORKDIR /usr/src/mod_twilio_stream/build
 RUN cmake ..
+RUN make
+RUN make install
+
+WORKDIR  /usr/src
+RUN git clone https://github.com/freeswitch/mod_rayo.git -b main
+COPY src/mod/mod_rayo/mod_rayo.patch mod_rayo/mod_rayo.patch
+
+WORKDIR /usr/src/mod_rayo
+RUN git apply mod_rayo.patch
+RUN  ./bootstrap.sh
+RUN ./configure
 RUN make
 RUN make install
 
@@ -38,7 +49,7 @@ RUN apt-get update && apt-get install --no-install-recommends -yq libssl-dev lib
             freeswitch-mod-console \
             freeswitch-mod-event-socket \
             freeswitch-mod-logfile \
-            freeswitch-mod-rayo \
+            freeswitch-mod-ssml \
             freeswitch-mod-sofia \
             freeswitch-mod-dialplan-xml \
             freeswitch-mod-commands \
@@ -69,6 +80,7 @@ RUN chown -R freeswitch:daemon /etc/freeswitch && \
 COPY --link --from=aws-cli /usr/local/aws-cli/ /usr/local/aws-cli/
 COPY --link --from=aws-cli /usr/local/bin/ /usr/local/bin
 COPY --link --from=freeswitch-build /usr/local/freeswitch/mod/mod_twilio_stream.so /usr/lib/freeswitch/mod/
+COPY --link --from=freeswitch-build /usr/lib/freeswitch/mod/mod_rayo.* /usr/lib/freeswitch/mod/
 
 RUN ldconfig
 
@@ -86,6 +98,8 @@ ENV FS_CACHE_DIRECTORY "/var/cache"
 ENV FS_LOG_DIRECTORY "/var/log/freeswitch"
 ENV FS_STORAGE_DIRECTORY "$FS_CACHE_DIRECTORY/freeswitch/storage"
 ENV FS_TTS_CACHE_DIRECTORY "$FS_CACHE_DIRECTORY/freeswitch/tts_cache"
+ENV FS_MOD_RAYO_MAX_IDLE_SECS "300"
+ENV FS_LOG_LEVEL "info"
 ENV MOD_TWILIO_STREAM_SUBPROTOCOL_NAME "audio.somleng.org"
 ENV MOD_TWILIO_STREAM_MIN_BUFFER_MILISECS "500"
 
