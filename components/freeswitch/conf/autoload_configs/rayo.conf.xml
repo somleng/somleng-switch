@@ -2,7 +2,7 @@
 
 <configuration name="rayo.conf" description="Rayo server config">
   <settings>
-    <param name="max-idle-sec" value="5"/>
+    <param name="max-idle-sec" value="$${mod_rayo_max_idle_secs}"/>
     <param name="add-variables-to-events" value="true"/>
   </settings>
 
