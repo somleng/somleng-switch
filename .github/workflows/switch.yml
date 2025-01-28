@@ -144,10 +144,8 @@ jobs:
                       docker buildx build --cache-from ${{ secrets.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --tag ${{ secrets.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --push components/app
                       docker buildx build --cache-from ${{ secrets.ECR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --tag ${{ secrets.ECR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --push components/nginx
                       docker buildx build --cache-from ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --tag ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --push components/freeswitch_event_logger
-                      if [ "${{ matrix.platform }}" = "amd64" ]; then
-                        components/freeswitch/bin/export_tts_voices > components/freeswitch/conf/autoload_configs/tts_voices.xml
-                        docker buildx build --build-arg signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }} --cache-from ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --tag ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --push components/freeswitch
-                      fi
+                      components/freeswitch/bin/export_tts_voices > components/freeswitch/conf/autoload_configs/tts_voices.xml
+                      docker buildx build --build-arg signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }} --cache-from ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --tag ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --push components/freeswitch
 
   build-manifest:
     name: Build Manifest
@@ -185,12 +183,8 @@ jobs:
           declare -a components=("${{ env.APP_REPOSITORY_NAME }}" "${{ env.WEBSERVER_REPOSITORY_NAME }}" "${{ env.FREESWITCH_REPOSITORY_NAME }}" "${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}")
           for component in "${components[@]}"
           do
-            if [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ]; then
-              docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-amd64
-            else
-              source_images=$(printf "${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-%s " "${platforms[@]}")
-              docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} $source_images
-            fi
+            source_images=$(printf "${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-%s " "${platforms[@]}")
+            docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/$component:${{ matrix.image_tag }} $source_images
           done
 
   publish_images:
@@ -247,12 +241,8 @@ jobs:
 
           for component in "${components[@]}"
           do
-            if [ "$component" = "${{ env.FREESWITCH_REPOSITORY_NAME }}" ]; then
-              docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} ${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-amd64
-            else
-              source_images=$(printf "${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-%s " "${platforms[@]}")
-              docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} $source_images
-            fi
+            source_images=$(printf "${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }}-%s " "${platforms[@]}")
+            docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/$component:${{ matrix.friendly_image_tag }} $source_images
           done
 
   deploy:
