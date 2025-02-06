@@ -164,7 +164,7 @@ GEM
       rake
     future-resource (1.1.0)
     has-guarded-handlers (1.6.3)
-    hashdiff (1.1.1)
+    hashdiff (1.1.2)
     http (5.2.0)
       addressable (~> 2.8)
       base64 (~> 0.1)
@@ -241,7 +241,7 @@ GEM
     redis-client (0.22.2)
       connection_pool
     regexp_parser (2.10.0)
-    rexml (3.3.9)
+    rexml (3.4.0)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
@@ -347,7 +347,7 @@ GEM
       coercible (~> 1.0)
       descendants_tracker (~> 0.0, >= 0.0.3)
       equalizer (~> 0.0, >= 0.0.9)
-    webmock (3.24.0)
+    webmock (3.25.0)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
