@@ -35,7 +35,7 @@ GEM
     docile (1.4.1)
     jmespath (1.6.2)
     ostruct (0.6.1)
-    ox (2.14.21)
+    ox (2.14.22)
       bigdecimal (>= 3.0)
     rake (13.2.1)
     rexml (3.3.9)
