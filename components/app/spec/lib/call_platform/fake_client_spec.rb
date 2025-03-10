@@ -45,6 +45,19 @@ module CallPlatform
           twiml: include("<Connect>")
         )
       end
+
+      it "returns a mock <Dial> response" do
+        client = FakeClient.new
+
+        response = client.create_inbound_call(
+          to: "3333",
+          from: "+855715200987"
+        )
+
+        expect(response).to have_attributes(
+          twiml: include("<Dial>")
+        )
+      end
     end
 
     describe "#create_media_stream" do
@@ -58,6 +71,35 @@ module CallPlatform
 
         expect(response).to have_attributes(
           id: be_present
+        )
+      end
+    end
+
+    describe "#create_outbound_calls" do
+      it "returns mock outbound calls" do
+        client = FakeClient.new
+
+        response = client.create_outbound_calls(
+          destinations: [ "85516701999", "855715100999" ],
+          parent_call_sid: "0df546d9-3348-48a7-b797-5a18dac477d2",
+          from: nil
+        )
+
+        expect(response).to contain_exactly(
+          have_attributes(
+            from: "855715100850",
+            parent_call_sid: "0df546d9-3348-48a7-b797-5a18dac477d2",
+            routing_parameters: hash_including(
+              destination: "85516701999"
+            )
+          ),
+          have_attributes(
+            from: "855715100850",
+            parent_call_sid: "0df546d9-3348-48a7-b797-5a18dac477d2",
+            routing_parameters: hash_including(
+              destination: "855715100999"
+            )
+          )
         )
       end
     end

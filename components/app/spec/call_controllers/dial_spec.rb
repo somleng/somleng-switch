@@ -160,7 +160,7 @@ RSpec.describe CallController, type: :call_controller do
 
       expect(controller).to have_received(:dial).with(
         include(
-          "sofia/external/alice@sip.example.com" => hash_including(for: 30.seconds, headers: be_a_kind_of(Hash))
+          "{bridge_early_media=true}sofia/external/alice@sip.example.com" => hash_including(for: 30.seconds, headers: be_a_kind_of(Hash))
         )
       )
     end
@@ -457,6 +457,6 @@ RSpec.describe CallController, type: :call_controller do
   end
 
   def dial_string(number, profile: :external)
-    match(%r{sofia/#{profile}/#{number}@.+})
+    match(%r{\A\{bridge_early_media=true\}sofia/#{profile}/#{number}@.+})
   end
 end
