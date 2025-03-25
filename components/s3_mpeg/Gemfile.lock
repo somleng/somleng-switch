@@ -9,14 +9,15 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    aws-eventstream (1.3.1)
-    aws-partitions (1.1058.0)
-    aws-sdk-core (3.219.0)
+    aws-eventstream (1.3.2)
+    aws-partitions (1.1073.0)
+    aws-sdk-core (3.221.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
       base64
       jmespath (~> 1, >= 1.6.1)
+      logger
     aws-sdk-kms (1.99.0)
       aws-sdk-core (~> 3, >= 3.216.0)
       aws-sigv4 (~> 1.5)
@@ -24,7 +25,7 @@ GEM
       aws-sdk-core (~> 3, >= 3.216.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.5)
-    aws-sdk-ssm (1.191.0)
+    aws-sdk-ssm (1.192.0)
       aws-sdk-core (~> 3, >= 3.216.0)
       aws-sigv4 (~> 1.5)
     aws-sigv4 (1.11.0)
@@ -35,6 +36,7 @@ GEM
     diff-lcs (1.5.1)
     docile (1.4.1)
     jmespath (1.6.2)
+    logger (1.6.6)
     ostruct (0.6.1)
     ox (2.14.22)
       bigdecimal (>= 3.0)
