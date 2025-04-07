@@ -6,8 +6,14 @@ resource "aws_efs_file_system" "this" {
     Name = var.name
   }
 
+  throughput_mode = "elastic"
+
   lifecycle_policy {
     transition_to_ia = "AFTER_30_DAYS"
+  }
+
+  lifecycle_policy {
+    transition_to_archive = "AFTER_60_DAYS"
   }
 
   lifecycle_policy {
