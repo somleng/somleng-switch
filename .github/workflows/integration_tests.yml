@@ -5,9 +5,6 @@ on:
       context:
         required: true
         type: string
-    secrets:
-      signalwire_token:
-        required: true
 
 jobs:
   build:
@@ -74,7 +71,7 @@ jobs:
           load: true
           context: components/freeswitch
           build-args:
-            signalwire_token=${{ secrets.signalwire_token }}
+            signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
           tags: freeswitch:latest
           cache-from: type=gha,scope=integration-tests-freeswitch
           cache-to: type=gha,mode=max,scope=integration-tests-freeswitch
@@ -150,4 +147,3 @@ jobs:
       - name: Run ${{ inputs.context }} Tests
         run: |
           docker compose exec testing ./tests.sh ./tests/${{ inputs.context }}
-
