@@ -46,7 +46,7 @@ jobs:
             {
               "identifier": "s3-mpeg-staging",
               "environment": "staging",
-              "branch": "use_arm_gh_runners",
+              "branch": "develop",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}"
             },
