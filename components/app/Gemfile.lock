@@ -153,7 +153,7 @@ GEM
     drb (2.2.1)
     equalizer (0.0.11)
     eventmachine (1.2.7)
-    faraday (2.12.2)
+    faraday (2.13.0)
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
