@@ -28,7 +28,7 @@ resource "aws_ecs_task_definition" "this" {
         options = {
           awslogs-group         = aws_cloudwatch_log_group.nginx.name,
           awslogs-region        = var.region.aws_region,
-          awslogs-stream-prefix = var.app_environment
+          awslogs-stream-prefix = "${var.identifier}/${var.app_environment}"
         }
       },
       essential = true,
@@ -53,7 +53,7 @@ resource "aws_ecs_task_definition" "this" {
         options = {
           awslogs-group         = aws_cloudwatch_log_group.app.name,
           awslogs-region        = var.region.aws_region,
-          awslogs-stream-prefix = var.app_environment
+          awslogs-stream-prefix = "${var.identifier}/${var.app_environment}"
         }
       },
       startTimeout = 120,
@@ -129,7 +129,7 @@ resource "aws_ecs_task_definition" "this" {
         options = {
           awslogs-group         = aws_cloudwatch_log_group.freeswitch.name,
           awslogs-region        = var.region.aws_region,
-          awslogs-stream-prefix = var.app_environment
+          awslogs-stream-prefix = "${var.identifier}/${var.app_environment}"
         }
       },
       startTimeout = 120,
@@ -264,7 +264,7 @@ resource "aws_ecs_task_definition" "this" {
         options = {
           awslogs-group         = aws_cloudwatch_log_group.redis.name,
           awslogs-region        = var.region.aws_region,
-          awslogs-stream-prefix = var.app_environment
+          awslogs-stream-prefix = "${var.identifier}/${var.app_environment}"
         }
       },
       essential = true,
@@ -288,7 +288,7 @@ resource "aws_ecs_task_definition" "this" {
         options = {
           awslogs-group         = aws_cloudwatch_log_group.freeswitch_event_logger.name,
           awslogs-region        = var.region.aws_region,
-          awslogs-stream-prefix = var.app_environment
+          awslogs-stream-prefix = "${var.identifier}/${var.app_environment}"
         }
       },
       startTimeout = 120,
