@@ -12,6 +12,12 @@ resource "aws_autoscaling_group" "this" {
   desired_capacity          = 0
   wait_for_capacity_timeout = 0
   protect_from_scale_in     = true
+  # Turn on metrics collection
+  # https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_EnableMetricsCollection.html
+  metrics_granularity = "1Minute"
+  enabled_metrics = [
+    "GroupInServiceInstances"
+  ]
 
   tag {
     key                 = "Name"

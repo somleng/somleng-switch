@@ -31,6 +31,11 @@ resource "aws_appautoscaling_policy" "freeswitch_session_count" {
   scalable_dimension = aws_appautoscaling_target.scale_target.scalable_dimension
   policy_type        = "TargetTrackingScaling"
 
+  # Adapted From:
+  # https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-target-tracking-metric-math.html
+  # Note we are deliberately not using the Metric "RunningTaskCount" from "ECS/ContainerInsights" because
+  # it's expensive to turn these metrics on for each cluster. Since we have 1 task per instance this value should be the same
+
   target_tracking_scaling_policy_configuration {
     customized_metric_specification {
       metrics {
@@ -55,20 +60,16 @@ resource "aws_appautoscaling_policy" "freeswitch_session_count" {
       }
 
       metrics {
-        label = "Get the total number of RUNNING tasks"
+        label = "Get the group size (the number of InService instances)"
         id    = "m2"
 
         metric_stat {
           metric {
-            metric_name = "RunningTaskCount"
-            namespace   = "ECS/ContainerInsights"
+            metric_name = "GroupInServiceInstances"
+            namespace   = "AWS/AutoScaling"
             dimensions {
-              name  = "ClusterName"
-              value = var.ecs_cluster.name
-            }
-            dimensions {
-              name  = "ServiceName"
-              value = aws_ecs_service.this.name
+              name  = "AutoScalingGroupName"
+              value = module.container_instances.autoscaling_group.name
             }
           }
 
@@ -79,7 +80,7 @@ resource "aws_appautoscaling_policy" "freeswitch_session_count" {
       }
 
       metrics {
-        label       = "Calculate the number of sessions per running task"
+        label       = "Calculate the number of sessions per running instance"
         id          = "e1"
         expression  = "m1 / m2"
         return_data = true

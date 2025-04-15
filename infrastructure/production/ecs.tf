@@ -3,7 +3,7 @@ resource "aws_ecs_cluster" "this" {
 
   setting {
     name  = "containerInsights"
-    value = "enabled"
+    value = "disabled"
   }
 }
 
@@ -20,6 +20,11 @@ resource "aws_ecs_cluster_capacity_providers" "this" {
 
 resource "aws_ecs_cluster" "helium" {
   name = var.ecs_cluster_name
+
+  setting {
+    name  = "containerInsights"
+    value = "disabled"
+  }
 
   provider = aws.helium
 }
