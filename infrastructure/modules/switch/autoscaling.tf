@@ -53,7 +53,7 @@ resource "aws_appautoscaling_policy" "freeswitch_session_count" {
             }
           }
 
-          stat = "Sum"
+          stat = "Average"
         }
 
         return_data = false
