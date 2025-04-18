@@ -49,6 +49,7 @@ class CallController < Adhearsion::CallController
       from: call.variables.fetch("variable_sip_h_x_somleng_caller_identity"),
       external_id: call_serializer.id,
       host: call_serializer.host,
+      region: AppSettings.fetch(:region),
       source_ip: call.variables["variable_sip_h_x_src_ip"] || call.variables["variable_sip_via_host"],
       client_identifier: call.variables["variable_sip_h_x_somleng_client_identifier"],
       variables: {

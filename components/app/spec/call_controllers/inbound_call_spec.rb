@@ -28,7 +28,8 @@ RSpec.describe CallController, type: :call_controller do
       expect(request_body).to include(
         "from" => "0715100960",
         "external_id" => call.id,
-        "host" => be_present
+        "host" => be_present,
+        "region" => be_present
       )
     })
   end

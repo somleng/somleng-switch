@@ -159,7 +159,7 @@ end
 AppSettings.redis_client = -> { FakeRedis.new }
 
 RSpec.configure do |config|
-  config.before(:each) do
+  config.before do
     AppSettings.redis.with { |redis| redis.flushall }
   end
 end
