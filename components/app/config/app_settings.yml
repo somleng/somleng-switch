@@ -12,6 +12,7 @@ default: &default
   redis_pool_size: <%= ENV.fetch('DB_POOL') { 250 } %>
   services_function_arn: <%= ENV.fetch('SERVICES_FUNCTION_ARN') { "arn:aws:lambda:ap-southeast-1:12345:function:function-name" } %>
   services_function_region: <%= ENV.fetch('SERVICES_FUNCTION_REGION') { "ap-southeast-1" } %>
+  region: <%= ENV.fetch('REGION') { "hydrogen" } %>
 
 production: &production
   <<: *default
