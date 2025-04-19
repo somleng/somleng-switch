@@ -117,7 +117,7 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name  = "SERVICES_FUNCTION_REGION",
-          value = var.services_function.this.arn
+          value = var.services_function.aws_region
         },
         {
           name  = "REGION",
