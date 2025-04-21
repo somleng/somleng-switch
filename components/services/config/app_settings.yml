@@ -5,6 +5,7 @@ default: &default
 production: &production
   <<: *default
   sentry_dsn: "<%= app_settings.credentials.fetch('sentry_dsn') %>"
+  queue_url: '<%= ENV.fetch("QUEUE_URL") %>'
 
 staging:
   <<: *production
@@ -12,6 +13,7 @@ staging:
 development: &development
   <<: *default
   stub_regions: true
+  queue_url: '<%= ENV.fetch("QUEUE_URL", "https://sqs.us-east-1.amazonaws.com/123456789/queue") %>'
 
 test:
   <<: *development

@@ -6,6 +6,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem "aws-sdk-ec2"
 gem "aws-sdk-ecs"
+gem "aws-sdk-sqs"
 gem "aws-sdk-ssm"
 gem "base64"
 gem "encrypted_credentials", github: "somleng/encrypted_credentials"

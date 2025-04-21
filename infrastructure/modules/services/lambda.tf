@@ -31,6 +31,7 @@ resource "aws_lambda_function" "this" {
       DB_HOST                                     = var.db_host
       DB_PORT                                     = var.db_port
       DB_USER                                     = var.db_username
+      QUEUE_URL                                   = aws_sqs_queue.this.url
     }
   }
 

@@ -24,3 +24,9 @@ Aws.config[:ec2] = {
     }
   }
 }
+
+Aws.config[:sqs] ||= {
+  stub_responses: {
+    send_message: Aws::SQS::Client.new.stub_data(:send_message)
+  }
+}

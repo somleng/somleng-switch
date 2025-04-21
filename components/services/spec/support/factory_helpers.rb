@@ -26,6 +26,27 @@ module FactoryHelpers
   def create_subscriber(params)
     client_gateway_database_connection.table(:subscriber).insert(params)
   end
+
+  def build_ecs_event(**attributes)
+    task_running = attributes.fetch(:task_running?, true)
+    task_stopped = attributes.fetch(:task_stopped, !task_running)
+    eni_attached = attributes.fetch(:eni_attached, task_running)
+    eni_deleted = attributes.fetch(:eni_deleted, task_stopped)
+
+    ECSEvent.new(
+      event_type: :ecs,
+      task_running?: task_running,
+      task_stopped?: task_stopped,
+      eni_attached?: eni_attached,
+      eni_deleted?: eni_deleted,
+      eni_private_ip: "10.0.0.139",
+      private_ip: "10.0.0.139",
+      public_ip: "54.251.92.249",
+      group: "service:somleng-switch",
+      region: "ap-southeast-1",
+      **attributes
+    )
+  end
 end
 
 RSpec.configure do |config|
