@@ -12,6 +12,7 @@ production: &production
 
 staging:
   <<: *production
+  somleng_host: '<%= ENV.fetch("SOMLENG_HOST", "https://api-staging.somleng.org") %>'
 
 development: &development
   <<: *default
