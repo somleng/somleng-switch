@@ -24,6 +24,7 @@ if ENV.key?("CI")
   SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
 end
 
+ENV["AWS_DEFAULT_REGION"] = "ap-southeast-1"
 ENV["SWITCH_GROUP"] = "service:somleng-switch"
 ENV["MEDIA_PROXY_GROUP"] = "service:media-proxy"
 ENV["CLIENT_GATEWAY_GROUP"] = "service:client-gateway"
