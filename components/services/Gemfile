@@ -10,6 +10,7 @@ gem "aws-sdk-sqs"
 gem "aws-sdk-ssm"
 gem "base64"
 gem "encrypted_credentials", github: "somleng/encrypted_credentials"
+gem "faraday"
 gem "ox" # XML parser. required by aws-sdk-s3
 gem "pg"
 gem "sentry-ruby"
@@ -27,4 +28,5 @@ group :test do
   gem "rspec"
   gem "simplecov", require: false
   gem "simplecov-cobertura", require: false
+  gem "webmock"
 end

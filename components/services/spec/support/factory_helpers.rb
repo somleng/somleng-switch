@@ -42,8 +42,10 @@ module FactoryHelpers
       eni_private_ip: "10.0.0.139",
       private_ip: "10.0.0.139",
       public_ip: "54.251.92.249",
-      group: "service:somleng-switch",
+      group: "service:switch",
+      family: "switch",
       region: "ap-southeast-1",
+      cluster: "somleng-switch",
       **attributes
     )
   end

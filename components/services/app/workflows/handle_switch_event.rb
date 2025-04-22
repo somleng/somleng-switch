@@ -28,15 +28,14 @@ class HandleSwitchEvent < ApplicationWorkflow
   end
 
   def enqueue_notify
-    status = if task_running?
-      "running"
-    elsif task_stopped?
-      "stopped"
-    end
+    return if !task_running? && !task_stopped?
 
-    return if status.nil?
-
-    enqueue_job(NotifySwitchCapacityChangeJob.to_s, status:)
+    enqueue_job(
+      NotifySwitchCapacityChangeJob.to_s,
+      region: event.region,
+      cluster: event.cluster,
+      family: event.family
+    )
   end
 
   def enqueue_job(job_class, *args)

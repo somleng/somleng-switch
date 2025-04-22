@@ -21,6 +21,8 @@ class ECSEventParser
       private_ip:,
       public_ip:,
       group:,
+      family:,
+      cluster: cluster_arn,
       region:
     )
   end
@@ -49,6 +51,10 @@ class ECSEventParser
 
   def group
     detail.fetch("group")
+  end
+
+  def family
+    group.split(":", 2).last
   end
 
   def eni_private_ip

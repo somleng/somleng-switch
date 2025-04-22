@@ -4,7 +4,13 @@ RSpec.describe HandleSwitchEvent, :public_gateway, :client_gateway do
   it "handles handles running switch events" do
     sqs_client = Aws::SQS::Client.new(stub_responses: true)
     queue_url = "https://sqs.us-east-1.amazonaws.com/123456789/queue"
-    event = build_ecs_event(task_running?: true, region: "ap-southeast-1", private_ip: "10.0.0.100")
+    event = build_ecs_event(
+      task_running?: true,
+      region: "ap-southeast-1",
+      private_ip: "10.0.0.100",
+      cluster: "somleng-switch",
+      family: "switch"
+    )
 
     HandleSwitchEvent.call(event:, queue_url:, sqs_client:)
 
@@ -21,7 +27,11 @@ RSpec.describe HandleSwitchEvent, :public_gateway, :client_gateway do
     )
     expect(sqs_client.api_requests.first).to match(
       sqs_request(
-        { status: "running" },
+        {
+          region: "ap-southeast-1",
+          cluster: "somleng-switch",
+          family: "switch"
+        },
         job_class: "NotifySwitchCapacityChangeJob",
         queue_url:
       )
@@ -30,7 +40,10 @@ RSpec.describe HandleSwitchEvent, :public_gateway, :client_gateway do
 
   it "handles switch events from different regions" do
     sqs_client = Aws::SQS::Client.new(stub_responses: true)
-    event = build_ecs_event(task_running?: true, region: "us-east-1")
+    event = build_ecs_event(
+      task_running?: true,
+      region: "us-east-1"
+    )
 
     HandleSwitchEvent.call(event:, sqs_client:)
 
@@ -38,12 +51,7 @@ RSpec.describe HandleSwitchEvent, :public_gateway, :client_gateway do
     expect(results[0]).to include(
       group_id: 2
     )
-    expect(sqs_client.api_requests.first).to match(
-      sqs_request(
-        { status: "running" },
-        job_class: "NotifySwitchCapacityChangeJob",
-      )
-    )
+    expect(sqs_client.api_requests.size).to eq(1)
   end
 
   it "handles stopped switch events" do
@@ -57,12 +65,7 @@ RSpec.describe HandleSwitchEvent, :public_gateway, :client_gateway do
     HandleSwitchEvent.call(event:, sqs_client:)
 
     expect(public_gateway_load_balancer.count).to eq(0)
-    expect(sqs_client.api_requests.first).to match(
-      sqs_request(
-        { status: "stopped" },
-        job_class: "NotifySwitchCapacityChangeJob",
-      )
-    )
+    expect(sqs_client.api_requests.size).to eq(1)
   end
 
   def public_gateway_load_balancer

@@ -1,19 +1,24 @@
 default: &default
-  region_data: '<%= ENV.fetch("REGION_DATA", "{}") %>'
-  stub_regions: false
+  somleng_host: '<%= ENV.fetch("SOMLENG_HOST", "https://api.somleng.org") %>'
+  somleng_username: '<%= ENV.fetch("SOMLENG_USERNAME", "services") %>'
 
 production: &production
   <<: *default
+  region_data: '<%= ENV.fetch("REGION_DATA") %>'
+  stub_regions: false
   sentry_dsn: "<%= app_settings.credentials.fetch('sentry_dsn') %>"
   queue_url: '<%= ENV.fetch("QUEUE_URL") %>'
+  somleng_password: "<%= ENV.fetch('SOMLENG_PASSWORD') { app_settings.credentials.fetch('somleng_password') } %>"
 
 staging:
   <<: *production
 
 development: &development
   <<: *default
+  region_data: '<%= ENV.fetch("REGION_DATA", "{}") %>'
   stub_regions: true
   queue_url: '<%= ENV.fetch("QUEUE_URL", "https://sqs.us-east-1.amazonaws.com/123456789/queue") %>'
+  somleng_password: "<%= ENV.fetch('SOMLENG_PASSWORD', 'password') %>"
 
 test:
   <<: *development

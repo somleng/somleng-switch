@@ -39,6 +39,7 @@ resource "aws_iam_policy" "custom_policy" {
       },
       {
         Action = [
+          "sqs:SendeMessage",
           "sqs:DeleteMessage",
           "sqs:ReceiveMessage",
           "sqs:GetQueueAttributes"
@@ -51,7 +52,8 @@ resource "aws_iam_policy" "custom_policy" {
       {
         Action = [
           "ec2:DescribeInstances",
-          "ecs:DescribeContainerInstances"
+          "ecs:DescribeContainerInstances",
+          "ecs:ListTasks"
         ]
         Effect = "Allow"
         Resource = [
