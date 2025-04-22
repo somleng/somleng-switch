@@ -30,6 +30,18 @@ RSpec.describe NotifySwitchCapacityChangeJob do
     )
   end
 
+  it "instantiates the ECS client with the correct region" do
+    job = NotifySwitchCapacityChangeJob.new(
+      {
+        region: "us-east-1",
+        cluster: "somleng-switch",
+        family: "switch"
+      }
+    )
+
+    expect(job.ecs_client.config.region).to eq("us-east-1")
+  end
+
   def stub_ecs_client(task_arns)
     Aws::ECS::Client.new(
       stub_responses: {
