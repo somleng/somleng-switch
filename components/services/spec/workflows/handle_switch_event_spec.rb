@@ -76,7 +76,7 @@ RSpec.describe HandleSwitchEvent, :public_gateway, :client_gateway do
     hash_including(
       operation_name: :send_message,
       params: hash_including(
-        queue_url: options.fetch(:queue_url) { AppSettings.fetch(:queue_url) },
+        queue_url: options.fetch(:queue_url),
         message_body: {
           job_class: options.fetch(:job_class),
           job_args: args

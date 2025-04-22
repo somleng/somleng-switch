@@ -124,7 +124,7 @@ RSpec.describe "Handles SQS Message" do
       }.to_json
     )
 
-    stub_request(:post, "https://api.somleng.org/services/switch_capacities").to_return(status: 200)
+    stub_request(:post, "https://api.somleng.org/services/switch_capacities")
 
     invoke_lambda(payload:)
 
