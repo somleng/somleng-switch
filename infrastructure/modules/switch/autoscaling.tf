@@ -24,6 +24,10 @@ resource "aws_appautoscaling_policy" "policy" {
   }
 }
 
+# Note: Unlike a queue, this metric does not depend on the number of tasks running.
+# This is similar to a CPU target value. The CPU average is over all tasks running.
+# We want the AVERAGE session count to be around 100
+
 resource "aws_appautoscaling_policy" "freeswitch_session_count" {
   name               = "freeswitch-session-count-scale"
   service_namespace  = aws_appautoscaling_target.scale_target.service_namespace
@@ -31,59 +35,16 @@ resource "aws_appautoscaling_policy" "freeswitch_session_count" {
   scalable_dimension = aws_appautoscaling_target.scale_target.scalable_dimension
   policy_type        = "TargetTrackingScaling"
 
-  # Adapted From:
-  # https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-target-tracking-metric-math.html
-  # Note we are deliberately not using the Metric "RunningTaskCount" from "ECS/ContainerInsights" because
-  # it's expensive to turn these metrics on for each cluster. Since we have 1 task per instance this value should be the same
-
   target_tracking_scaling_policy_configuration {
     customized_metric_specification {
-      metrics {
-        label = "Get the total number of FreeSWITCH sessions"
-        id    = "m1"
+      metric_name = aws_cloudwatch_log_metric_filter.freeswitch_session_count.metric_transformation.*.name[0]
+      namespace   = aws_cloudwatch_log_metric_filter.freeswitch_session_count.metric_transformation.*.namespace[0]
+      unit        = aws_cloudwatch_log_metric_filter.freeswitch_session_count.metric_transformation.*.unit[0]
+      statistic   = "Average"
 
-        metric_stat {
-          metric {
-            metric_name = aws_cloudwatch_log_metric_filter.freeswitch_session_count.metric_transformation.*.name[0]
-            namespace   = aws_cloudwatch_log_metric_filter.freeswitch_session_count.metric_transformation.*.namespace[0]
-
-            dimensions {
-              name  = "ServiceName"
-              value = aws_ecs_service.this.name
-            }
-          }
-
-          stat = "Average"
-        }
-
-        return_data = false
-      }
-
-      metrics {
-        label = "Get the group size (the number of InService instances)"
-        id    = "m2"
-
-        metric_stat {
-          metric {
-            metric_name = "GroupInServiceInstances"
-            namespace   = "AWS/AutoScaling"
-            dimensions {
-              name  = "AutoScalingGroupName"
-              value = module.container_instances.autoscaling_group.name
-            }
-          }
-
-          stat = "Average"
-        }
-
-        return_data = false
-      }
-
-      metrics {
-        label       = "Calculate the number of sessions per running instance"
-        id          = "e1"
-        expression  = "m1 / m2"
-        return_data = true
+      dimensions {
+        name  = "ServiceName"
+        value = aws_ecs_service.this.name
       }
     }
 
