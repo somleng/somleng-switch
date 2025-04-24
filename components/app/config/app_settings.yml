@@ -1,9 +1,9 @@
 default: &default
   ahn_core_host: <%= ENV.fetch("AHN_CORE_HOST") { "localhost" } %>
   ahn_core_port: <%= ENV.fetch("AHN_CORE_PORT") { 5222 } %>
-  call_platform_username: "services"
-  ahn_core_username: "rayo@rayo.somleng.org"
-  ahn_http_username: "adhearsion"
+  call_platform_username: <%= ENV.fetch("CALL_PLATFORM_USERNAME", "services") %>
+  ahn_core_username: <%= ENV.fetch("AHN_CORE_USERNAME", "rayo@rayo.somleng.org") %>
+  ahn_http_username: <%= ENV.fetch("AHN_HTTP_USERNAME", "adhearsion") %>
   redis_url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } %>
   redis_pool_size: <%= ENV.fetch('DB_POOL') { 250 } %>
 
