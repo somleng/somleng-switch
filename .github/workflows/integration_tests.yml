@@ -34,7 +34,6 @@ jobs:
 
       # Login to AWS to avoid rate limit
       - name: Configure AWS credentials
-        id: aws-login
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
