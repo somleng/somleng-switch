@@ -53,7 +53,7 @@ class HandleSwitchEvent < ApplicationWorkflow
   end
 
   def task_stopped?
-    event.task_stopped? && event.eni_deleted?
+    event.task_stopped?
   end
 
   def load_balancer_group
