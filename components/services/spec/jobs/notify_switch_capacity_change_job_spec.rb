@@ -4,7 +4,7 @@ RSpec.describe NotifySwitchCapacityChangeJob do
   it "fetches the number of tasks and notifies Somleng" do
     task_arns = [ "task-arn-1", "task-arn-2" ]
     ecs_client = stub_ecs_client(task_arns)
-    somleng_client = instance_spy(Somleng::Client)
+    call_platform_client = instance_spy(CallPlatform::Client)
 
     job = NotifySwitchCapacityChangeJob.new(
       {
@@ -13,7 +13,7 @@ RSpec.describe NotifySwitchCapacityChangeJob do
         family: "switch"
       },
       ecs_client:,
-      somleng_client:
+      call_platform_client:
     )
 
     job.call
@@ -24,7 +24,7 @@ RSpec.describe NotifySwitchCapacityChangeJob do
         family: "switch"
       )
     )
-    expect(somleng_client).to have_received(:update_switch_capacity).with(
+    expect(call_platform_client).to have_received(:update_switch_capacity).with(
       region: "hydrogen",
       capacity: 2
     )

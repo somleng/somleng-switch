@@ -1,5 +1,5 @@
 class NotifySwitchCapacityChangeJob
-  attr_reader :region, :cluster, :family, :ecs_client, :somleng_client, :somleng_region
+  attr_reader :region, :cluster, :family, :ecs_client, :call_platform_client, :somleng_region
 
   def initialize(params, **options)
     params.transform_keys!(&:to_sym)
@@ -7,12 +7,12 @@ class NotifySwitchCapacityChangeJob
     @cluster = params.fetch(:cluster)
     @family = params.fetch(:family)
     @ecs_client = options.fetch(:ecs_client) { Aws::ECS::Client.new(region:) }
-    @somleng_client = options.fetch(:somleng_client) { Somleng::Client.new }
+    @call_platform_client = options.fetch(:call_platform_client) { CallPlatform::Client.new }
     @somleng_region = options.fetch(:somleng_region) { SomlengRegion::Region.find_by!(identifier: region) }
   end
 
   def call
-    somleng_client.update_switch_capacity(region: somleng_region.alias, capacity: tasks.count)
+    call_platform_client.update_switch_capacity(region: somleng_region.alias, capacity: tasks.count)
   end
 
   private
