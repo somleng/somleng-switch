@@ -29,6 +29,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Test write
+        run: |
+          echo "test" > test.txt
+          echo "test" > components/freeswitch/conf/autoload_configs/test.txt
+
       - name: Install native dependencies
         run: |
           sudo apt-get update
