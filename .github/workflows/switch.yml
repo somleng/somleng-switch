@@ -74,7 +74,7 @@ jobs:
             {
               "identifier": "switch-staging",
               "environment": "staging",
-              "branch": "develop",
+              "branch": "handle_task_capacity_update_notifications",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "switch-staging",

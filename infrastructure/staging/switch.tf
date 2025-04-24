@@ -1,7 +1,3 @@
-data "aws_ssm_parameter" "call_platform_password" {
-  name = "somleng.${var.app_environment}.services_password"
-}
-
 module "switch" {
   source = "../modules/switch"
 

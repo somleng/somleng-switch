@@ -1,5 +1,5 @@
-data "aws_ssm_parameter" "somleng_services_password" {
-  name = "somleng.production.services_password"
+data "aws_ssm_parameter" "call_platform_password" {
+  name = "somleng.${var.app_environment}.services_password"
 }
 
 data "aws_ssm_parameter" "freeswitch_event_socket_password" {

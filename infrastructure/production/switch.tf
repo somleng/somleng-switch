@@ -8,6 +8,7 @@ module "switch" {
   recordings_bucket_name                             = "raw-recordings.somleng.org"
   application_master_key_parameter_name              = "somleng-switch.${var.app_environment}.application_master_key"
   rayo_password_parameter_name                       = "somleng-switch.${var.app_environment}.rayo_password"
+  http_password_parameter_name                       = "somleng-switch.${var.app_environment}.http_password"
   freeswitch_event_socket_password_parameter_name    = "somleng-switch.${var.app_environment}.freeswitch_event_socket_password"
   recordings_bucket_access_key_id_parameter_name     = "somleng-switch.${var.app_environment}.recordings_bucket_access_key_id"
   recordings_bucket_secret_access_key_parameter_name = "somleng-switch.${var.app_environment}.recordings_bucket_secret_access_key"
@@ -19,7 +20,7 @@ module "switch" {
   sip_port                                           = var.sip_port
   sip_alternative_port                               = var.sip_alternative_port
   freeswitch_event_socket_port                       = var.freeswitch_event_socket_port
-  json_cdr_password_parameter                        = data.aws_ssm_parameter.somleng_services_password
+  call_platform_password_parameter                   = data.aws_ssm_parameter.call_platform_password
   services_function                                  = module.services
   internal_route53_zone                              = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_internal_somleng_org
   lb_rule_index                                      = 20
@@ -50,6 +51,7 @@ module "switch_helium" {
   recordings_bucket_secret_access_key_parameter = module.switch.recordings_bucket_secret_access_key_parameter
   application_master_key_parameter              = module.switch.application_master_key_parameter
   rayo_password_parameter                       = module.switch.rayo_password_parameter
+  http_password_parameter                       = module.switch.http_password_parameter
   freeswitch_event_socket_password_parameter    = module.switch.freeswitch_event_socket_password_parameter
   container_instance_profile                    = module.switch.container_instances.iam_instance_profile
   iam_task_role                                 = module.switch.iam_task_role
@@ -59,7 +61,7 @@ module "switch_helium" {
   sip_port                                      = module.switch.sip_port
   sip_alternative_port                          = module.switch.sip_alternative_port
   freeswitch_event_socket_port                  = module.switch.freeswitch_event_socket_port
-  json_cdr_password_parameter                   = module.switch.json_cdr_password_parameter
+  call_platform_password_parameter              = module.switch.call_platform_password_parameter
   services_function                             = module.switch.services_function
   app_image                                     = module.switch.app_image
   nginx_image                                   = module.switch.nginx_image
