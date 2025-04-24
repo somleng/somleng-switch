@@ -12,7 +12,7 @@ class NotifySwitchCapacityChangeJob
   end
 
   def call
-    call_platform_client.update_switch_capacity(region: somleng_region.alias, capacity: tasks.count)
+    call_platform_client.update_capacity(region: somleng_region.alias, capacity: tasks.count)
   end
 
   private

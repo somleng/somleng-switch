@@ -40,7 +40,7 @@ resource "aws_iam_policy" "custom_policy" {
       },
       {
         Action = [
-          "sqs:SendeMessage",
+          "sqs:SendMessage",
           "sqs:DeleteMessage",
           "sqs:ReceiveMessage",
           "sqs:GetQueueAttributes"

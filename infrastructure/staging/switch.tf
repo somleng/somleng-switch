@@ -12,7 +12,7 @@ module "switch" {
   freeswitch_event_socket_password_parameter_name    = "somleng-switch.${var.app_environment}.freeswitch_event_socket_password"
   recordings_bucket_access_key_id_parameter_name     = "somleng-switch.${var.app_environment}.recordings_bucket_access_key_id"
   recordings_bucket_secret_access_key_parameter_name = "somleng-switch.${var.app_environment}.recordings_bucket_secret_access_key"
-  min_tasks                                          = 1
+  min_tasks                                          = 2
   max_tasks                                          = 2
   lb_rule_index                                      = 120
   identifier                                         = var.switch_identifier

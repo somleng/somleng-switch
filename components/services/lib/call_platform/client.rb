@@ -8,8 +8,8 @@ module CallPlatform
       @http_client = options.fetch(:http_client) { default_http_client(**options.fetch(:http_client_options, {})) }
     end
 
-    def update_switch_capacity(params)
-      notify_request("/services/switch_capacities", params)
+    def update_capacity(params)
+      notify_request("/services/call_service_capacities", params)
     end
 
     private

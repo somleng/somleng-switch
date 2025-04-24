@@ -109,7 +109,7 @@ RSpec.describe "Handles SQS Message" do
     expect(result.count).to eq(0)
   end
 
-  it "notifies switch capacity updates" do
+  it "notifies capacity updates" do
     payload = build_sqs_message_event_payload(
       event_source_arn: "arn:aws:sqs:us-east-2:123456789012:somleng-switch-permissions",
       body: {
@@ -124,11 +124,11 @@ RSpec.describe "Handles SQS Message" do
       }.to_json
     )
 
-    stub_request(:post, "https://api.somleng.org/services/switch_capacities")
+    stub_request(:post, "https://api.somleng.org/services/call_service_capacities")
 
     invoke_lambda(payload:)
 
-    expect(WebMock).to have_requested(:post, "https://api.somleng.org/services/switch_capacities").with(body: { region: "hydrogen", capacity: 0 }.to_json)
+    expect(WebMock).to have_requested(:post, "https://api.somleng.org/services/call_service_capacities").with(body: { region: "hydrogen", capacity: 0 }.to_json)
   end
 
   def subscriber
