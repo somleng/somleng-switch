@@ -181,7 +181,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: components/freeswitch
+          context: components/freeswitch_event_logger
           build-args: |
             signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
           platforms: linux/${{ matrix.platform.arch }}
