@@ -146,6 +146,8 @@ jobs:
 
       - name: Export Polly Voices
         run: |
+          ls -lath components/freeswitch/conf/autoload_configs/tts_voices.xml
+          ls -lath components/freeswitch/bin/export_tts_voices
           components/freeswitch/bin/export_tts_voices > components/freeswitch/conf/autoload_configs/tts_voices.xml
 
       - name: Build and push app image
