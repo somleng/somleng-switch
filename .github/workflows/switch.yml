@@ -32,6 +32,8 @@ jobs:
       - name: Test write
         run: |
           echo "test" > test.txt
+          ls -lath
+          ls -lath components/freeswitch/
           echo "test" > components/freeswitch/conf/autoload_configs/test.txt
 
       - name: Install native dependencies
