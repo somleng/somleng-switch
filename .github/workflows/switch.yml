@@ -181,7 +181,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: components/freeswitch_event_logger
+          context: components/freeswitch
           build-args: |
             signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
           platforms: linux/${{ matrix.platform.arch }}
@@ -196,7 +196,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: components/freeswitch
+          context: components/freeswitch_event_logger
           platforms: linux/${{ matrix.platform.arch }}
           cache-from: type=gha,scope=${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
           cache-to: type=gha,mode=max,scope=${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
