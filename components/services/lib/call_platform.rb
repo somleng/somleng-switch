@@ -1,4 +1,4 @@
-module Somleng
+module CallPlatform
   class << self
     def configure
       yield(configuration)
@@ -12,5 +12,5 @@ module Somleng
   end
 end
 
-require_relative "somleng/configuration"
-require_relative "somleng/client"
+require_relative "call_platform/configuration"
+require_relative "call_platform/client"

@@ -1,6 +1,6 @@
 require "spec_helper"
 
-module Somleng
+module CallPlatform
   RSpec.describe Client do
     it "updates the switch capacity" do
       client = Client.new(http_client_options: { username: "somleng", password: "secret" })

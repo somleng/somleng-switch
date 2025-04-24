@@ -1,6 +1,6 @@
 require "faraday"
 
-module Somleng
+module CallPlatform
   class Client
     attr_reader :http_client
 
@@ -23,7 +23,7 @@ module Somleng
     end
 
     def default_http_client(**options)
-      Faraday.new(url: options.fetch(:url, Somleng.configuration.host)) do |conn|
+      Faraday.new(url: options.fetch(:url, CallPlatform.configuration.host)) do |conn|
         conn.headers["Accept"] = "application/json"
         conn.headers["Content-Type"] = "application/json"
 
@@ -32,8 +32,8 @@ module Somleng
         conn.request(
           :authorization,
           :basic,
-          options.fetch(:username, Somleng.configuration.username),
-          options.fetch(:password, Somleng.configuration.password)
+          options.fetch(:username, CallPlatform.configuration.username),
+          options.fetch(:password, CallPlatform.configuration.password)
         )
       end
     end

@@ -3,6 +3,7 @@ variable "ecs_cluster" {}
 variable "app_environment" {}
 variable "lb_rule_index" {}
 variable "region" {}
+variable "call_platform_password_parameter" {}
 
 variable "target_group_name" {
   default = null
@@ -48,6 +49,14 @@ variable "rayo_password_parameter" {
   default = null
 }
 
+variable "http_password_parameter_name" {
+  default = null
+}
+
+variable "http_password_parameter" {
+  default = null
+}
+
 variable "freeswitch_event_socket_password_parameter_name" {
   default = null
 }
@@ -72,7 +81,6 @@ variable "target_event_bus" {
   default = null
 }
 
-variable "json_cdr_password_parameter" {}
 variable "services_function" {}
 variable "cache_name" {
   default = null

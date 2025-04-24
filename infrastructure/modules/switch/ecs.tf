@@ -84,6 +84,14 @@ resource "aws_ecs_task_definition" "this" {
         {
           name      = "AHN_CORE_PASSWORD",
           valueFrom = local.rayo_password_parameter.arn
+        },
+        {
+          name      = "AHN_HTTP_PASSWORD",
+          valueFrom = local.http_password_parameter.arn
+        },
+        {
+          name      = "CALL_PLATFORM_PASSWORD",
+          valueFrom = var.call_platform_password_parameter.arn
         }
       ],
       environment = [
@@ -182,7 +190,7 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name      = "FS_MOD_JSON_CDR_PASSWORD",
-          valueFrom = var.json_cdr_password_parameter.arn
+          valueFrom = var.call_platform_password_parameter.arn
         },
         {
           name      = "FS_RECORDINGS_BUCKET_ACCESS_KEY_ID",
