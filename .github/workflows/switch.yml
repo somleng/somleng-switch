@@ -121,10 +121,6 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
 
-      - name: Export Polly Voices
-        run: |
-          components/freeswitch/bin/export_tts_voices > components/freeswitch/conf/autoload_configs/tts_voices.xml
-
       - name: Configure AWS credentials
         id: aws-login
         uses: aws-actions/configure-aws-credentials@v4
@@ -150,6 +146,10 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ secrets.ECR_REGISTRY }}
+
+      - name: Export Polly Voices
+        run: |
+          components/freeswitch/bin/export_tts_voices > components/freeswitch/conf/autoload_configs/tts_voices.xml
 
       - name: Build and push app image
         uses: docker/build-push-action@v6
