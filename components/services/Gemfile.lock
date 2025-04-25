@@ -44,7 +44,7 @@ GEM
       rexml
     diff-lcs (1.6.1)
     docile (1.4.1)
-    faraday (2.13.0)
+    faraday (2.13.1)
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
@@ -52,7 +52,7 @@ GEM
       net-http (>= 0.5.0)
     hashdiff (1.1.2)
     jmespath (1.6.2)
-    json (2.10.2)
+    json (2.11.3)
     language_server-protocol (3.17.0.4)
     lint_roller (1.1.0)
     logger (1.7.0)
