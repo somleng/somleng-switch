@@ -2,20 +2,6 @@ require "aws-sdk-ecs"
 require "aws-sdk-ec2"
 
 class ECSEventParser
-  Event = Struct.new(
-    :task_running?,
-    :task_stopped?,
-    :eni_attached?,
-    :eni_deleted?,
-    :eni_private_ip,
-    :private_ip,
-    :public_ip,
-    :group,
-    :event_type,
-    :region,
-    keyword_init: true
-  )
-
   attr_reader :event, :ecs_client, :ec2_client
 
   def initialize(event, ecs_client: Aws::ECS::Client.new, ec2_client: Aws::EC2::Client.new)
@@ -25,7 +11,7 @@ class ECSEventParser
   end
 
   def parse_event
-    Event.new(
+    ECSEvent.new(
       event_type: :ecs,
       task_running?: task_running?,
       task_stopped?: task_stopped?,
@@ -35,6 +21,8 @@ class ECSEventParser
       private_ip:,
       public_ip:,
       group:,
+      family:,
+      cluster: cluster_arn,
       region:
     )
   end
@@ -63,6 +51,10 @@ class ECSEventParser
 
   def group
     detail.fetch("group")
+  end
+
+  def family
+    group.split(":", 2).last
   end
 
   def eni_private_ip

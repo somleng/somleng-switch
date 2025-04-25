@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7-labs
 
-ARG RUBY_VERSION=3.3
+ARG RUBY_VERSION=3.4
 FROM public.ecr.aws/lambda/ruby:$RUBY_VERSION AS build-image
 
 RUN dnf update && \

@@ -42,7 +42,7 @@ jobs:
           matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
           echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
           echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
-          echo "packageMatrix={\"platform\":[\"amd64\",\"arm64\"],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+          echo "packageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
 
   build-packages:
     name: Build Packages
@@ -70,83 +70,6 @@ jobs:
           role-duration-seconds: 3600
           aws-region: ap-southeast-1
 
-      - name: Build images
-        uses: aws-actions/aws-codebuild-run-build@v1
-        with:
-          project-name: somleng-switch-${{ matrix.platform }}
-          buildspec-override:   |
-            version: 0.2
-            phases:
-              build:
-                steps:
-                  - name: Build
-                    run: |
-                      aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
-                      export DOCKER_BUILDKIT=1
-                      docker buildx build --cache-from ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --tag ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform }} --push components/media_proxy
-
-  build-manifest:
-    name: Build Manifest
-    runs-on: ubuntu-latest
-
-    needs:
-      - build
-      - build-packages
-
-    strategy:
-      matrix: ${{fromJSON(needs.build.outputs.matrix)}}
-
-    steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-skip-session-tagging: true
-          role-duration-seconds: 3600
-          aws-region: ap-southeast-1
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to ECR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ secrets.ECR_REGISTRY }}
-
-      - name: Build Manifest
-        run: |
-          declare -a platforms=("amd64" "arm64")
-          source_images=$(printf "${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-%s " "${platforms[@]}")
-          docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }} $source_images
-
-  publish_images:
-    name: Publish Images
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix: ${{fromJSON(needs.build.outputs.matrix)}}
-
-    needs:
-      - build
-      - build-packages
-
-
-    steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-skip-session-tagging: true
-          role-duration-seconds: 3600
-          aws-region: ap-southeast-1
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -159,15 +82,69 @@ jobs:
         with:
           registry: ${{ secrets.ECR_REGISTRY }}
 
-      - name: Publish Images
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          context: components/media_proxy
+          platforms: linux/${{ matrix.platform.arch }}
+          cache-from: type=gha,scope=${{ env.REPOSITORY_NAME }}-${{ matrix.platform.arch }}
+          cache-to: type=gha,mode=max,scope=${{ env.REPOSITORY_NAME }}-${{ matrix.platform.arch }}
+          provenance: false
+          tags: |
+            ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}-${{ matrix.platform.arch }}
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform.arch }}
+
+  build-manifest:
+    name: Build Manifest
+    runs-on: ubuntu-latest
+
+    needs:
+      - build
+      - build-packages
+
+    strategy:
+      matrix: ${{fromJSON(needs.build.outputs.matrix)}}
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-skip-session-tagging: true
+          role-duration-seconds: 3600
+          aws-region: ap-southeast-1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to ECR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ECR_REGISTRY }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Manifest
         run: |
           declare -a platforms=("amd64" "arm64")
-          for platform in "${platforms[@]}"
-          do
-            docker image pull ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-$platform
-            docker tag ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-$platform ${{ secrets.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-$platform
-            docker push ${{ secrets.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-$platform
-          done
+
+          source_images=$(printf "${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}-%s " "${platforms[@]}")
+          docker buildx imagetools create -t ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} -t ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }} $source_images
 
           source_images=$(printf "${{ secrets.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-%s " "${platforms[@]}")
           docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }} $source_images
@@ -186,7 +163,6 @@ jobs:
 
     steps:
       - name: Configure AWS credentials
-        id: aws-login
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}

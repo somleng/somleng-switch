@@ -68,10 +68,11 @@ data "aws_iam_policy_document" "task_execution_policy" {
     resources = [
       local.application_master_key_parameter.arn,
       local.rayo_password_parameter.arn,
+      local.http_password_parameter.arn,
       local.freeswitch_event_socket_password_parameter.arn,
-      var.json_cdr_password_parameter.arn,
+      var.call_platform_password_parameter.arn,
       local.recordings_bucket_access_key_id_parameter.arn,
-      local.recordings_bucket_secret_access_key_parameter.arn
+      local.recordings_bucket_secret_access_key_parameter.arn,
     ]
   }
 }

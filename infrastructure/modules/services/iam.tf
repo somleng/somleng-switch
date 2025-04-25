@@ -34,11 +34,13 @@ resource "aws_iam_policy" "custom_policy" {
           var.freeswitch_event_socket_password_parameter.arn,
           aws_ssm_parameter.application_master_key.arn,
           var.db_password_parameter.arn,
-          data.aws_ssm_parameter.region_data.arn
+          var.call_platform_password_parameter.arn,
+          data.aws_ssm_parameter.region_data.arn,
         ]
       },
       {
         Action = [
+          "sqs:SendMessage",
           "sqs:DeleteMessage",
           "sqs:ReceiveMessage",
           "sqs:GetQueueAttributes"
@@ -51,7 +53,8 @@ resource "aws_iam_policy" "custom_policy" {
       {
         Action = [
           "ec2:DescribeInstances",
-          "ecs:DescribeContainerInstances"
+          "ecs:DescribeContainerInstances",
+          "ecs:ListTasks"
         ]
         Effect = "Allow"
         Resource = [

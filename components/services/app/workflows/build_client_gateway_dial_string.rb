@@ -5,6 +5,7 @@ class BuildClientGatewayDialString < ApplicationWorkflow
   PROXY_PATH_FORMAT = "fs_path=sip:%<host>s:%<port>s".freeze
 
   def initialize(destination:, client_identifier:)
+    super()
     @destination = destination
     @client_identifier = client_identifier
   end

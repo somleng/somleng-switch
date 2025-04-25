@@ -2,6 +2,7 @@ class CreateDomain < ApplicationWorkflow
   attr_reader :domain
 
   def initialize(domain:)
+    super()
     @domain = domain
   end
 

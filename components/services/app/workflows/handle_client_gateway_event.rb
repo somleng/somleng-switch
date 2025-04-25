@@ -2,6 +2,7 @@ class HandleClientGatewayEvent < ApplicationWorkflow
   attr_reader :event
 
   def initialize(event:)
+    super()
     @event = event
   end
 

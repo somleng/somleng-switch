@@ -7,4 +7,6 @@ module "container_instances" {
   cluster_name         = var.ecs_cluster.name
   max_capacity         = var.max_tasks * 2
   iam_instance_profile = var.container_instance_profile
+  instance_type        = "t4g.small"
+  architecture         = "arm64"
 }

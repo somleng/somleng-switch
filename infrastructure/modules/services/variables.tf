@@ -6,6 +6,7 @@ variable "switch_group" {}
 variable "media_proxy_group" {}
 variable "client_gateway_group" {}
 variable "db_password_parameter" {}
+variable "call_platform_password_parameter" {}
 variable "freeswitch_event_socket_password_parameter" {}
 variable "db_security_group" {}
 variable "freeswitch_event_socket_port" {}
@@ -17,3 +18,6 @@ variable "sip_alternative_port" {}
 variable "public_gateway_db_name" {}
 variable "client_gateway_db_name" {}
 variable "media_proxy_ng_port" {}
+variable "lambda_function_timeout" {
+  default = 300
+}

@@ -4,7 +4,7 @@ resource "aws_lambda_function" "this" {
   package_type  = "Image"
   architectures = ["arm64"]
   image_uri     = docker_registry_image.this.name
-  timeout       = 300
+  timeout       = var.lambda_function_timeout
   memory_size   = 512
 
   vpc_config {
@@ -27,10 +27,12 @@ resource "aws_lambda_function" "this" {
       DB_PASSWORD_SSM_PARAMETER_NAME              = var.db_password_parameter.name
       APP_MASTER_KEY_SSM_PARAMETER_NAME           = aws_ssm_parameter.application_master_key.name
       REGION_DATA_SSM_PARAMETER_NAME              = data.aws_ssm_parameter.region_data.name
+      CALL_PLATFORM_PASSWORD_SSM_PARAMETER_NAME   = var.call_platform_password_parameter.name
       APP_ENV                                     = var.app_environment
       DB_HOST                                     = var.db_host
       DB_PORT                                     = var.db_port
       DB_USER                                     = var.db_username
+      QUEUE_URL                                   = aws_sqs_queue.this.url
     }
   }
 

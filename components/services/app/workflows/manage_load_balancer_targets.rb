@@ -2,6 +2,7 @@ class ManageLoadBalancerTargets < ApplicationWorkflow
   attr_reader :ip_address
 
   def initialize(ip_address:)
+    super()
     @ip_address = ip_address
   end
 

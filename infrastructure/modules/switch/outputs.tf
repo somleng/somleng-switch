@@ -22,6 +22,10 @@ output "rayo_password_parameter" {
   value = local.rayo_password_parameter
 }
 
+output "http_password_parameter" {
+  value = local.http_password_parameter
+}
+
 output "freeswitch_event_socket_password_parameter" {
   value = local.freeswitch_event_socket_password_parameter
 }
@@ -74,8 +78,8 @@ output "freeswitch_event_socket_port" {
   value = var.freeswitch_event_socket_port
 }
 
-output "json_cdr_password_parameter" {
-  value = var.json_cdr_password_parameter
+output "call_platform_password_parameter" {
+  value = var.call_platform_password_parameter
 }
 
 output "services_function" {

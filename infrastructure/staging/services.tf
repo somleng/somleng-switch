@@ -13,6 +13,7 @@ module "services" {
   app_image = data.terraform_remote_state.core.outputs.services_ecr_repository.this.repository_url
 
   db_password_parameter                      = data.terraform_remote_state.core_infrastructure.outputs.db_master_password_parameter
+  call_platform_password_parameter           = data.aws_ssm_parameter.call_platform_password
   freeswitch_event_socket_password_parameter = data.aws_ssm_parameter.freeswitch_event_socket_password
 
   db_security_group            = data.terraform_remote_state.core_infrastructure.outputs.db_security_group
