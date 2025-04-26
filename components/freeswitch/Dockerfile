@@ -37,7 +37,7 @@ FROM public.ecr.aws/docker/library/debian:bookworm-slim
 
 ARG signalwire_token
 
-RUN apt-get update && apt-get install --no-install-recommends -yq libssl-dev libspeex-dev libspeexdsp-dev gnupg2 wget ca-certificates lsb-release && \
+RUN apt-get update && apt-get install --no-install-recommends -yq libssl-dev libspeex-dev libspeexdsp-dev gnupg2 wget ca-certificates lsb-release curl && \
     wget --http-user=signalwire --http-password=${signalwire_token} -O /usr/share/keyrings/signalwire-freeswitch-repo.gpg https://freeswitch.signalwire.com/repo/deb/debian-release/signalwire-freeswitch-repo.gpg && \
     echo "machine freeswitch.signalwire.com login signalwire password ${signalwire_token}" > /etc/apt/auth.conf && \
     chmod 600 /etc/apt/auth.conf && \

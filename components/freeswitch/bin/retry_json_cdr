@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+REQUIRED_ENV_VARS=("FS_LOG_DIRECTORY" "FS_MOD_JSON_CDR_URL")
+MOD_JSON_CDR_USER="services"
+
+# Loop through and check if each is set
+for var in "${REQUIRED_ENV_VARS[@]}"; do
+  if [[ -z "${!var}" ]]; then
+    echo "Error: $var environment variable is not set."
+    exit 1
+  fi
+done
+
+for file in "$FS_LOG_DIRECTORY"/*.json; do
+  if [[ -f "$file" ]]; then
+    curl -X POST "$FS_MOD_JSON_CDR_URL" \
+      -H "Content-Type: application/x-www-form-base64-encoded" \
+      -u "${MOD_JSON_CDR_USER}:${FS_MOD_JSON_CDR_PASSWORD}" \
+      --data "cdr=$(base64 "$file")"
+  fi
+done
