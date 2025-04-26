@@ -27,7 +27,7 @@ for file in "$FS_LOG_DIRECTORY"/*.json; do
     if [[ -n "$user_encoding" ]]; then
       encoding="$user_encoding"
     else
-      if echo "$raw_content" | jq empty >/dev/null 2>&1; then
+      if echo "$raw_content" | sed -E 's/: *nan([,}])/: null\1/g' | jq empty >/dev/null 2>&1; then
         encoding="json"
       else
         encoding="base64"
