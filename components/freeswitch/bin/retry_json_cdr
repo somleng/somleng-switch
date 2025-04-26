@@ -11,11 +11,23 @@ for var in "${REQUIRED_ENV_VARS[@]}"; do
   fi
 done
 
+encoding="$1"
+if [[ "$encoding" != "base64" && "$encoding" != "json" ]]; then
+  echo "Usage: $0 [base64|json]"
+  exit 1
+fi
+
 for file in "$FS_LOG_DIRECTORY"/*.json; do
   if [[ -f "$file" ]]; then
-    curl -X POST "$FS_MOD_JSON_CDR_URL" \
+    if [[ "$encoding" == "base64" ]]; then
+      content=$(<"$file")
+    else
+      content=$(base64 "$file")
+    fi
+
+    curl "$FS_MOD_JSON_CDR_URL" \
       -H "Content-Type: application/x-www-form-base64-encoded" \
       -u "${MOD_JSON_CDR_USER}:${FS_MOD_JSON_CDR_PASSWORD}" \
-      --data "cdr=$(base64 "$file")"
+      --data "cdr=$content"
   fi
 done
