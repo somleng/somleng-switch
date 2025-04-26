@@ -23,13 +23,16 @@ module CallPlatform
     end
 
     it "handles client errors" do
-      client = Client.new
+      error_handler = class_spy(Sentry)
+      client = Client.new(capture_errors: true, error_handler:)
       stub_request(:post, "https://api.somleng.org/services/call_service_capacities").to_return(status: 500)
 
       client.update_capacity(
         region: "hydrogen",
         capacity: 2
       )
+
+      expect(error_handler).to have_received(:capture_message)
     end
   end
 end

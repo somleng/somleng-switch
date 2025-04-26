@@ -1,6 +1,6 @@
 require_relative "../spec_helper"
 
-RSpec.describe "Handle ECS Events", :public_gateway, :client_gateway do
+RSpec.describe "Handle ECS Events", :client_gateway, :public_gateway do
   it "handles switch events" do
     stub_env("SWITCH_GROUP" => "service:somleng-switch")
     payload = build_ecs_event_payload(

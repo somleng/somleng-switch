@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe HandleSwitchEvent, :public_gateway, :client_gateway do
+RSpec.describe HandleSwitchEvent, :client_gateway, :public_gateway do
   it "handles handles running switch events" do
     sqs_client = Aws::SQS::Client.new(stub_responses: true)
     queue_url = "https://sqs.us-east-1.amazonaws.com/123456789/queue"
