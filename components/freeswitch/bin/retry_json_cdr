@@ -25,9 +25,16 @@ for file in "$FS_LOG_DIRECTORY"/*.json; do
       content=$(base64 "$file")
     fi
 
-    curl "$FS_MOD_JSON_CDR_URL" \
+    http_status=$(curl -s -o /dev/null -w "%{http_code}" "$FS_MOD_JSON_CDR_URL" \
       -H "Content-Type: application/x-www-form-base64-encoded" \
       -u "${MOD_JSON_CDR_USER}:${FS_MOD_JSON_CDR_PASSWORD}" \
-      --data "cdr=$content"
+      --data "cdr=$content")
+
+    if [[ "$http_status" =~ ^2 ]]; then
+      echo "Upload successful (HTTP $http_status), removing $file"
+      rm "$file"
+    else
+      echo "Upload failed (HTTP $http_status), keeping $file"
+    fi
   fi
 done
