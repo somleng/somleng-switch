@@ -1,6 +1,6 @@
 require_relative "../spec_helper"
 
-RSpec.describe ManageLoadBalancerTargets, :public_gateway, :client_gateway do
+RSpec.describe ManageLoadBalancerTargets, :client_gateway, :public_gateway do
   it "Adds load balancer targets" do
     stub_env("FS_EVENT_SOCKET_PASSWORD" => "fs-event-socket-password")
 
