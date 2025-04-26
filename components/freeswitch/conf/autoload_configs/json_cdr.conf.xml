@@ -13,5 +13,6 @@
     <!-- Error log dir ("json_cdr" is appended). Up to 20 may be specified. Default to log-dir if none is specified. -->
     <param name="err-log-dir" value="$${log_directory}"/>
     <param name="rotate" value="false"/>
+    <param name="encode" value="base64"/>
   </settings>
 </configuration>

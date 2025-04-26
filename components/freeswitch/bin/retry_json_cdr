@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+REQUIRED_ENV_VARS=("FS_LOG_DIRECTORY" "FS_MOD_JSON_CDR_URL")
+MOD_JSON_CDR_USER="services"
+
+# Loop through and check if each is set
+for var in "${REQUIRED_ENV_VARS[@]}"; do
+  if [[ -z "${!var}" ]]; then
+    echo "Error: $var environment variable is not set."
+    exit 1
+  fi
+done
+
+user_encoding="$1"
+if [[ -n "$user_encoding" && "$user_encoding" != "base64" && "$user_encoding" != "json" ]]; then
+  echo "Usage: $0 [base64|json]"
+  exit 1
+fi
+
+for file in "$FS_LOG_DIRECTORY"/*.json; do
+  if [[ -f "$file" ]]; then
+    echo "Processing $file..."
+
+    raw_content=$(<"$file")
+
+    # Use flag if provided, otherwise auto-detect
+    if [[ -n "$user_encoding" ]]; then
+      encoding="$user_encoding"
+    else
+      if echo "$raw_content" | jq empty >/dev/null 2>&1; then
+        encoding="json"
+      else
+        encoding="base64"
+      fi
+    fi
+
+    echo "Detected/selected encoding: $encoding...."
+
+    # Prepare payload
+    if [[ "$encoding" == "json" ]]; then
+      content=$(printf "%s" "$raw_content" | base64)
+    else
+      content="$raw_content"
+    fi
+
+    http_status=$(curl -s -o /dev/null -w "%{http_code}" "$FS_MOD_JSON_CDR_URL" \
+      -H "Content-Type: application/x-www-form-base64-encoded" \
+      -u "${MOD_JSON_CDR_USER}:${FS_MOD_JSON_CDR_PASSWORD}" \
+      --data "cdr=$content")
+
+    if [[ "$http_status" =~ ^2 ]]; then
+      echo "Upload successful (HTTP $http_status), removing $file"
+      rm "$file"
+    else
+      echo "Upload failed (HTTP $http_status), keeping $file"
+    fi
+  fi
+done
