@@ -11,7 +11,7 @@ for var in "${REQUIRED_ENV_VARS[@]}"; do
   fi
 done
 
-encoding="$1"
+encoding="${1:-base64}"
 if [[ "$encoding" != "base64" && "$encoding" != "json" ]]; then
   echo "Usage: $0 [base64|json]"
   exit 1
