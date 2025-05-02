@@ -111,7 +111,7 @@ GEM
     aws-sdk-lambda (1.150.0)
       aws-sdk-core (~> 3, >= 3.216.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-polly (1.105.0)
+    aws-sdk-polly (1.106.0)
       aws-sdk-core (~> 3, >= 3.216.0)
       aws-sigv4 (~> 1.5)
     aws-sigv4 (1.11.0)
