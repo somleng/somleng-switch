@@ -9,7 +9,7 @@ class DialString
   end
 
   def to_s
-    "sofia/#{external_profile}/#{address}"
+    "#{channel_variables}sofia/#{external_profile}/#{address}"
   end
 
   def address
@@ -28,5 +28,16 @@ class DialString
 
   def external_profile
     options.fetch(:symmetric_latching, true) ? EXTERNAL_PROFILE : EXTERNAL_NAT_INSTANCE_PROFILE
+  end
+
+  def channel_variables
+    result = vars.map { |k, v| "#{k}=#{v}" }.join(",")
+
+    return if result.blank?
+    "{#{result}}"
+  end
+
+  def vars
+    options.fetch(:vars, {})
   end
 end
