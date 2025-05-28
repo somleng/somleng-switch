@@ -38,7 +38,7 @@ GEM
     jmespath (1.6.2)
     logger (1.7.0)
     ostruct (0.6.1)
-    ox (2.14.22)
+    ox (2.14.23)
       bigdecimal (>= 3.0)
     rake (13.2.1)
     rexml (3.3.9)
