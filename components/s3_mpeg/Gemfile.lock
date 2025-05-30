@@ -40,7 +40,7 @@ GEM
     ostruct (0.6.1)
     ox (2.14.23)
       bigdecimal (>= 3.0)
-    rake (13.2.1)
+    rake (13.3.0)
     rexml (3.3.9)
     rspec (3.13.1)
       rspec-core (~> 3.13.0)
