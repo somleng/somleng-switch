@@ -197,7 +197,7 @@ GEM
       multi_json (~> 1.14)
     method_source (1.1.0)
     minitest (5.25.4)
-    mock_redis (0.50.0)
+    mock_redis (0.51.0)
       redis (~> 5)
     multi_json (1.15.0)
     mustermann (3.0.3)
