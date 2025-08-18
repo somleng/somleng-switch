@@ -125,6 +125,29 @@ services:
       EVENT_SOCKET_PASSWORD: secret
       REDIS_URL: "redis://redis:6379/1"
 
+  billing_engine:
+    build:
+      context: components/billing_engine
+    image: billing_engine:latest
+    depends_on:
+      redis:
+        condition: service_healthy
+      freeswitch:
+        condition: service_healthy
+    environment:
+      EVENT_SOCKET_HOST: freeswitch:8021
+      EVENT_SOCKET_PASSWORD: secret
+      STORDB_DBNAME: "cgrates"
+      STORDB_USER: "cgrates"
+      STORDB_PASSWORD: ""
+      STORDB_HOST: "host.docker.internal"
+      STORDB_PORT: 5432
+      DATADB_HOST: "redis"
+      DATADB_USER: "redis"
+      DATADB_PORT: 6379
+      DATADB_DBNAME: 1
+      LOG_LEVEL: 7
+
   switch-app:
     build:
       context: components/app
