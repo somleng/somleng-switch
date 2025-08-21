@@ -14,6 +14,16 @@ RSpec.describe DialString do
       expect(dial_string.to_s).to eq("sofia/alternative-outbound/1234@192.168.1.1")
     end
 
+    it "handles channel variables" do
+      dial_string = DialString.new(
+        vars: { bridge_early_media: true },
+        symmetric_latching: true,
+        address: "1234@192.168.1.1"
+      )
+
+      expect(dial_string.to_s).to eq("{bridge_early_media=true}sofia/external/1234@192.168.1.1")
+    end
+
     it "builds a public gateway dial string" do
       dial_string = DialString.new(
         build_routing_parameters(

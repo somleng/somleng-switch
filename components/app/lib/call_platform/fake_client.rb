@@ -33,9 +33,34 @@ module CallPlatform
       end
     end
 
+    class DialTestNumber < TestNumber
+      Number = Data.define(:number)
+
+      DIAL_TO = [
+        Number.new(number: "85516701999"),
+        Number.new(number: "855715100999")
+      ].freeze
+
+      def twiml_response
+        <<~TWIML
+        <Response>
+          <Dial>
+            <Number>#{self.class.dial_to[0].number}</Number>
+            <Number>#{self.class.dial_to[1].number}</Number>
+          </Dial>
+        </Response>
+        TWIML
+      end
+
+      def self.dial_to
+        DIAL_TO
+      end
+    end
+
     TEST_NUMBERS = [
       TestNumber.new(number: "1111", twiml_response: "<Response><Say>Hello World!</Say><Hangup /></Response>"),
-      ConnectTestNumberWithTwiMLResponse.new(number: "2222")
+      ConnectTestNumberWithTwiMLResponse.new(number: "2222"),
+      DialTestNumber.new(number: "3333")
     ].freeze
 
     def create_inbound_call(params)
@@ -60,6 +85,27 @@ module CallPlatform
 
     def create_media_stream(**)
       AudioStreamResponse.new(id: SecureRandom.uuid)
+    end
+
+    def create_outbound_calls(params)
+      DialTestNumber.dial_to.map do |n|
+        OutboundPhoneCallResponse.new(
+          sid: SecureRandom.uuid,
+          parent_call_sid: params.fetch(:parent_call_sid),
+          account_sid: SecureRandom.uuid,
+          from: params.fetch(:from) || "855715100850",
+          routing_parameters: {
+            destination: n.number,
+            dial_string_prefix: nil,
+            plus_prefix: false,
+            national_dialing: false,
+            host: "sip.example.com",
+            username: nil,
+            symmetric_latching: true
+          },
+          address: nil
+        )
+      end
     end
 
     private
