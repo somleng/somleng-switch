@@ -198,7 +198,7 @@ GEM
       multi_json (~> 1.14)
     method_source (1.1.0)
     minitest (5.25.4)
-    mock_redis (0.51.0)
+    mock_redis (0.52.0)
       redis (~> 5)
     multi_json (1.15.0)
     mustermann (3.0.3)
@@ -245,7 +245,7 @@ GEM
     rake (13.3.0)
     redis (5.4.1)
       redis-client (>= 0.22.0)
-    redis-client (0.25.1)
+    redis-client (0.25.2)
       connection_pool
     regexp_parser (2.10.0)
     rexml (3.4.1)
