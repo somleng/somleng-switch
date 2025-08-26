@@ -11,8 +11,8 @@ RUN cd /testing/support/ws_server && \
 
 EXPOSE 5060
 
-ENV WS_SERVER_PORT "3001"
-ENV FILE_SERVER_PORT "8000"
+ENV WS_SERVER_PORT="3001"
+ENV FILE_SERVER_PORT="8000"
 
 ENTRYPOINT ["./docker-entrypoint.sh"]
 CMD ["services"]

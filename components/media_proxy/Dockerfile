@@ -2,7 +2,7 @@ FROM public.ecr.aws/docker/library/debian:bookworm-slim
 
 USER root
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 ARG REL=latest
 ARG DIST=bookworm
