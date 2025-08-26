@@ -4,7 +4,7 @@ FROM public.ecr.aws/docker/library/debian:bookworm-slim AS bootstrap
 
 USER root
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 ARG OPENSIPS_VERSION=3.4
 ARG OPENSIPS_BUILD=releases
@@ -19,11 +19,11 @@ RUN apt-get -y update -qq && apt-get -y install gnupg2 ca-certificates curl && \
 
 COPY bootstrap.sh /docker-entrypoint.sh
 
-ENV DATABASE_USERNAME "postgres"
-ENV DATABASE_PASSWORD ""
-ENV DATABASE_HOST "localhost"
-ENV DATABASE_PORT 5432
-ENV DATABASE_NAME "opensips"
+ENV DATABASE_USERNAME="postgres"
+ENV DATABASE_PASSWORD=""
+ENV DATABASE_HOST="localhost"
+ENV DATABASE_PORT=5432
+ENV DATABASE_NAME="opensips"
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["create_db"]
@@ -34,7 +34,7 @@ FROM public.ecr.aws/docker/library/debian:bookworm-slim AS build
 
 USER root
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 ARG OPENSIPS_VERSION=3.4
 ARG OPENSIPS_BUILD=releases

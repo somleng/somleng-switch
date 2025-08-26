@@ -12,9 +12,12 @@
 [![View performance data on Skylight](https://badges.skylight.io/status/Z5dVwBwcpWaW.svg)](https://oss.skylight.io/app/applications/Z5dVwBwcpWaW)
 [![codecov](https://codecov.io/gh/somleng/somleng-switch/branch/develop/graph/badge.svg?token=nr3f5p31G6)](https://codecov.io/gh/somleng/somleng-switch)
 
-SomlengSWITCH (part of [The Somleng Project](https://github.com/somleng/somleng-project)) is used to control programmable voice for Somleng. SomlengSWITCH is made up of a number of components described below.
+SomlengSWITCH is a modular, open-source platform designed to facilitate programmable voice and messaging applications.
+It serves as the core engine for Somleng's Telco-as-a-Service (TaaS) and Communications Platform-as-a-Service (CPaaS) offerings.
 
-## Components
+The architecture is structured into several key components, each playing a vital role in the system's functionality.
+
+## Architecture Overview
 
 ![Architecture](assets/architecture.png)
 
