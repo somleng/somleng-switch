@@ -158,6 +158,9 @@ services:
       context: components/billing_engine
       target: bootstrap
     image: billing-engine:bootstrap
+    depends_on:
+      redis:
+        condition: service_healthy
     environment:
       STORDB_DBNAME: "cgrates"
       STORDB_USER: "cgrates"
