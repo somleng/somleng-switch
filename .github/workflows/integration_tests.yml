@@ -128,6 +128,27 @@ jobs:
           cache-from: type=gha,scope=integration-tests-gateway-bootstrap
           cache-to: type=gha,mode=max,scope=integration-tests-gateway-bootstrap
 
+      - name: Build Billing Engine Bootstrap
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          load: true
+          context: components/billing_engine
+          target: bootstrap
+          tags: billing-engine:bootstrap
+          cache-from: type=gha,scope=integration-tests-billing-engine-bootstrap
+          cache-to: type=gha,mode=max,scope=integration-tests-billing-engine-bootstrap
+
+      - name: Build Billing Engine
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          load: true
+          context: components/billing_engine
+          tags: billing-engine:latest
+          cache-from: type=gha,scope=integration-tests-billing-engine
+          cache-to: type=gha,mode=max,scope=integration-tests-billing-engine
+
       - name: Build Testing
         uses: docker/build-push-action@v6
         with:
@@ -141,7 +162,8 @@ jobs:
       - name: Run docker compose
         run: |
           docker compose run -e DATABASE_NAME=opensips_${{ inputs.context }}_test gateway-bootstrap create_db ${{ inputs.context }}
-          docker compose up --wait -d ${{ inputs.context }} media_proxy freeswitch freeswitch_event_logger switch-app redis testing
+          docker compose run billing-engine-bootstrap
+          docker compose up --wait -d ${{ inputs.context }} media_proxy freeswitch freeswitch_event_logger switch-app billing-engine redis testing
 
       - name: Run ${{ inputs.context }} Tests
         run: |

@@ -12,7 +12,8 @@ if [ ! -f "$CONFIG_FILE" ]; then
   cat > "$CONFIG_FILE" <<EOF
 {
   "general": {
-    "log_level": ${LOG_LEVEL:-3}
+    "log_level": ${LOG_LEVEL:-3},
+    "logger": "*stdout"
   },
   "stor_db": {
     "db_type": "*postgres",
@@ -48,9 +49,14 @@ if [ ! -f "$CONFIG_FILE" ]; then
       }
     ]
   },
+  "listen": {
+    "http": "${HTTP_LISTEN_ADDRESS}"
+  },
   "http": {
-    "json_rpc_url": "",
     "ws_url": ""
+  },
+  "apiers": {
+    "enabled": true
   }
 }
 EOF

@@ -125,10 +125,10 @@ services:
       EVENT_SOCKET_PASSWORD: secret
       REDIS_URL: "redis://redis:6379/1"
 
-  billing_engine:
+  billing-engine:
     build:
       context: components/billing_engine
-    image: billing_engine:latest
+    image: billing-engine:latest
     depends_on:
       redis:
         condition: service_healthy
@@ -145,8 +145,27 @@ services:
       DATADB_HOST: "redis"
       DATADB_USER: "redis"
       DATADB_PORT: 6379
-      DATADB_DBNAME: 1
+      DATADB_DBNAME: 2
       LOG_LEVEL: 7
+      HTTP_LISTEN_ADDRESS: "0.0.0.0:2080"
+    expose:
+      - "2080/tcp"
+
+  billing-engine-bootstrap:
+    build:
+      context: components/billing_engine
+      target: bootstrap
+    image: billing-engine:bootstrap
+    environment:
+      STORDB_DBNAME: "cgrates"
+      STORDB_USER: "cgrates"
+      STORDB_PASSWORD: ""
+      STORDB_HOST: "host.docker.internal"
+      STORDB_PORT: 5432
+      DATADB_HOST: "redis"
+      DATADB_USER: "redis"
+      DATADB_PORT: 6379
+      DATADB_DBNAME: 2
 
   switch-app:
     build:
