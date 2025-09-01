@@ -11,7 +11,7 @@ scenario=$current_dir/../../scenarios/register_inbound_nated_contact.xml
 log_file="register_inbound_nated_contact_*_messages.log"
 rm -f $log_file
 
-reset_db
+reset_opensips_db
 
 client_gateway="$(dig +short client_gateway)"
 media_proxy="$(dig +short media_proxy)"
@@ -24,4 +24,4 @@ reload_opensips_tables
 
 sipp -sf $scenario client_gateway:5060 -s "1111" -key username "user1" -key contact_ip "100.65.107.153" -au "user1" -ap "password" -m 1 -trace_msg > /dev/null
 
-reset_db
+reset_opensips_db

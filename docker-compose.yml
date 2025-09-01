@@ -137,7 +137,7 @@ services:
     environment:
       EVENT_SOCKET_HOST: freeswitch:8021
       EVENT_SOCKET_PASSWORD: secret
-      STORDB_DBNAME: "cgrates"
+      STORDB_DBNAME: "cgrates_test"
       STORDB_USER: "cgrates"
       STORDB_PASSWORD: ""
       STORDB_HOST: "host.docker.internal"
@@ -162,7 +162,7 @@ services:
       redis:
         condition: service_healthy
     environment:
-      STORDB_DBNAME: "cgrates"
+      STORDB_DBNAME: "cgrates_test"
       STORDB_USER: "cgrates"
       STORDB_PASSWORD: ""
       STORDB_HOST: "host.docker.internal"
@@ -187,6 +187,7 @@ services:
       CONNECT_WS_SERVER_URL: "ws://testing:3001"
       AUDIO_FILE_URL: "http://testing:8000/scenarios/files/tone.wav"
       AHN_CORE_HTTP_PORT: "8080"
+      AHN_CORE_LOGGING_LEVEL: "debug"
       AWS_DEFAULT_REGION: "ap-southeast-1"
       REDIS_URL: "redis://redis:6379/1"
     healthcheck:

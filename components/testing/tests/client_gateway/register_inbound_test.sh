@@ -11,7 +11,7 @@ scenario=$current_dir/../../scenarios/register_inbound.xml
 log_file="register_inbound_*_messages.log"
 rm -f $log_file
 
-reset_db
+reset_opensips_db
 
 uac=$(hostname -i)
 client_gateway="$(dig +short client_gateway)"
@@ -25,7 +25,7 @@ reload_opensips_tables
 
 sipp -sf $scenario client_gateway:5060 -s "1234" -key username "user1" -key contact_ip "$uac" -au "user1" -ap "password" -m 1 -trace_msg > /dev/null
 
-reset_db
+reset_opensips_db
 
 if ! assert_in_file $log_file "Record-Route: <sip:$client_gateway:5060;lr;r2=on>"; then
   exit 1

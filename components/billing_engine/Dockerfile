@@ -36,9 +36,14 @@ ENTRYPOINT ["/usr/local/bin/bootstrap.sh"]
 FROM base
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY docker-healthcheck.sh /usr/local/bin/docker-healthcheck.sh
 
 RUN adduser -D -u 1000 cgrates && chown cgrates:cgrates /etc/cgrates
 USER cgrates
 WORKDIR /home/cgrates
+
+ENV HTTP_LISTEN_PORT=2080
+
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD /usr/local/bin/docker-healthcheck.sh
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

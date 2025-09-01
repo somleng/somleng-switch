@@ -11,7 +11,7 @@ scenario=$current_dir/../../scenarios/zamtel_inbound.xml
 log_file="zamtel_inbound_*_messages.log"
 rm -f $log_file
 
-reset_db
+reset_opensips_db
 create_load_balancer_entry "gwalt" "5080"
 create_address_entry $(hostname -i)
 reload_opensips_tables
@@ -19,7 +19,7 @@ reload_opensips_tables
 public_gateway="$(dig +short public_gateway)"
 
 sipp -sf $scenario public_gateway:5080 -s 7888 -m 1 -trace_msg > /dev/null
-reset_db
+reset_opensips_db
 
 # Assert correct IP in SDP
 if ! assert_in_file "$log_file" "c=IN IP4 18.141.245.230"; then

@@ -35,6 +35,9 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
     "username": null,
     "symmetric_latching": true
   },
+  "billing_parameters": {
+    "charging_mode": "postpaid"
+  },
   "test_headers": {
     "X-UAS-Contact-Ip": "$uas"
   }

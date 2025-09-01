@@ -47,10 +47,11 @@ class ExecuteDial < ExecuteTwiMLVerb
   end
 
   def build_dial_string(phone_call_response)
+    dial_string = DialString.new(phone_call_response.to_h)
+
     if phone_call_response.address.present?
-      DialString.new(address: phone_call_response.address)
+      [ dial_string, nil ]
     else
-      dial_string = DialString.new(phone_call_response.routing_parameters)
       [ dial_string, dial_string.format_number(phone_call_response.from) ]
     end
   end

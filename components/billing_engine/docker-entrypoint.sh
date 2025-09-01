@@ -13,7 +13,8 @@ if [ ! -f "$CONFIG_FILE" ]; then
 {
   "general": {
     "log_level": ${LOG_LEVEL:-3},
-    "logger": "*stdout"
+    "logger": "*stdout",
+    "default_request_type": "*postpaid"
   },
   "stor_db": {
     "db_type": "*postgres",
@@ -34,7 +35,16 @@ if [ ! -f "$CONFIG_FILE" ]; then
     "db_name": "${DATADB_DBNAME:-1}"
   },
   "sessions": {
+    "enabled": true,
+    "attributes_conns": ["*localhost"],
+    "chargers_conns": ["*internal"],
+  },
+  "attributes": {
     "enabled": true
+  },
+  "chargers": {
+    "enabled": true,
+    "attributes_conns": ["*internal"],
   },
   "freeswitch_agent": {
     "enabled": true,
@@ -48,6 +58,14 @@ if [ ! -f "$CONFIG_FILE" ]; then
         "alias": ""
       }
     ]
+  },
+  "rals": {
+    "enabled": true,
+    "thresholds_conns": ["*localhost"],
+  },
+  "thresholds": {
+    "enabled": true,
+    "string_indexed_fields": ["*req.Account"],
   },
   "listen": {
     "http": "${HTTP_LISTEN_ADDRESS}"
