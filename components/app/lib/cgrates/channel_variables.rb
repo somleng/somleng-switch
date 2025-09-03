@@ -3,13 +3,13 @@ module CGRates
     attr_reader :charging_mode, :flags
 
     DEFAULT_FLAGS = [
-      # :resources,
-      # :attributes,
-      # :sessions,
-      # :routes,
-      # :thresholds,
-      # :stats,
-      # :accounts
+      :resources,
+      :attributes,
+      :sessions,
+      :routes,
+      :thresholds,
+      :stats,
+      :accounts
     ].freeze
 
     def initialize(**options)
@@ -20,10 +20,7 @@ module CGRates
     def to_h
       {
         "cgr_reqtype" => cgr_req_type,
-        "cgr_flags" => cgr_flags,
-        "cgr_account" => "1234",
-        "cgr_subject" => "9876",
-        "cgr_destination" => "855716100987"
+        "cgr_flags" => cgr_flags
       }.reject { |_, v| v.blank? }
     end
 

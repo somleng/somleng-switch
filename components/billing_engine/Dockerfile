@@ -7,6 +7,10 @@ WORKDIR /go/src/github.com/cgrates/cgrates
 # Clone CGRateS source
 RUN git clone https://github.com/cgrates/cgrates.git .
 
+# Copy and apply git patch
+COPY src/cgrates/fsagent_inbound_filter.patch /tmp/fsagent_inbound_filter.patch
+RUN git apply /tmp/fsagent_inbound_filter.patch
+
 # Build CGRateS using official build.sh script
 RUN chmod +x build.sh && ./build.sh
 
