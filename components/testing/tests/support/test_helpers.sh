@@ -46,3 +46,31 @@ assert_not_in_file () {
     return 1
   fi
 }
+
+billing_engine_set_charger_profile () {
+  response=$(
+    curl -s -X POST "http://billing-engine:$BILLING_ENGINE_HTTP_PORT/jsonrpc" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "APIerSv1.SetChargerProfile",
+        "params": [
+          {
+            "ID": "CHARGER_Default",
+            "FilterIDs": [],
+            "AttributeIDs": ["*none"],
+            "RunID": "default",
+            "Weight": 0
+          }
+        ]
+      }'
+  )
+
+  error=$(echo "$response" | jq -r '.error')
+
+  if [ "$error" != "null" ]; then
+    echo "Error in response: $error"
+    return 1
+  fi
+}

@@ -67,8 +67,8 @@ if [ ! -f "$CONFIG_FILE" ]; then
     "enabled": true,
     "string_indexed_fields": ["*req.Account"],
   },
-  "http": {
-    "ws_url": ""
+  "listen": {
+    "http": "${HTTP_LISTEN_ADDRESS}"
   },
   "apiers": {
     "enabled": true

@@ -148,8 +148,11 @@ services:
       DATADB_PORT: 6379
       DATADB_DBNAME: 2
       LOG_LEVEL: 7
+      HTTP_LISTEN_ADDRESS: "0.0.0.0:2080"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    expose:
+      - "2080/tcp"
 
   billing-engine-bootstrap:
     build:
