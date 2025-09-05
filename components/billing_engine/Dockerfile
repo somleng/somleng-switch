@@ -39,11 +39,13 @@ ENTRYPOINT ["/usr/local/bin/bootstrap.sh"]
 
 FROM base
 
+RUN apk add --no-cache ngrep
+
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY docker-healthcheck.sh /usr/local/bin/docker-healthcheck.sh
 
 RUN adduser -D -u 1000 cgrates && chown cgrates:cgrates /etc/cgrates
-USER cgrates
+# USER cgrates
 WORKDIR /home/cgrates
 
 ENV HTTP_LISTEN_PORT=2080

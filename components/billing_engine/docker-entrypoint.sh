@@ -37,18 +37,18 @@ if [ ! -f "$CONFIG_FILE" ]; then
   "sessions": {
     "enabled": true,
     "attributes_conns": ["*localhost"],
-    "chargers_conns": ["*internal"],
+    "chargers_conns": ["*localhost"],
   },
   "attributes": {
     "enabled": true
   },
   "chargers": {
     "enabled": true,
-    "attributes_conns": ["*internal"],
+    "attributes_conns": ["*localhost"],
   },
   "freeswitch_agent": {
     "enabled": true,
-    "sessions_conns": ["*birpc_internal"],
+    "sessions_conns": ["*bijson_localhost"],
     "create_cdr": true,
     "event_socket_conns": [
       {
@@ -62,6 +62,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
   "rals": {
     "enabled": true,
     "thresholds_conns": ["*localhost"],
+    "apiers_conns": ["*localhost"]
   },
   "thresholds": {
     "enabled": true,
