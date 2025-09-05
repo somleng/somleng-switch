@@ -24,9 +24,14 @@ class RoutingParameters
 
   def format_number(value)
     result = value.gsub(/\D/, "")
-    result = Phony.format(result, format: :national, spaces: "") if national_dialing && Phony.plausible?(result)
-    result = result.gsub(/\D/, "")
-    result.prepend("+") if plus_prefix
+    if Phony.plausible?(result)
+      if national_dialing
+        result = Phony.format(result, format: :national, spaces: "").gsub(/\D/, "")
+      elsif plus_prefix
+        result.prepend("+")
+      end
+    end
+
     result
   end
 
