@@ -133,6 +133,19 @@ RSpec.describe DialString do
 
       expect(result).to eq("+855716100987")
     end
+
+    it "formats a short code" do
+      dial_string = DialString.new(
+        build_routing_parameters(
+          national_dialing: false,
+          plus_prefix: true
+        )
+      )
+
+      result = dial_string.format_number("1393")
+
+      expect(result).to eq("1393")
+    end
   end
 
   def build_routing_parameters(options)
