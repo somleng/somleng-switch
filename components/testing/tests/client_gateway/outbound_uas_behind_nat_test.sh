@@ -9,7 +9,7 @@ source $current_dir/../support/test_helpers.sh
 log_file=$(find . -type f -iname "uas_*_messages.log")
 cat /dev/null > $log_file
 
-reset_db
+reset_opensips_db
 create_rtpengine_entry "udp:media_proxy:2223"
 reload_opensips_tables
 
@@ -49,7 +49,7 @@ EOF
 
 sleep 10
 
-reset_db
+reset_opensips_db
 
 if ! assert_in_file $log_file "ACK sip:$uas"; then
   exit 1
