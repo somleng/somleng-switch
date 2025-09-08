@@ -1,10 +1,4 @@
-<profile name="external">
-  <!-- http://wiki.freeswitch.org/wiki/Sofia_Configuration_Files -->
-  <!-- This profile is only for outbound registrations to providers -->
-  <gateways>
-    <X-PRE-PROCESS cmd="include" data="external/*.xml"/>
-  </gateways>
-
+<profile name="external-inbound">
   <settings>
     <X-PRE-PROCESS cmd="include" data="shared/settings.xml"/>
 
