@@ -93,6 +93,7 @@ variable "app_image" {}
 variable "nginx_image" {}
 variable "freeswitch_image" {}
 variable "freeswitch_event_logger_image" {}
+variable "external_sip_outbound_ip" {}
 variable "external_rtp_ip" {}
 variable "alternative_sip_outbound_ip" {}
 variable "alternative_rtp_ip" {}

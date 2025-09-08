@@ -227,6 +227,10 @@ resource "aws_ecs_task_definition" "this" {
           value = "/cache/freeswitch/logs"
         },
         {
+          name  = "FS_EXTERNAL_SIP_OUTBOUND_IP",
+          value = var.external_sip_outbound_ip
+        },
+        {
           name  = "FS_EXTERNAL_RTP_IP",
           value = var.external_rtp_ip
         },
