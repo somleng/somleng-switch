@@ -1,4 +1,4 @@
-<profile name="external-inbound">
+<profile name="external">
   <settings>
     <X-PRE-PROCESS cmd="include" data="shared/settings.xml"/>
 

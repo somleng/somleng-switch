@@ -34,7 +34,7 @@ RSpec.describe OutboundCall do
 
     expect(result).to eq(outbound_call)
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      "sofia/external-outbound/85516701721@27.109.112.141",
+      "sofia/external/85516701721@27.109.112.141",
       from: "2442",
       controller: CallController,
       controller_metadata: {
@@ -81,7 +81,7 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      "sofia/external-outbound/016701721@27.109.112.141", hash_including(from: "023238265")
+      "sofia/external/016701721@27.109.112.141", hash_including(from: "023238265")
     )
   end
 
@@ -123,7 +123,7 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      %r{sofia/external-outbound/\+85516701721@.+}, any_args
+      %r{sofia/external/\+85516701721@.+}, any_args
     )
   end
 

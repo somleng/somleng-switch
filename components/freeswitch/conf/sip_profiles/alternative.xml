@@ -1,4 +1,4 @@
-<profile name="alternative-inbound">
+<profile name="alternative">
   <settings>
     <X-PRE-PROCESS cmd="include" data="shared/settings.xml"/>
 
