@@ -1,4 +1,4 @@
-<profile name="nat-gateway">
+<profile name="nat_gateway">
   <settings>
     <X-PRE-PROCESS cmd="include" data="shared/settings.xml"/>
 

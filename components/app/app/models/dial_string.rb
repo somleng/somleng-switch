@@ -1,7 +1,7 @@
 class DialString
   attr_reader :options
 
-  DEFAULT_SIP_PROFILE = "nat-gateway".freeze
+  DEFAULT_SIP_PROFILE = "nat_gateway".freeze
 
   def initialize(options)
     @options = options.symbolize_keys

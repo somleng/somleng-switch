@@ -42,7 +42,7 @@ module SomlengAdhearsion
                 "national_dialing" => false,
                 "host" => "27.109.112.141",
                 "username" => nil,
-                "sip_profile" => "nat-gateway"
+                "sip_profile" => "nat_gateway"
               }
             ),
             {

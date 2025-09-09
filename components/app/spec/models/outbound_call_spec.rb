@@ -23,7 +23,7 @@ RSpec.describe OutboundCall do
         "national_dialing" => false,
         "host" => "27.109.112.141",
         "username" => nil,
-        "sip_profile" => "nat-gateway"
+        "sip_profile" => "nat_gateway"
       }
     )
 
@@ -34,7 +34,7 @@ RSpec.describe OutboundCall do
 
     expect(result).to eq(outbound_call)
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      "sofia/nat-gateway/85516701721@27.109.112.141",
+      "sofia/nat_gateway/85516701721@27.109.112.141",
       from: "2442",
       controller: CallController,
       controller_metadata: {
@@ -73,7 +73,7 @@ RSpec.describe OutboundCall do
         "national_dialing" => true,
         "host" => "27.109.112.141",
         "username" => nil,
-        "sip_profile" => "nat-gateway"
+        "sip_profile" => "nat_gateway"
       }
     )
     allow(Adhearsion::OutboundCall).to receive(:originate)
@@ -81,7 +81,7 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      "sofia/nat-gateway/016701721@27.109.112.141", hash_including(from: "023238265")
+      "sofia/nat_gateway/016701721@27.109.112.141", hash_including(from: "023238265")
     )
   end
 
@@ -115,7 +115,7 @@ RSpec.describe OutboundCall do
         "national_dialing" => false,
         "host" => nil,
         "username" => "user1",
-        "sip_profile" => "nat-gateway"
+        "sip_profile" => "nat_gateway"
       }
     )
     allow(Adhearsion::OutboundCall).to receive(:originate)
@@ -123,7 +123,7 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      %r{sofia/nat-gateway/\+85516701721@.+}, any_args
+      %r{sofia/nat_gateway/\+85516701721@.+}, any_args
     )
   end
 
@@ -149,7 +149,7 @@ RSpec.describe OutboundCall do
         "national_dialing" => false,
         "host" => "27.109.112.141",
         "username" => nil,
-        "sip_profile" => "nat-gateway"
+        "sip_profile" => "nat_gateway"
       }
     )
   end

@@ -160,7 +160,7 @@ RSpec.describe CallController, type: :call_controller do
 
       expect(controller).to have_received(:dial).with(
         include(
-          "sofia/nat-gateway/alice@sip.example.com" => hash_including(for: 30.seconds, headers: be_a_kind_of(Hash))
+          "sofia/nat_gateway/alice@sip.example.com" => hash_including(for: 30.seconds, headers: be_a_kind_of(Hash))
         )
       )
     end
@@ -456,7 +456,7 @@ RSpec.describe CallController, type: :call_controller do
     instance_double(Adhearsion::OutboundCall, id: SecureRandom.uuid, **options)
   end
 
-  def dial_string(number, profile: "nat-gateway")
+  def dial_string(number, profile: "nat_gateway")
     match(%r{sofia/#{profile}/#{number}@.+})
   end
 end
