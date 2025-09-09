@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe DialString do
   describe "#to_s" do
-    it "uses the default correct profile" do
+    it "uses the default profile" do
       dial_string = DialString.new(address: "1234@192.168.1.1")
 
       expect(dial_string.to_s).to eq("sofia/nat_gateway/1234@192.168.1.1")
