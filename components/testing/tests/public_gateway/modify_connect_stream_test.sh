@@ -31,7 +31,7 @@ output=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:$SWITCH_PORT/
     "national_dialing": false,
     "host": "$uas",
     "username": null,
-    "symmetric_latching": true
+    "sip_profile": "nat-gateway"
   },
   "test_headers": {
     "X-UAS-Contact-Ip": "$uas"

@@ -2,16 +2,16 @@ require "spec_helper"
 
 RSpec.describe DialString do
   describe "#to_s" do
-    it "handles trunks with symmetric latching support" do
-      dial_string = DialString.new(symmetric_latching: true, address: "1234@192.168.1.1")
+    it "uses the default correct profile" do
+      dial_string = DialString.new(address: "1234@192.168.1.1")
 
-      expect(dial_string.to_s).to eq("sofia/external/1234@192.168.1.1")
+      expect(dial_string.to_s).to eq("sofia/nat-gateway/1234@192.168.1.1")
     end
 
-    it "handles trunks without symmetric latching support" do
-      dial_string = DialString.new(symmetric_latching: false, address: "1234@192.168.1.1")
+    it "supports different profiles" do
+      dial_string = DialString.new(sip_profile: "test", address: "1234@192.168.1.1")
 
-      expect(dial_string.to_s).to eq("sofia/alternative-outbound/1234@192.168.1.1")
+      expect(dial_string.to_s).to eq("sofia/test/1234@192.168.1.1")
     end
 
     it "builds a public gateway dial string" do
@@ -25,7 +25,7 @@ RSpec.describe DialString do
         )
       )
 
-      expect(dial_string.to_s).to eq("sofia/external/855716100987@sip.example.com")
+      expect(dial_string.to_s).to eq("sofia/nat-gateway/855716100987@sip.example.com")
     end
 
     it "builds a dial string with a plus prefix" do
@@ -39,7 +39,7 @@ RSpec.describe DialString do
         )
       )
 
-      expect(dial_string.to_s).to eq("sofia/external/+1234855716100987@sip.example.com")
+      expect(dial_string.to_s).to eq("sofia/nat-gateway/+1234855716100987@sip.example.com")
     end
 
     it "builds a dial string for national dialing for countries with a trunk prefix" do
@@ -53,7 +53,7 @@ RSpec.describe DialString do
         )
       )
 
-      expect(dial_string.to_s).to eq("sofia/external/0716100987@sip.example.com")
+      expect(dial_string.to_s).to eq("sofia/nat-gateway/0716100987@sip.example.com")
     end
 
     it "builds a dial string for national dialing for countries without a trunk prefix" do
@@ -67,7 +67,7 @@ RSpec.describe DialString do
         )
       )
 
-      expect(dial_string.to_s).to eq("sofia/external/6505130514@sip.example.com")
+      expect(dial_string.to_s).to eq("sofia/nat-gateway/6505130514@sip.example.com")
     end
 
     it "build a client gateway dial string" do
@@ -92,7 +92,7 @@ RSpec.describe DialString do
       ).to have_received(
         :build_client_gateway_dial_string).with(username: "user1", destination: "02092960310"
       )
-      expect(result).to eq("sofia/external/102092960310@45.118.77.153:1619;fs_path=sip:10.10.0.20:6060")
+      expect(result).to eq("sofia/nat-gateway/102092960310@45.118.77.153:1619;fs_path=sip:10.10.0.20:6060")
     end
   end
 
