@@ -32,7 +32,7 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
     "national_dialing": false,
     "host": "$uas",
     "username": null,
-    "sip_profile": "nat_gateway"
+    "sip_profile": "nat_instance"
   }
 }
 EOF
