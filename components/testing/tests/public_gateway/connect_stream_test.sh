@@ -40,7 +40,7 @@ rm -f $log_file
 
 media_server="$(dig +short freeswitch)"
 
-reset_db
+reset_opensips_db
 create_load_balancer_entry "gw" "5060"
 create_address_entry $(hostname -i)
 reload_opensips_tables
@@ -54,7 +54,7 @@ tcpdump_pid=$!
 
 sipp -sf $scenario public_gateway:5060 -key username "+855715100850" -s 2222 -m 1 -trace_msg > /dev/null
 
-reset_db
+reset_opensips_db
 
 # kill tcpdump
 kill $tcpdump_pid
