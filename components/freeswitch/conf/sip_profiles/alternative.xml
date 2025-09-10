@@ -1,9 +1,0 @@
-<profile name="alternative">
-  <settings>
-    <X-PRE-PROCESS cmd="include" data="shared/settings.xml"/>
-
-    <param name="sip-port" value="$${sip_alternative_port}"/>
-    <param name="ext-sip-ip" value="$${local_ip_v4}"/>
-    <param name="ext-rtp-ip" value="$${alternative_rtp_ip}"/>
-  </settings>
-</profile>

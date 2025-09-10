@@ -38,7 +38,7 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
     "national_dialing": false,
     "host": null,
     "username": "user1",
-    "symmetric_latching": true,
+    "sip_profile": "nat_gateway",
     "address": "+85512334667@$uas;fs_path=sip:$client_gateway:5060"
   },
   "test_headers": {

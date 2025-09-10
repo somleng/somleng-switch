@@ -1,9 +1,0 @@
-<profile name="external-outbound">
-  <settings>
-    <X-PRE-PROCESS cmd="include" data="shared/settings.xml"/>
-
-    <param name="sip-port" value="5081"/>
-    <param name="ext-sip-ip" value="$${external_sip_outbound_ip}"/>
-    <param name="ext-rtp-ip" value="$${external_rtp_ip}"/>
-  </settings>
-</profile>

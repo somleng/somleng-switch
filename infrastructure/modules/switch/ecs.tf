@@ -227,20 +227,20 @@ resource "aws_ecs_task_definition" "this" {
           value = "/cache/freeswitch/logs"
         },
         {
-          name  = "FS_EXTERNAL_SIP_OUTBOUND_IP",
-          value = var.external_sip_outbound_ip
+          name  = "FS_EXT_PROFILE_NAT_GATEWAY_SIP_PORT",
+          value = tostring(var.sip_port)
         },
         {
-          name  = "FS_EXTERNAL_RTP_IP",
-          value = var.external_rtp_ip
+          name  = "FS_EXT_PROFILE_NAT_GATEWAY_EXT_RTP_IP",
+          value = var.nat_gateway_ip
         },
         {
-          name  = "FS_ALTERNATIVE_SIP_OUTBOUND_IP",
-          value = var.alternative_sip_outbound_ip
+          name  = "FS_EXT_PROFILE_NAT_INSTANCE_SIP_PORT",
+          value = tostring(var.sip_alternative_port)
         },
         {
-          name  = "FS_ALTERNATIVE_RTP_IP",
-          value = var.alternative_rtp_ip
+          name  = "FS_EXT_PROFILE_NAT_INSTANCE_EXT_RTP_IP",
+          value = var.nat_instance_ip
         },
         {
           name  = "FS_MOD_RAYO_PORT",
@@ -261,14 +261,6 @@ resource "aws_ecs_task_definition" "this" {
         {
           name  = "FS_EVENT_SOCKET_PORT",
           value = tostring(var.freeswitch_event_socket_port)
-        },
-        {
-          name  = "FS_SIP_PORT",
-          value = tostring(var.sip_port)
-        },
-        {
-          name  = "FS_SIP_ALTERNATIVE_PORT",
-          value = tostring(var.sip_alternative_port)
         }
       ]
     },
