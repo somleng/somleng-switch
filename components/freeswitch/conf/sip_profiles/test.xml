@@ -6,7 +6,7 @@
     <X-PRE-PROCESS cmd="include" data="shared/settings.xml"/>
 
     <param name="sip-port" value="5099"/>
-    <param name="ext-sip-port" value = "5060">
+    <param name="ext-sip-port" value = "5060"/>
     <param name="ext-sip-ip" value="13.250.230.15"/>
     <param name="ext-rtp-ip" value="13.250.230.15"/>
   </settings>
