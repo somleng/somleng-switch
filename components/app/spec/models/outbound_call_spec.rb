@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe OutboundCall do
-  it "originates an outbound call through the public gateway" do
+  it "originates an outbound call through the default profile" do
     call_params = build_call_params(
       "to" => "+85516701721",
       "from" => "2442",
@@ -23,7 +23,7 @@ RSpec.describe OutboundCall do
         "national_dialing" => false,
         "host" => "27.109.112.141",
         "username" => nil,
-        "symmetric_latching" => true
+        "sip_profile" => "nat_gateway"
       }
     )
 
@@ -34,7 +34,7 @@ RSpec.describe OutboundCall do
 
     expect(result).to eq(outbound_call)
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      "sofia/external/85516701721@27.109.112.141",
+      "sofia/nat_gateway/85516701721@27.109.112.141",
       from: "2442",
       controller: CallController,
       controller_metadata: {
@@ -73,7 +73,7 @@ RSpec.describe OutboundCall do
         "national_dialing" => true,
         "host" => "27.109.112.141",
         "username" => nil,
-        "symmetric_latching" => true
+        "sip_profile" => "nat_gateway"
       }
     )
     allow(Adhearsion::OutboundCall).to receive(:originate)
@@ -81,11 +81,11 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      "sofia/external/016701721@27.109.112.141", hash_including(from: "023238265")
+      "sofia/nat_gateway/016701721@27.109.112.141", hash_including(from: "023238265")
     )
   end
 
-  it "originates an outbound call through the public gateway without symmetric latching support" do
+  it "originates an outbound call through a custom sip profile" do
     call_params = build_call_params(
       "routing_parameters" => {
         "destination" => "85516701721",
@@ -94,7 +94,7 @@ RSpec.describe OutboundCall do
         "national_dialing" => false,
         "host" => "27.109.112.141",
         "username" => nil,
-        "symmetric_latching" => false
+        "sip_profile" => "test"
       }
     )
     allow(Adhearsion::OutboundCall).to receive(:originate)
@@ -102,7 +102,7 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      "sofia/alternative-outbound/85516701721@27.109.112.141", any_args
+      "sofia/test/85516701721@27.109.112.141", any_args
     )
   end
 
@@ -115,7 +115,7 @@ RSpec.describe OutboundCall do
         "national_dialing" => false,
         "host" => nil,
         "username" => "user1",
-        "symmetric_latching" => true
+        "sip_profile" => "nat_gateway"
       }
     )
     allow(Adhearsion::OutboundCall).to receive(:originate)
@@ -123,7 +123,7 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      %r{sofia/external/\+85516701721@.+}, any_args
+      %r{sofia/nat_gateway/\+85516701721@.+}, any_args
     )
   end
 
@@ -149,7 +149,7 @@ RSpec.describe OutboundCall do
         "national_dialing" => false,
         "host" => "27.109.112.141",
         "username" => nil,
-        "symmetric_latching" => true
+        "sip_profile" => "nat_gateway"
       }
     )
   end

@@ -38,7 +38,7 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
     "national_dialing": false,
     "host": "$uas",
     "username": null,
-    "symmetric_latching": true
+    "sip_profile": "nat_gateway"
   },
   "billing_parameters": {
     "charging_mode": "postpaid"

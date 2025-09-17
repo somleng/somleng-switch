@@ -84,7 +84,7 @@ RSpec.describe CallController, type: :call_controller do
       )
     end
 
-    it "handles numbers without symmetric latching support", :vcr, cassette: :dial_without_symmetric_latching do
+    it "handles different SIP profiles", :vcr, cassette: :dial_to_test_profile do
       controller = build_controller(
         stub_voice_commands: [ { dial: build_dial_status } ],
         call_properties: {
@@ -103,7 +103,7 @@ RSpec.describe CallController, type: :call_controller do
 
       expect(controller).to have_received(:dial).with(
         include(
-          dial_string("016701721", profile: "alternative-outbound") => be_a_kind_of(Hash)
+          dial_string("016701721", profile: "test") => be_a_kind_of(Hash)
         )
       )
     end
@@ -132,7 +132,7 @@ RSpec.describe CallController, type: :call_controller do
       expect(controller).to have_received(:dial).with(
         include(
           dial_string("85516701721") => hash_including(from: match(/\A855/),),
-          dial_string("0715100860", profile: "alternative-outbound") => hash_including(from: match(/\A0/)),
+          dial_string("0715100860", profile: "test") => hash_including(from: match(/\A0/)),
           dial_string("85510555777") => hash_including(from: match(/\A855/))
         ),
         any_args
@@ -160,7 +160,7 @@ RSpec.describe CallController, type: :call_controller do
 
       expect(controller).to have_received(:dial).with(
         include(
-          "sofia/external/alice@sip.example.com" => hash_including(for: 30.seconds, headers: be_a_kind_of(Hash))
+          "sofia/nat_gateway/alice@sip.example.com" => hash_including(for: 30.seconds, headers: be_a_kind_of(Hash))
         )
       )
     end
@@ -189,7 +189,7 @@ RSpec.describe CallController, type: :call_controller do
       expect(controller).to have_received(:dial).with(
         include(
           dial_string("85516701721") => hash_including(from: "85523238265"),
-          dial_string("0715100860", profile: "alternative-outbound") => hash_including(from: "023238265"),
+          dial_string("0715100860", profile: "test") => hash_including(from: "023238265"),
           dial_string("85510555777") => hash_including(from: "85523238265")
         )
       )
@@ -456,7 +456,7 @@ RSpec.describe CallController, type: :call_controller do
     instance_double(Adhearsion::OutboundCall, id: SecureRandom.uuid, **options)
   end
 
-  def dial_string(number, profile: :external)
+  def dial_string(number, profile: "nat_gateway")
     match(%r{sofia/#{profile}/#{number}@.+})
   end
 end

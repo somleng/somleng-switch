@@ -1,8 +1,7 @@
 class DialString
-  EXTERNAL_PROFILE = "external".freeze
-  EXTERNAL_NAT_INSTANCE_PROFILE = "alternative-outbound".freeze
-
   attr_reader :options
+
+  DEFAULT_SIP_PROFILE = "nat_gateway".freeze
 
   def initialize(options)
     @options = options.symbolize_keys
@@ -27,7 +26,7 @@ class DialString
   end
 
   def external_profile
-    routing_parameters.symmetric_latching? ? EXTERNAL_PROFILE : EXTERNAL_NAT_INSTANCE_PROFILE
+    options.fetch(:sip_profile, DEFAULT_SIP_PROFILE)
   end
 
   def channel_variables

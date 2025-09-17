@@ -94,7 +94,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-      FS_ALTERNATIVE_RTP_IP: "18.141.245.230"
+      FS_EXT_PROFILE_NAT_INSTANCE_EXT_RTP_IP: "18.141.245.230"
       FS_EVENT_SOCKET_PASSWORD: "secret"
       FS_EVENT_SOCKET_PORT: 8021
       FS_MOD_RAYO_MAX_IDLE_SECS: 5
