@@ -8,7 +8,7 @@ class DialString
   end
 
   def to_s
-    "sofia/#{external_profile}/#{address}"
+    "#{format_channel_variables(channel_variables)}sofia/#{external_profile}/#{address};fs_path=sip:freeswitch:5060"
   end
 
   def address
@@ -22,10 +22,20 @@ class DialString
   private
 
   def routing_parameters
-    @routing_parameters ||= RoutingParameters.new(options)
+    @routing_parameters ||= RoutingParameters.new(options.fetch(:routing_parameters))
   end
 
   def external_profile
     options.fetch(:sip_profile, DEFAULT_SIP_PROFILE)
+  end
+
+  def channel_variables
+    options.fetch(:channel_variables) { BillingEngineParameters.new(**options.fetch(:billing_parameters)).to_h }
+  end
+
+  def format_channel_variables(variables)
+    return "" if variables.empty?
+
+    "{#{variables.map { |k, v| "#{k}=#{v}" }.join(",")}}"
   end
 end
