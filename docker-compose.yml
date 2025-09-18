@@ -129,8 +129,8 @@ services:
   billing-engine:
     build:
       context: components/billing_engine
-      target: testing
-    image: billing-engine:testing
+      target: debug
+    image: billing-engine:debug
     depends_on:
       redis:
         condition: service_healthy

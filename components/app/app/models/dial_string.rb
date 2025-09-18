@@ -8,7 +8,7 @@ class DialString
   end
 
   def to_s
-    "#{format_channel_variables(channel_variables)}sofia/#{external_profile}/#{address}"
+    "#{format_channel_variables(channel_variables)}sofia/#{external_profile}/#{address};fs_path=sip:freeswitch:5060"
   end
 
   def address

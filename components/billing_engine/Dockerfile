@@ -8,8 +8,8 @@ WORKDIR /go/src/github.com/cgrates/cgrates
 RUN git clone https://github.com/cgrates/cgrates.git .
 
 # Copy and apply git patch
-COPY src/cgrates/fsagent_inbound_filter.patch /tmp/fsagent_inbound_filter.patch
-RUN git apply /tmp/fsagent_inbound_filter.patch
+# COPY src/cgrates/fsagent_inbound_filter.patch /tmp/fsagent_inbound_filter.patch
+# RUN git apply /tmp/fsagent_inbound_filter.patch
 
 # Build CGRateS using official build.sh script
 RUN chmod +x build.sh && ./build.sh
@@ -46,9 +46,9 @@ HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD /usr/local/bin/docker-he
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-FROM runtime AS testing
+FROM runtime AS debug
 
-RUN apk add --no-cache ngrep
+RUN apk add --no-cache ngrep jq
 
 FROM base
 

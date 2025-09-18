@@ -9,6 +9,7 @@
   <param name="rtp-ip" value="$${local_ip_v4}"/>
 
   <param name="bind-params" value="transport=udp"/>
+
   <param name="inbound-codec-prefs" value="G722,PCMU,PCMA,GSM"/>
   <param name="outbound-codec-prefs" value="G722,PCMU,PCMA,GSM"/>
 
