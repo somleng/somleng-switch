@@ -17,11 +17,7 @@ function logRequest(req, body) {
   jsonStr = decoded
     .replace(/\bNaN\b/gi, "null")
     .replace(/\bInfinity\b/gi, "null")
-    .replace(/\b-Infinity\b/gi, "null")
-    .replace(
-      /"sip_user_agent"\s*:\s*"([^"]|\\")*?"/gi,
-      '"sip_user_agent":"[REMOVED]"'
-    );
+    .replace(/\b-Infinity\b/gi, "null");
 
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   console.log(JSON.stringify(JSON.parse(jsonStr), null, 2));
