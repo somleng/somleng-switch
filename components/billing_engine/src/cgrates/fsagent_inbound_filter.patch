@@ -1,0 +1,13 @@
+diff --git a/agents/fsagent.go b/agents/fsagent.go
+index 44f9390fb..68f583927 100644
+--- a/agents/fsagent.go
++++ b/agents/fsagent.go
+@@ -305,7 +305,7 @@ func (fsa *FSsessions) onChannelHangupComplete(fsev FSEvent, connIdx int) {
+ // Connect connects to the freeswitch mod_event_socket server and starts
+ // listening for events.
+ func (fsa *FSsessions) Connect() error {
+-	eventFilters := map[string][]string{"Call-Direction": {"inbound"}}
++	eventFilters := map[string][]string{}
+ 	connErr := make(chan error)
+ 	var reply string
+ 	// make a call fs -> sessions_conns to create an active client needed for syncSessions when restoring sessions, since prior clients are lost when engine shuts down

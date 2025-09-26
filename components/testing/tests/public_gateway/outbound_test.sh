@@ -12,6 +12,11 @@ cat /dev/null > $log_file
 uas="$(hostname -i)"
 media_server="$(dig +short freeswitch)"
 
+if ! billing_engine_set_charger_profile; then
+  echo "Failed to set charger profile. Exiting."
+  exit 1
+fi
+
 curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/calls \
 -H 'Content-Type: application/json; charset=utf-8' \
 --data-binary @- << EOF
@@ -34,6 +39,9 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
     "host": "$uas",
     "username": null,
     "sip_profile": "nat_gateway"
+  },
+  "billing_parameters": {
+    "charging_mode": "postpaid"
   },
   "test_headers": {
     "X-UAS-Contact-Ip": "$uas"

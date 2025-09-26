@@ -19,14 +19,14 @@ module CallPlatform
       keyword_init: true
     )
 
-    OutboundPhoneCallResponse = Struct.new(
+    OutboundPhoneCallResponse = Data.define(
       :sid,
       :from,
       :account_sid,
       :parent_call_sid,
       :routing_parameters,
-      :address,
-      keyword_init: true
+      :billing_parameters,
+      :address
     )
 
     RecordingResponse = Struct.new(
@@ -86,6 +86,7 @@ module CallPlatform
           account_sid: phone_call_response.fetch("account_sid"),
           from: phone_call_response.fetch("from"),
           routing_parameters: phone_call_response.fetch("routing_parameters"),
+          billing_parameters: phone_call_response.fetch("billing_parameters"),
           address: phone_call_response.fetch("address")
         )
       end
