@@ -302,7 +302,7 @@ GEM
       activesupport (>= 3.0.7)
       nokogiri (~> 1.8, >= 1.8.3)
     securerandom (0.4.1)
-    sentry-ruby (5.27.1)
+    sentry-ruby (5.28.0)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
     simplecov (0.22.0)
