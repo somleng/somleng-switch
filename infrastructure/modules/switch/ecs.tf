@@ -231,7 +231,7 @@ resource "aws_ecs_task_definition" "this" {
           value = tostring(var.sip_port)
         },
         {
-          name  = "FS_EXT_PROFILE_NAT_GATEWAY_EXT_RTP_IP",
+          name  = "FS_EXT_PROFILE_NAT_GATEWAY_IP",
           value = var.nat_gateway_ip
         },
         {
@@ -239,7 +239,7 @@ resource "aws_ecs_task_definition" "this" {
           value = tostring(var.sip_alternative_port)
         },
         {
-          name  = "FS_EXT_PROFILE_NAT_INSTANCE_EXT_RTP_IP",
+          name  = "FS_EXT_PROFILE_NAT_INSTANCE_IP",
           value = var.nat_instance_ip
         },
         {
