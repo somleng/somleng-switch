@@ -12,8 +12,15 @@ cat /dev/null > $log_file
 uas="$(hostname -i)"
 media_server="$(dig +short freeswitch)"
 
+reset_billing_engine_data
+
 if ! billing_engine_set_charger_profile; then
   echo "Failed to set charger profile. Exiting."
+  exit 1
+fi
+
+if ! billing_engine_create_destination; then
+  echo "Failed to create destination. Exiting."
   exit 1
 fi
 

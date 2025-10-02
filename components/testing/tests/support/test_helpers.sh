@@ -47,30 +47,76 @@ assert_not_in_file () {
   fi
 }
 
+reset_billing_engine_data() {
+  local db="$BILLING_ENGINE_STORDB_DBNAME"
+  local user="$DATABASE_USERNAME"
+  local host="$DATABASE_HOST"
+  local redis_url="$BILLING_ENGINE_DATADB_REDIS_URL"
+  local keep_redis_keys="versions cfi_cgrates.org"
+  local keep_redis_keys_pattern=$(echo "$keep_redis_keys" | sed 's/ /|/g')
+
+  # flush all redis keys except from whitelist
+  redis-cli -u "$redis_url" --scan | grep -Ev "$keep_redis_keys_pattern" | while read key; do
+    redis-cli -u "$redis_url" DEL "$key" > /dev/null
+  done
+
+  # Get all table names except "versions"
+  tables=$(psql -h "$host" -U "$user" -d "$db" -Atc \
+      "SELECT string_agg(tablename, ', ')
+      FROM pg_tables
+      WHERE schemaname='public' AND tablename <> 'versions';")
+
+  if [ -z "$tables" ]; then
+    echo "No tables found in $db"
+    return 1
+  fi
+
+  # Truncate all tables in a single command (faster + handles FKs)
+  psql -q -h "$host" -U "$user" -d "$db" -c "TRUNCATE TABLE $tables RESTART IDENTITY CASCADE;"
+}
+
 billing_engine_set_charger_profile () {
+  billing_engine_api "APIerSv1.SetChargerProfile" "[
+    {
+      \"ID\": \"CHARGER_Default\",
+      \"FilterIDs\": [],
+      \"AttributeIDs\": [\"*none\"],
+      \"RunID\": \"default\",
+      \"Weight\": 0
+    }
+  ]"
+}
+
+billing_engine_create_destination () {
+  local prefix="${1:-*}"
+  billing_engine_api "APIerSv2.SetTPDestination" "[
+    {
+      \"TPid\": \"TEST\",
+      \"ID\": \"TEST_CATCHALL\",
+      \"Prefixes\": [\"$prefix\"]
+    }
+  ]"
+}
+
+billing_engine_api () {
+  local method="$1"
+  local params="$2"
+
   response=$(
     curl -s -X POST "http://billing-engine:$BILLING_ENGINE_HTTP_PORT/jsonrpc" \
       -H "Content-Type: application/json" \
-      -d '{
-        "jsonrpc": "2.0",
-        "id": 1,
-        "method": "APIerSv1.SetChargerProfile",
-        "params": [
-          {
-            "ID": "CHARGER_Default",
-            "FilterIDs": [],
-            "AttributeIDs": ["*none"],
-            "RunID": "default",
-            "Weight": 0
-          }
-        ]
-      }'
+      -d "{
+        \"jsonrpc\": \"2.0\",
+        \"id\": 1,
+        \"method\": \"$method\",
+        \"params\": $params
+      }"
   )
 
   error=$(echo "$response" | jq -r '.error')
 
   if [ "$error" != "null" ]; then
-    echo "Error in response: $error"
+    echo "Error in response: $error" >&2
     return 1
   fi
 }

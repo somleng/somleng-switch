@@ -1,4 +1,4 @@
-CallProperties = Struct.new(
+CallProperties = Data.define(
   :voice_url,
   :voice_method,
   :twiml,
@@ -10,6 +10,5 @@ CallProperties = Struct.new(
   :to,
   :from,
   :sip_headers,
-  :default_tts_voice,
-  keyword_init: true
+  :default_tts_voice
 )

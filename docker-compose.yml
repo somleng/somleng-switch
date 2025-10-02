@@ -154,6 +154,8 @@ services:
       - "host.docker.internal:host-gateway"
     expose:
       - "2080/tcp"
+    ports:
+      - "2080:2080"
 
   billing-engine-bootstrap:
     build:
@@ -209,6 +211,8 @@ services:
       context: components/testing
     image: testing:latest
     environment:
+      BILLING_ENGINE_STORDB_DBNAME: "cgrates_test"
+      BILLING_ENGINE_DATADB_REDIS_URL: "redis://redis:6379/2"
       DATABASE_HOST: host.docker.internal
       DATABASE_PORT: 5432
       DATABASE_USERNAME: postgres

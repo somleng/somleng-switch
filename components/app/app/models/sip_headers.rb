@@ -1,4 +1,4 @@
-SIPHeaders = Struct.new(:call_sid, :account_sid, keyword_init: true) do
+SIPHeaders = Data.define(:call_sid, :account_sid) do
   def to_h
     {
       "X-Somleng-CallSid" => call_sid,
