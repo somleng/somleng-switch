@@ -88,12 +88,12 @@ billing_engine_set_charger_profile () {
 }
 
 billing_engine_create_destination () {
-  local prefix="${1:-*}"
+  local prefix="${1:-""}"
   billing_engine_api "APIerSv2.SetTPDestination" "[
     {
       \"TPid\": \"TEST\",
       \"ID\": \"TEST_CATCHALL\",
-      \"Prefixes\": [\"$prefix\"]
+      \"Prefixes\": [\"0\",\"1\",\"2\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\"]
     }
   ]"
 }

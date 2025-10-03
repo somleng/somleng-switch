@@ -19,7 +19,7 @@ if ! billing_engine_set_charger_profile; then
   exit 1
 fi
 
-if ! billing_engine_create_destination "855"; then
+if ! billing_engine_create_destination; then
   echo "Failed to create destination. Exiting."
   exit 1
 fi
