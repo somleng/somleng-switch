@@ -19,8 +19,33 @@ if ! billing_engine_set_charger_profile; then
   exit 1
 fi
 
-if ! billing_engine_create_destination; then
+if ! billing_engine_create_destination "855"; then
   echo "Failed to create destination. Exiting."
+  exit 1
+fi
+
+if ! billing_engine_create_rate 100; then
+  echo "Failed to create rate. Exiting."
+  exit 1
+fi
+
+if ! billing_engine_create_destination_rate; then
+  echo "Failed to create destination rate. Exiting."
+  exit 1
+fi
+
+if ! billing_engine_create_rating_plan; then
+  echo "Failed to create rating plan. Exiting."
+  exit 1
+fi
+
+if ! billing_engine_create_rating_profile; then
+  echo "Failed to create rating profile. Exiting."
+  exit 1
+fi
+
+if ! billing_engine_load_tariff_plan; then
+  echo "Failed to load tariff plan. Exiting."
   exit 1
 fi
 

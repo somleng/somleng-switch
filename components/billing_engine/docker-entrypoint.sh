@@ -38,6 +38,8 @@ if [ ! -f "$CONFIG_FILE" ]; then
     "enabled": true,
     "attributes_conns": ["*localhost"],
     "chargers_conns": ["*localhost"],
+    "rals_conns": ["*localhost"],
+    "cdrs_conns": ["*localhost"]
   },
   "attributes": {
     "enabled": true
@@ -45,6 +47,9 @@ if [ ! -f "$CONFIG_FILE" ]; then
   "chargers": {
     "enabled": true,
     "attributes_conns": ["*localhost"],
+  },
+  "cdrs": {
+	  "enabled": true,
   },
   "freeswitch_agent": {
     "enabled": true,

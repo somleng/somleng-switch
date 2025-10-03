@@ -98,6 +98,90 @@ billing_engine_create_destination () {
   ]"
 }
 
+billing_engine_create_rate () {
+  local rate_per_minute="${1:-100}"
+  local rate_increment="${2:-"1s"}"
+  billing_engine_api "APIerSv1.SetTPRate" "[
+    {
+      \"TPid\": \"TEST\",
+      \"ID\": \"TEST_CATCHALL\",
+      \"RateSlots\": [
+        {
+          \"RateUnit\": \"60s\",
+          \"GroupIntervalStart\": null,
+          \"RateIncrement\": \"${rate_increment}\",
+          \"Rate\": $rate_per_minute,
+          \"ConnectFee\": 0.0
+        }
+      ]
+    }
+  ]"
+}
+
+billing_engine_create_destination_rate () {
+  billing_engine_api "APIerSv1.SetTPDestinationRate" "[
+    {
+      \"TPid\": \"TEST\",
+      \"ID\": \"TEST_CATCHALL\",
+      \"DestinationRates\": [
+        {
+          \"RoundingDecimals\": 4,
+          \"RateId\": \"TEST_CATCHALL\",
+          \"MaxCost\": 0,
+          \"MaxCostStrategy\": null,
+          \"DestinationId\": \"TEST_CATCHALL\",
+          \"RoundingMethod\": \"*up\"
+        }
+      ]
+    }
+  ]"
+}
+
+billing_engine_create_rating_plan () {
+  billing_engine_api "APIerSv1.SetTPRatingPlan" "[
+    {
+      \"TPid\": \"TEST\",
+      \"ID\": \"TEST_CATCHALL\",
+      \"RatingPlanBindings\": [
+        {
+          \"TimingId\": \"*any\",
+          \"Weight\": 10,
+          \"DestinationRatesId\": \"TEST_CATCHALL\"
+        }
+      ]
+    }
+  ]"
+}
+
+billing_engine_create_rating_profile () {
+  billing_engine_api "APIerSv1.SetTPRatingProfile" "[
+    {
+      \"RatingPlanActivations\": [
+        {
+          \"RatingPlanId\": \"TEST_CATCHALL\",
+          \"FallbackSubjects\": null,
+          \"ActivationTime\": null
+        }
+      ],
+      \"LoadId\": \"TEST\",
+      \"Category\": \"call\",
+      \"TPid\": \"TEST\",
+      \"Tenant\": \"cgrates.org\",
+      \"Subject\": \"*any\"
+    }
+  ]"
+}
+
+billing_engine_load_tariff_plan () {
+  billing_engine_api "APIerSv1.LoadTariffPlanFromStorDb" "[
+    {
+      \"TPid\": \"TEST\",
+      \"DryRun\": false,
+      \"Validate\": true
+    }
+  ]"
+}
+
 billing_engine_api () {
   local method="$1"
   local params="$2"
