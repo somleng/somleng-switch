@@ -20,7 +20,15 @@ function logRequest(req, body) {
     .replace(/\b-Infinity\b/gi, "null");
 
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  console.log(JSON.stringify(JSON.parse(jsonStr), null, 2));
+
+  try {
+    const json = JSON.parse(jsonStr);
+    console.log(JSON.stringify(json, null, 2));
+  } catch (err) {
+    console.warn(`[Warning] Failed to parse JSON: ${err.message}`);
+    console.log("Decoded content:\n", jsonStr);
+  }
+
   console.log("\n");
 }
 

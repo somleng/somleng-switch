@@ -28,7 +28,8 @@ class BuildCallProperties < ApplicationWorkflow
   def sip_headers
     @sip_headers ||= SIPHeaders.new(
       call_sid: call_params.fetch("sid"),
-      account_sid: call_params.fetch("account_sid")
+      account_sid: call_params.fetch("account_sid"),
+      carrier_sid: call_params.fetch("carrier_sid")
     )
   end
 end

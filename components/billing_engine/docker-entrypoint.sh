@@ -50,6 +50,9 @@ if [ ! -f "$CONFIG_FILE" ]; then
   },
   "cdrs": {
 	  "enabled": true,
+    "thresholds_conns": ["*localhost"],
+    "rals_conns": ["*localhost"],
+    "chargers_conns": ["*localhost"]
   },
   "freeswitch_agent": {
     "enabled": true,

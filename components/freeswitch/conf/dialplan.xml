@@ -12,6 +12,7 @@
       <condition field="${cgr_notify}" expression="^$">
         <action application="log" data="NOTICE In the CGRateS_Auth block parking the call" />
         <action application="set" data="cgr_account=${sip_h_X-Somleng-AccountSid}" />
+        <!-- <action application="set" data="cgr_tenant=somleng.org" /> -->
         <action application="park" />
       </condition>
     </extension>

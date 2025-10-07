@@ -75,10 +75,10 @@ reset_billing_engine_data() {
   psql -q -h "$host" -U "$user" -d "$db" -c "TRUNCATE TABLE $tables RESTART IDENTITY CASCADE;"
 }
 
-billing_engine_set_charger_profile () {
+billing_engine_create_default_charger () {
   billing_engine_api "APIerSv1.SetChargerProfile" "[
     {
-      \"ID\": \"CHARGER_Default\",
+      \"ID\": \"CHARGER_DEFAULT\",
       \"FilterIDs\": [],
       \"AttributeIDs\": [\"*none\"],
       \"RunID\": \"default\",
@@ -166,7 +166,6 @@ billing_engine_create_rating_profile () {
       \"LoadId\": \"TEST\",
       \"Category\": \"call\",
       \"TPid\": \"TEST\",
-      \"Tenant\": \"cgrates.org\",
       \"Subject\": \"*any\"
     }
   ]"
@@ -178,6 +177,33 @@ billing_engine_load_tariff_plan () {
       \"TPid\": \"TEST\",
       \"DryRun\": false,
       \"Validate\": true
+    }
+  ]"
+}
+
+billing_engine_create_account () {
+  local account="${1:-"sample-account-sid"}"
+
+  billing_engine_api "APIerSv1.SetAccount" "[
+    {
+      \"Account\": \"$account\"
+    }
+  ]"
+}
+
+billing_engine_set_balance () {
+  local account="${1:-"sample-account-sid"}"
+  local balance="${2:-"5m"}"
+
+  billing_engine_api "APIerSv1.SetBalance" "[
+    {
+      \"Balance\": {
+        \"ID\": \"TEST\",
+        \"Weight\": 10,
+        \"Value\": \"$balance\"
+      },
+      \"Account\": \"$account\",
+      \"BalanceType\": \"*voice\"
     }
   ]"
 }

@@ -14,8 +14,8 @@ media_server="$(dig +short freeswitch)"
 
 reset_billing_engine_data
 
-if ! billing_engine_set_charger_profile; then
-  echo "Failed to set charger profile. Exiting."
+if ! billing_engine_create_default_charger; then
+  echo "Failed to create default charger profile. Exiting."
   exit 1
 fi
 
@@ -24,7 +24,7 @@ if ! billing_engine_create_destination; then
   exit 1
 fi
 
-if ! billing_engine_create_rate 100; then
+if ! billing_engine_create_rate 1.00; then
   echo "Failed to create rate. Exiting."
   exit 1
 fi
@@ -49,6 +49,16 @@ if ! billing_engine_load_tariff_plan; then
   exit 1
 fi
 
+if ! billing_engine_create_account "sample-account-sid"; then
+  echo "Failed to create account. Exiting."
+  exit 1
+fi
+
+if ! billing_engine_set_balance "sample-account-sid" "5m"; then
+  echo "Failed to set balance. Exiting."
+  exit 1
+fi
+
 response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls \
 -H 'Content-Type: application/json; charset=utf-8' \
 --data-binary @- << EOF
@@ -59,6 +69,7 @@ response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls 
   "voice_method": "GET",
   "sid": "sample-call-sid",
   "account_sid": "sample-account-sid",
+  "carrier_sid": "TEST",
   "account_auth_token": "sample-auth-token",
   "direction": "outbound-api",
   "api_version": "2010-04-01",
