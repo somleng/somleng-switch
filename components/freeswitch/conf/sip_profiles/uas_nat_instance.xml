@@ -1,0 +1,18 @@
+<!--
+  ext-sip-ip is set to local_ip_v4 because when this profile is used FreeSWITCH is acting as a UAS
+  behind a SIP Proxy. SIP subsequent requests (ACK, BYE, etc.) are routed through the proxy, which
+  include Route headers. These requests are first sent to the proxy and then forwarded
+  to the Contact header provided by FreeSWITCH. Since the Contact header must contain
+  the reachable address within the local network (the private IP), we set ext-sip-ip
+  to local_ip_v4 to ensure correct routing of in-dialog requests through the SIP Proxy.
+-->
+
+<profile name="uas_nat_instance">
+  <settings>
+    <X-PRE-PROCESS cmd="include" data="shared/settings.xml"/>
+
+    <param name="sip-port" value="$${ext_profile_uas_nat_instance_sip_port}"/>
+    <param name="ext-sip-ip" value="$${local_ip_v4}"/>
+    <param name="ext-rtp-ip" value="$${ext_profile_nat_instance_ip}"/>
+  </settings>
+</profile>
