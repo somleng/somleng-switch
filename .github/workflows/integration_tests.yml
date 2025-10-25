@@ -152,6 +152,8 @@ jobs:
         run: |
           mkdir -p tmp/logs
           docker compose exec testing sh -c 'tar cf - *_messages.log' | tar xf - -C tmp/
+          docker compose logs freeswitch > tmp/freeswitch.log
+          docker compose logs switch-app > tmp/switch-app
 
       - name: Upload logs
         uses: actions/upload-artifact@v4
