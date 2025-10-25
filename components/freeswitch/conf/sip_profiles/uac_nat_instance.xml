@@ -1,0 +1,17 @@
+<!--
+  ext-sip-ip is set to the public IP address of the NAT instance because this profile
+  operates as a UAC (User Agent Client) behind a 1:1 NAT. The Contact header must contain
+  an address that the UAS can reach through the NAT instance. By setting ext-sip-ip
+  to the NAT instance's external IP, in-dialog SIP requests (ACK, BYE, etc.) sent
+  from the UAS will correctly traverse the NAT and reach this FreeSWITCH instance.
+-->
+
+<profile name="uac_nat_instance">
+  <settings>
+    <X-PRE-PROCESS cmd="include" data="shared/settings.xml"/>
+
+    <param name="sip-port" value="$${ext_uac_profile_nat_instance_sip_port}"/>
+    <param name="ext-sip-ip" value="$${ext_profile_nat_instance_ip}"/>
+    <param name="ext-rtp-ip" value="$${ext_profile_nat_instance_ip}"/>
+  </settings>
+</profile>
