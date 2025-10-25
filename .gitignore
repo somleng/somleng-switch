@@ -3,7 +3,8 @@
 .*.swo
 .DS_STORE
 log/*.log
-tmp
+/tmp/*
+!/tmp/.keep
 vendor/ruby
 
 # SimpleCov

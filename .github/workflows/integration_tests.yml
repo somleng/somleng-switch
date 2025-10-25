@@ -146,3 +146,16 @@ jobs:
       - name: Run ${{ inputs.context }} Tests
         run: |
           docker compose exec testing ./tests.sh ./tests/${{ inputs.context }}
+
+      - name: Fetch logs from container
+        if: failure()
+        run: |
+          mkdir -p tmp/logs
+          docker compose exec testing sh -c 'tar cf - *_messages.log' | tar xf - -C tmp/
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: error_logs
+          path: tmp
