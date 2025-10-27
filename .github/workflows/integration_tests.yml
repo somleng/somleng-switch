@@ -156,7 +156,7 @@ jobs:
           docker compose logs switch-app > tmp/switch-app
 
       - name: Upload logs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: error_logs
