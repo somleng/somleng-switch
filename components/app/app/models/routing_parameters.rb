@@ -1,6 +1,6 @@
 class RoutingParameters
   attr_reader :destination, :dial_string_prefix, :plus_prefix, :national_dialing,
-              :host, :username, :services_client
+              :host, :username, :symmetric_latching, :services_client
 
   def initialize(options)
     options.symbolize_keys!
@@ -10,6 +10,7 @@ class RoutingParameters
     @national_dialing = options.fetch(:national_dialing)
     @host = options.fetch(:host)
     @username = options.fetch(:username)
+    @symmetric_latching = options.fetch(:symmetric_latching, true)
     @services_client = options.fetch(:services_client) { Services::Client.new }
   end
 
@@ -32,6 +33,10 @@ class RoutingParameters
     end
 
     result
+  end
+
+  def symmetric_latching?
+    symmetric_latching
   end
 
   private

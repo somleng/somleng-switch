@@ -12,7 +12,54 @@ cat /dev/null > $log_file
 uas="$(hostname -i)"
 media_server="$(dig +short freeswitch)"
 
-curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/calls \
+reset_billing_engine_data
+
+if ! billing_engine_create_default_charger; then
+  echo "Failed to create default charger profile. Exiting."
+  exit 1
+fi
+
+if ! billing_engine_create_destination; then
+  echo "Failed to create destination. Exiting."
+  exit 1
+fi
+
+if ! billing_engine_create_rate 1.00; then
+  echo "Failed to create rate. Exiting."
+  exit 1
+fi
+
+if ! billing_engine_create_destination_rate; then
+  echo "Failed to create destination rate. Exiting."
+  exit 1
+fi
+
+if ! billing_engine_create_rating_plan; then
+  echo "Failed to create rating plan. Exiting."
+  exit 1
+fi
+
+if ! billing_engine_create_rating_profile; then
+  echo "Failed to create rating profile. Exiting."
+  exit 1
+fi
+
+if ! billing_engine_load_tariff_plan; then
+  echo "Failed to load tariff plan. Exiting."
+  exit 1
+fi
+
+if ! billing_engine_create_account "sample-account-sid"; then
+  echo "Failed to create account. Exiting."
+  exit 1
+fi
+
+if ! billing_engine_set_balance "sample-account-sid" "5m"; then
+  echo "Failed to set balance. Exiting."
+  exit 1
+fi
+
+response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls \
 -H 'Content-Type: application/json; charset=utf-8' \
 --data-binary @- << EOF
 {
@@ -22,6 +69,7 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
   "voice_method": "GET",
   "sid": "sample-call-sid",
   "account_sid": "sample-account-sid",
+  "carrier_sid": "TEST",
   "account_auth_token": "sample-auth-token",
   "direction": "outbound-api",
   "api_version": "2010-04-01",
@@ -35,11 +83,17 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
     "username": null,
     "sip_profile": "nat_gateway"
   },
+  "billing_parameters": {
+    "charging_mode": "postpaid"
+  },
   "test_headers": {
     "X-UAS-Contact-Ip": "$uas"
   }
 }
 EOF
+)
+
+echo $response
 
 sleep 10
 

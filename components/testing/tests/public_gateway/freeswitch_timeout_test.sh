@@ -20,7 +20,7 @@ rm -f $log_file
 
 public_gateway="$(dig +short public_gateway)"
 
-reset_db
+reset_opensips_db
 create_load_balancer_entry "gw" "5061" "1" "$(hostname -i)"
 create_address_entry "$(hostname -i)" "1"
 reload_opensips_tables
@@ -32,7 +32,7 @@ sipp -sf $scenario public_gateway:5060 -s 1234 -m 1 -trace_msg -trace_err > /dev
 
 kill $sipp_server_pid
 
-reset_db
+reset_opensips_db
 
 # Assert 500 All GW are down is returned to the UAC.
 if ! assert_in_file "$log_file" "All GW are down"; then

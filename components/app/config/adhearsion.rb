@@ -6,4 +6,5 @@ Adhearsion.config do |config|
   config.core.port = AppSettings.fetch(:ahn_core_port)
   config.core.username = AppSettings.fetch(:ahn_core_username)
   config.core.password = AppSettings.fetch(:ahn_core_password)
+  config.core.logging.level = AppSettings.fetch(:ahn_core_loglevel).to_sym
 end

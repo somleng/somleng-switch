@@ -1,8 +1,33 @@
 <include>
   <context name="default">
-    <extension name="adhearsion">
-      <action application="start_dtmf"/>
+    <!-- remove this extension when finished debugging -->
+    <extension name="debug" continue="true">
       <condition>
+        <action application="log" data="NOTICE Dumping all variables for call ${uuid}"/>
+        <action application="info"/>
+      </condition>
+    </extension>
+
+    <extension name="CGRateS_Auth">
+      <condition field="${cgr_notify}" expression="^$">
+        <action application="log" data="NOTICE In the CGRateS_Auth block parking the call" />
+        <action application="set" data="cgr_account=${sip_h_X-Somleng-AccountSid}" />
+        <!-- <action application="set" data="cgr_tenant=somleng.org" /> -->
+        <action application="park" />
+      </condition>
+    </extension>
+
+    <extension name="CGRateS_Auth_Ok">
+      <condition field="${cgr_notify}" expression="^AUTH_OK$">
+        <action application="log" data="NOTICE CGRateS authorization successful!"/>
+        <action application="log" data="NOTICE SIP Profile: ${sofia_profile_name}, Address: ${sip_req_uri}"/>
+        <action application="bridge" data="sofia/${sofia_profile_name}/${sip_req_uri}"/>
+      </condition>
+    </extension>
+
+    <extension name="adhearsion">
+      <condition>
+        <action application="log" data="NOTICE IN ADHEARSION BLOCK"/>
         <action application="rayo"/>
       </condition>
     </extension>

@@ -99,6 +99,7 @@ services:
       FS_EVENT_SOCKET_PORT: 8021
       FS_MOD_RAYO_MAX_IDLE_SECS: 5
       FS_LOG_LEVEL: "debug"
+      FS_MOD_JSON_CDR_URL: "http://testing:9000"
     expose:
       - "5060/udp"
       - "5222/tcp"
@@ -125,6 +126,58 @@ services:
       EVENT_SOCKET_PASSWORD: secret
       REDIS_URL: "redis://redis:6379/1"
 
+  billing-engine:
+    build:
+      context: components/billing_engine
+      target: debug
+    image: billing-engine:debug
+    depends_on:
+      redis:
+        condition: service_healthy
+      freeswitch:
+        condition: service_healthy
+    environment:
+      EVENT_SOCKET_HOST: freeswitch:8021
+      EVENT_SOCKET_PASSWORD: secret
+      STORDB_DBNAME: "cgrates_test"
+      STORDB_USER: "cgrates"
+      STORDB_PASSWORD: ""
+      STORDB_HOST: "host.docker.internal"
+      STORDB_PORT: 5432
+      DATADB_HOST: "redis"
+      DATADB_USER: "redis"
+      DATADB_PORT: 6379
+      DATADB_DBNAME: 2
+      LOG_LEVEL: 7
+      HTTP_LISTEN_ADDRESS: "0.0.0.0:2080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    expose:
+      - "2080/tcp"
+    ports:
+      - "2080:2080"
+
+  billing-engine-bootstrap:
+    build:
+      context: components/billing_engine
+      target: bootstrap
+    image: billing-engine:bootstrap
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      STORDB_DBNAME: "cgrates_test"
+      STORDB_USER: "cgrates"
+      STORDB_PASSWORD: ""
+      STORDB_HOST: "host.docker.internal"
+      STORDB_PORT: 5432
+      DATADB_HOST: "redis"
+      DATADB_USER: "redis"
+      DATADB_PORT: 6379
+      DATADB_DBNAME: 2
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
   switch-app:
     build:
       context: components/app
@@ -138,6 +191,7 @@ services:
       CONNECT_WS_SERVER_URL: "ws://testing:3001"
       AUDIO_FILE_URL: "http://testing:8000/scenarios/files/tone.wav"
       AHN_CORE_HTTP_PORT: "8080"
+      AHN_CORE_LOGGING_LEVEL: "debug"
       AWS_DEFAULT_REGION: "ap-southeast-1"
       REDIS_URL: "redis://redis:6379/1"
     healthcheck:
@@ -157,13 +211,17 @@ services:
       context: components/testing
     image: testing:latest
     environment:
+      BILLING_ENGINE_STORDB_DBNAME: "cgrates_test"
+      BILLING_ENGINE_DATADB_REDIS_URL: "redis://redis:6379/2"
       DATABASE_HOST: host.docker.internal
       DATABASE_PORT: 5432
       DATABASE_USERNAME: postgres
       FIFO_DIR: /opensips/fifo
       WS_SERVER_PORT: 3001
       FILE_SERVER_PORT: 8000
+      CDR_SERVER_PORT: 9000
       SWITCH_PORT: 8080
+      BILLING_ENGINE_HTTP_PORT: 2080
       FILE_SERVER_LOG_FILE: http-server.log
       UAS: "true"
     extra_hosts:

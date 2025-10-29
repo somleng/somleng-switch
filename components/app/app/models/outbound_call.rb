@@ -6,7 +6,7 @@ class OutboundCall
   end
 
   def initiate
-    dial_string = DialString.new(call_params.fetch("routing_parameters"))
+    dial_string = DialString.new(call_params)
     call_properties = BuildCallProperties.call(call_params)
     sip_headers = call_properties.sip_headers
 

@@ -8,7 +8,7 @@ class DialString
   end
 
   def to_s
-    "sofia/#{external_profile}/#{address}"
+    "sofia/#{external_profile}/#{address};fs_path=sip:freeswitch:5060"
   end
 
   def address
@@ -22,7 +22,7 @@ class DialString
   private
 
   def routing_parameters
-    @routing_parameters ||= RoutingParameters.new(options)
+    @routing_parameters ||= RoutingParameters.new(options.fetch(:routing_parameters))
   end
 
   def external_profile

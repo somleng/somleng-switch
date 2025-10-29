@@ -1,6 +1,7 @@
 default: &default
   ahn_core_host: <%= ENV.fetch("AHN_CORE_HOST") { "localhost" } %>
   ahn_core_port: <%= ENV.fetch("AHN_CORE_PORT") { 5222 } %>
+  ahn_core_loglevel: <%= ENV.fetch("AHN_CORE_LOGGING_LEVEL") { "info" } %>
   call_platform_username: <%= ENV.fetch("CALL_PLATFORM_USERNAME", "services") %>
   ahn_core_username: <%= ENV.fetch("AHN_CORE_USERNAME", "rayo@rayo.somleng.org") %>
   ahn_http_username: <%= ENV.fetch("AHN_HTTP_USERNAME", "adhearsion") %>

@@ -14,14 +14,14 @@ rm -f $log_file
 media_server="$(dig +short freeswitch)"
 public_gateway="$(dig +short public_gateway)"
 
-reset_db
+reset_opensips_db
 create_load_balancer_entry "gw" "5060" "2"
 create_address_entry "$(hostname -i)" "2"
 reload_opensips_tables
 
 sipp -sf $scenario public_gateway:5060 -s 1234 -m 1 -trace_msg > /dev/null
 
-reset_db
+reset_opensips_db
 
 # Assert correct IP in SDP
 if ! assert_in_file "$log_file" "c=IN IP4 $media_server"; then
