@@ -99,17 +99,12 @@ services:
       FS_EVENT_SOCKET_PORT: 8021
       FS_MOD_RAYO_MAX_IDLE_SECS: 5
       FS_LOG_LEVEL: "debug"
+      FS_HOST: "freeswitch"
     expose:
       - "5060/udp"
       - "5222/tcp"
       - "5080/udp"
       - "8021/tcp"
-    healthcheck:
-      test:
-        ["CMD-SHELL", "fs_cli -p secret -x 'rayo status' | rayo_status_parser"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
 
   freeswitch_event_logger:
     build:
