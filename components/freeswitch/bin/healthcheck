@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -e
+
+# Determine host: prefer FS_HOST if set, otherwise use localhost
+FS_HOST=${FS_HOST:-localhost}
+
+fs_cli -p $FS_EVENT_SOCKET_PASSWORD -x 'rayo status' | rayo_status_parser
+
+# Check SIP responsiveness
+sipsak -s sip:healthcheck@$FS_HOST:${FS_EXT_PROFILE_NAT_GATEWAY_SIP_PORT:-5060} >/dev/null 2>&1
+sipsak -s sip:healthcheck@$FS_HOST:${FS_EXT_PROFILE_UAS_NAT_INSTANCE_SIP_PORT:-5080} >/dev/null 2>&1
