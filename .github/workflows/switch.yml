@@ -74,7 +74,7 @@ jobs:
             {
               "identifier": "switch-staging",
               "environment": "staging",
-              "branch": "improve_docker_healthcheck_v2",
+              "branch": "develop",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "switch-staging",
