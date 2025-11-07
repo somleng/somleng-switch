@@ -217,6 +217,7 @@ GEM
     nokogiri (1.18.10-x86_64-linux-musl)
       racc (~> 1.4)
     okcomputer (1.19.0)
+    openssl (3.3.2)
     ostruct (0.6.3)
     parallel (1.27.0)
     parser (3.3.9.0)
@@ -365,6 +366,7 @@ PLATFORMS
   aarch64-linux-musl
   arm64-darwin-22
   arm64-darwin-23
+  arm64-darwin-24
   x86_64-linux
   x86_64-linux-musl
 
@@ -379,6 +381,7 @@ DEPENDENCIES
   http
   mock_redis
   okcomputer
+  openssl
   phony
   rack-test
   rackup
