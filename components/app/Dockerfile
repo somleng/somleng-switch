@@ -6,7 +6,7 @@ ENV BUNDLE_APP_CONFIG="/app/.bundle"
 
 RUN apk update && \
     apk upgrade && \
-    apk add --update --no-cache build-base git pcre-dev && \
+    apk add --update --no-cache build-base git pcre-dev openssl-dev && \
     gem install bundler
 
 RUN mkdir -p $APP_ROOT
