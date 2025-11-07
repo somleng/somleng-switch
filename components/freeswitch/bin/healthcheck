@@ -3,7 +3,7 @@
 set -e
 
 # Determine host: prefer FS_HOST if set, otherwise use localhost
-FS_HOST=${FS_HOST:-localhost}
+FS_HOST=$(hostname -i)
 
 fs_cli -p $FS_EVENT_SOCKET_PASSWORD -x 'rayo status' | rayo_status_parser
 

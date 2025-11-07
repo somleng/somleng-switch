@@ -99,7 +99,6 @@ services:
       FS_EVENT_SOCKET_PORT: 8021
       FS_MOD_RAYO_MAX_IDLE_SECS: 5
       FS_LOG_LEVEL: "debug"
-      FS_HOST: "freeswitch"
     expose:
       - "5060/udp"
       - "5222/tcp"
