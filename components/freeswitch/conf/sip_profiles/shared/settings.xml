@@ -1,5 +1,5 @@
 <include>
-  <param name="sip-trace" value="no"/>
+  <param name="sip-trace" value="yes"/>
 
   <!-- If we use localnet.auto then inbound requests from OpenSIPS -->
   <!-- will be treated as local and the ext-sip-ip and ext-rtp-ip will not be used -->
