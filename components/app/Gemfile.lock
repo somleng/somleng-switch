@@ -158,8 +158,8 @@ GEM
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
-    faraday-net_http (3.4.1)
-      net-http (>= 0.5.0)
+    faraday-net_http (3.4.2)
+      net-http (~> 0.5)
     ffi (1.17.2-aarch64-linux-musl)
     ffi (1.17.2-arm64-darwin)
     ffi (1.17.2-x86_64-linux-gnu)
@@ -183,7 +183,7 @@ GEM
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     jmespath (1.6.2)
-    json (2.15.2)
+    json (2.16.0)
     jwt (3.1.2)
       base64
     language_server-protocol (3.17.0.5)
@@ -203,7 +203,7 @@ GEM
     multi_json (1.17.0)
     mustermann (3.0.4)
       ruby2_keywords (~> 0.0.1)
-    net-http (0.6.0)
+    net-http (0.7.0)
       uri
     niceogiri (1.1.2)
       nokogiri (~> 1.5)
@@ -337,7 +337,7 @@ GEM
     thread_safe (0.3.6)
     tilt (2.6.1)
     timers (4.3.5)
-    twilio-ruby (7.8.5)
+    twilio-ruby (7.8.6)
       faraday (>= 0.9, < 3.0)
       jwt (>= 1.5, < 4.0)
       nokogiri (>= 1.6, < 2.0)
@@ -346,7 +346,7 @@ GEM
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
     unicode-emoji (4.1.0)
-    uri (1.0.4)
+    uri (1.1.1)
     vcr (6.3.1)
       base64
     virtus (1.0.5)
