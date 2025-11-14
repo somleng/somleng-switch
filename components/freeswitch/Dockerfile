@@ -44,7 +44,7 @@ RUN apt-get update && apt-get install --no-install-recommends -yq libssl-dev lib
     echo "deb [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" > /etc/apt/sources.list.d/freeswitch.list && \
     echo "deb-src [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" >> /etc/apt/sources.list.d/freeswitch.list && \
     apt-get update --allow-releaseinfo-change && \
-    apt-get -y install --no-install-recommends netcat-traditional ffmpeg \
+    apt-get -y install --no-install-recommends sipsak netcat-traditional ffmpeg \
             freeswitch \
             freeswitch-mod-console \
             freeswitch-mod-event-socket \
@@ -92,7 +92,7 @@ EXPOSE 5080/udp
 EXPOSE 5222/tcp
 EXPOSE 8021/tcp
 
-HEALTHCHECK --interval=10s --timeout=5s --retries=10 CMD nc -z -w 5 localhost 5222
+HEALTHCHECK --interval=10s --timeout=5s --retries=10 CMD /usr/local/bin/healthcheck
 
 ENV FS_CACHE_DIRECTORY="/var/cache"
 ENV FS_LOG_DIRECTORY="/var/log/freeswitch"

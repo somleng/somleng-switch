@@ -74,7 +74,7 @@ GIT
 
 GIT
   remote: https://github.com/somleng/tts_voices.git
-  revision: 56abf5a66dd9b2b2f97787eeba516e81c593b645
+  revision: 6cdc3b83ff9d7d91123c5d1ac7be631f7fea27d8
   specs:
     tts_voices (0.1.0)
       aws-sdk-polly
@@ -100,8 +100,8 @@ GEM
     adhearsion-loquacious (1.9.3)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1176.0)
-    aws-sdk-core (3.234.0)
+    aws-partitions (1.1181.0)
+    aws-sdk-core (3.236.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
@@ -109,7 +109,7 @@ GEM
       bigdecimal
       jmespath (~> 1, >= 1.6.1)
       logger
-    aws-sdk-lambda (1.163.0)
+    aws-sdk-lambda (1.165.0)
       aws-sdk-core (~> 3, >= 3.234.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-polly (1.115.0)
@@ -158,8 +158,8 @@ GEM
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
-    faraday-net_http (3.4.1)
-      net-http (>= 0.5.0)
+    faraday-net_http (3.4.2)
+      net-http (~> 0.5)
     ffi (1.17.2-aarch64-linux-musl)
     ffi (1.17.2-arm64-darwin)
     ffi (1.17.2-x86_64-linux-gnu)
@@ -183,7 +183,7 @@ GEM
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     jmespath (1.6.2)
-    json (2.15.2)
+    json (2.16.0)
     jwt (3.1.2)
       base64
     language_server-protocol (3.17.0.5)
@@ -198,12 +198,12 @@ GEM
       multi_json (~> 1.14)
     method_source (1.1.0)
     minitest (5.25.5)
-    mock_redis (0.52.0)
+    mock_redis (0.53.0)
       redis (~> 5)
     multi_json (1.17.0)
     mustermann (3.0.4)
       ruby2_keywords (~> 0.0.1)
-    net-http (0.6.0)
+    net-http (0.7.0)
       uri
     niceogiri (1.1.2)
       nokogiri (~> 1.5)
@@ -217,12 +217,13 @@ GEM
     nokogiri (1.18.10-x86_64-linux-musl)
       racc (~> 1.4)
     okcomputer (1.19.0)
+    openssl (3.3.2)
     ostruct (0.6.3)
     parallel (1.27.0)
-    parser (3.3.9.0)
+    parser (3.3.10.0)
       ast (~> 2.4.1)
       racc
-    phony (2.22.5)
+    phony (2.22.7)
     prism (1.6.0)
     pry (0.14.2)
       coderay (~> 1.1)
@@ -245,7 +246,7 @@ GEM
     rake (13.3.0)
     redis (5.4.1)
       redis-client (>= 0.22.0)
-    redis-client (0.25.2)
+    redis-client (0.26.1)
       connection_pool
     regexp_parser (2.11.3)
     rexml (3.4.4)
@@ -262,7 +263,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.6)
-    rubocop (1.81.1)
+    rubocop (1.81.7)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -273,7 +274,7 @@ GEM
       rubocop-ast (>= 1.47.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 4.0)
-    rubocop-ast (1.47.1)
+    rubocop-ast (1.48.0)
       parser (>= 3.3.7.2)
       prism (~> 1.4)
     rubocop-performance (1.26.1)
@@ -290,9 +291,9 @@ GEM
       rubocop (>= 1.72)
       rubocop-performance (>= 1.24)
       rubocop-rails (>= 2.30)
-    rubocop-rspec (3.7.0)
+    rubocop-rspec (3.8.0)
       lint_roller (~> 1.1)
-      rubocop (~> 1.72, >= 1.72.1)
+      rubocop (~> 1.81)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     ruby_ami (2.4.0)
@@ -302,7 +303,7 @@ GEM
       activesupport (>= 3.0.7)
       nokogiri (~> 1.8, >= 1.8.3)
     securerandom (0.4.1)
-    sentry-ruby (6.0.0)
+    sentry-ruby (6.1.0)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
     simplecov (0.22.0)
@@ -336,7 +337,7 @@ GEM
     thread_safe (0.3.6)
     tilt (2.6.1)
     timers (4.3.5)
-    twilio-ruby (7.8.5)
+    twilio-ruby (7.8.6)
       faraday (>= 0.9, < 3.0)
       jwt (>= 1.5, < 4.0)
       nokogiri (>= 1.6, < 2.0)
@@ -345,7 +346,7 @@ GEM
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
     unicode-emoji (4.1.0)
-    uri (1.0.4)
+    uri (1.1.1)
     vcr (6.3.1)
       base64
     virtus (1.0.5)
@@ -353,7 +354,7 @@ GEM
       coercible (~> 1.0)
       descendants_tracker (~> 0.0, >= 0.0.3)
       equalizer (~> 0.0, >= 0.0.9)
-    webmock (3.26.0)
+    webmock (3.26.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
@@ -365,6 +366,7 @@ PLATFORMS
   aarch64-linux-musl
   arm64-darwin-22
   arm64-darwin-23
+  arm64-darwin-24
   x86_64-linux
   x86_64-linux-musl
 
@@ -379,6 +381,7 @@ DEPENDENCIES
   http
   mock_redis
   okcomputer
+  openssl
   phony
   rack-test
   rackup

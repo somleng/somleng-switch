@@ -105,12 +105,6 @@ services:
       - "5222/tcp"
       - "5080/udp"
       - "8021/tcp"
-    healthcheck:
-      test:
-        ["CMD-SHELL", "fs_cli -p secret -x 'rayo status' | rayo_status_parser"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
 
   freeswitch_event_logger:
     build:

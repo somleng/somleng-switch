@@ -152,7 +152,7 @@ resource "aws_ecs_task_definition" "this" {
       healthCheck = {
         command = [
           "CMD-SHELL",
-          "fs_cli -p $FS_EVENT_SOCKET_PASSWORD -x 'rayo status' | rayo_status_parser"
+          "/usr/local/bin/healthcheck"
         ]
         interval = 10,
         retries  = 10

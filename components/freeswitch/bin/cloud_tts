@@ -5,11 +5,24 @@ file="$2"
 voice="$3"
 cache_file="$4"
 
+# Allow injecting a custom aws_polly command (for testing)
+aws_polly_cmd="${AWS_POLLY_CMD:-aws_polly}"
+
 if [[ "$voice" =~ ^Polly\..+ ]]; then
-  # extract 'Polly.' from voice
-  voice_id_with_engine="${voice#"Polly."}"
-  # extract '-Neural' from voice
-  voice_id="${voice_id_with_engine%"-Neural"}"
-  [[ $voice_id_with_engine = $voice_id ]] && engine="standard" || engine="neural"
-  aws_polly "$text" "$file" "$voice_id" "$engine" "$cache_file"
+  # Remove the "Polly." prefix
+  voice_suffix="${voice#Polly.}"
+
+  # Extract the engine if present (suffix after last '-'), otherwise default to 'standard'
+  if [[ "$voice_suffix" == *-* ]]; then
+    engine="${voice_suffix##*-}"   # text after last hyphen
+    voice_id="${voice_suffix%-*}"  # text before last hyphen
+  else
+    engine="standard"
+    voice_id="$voice_suffix"
+  fi
+
+  # Lowercase engine (Bash 3 compatible)
+  engine="$(echo "$engine" | tr '[:upper:]' '[:lower:]')"
+
+  "$aws_polly_cmd" "$text" "$file" "$voice_id" "$engine" "$cache_file"
 fi
