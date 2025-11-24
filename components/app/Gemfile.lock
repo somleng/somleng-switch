@@ -216,7 +216,8 @@ GEM
       racc (~> 1.4)
     nokogiri (1.18.10-x86_64-linux-musl)
       racc (~> 1.4)
-    okcomputer (1.19.0)
+    okcomputer (1.19.1)
+      benchmark
     openssl (3.3.2)
     ostruct (0.6.3)
     parallel (1.27.0)
