@@ -12,12 +12,12 @@ module "public_gateway" {
   max_tasks             = 2
   sip_port              = var.sip_port
   sip_alternative_port  = var.sip_alternative_port
-  db_security_group     = data.terraform_remote_state.core_infrastructure.outputs.db_security_group
-  db_password_parameter = data.terraform_remote_state.core_infrastructure.outputs.db_master_password_parameter
+  db_security_group     = data.terraform_remote_state.core_infrastructure.outputs.db_staging.security_group
+  db_password_parameter = data.terraform_remote_state.core_infrastructure.outputs.db_staging.master_password_parameter
   db_name               = var.public_gateway_db_name
-  db_username           = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.master_username
-  db_host               = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.endpoint
-  db_port               = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.port
+  db_username           = data.terraform_remote_state.core_infrastructure.outputs.db_staging.this.master_username
+  db_host               = data.terraform_remote_state.core_infrastructure.outputs.db_staging.this.endpoint
+  db_port               = data.terraform_remote_state.core_infrastructure.outputs.db_staging.this.port
   global_accelerator    = data.terraform_remote_state.core_infrastructure.outputs.global_accelerator
   logs_bucket           = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.logs_bucket
 }
