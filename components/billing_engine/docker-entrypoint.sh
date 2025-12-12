@@ -39,7 +39,8 @@ if [ ! -f "$CONFIG_FILE" ]; then
     "attributes_conns": ["*localhost"],
     "chargers_conns": ["*localhost"],
     "rals_conns": ["*localhost"],
-    "cdrs_conns": ["*localhost"]
+    "cdrs_conns": ["*localhost"],
+    "debit_interval": "2s"
   },
   "attributes": {
     "enabled": true

@@ -10,8 +10,10 @@
 
     <extension name="CGRateS_Auth">
       <condition field="${cgr_notify}" expression="^$">
+      <!-- <action application="curl" data="url [headers|json] [get|head|post [url_encode_data]]"/> -->
         <action application="log" data="NOTICE In the CGRateS_Auth block parking the call" />
         <action application="set" data="cgr_account=${sip_h_X-Somleng-AccountSid}" />
+        <action application="set" data="cgr_reqtype=*prepaid" />
         <!-- <action application="set" data="cgr_tenant=somleng.org" /> -->
         <action application="park" />
       </condition>
@@ -26,6 +28,7 @@
     </extension>
 
     <extension name="adhearsion">
+     <!-- THIS IS ONLY FOR INBOUND -->
       <condition>
         <action application="log" data="NOTICE IN ADHEARSION BLOCK"/>
         <action application="rayo"/>
