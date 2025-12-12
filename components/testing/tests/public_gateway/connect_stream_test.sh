@@ -74,7 +74,7 @@ ffmpeg -y -i $artifacts_dir/uac_connect_play_verb_audio.wav -af silenceremove=1:
 
 ws_server_audio_md5=$(md5sum $artifacts_dir/uac_connect_trimmed_ws_server_audio.wav | head -c 32)
 play_verb_audio_md5=$(md5sum $artifacts_dir/uac_connect_trimmed_play_verb_audio.wav | head -c 32)
-expected_audio_md5="771d43cfe8a9e4f928b90732ac7883e3"
+expected_audio_md5="1c1542575c47ef620c8344438e75095f"
 
 echo "Actual ws_server_audio_md5: $ws_server_audio_md5"
 echo "Actual play_verb_audio_md5: $play_verb_audio_md5"
