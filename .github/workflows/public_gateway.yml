@@ -35,7 +35,7 @@ jobs:
               "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "public-gateway-staging",
               "ecs_cluster": "somleng-switch-staging",
-              "deploy": false
+              "deploy": true
             },
             {
               "identifier": "public-gateway",
