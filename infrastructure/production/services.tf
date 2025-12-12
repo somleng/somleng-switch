@@ -12,14 +12,14 @@ module "services" {
   vpc       = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc
   app_image = data.terraform_remote_state.core.outputs.services_ecr_repository.this.repository_url
 
-  db_password_parameter                      = data.terraform_remote_state.core_infrastructure.outputs.db_master_password_parameter
+  db_password_parameter                      = data.terraform_remote_state.core_infrastructure.outputs.db.master_password_parameter
   call_platform_password_parameter           = data.aws_ssm_parameter.call_platform_password
   freeswitch_event_socket_password_parameter = data.aws_ssm_parameter.freeswitch_event_socket_password
 
-  db_security_group            = data.terraform_remote_state.core_infrastructure.outputs.db_security_group
-  db_username                  = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.master_username
-  db_host                      = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.endpoint
-  db_port                      = data.terraform_remote_state.core_infrastructure.outputs.db_cluster.port
+  db_security_group            = data.terraform_remote_state.core_infrastructure.outputs.db.security_group
+  db_username                  = data.terraform_remote_state.core_infrastructure.outputs.db.this.master_username
+  db_host                      = data.terraform_remote_state.core_infrastructure.outputs.db.this.endpoint
+  db_port                      = data.terraform_remote_state.core_infrastructure.outputs.db.this.port
   sip_port                     = var.sip_port
   sip_alternative_port         = var.sip_alternative_port
   freeswitch_event_socket_port = var.freeswitch_event_socket_port
