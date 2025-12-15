@@ -26,3 +26,5 @@ variable "datadb_dbname" {}
 variable "min_tasks" {
   default = 0
 }
+
+variable "lb_rule_index" {}
