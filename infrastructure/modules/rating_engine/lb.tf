@@ -13,7 +13,7 @@ resource "aws_lb_target_group" "this" {
 
   health_check {
     protocol          = "HTTP"
-    path              = "/health_checks"
+    path              = var.json_rpc_url
     healthy_threshold = 3
     interval          = 10
   }

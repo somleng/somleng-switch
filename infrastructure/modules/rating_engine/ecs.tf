@@ -42,11 +42,11 @@ resource "aws_ecs_task_definition" "this" {
       secrets = [
         {
           name      = "HTTP_PASSWORD",
-          valueFrom = local.application_master_key_parameter.arn
+          valueFrom = aws_ssm_parameter.http_password.arn
         },
         {
-          name  = "STORDB_PASSWORD",
-          value = local.stordb_password_parameter.arn
+          name      = "STORDB_PASSWORD",
+          valueFrom = aws_ssm_parameter.stordb_password.arn
         },
       ],
       environment = [
@@ -55,12 +55,16 @@ resource "aws_ecs_task_definition" "this" {
           value = "127.0.0.1:${HTTP_PORT}"
         },
         {
+          name  = "JSON_RPC_URL",
+          value = var.json_rpc_url
+        },
+        {
           name  = "STORDB_DBNAME",
           value = var.stordb_dbname
         },
         {
           name  = "STORDB_HOST",
-          value = var.stordb_dbname
+          value = var.stordb_host
         },
         {
           name  = "STORDB_PORT",
