@@ -46,13 +46,13 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name      = "STORDB_PASSWORD",
-          valueFrom = aws_ssm_parameter.stordb_password.arn
+          valueFrom = var.stordb_password_parameter_arn
         },
       ],
       environment = [
         {
           name  = "HTTP_LISTEN_ADDRESS",
-          value = "127.0.0.1:${HTTP_PORT}"
+          value = "127.0.0.1:${var.http_port}"
         },
         {
           name  = "JSON_RPC_URL",
@@ -75,27 +75,27 @@ resource "aws_ecs_task_definition" "this" {
           value = var.stordb_user
         },
         {
-          name  = "DATADB_USER",
-          value = var.datadb_user
-        },
-        {
           name  = "DATADB_HOST",
-          value = var.datadb_host
+          value = aws_elasticache_serverless_cache.redis.endpoint.0.address
         },
         {
           name  = "DATADB_PORT",
-          value = var.datadb_port
+          value = aws_elasticache_serverless_cache.redis.endpoint.0.port
         },
         {
-          name  = "DATADB_DBNAME",
-          value = var.datadb_dbname
+          name  = "DATADB_TLS",
+          value = tostring(var.datadb_tls)
         },
+        {
+          name  = "DATADB_CLUSTER",
+          value = tostring(var.datadb_cluster)
+        }
       ]
     }
   ])
 
-  task_role_arn      = local.iam_task_role.arn
-  execution_role_arn = local.iam_task_execution_role.arn
+  task_role_arn      = aws_iam_role.ecs_task_role.arn
+  execution_role_arn = aws_iam_role.task_execution_role.arn
   memory             = module.container_instances.ec2_instance_type.memory_size - 512
 }
 
@@ -108,7 +108,8 @@ resource "aws_ecs_service" "this" {
   network_configuration {
     subnets = var.region.vpc.private_subnets
     security_groups = [
-      aws_security_group.this.id
+      aws_security_group.this.id,
+      var.stordb_security_group
     ]
   }
 
