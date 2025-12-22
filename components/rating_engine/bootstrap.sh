@@ -41,8 +41,13 @@ if [ "$#" -eq 0 ]; then
 
   # Create user if not exists
   psql --host="$STORDB_HOST" --username=$ADMIN_DATABASE_USER --port="$STORDB_PORT" --dbname=postgres <<-SQL
-SELECT 'CREATE USER $STORDB_USER;'
+SELECT 'CREATE ROLE $STORDB_USER LOGIN PASSWORD ''$STORDB_PASSWORD'';'
 WHERE NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '$STORDB_USER')\gexec
+SQL
+
+  psql --host="$STORDB_HOST" --username=$ADMIN_DATABASE_USER --port="$STORDB_PORT" --dbname=postgres <<-SQL
+GRANT $STORDB_USER TO $ADMIN_DATABASE_USER;
+ALTER ROLE $STORDB_USER INHERIT;
 SQL
 
   # Create database if not exists
