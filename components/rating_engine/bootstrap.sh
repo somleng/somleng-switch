@@ -22,7 +22,8 @@ cat > "$CONFIG_FILE" <<EOF
     "db_host": "${STORDB_HOST}",
     "db_port": ${STORDB_PORT:-5432},
     "opts": {
-      "sqlLogLevel": 4
+      "sqlLogLevel": 4,
+      "pgSSLMode": "${STORDB_SSL_MODE:-"disable"}"
     },
   },
   "data_db": {
