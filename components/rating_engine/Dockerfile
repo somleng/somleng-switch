@@ -50,7 +50,7 @@ FROM runtime AS debug
 
 RUN apk add --no-cache ngrep jq
 
-FROM base
+FROM runtime
 
 RUN adduser -D -u 1000 cgrates && chown cgrates:cgrates /etc/cgrates
 USER cgrates
