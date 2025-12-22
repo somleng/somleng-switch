@@ -112,6 +112,18 @@ jobs:
             ${{ secrets.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.image_tag }}-${{ matrix.platform.arch }}
             ${{ secrets.GHCR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform.arch }}
 
+      - name: Build and push bootstrap image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          context: components/rating_engine
+          platforms: linux/${{ matrix.platform.arch }}
+          cache-from: type=gha,scope=${{ env.APP_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
+          cache-to: type=gha,mode=max,scope=${{ env.APP_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
+          provenance: false
+          tags: |
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:bootstrap-${{ matrix.platform.arch }}
+
   build-manifest:
     name: Build Manifest
     runs-on: ubuntu-latest
