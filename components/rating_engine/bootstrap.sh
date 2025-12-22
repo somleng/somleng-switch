@@ -4,6 +4,7 @@ set -e
 CONFIG_DIR="/etc/cgrates"
 STORDB_SCRIPTS_DIR="/usr/share/cgrates/storage/postgres"
 CONFIG_FILE="$CONFIG_DIR/cgrates.json"
+ADMIN_DATABASE_USER="${ADMIN_DATABASE_USER:-postgres}"
 
 echo "📝 Generating CGRateS config..."
 mkdir -p "$CONFIG_DIR"
@@ -38,13 +39,13 @@ if [ "$#" -eq 0 ]; then
   echo "🚀 Bootstrapping CGRateS database..."
 
   # Create user if not exists
-  psql --host="$STORDB_HOST" --username=postgres --port="$STORDB_PORT" --dbname=postgres <<-SQL
+  psql --host="$STORDB_HOST" --username=$ADMIN_DATABASE_USER --port="$STORDB_PORT" --dbname=postgres <<-SQL
 SELECT 'CREATE USER $STORDB_USER;'
 WHERE NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '$STORDB_USER')\gexec
 SQL
 
   # Create database if not exists
-  psql --host="$STORDB_HOST" --username=postgres --port="$STORDB_PORT" --dbname=postgres <<-SQL
+  psql --host="$STORDB_HOST" --username=$ADMIN_DATABASE_USER --port="$STORDB_PORT" --dbname=postgres <<-SQL
 SELECT 'CREATE DATABASE $STORDB_DBNAME OWNER $STORDB_USER;'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '$STORDB_DBNAME')\gexec
 SQL
