@@ -120,6 +120,7 @@ jobs:
           platforms: linux/${{ matrix.platform.arch }}
           cache-from: type=gha,scope=${{ env.APP_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
           cache-to: type=gha,mode=max,scope=${{ env.APP_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
+          target: bootstrap
           provenance: false
           tags: |
             ${{ secrets.GHCR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:bootstrap-${{ matrix.platform.arch }}
