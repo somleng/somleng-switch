@@ -57,8 +57,8 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '$STORDB_DBNAME')\gexe
 SQL
 
   # Create necessary tables
-  PGPASSWORD="$STORDB_PASSWORD" psql --host="$STORDB_HOST" --username="$STORDB_USER" --port="$STORDB_PORT" --dbname="$STORDB_DBNAME" -f "$STORDB_SCRIPTS_DIR/create_cdrs_tables.sql"
-  PGPASSWORD="$STORDB_PASSWORD" psql --host="$STORDB_HOST" --username="$STORDB_USER" --port="$STORDB_PORT" --dbname="$STORDB_DBNAME" -f "$STORDB_SCRIPTS_DIR/create_tariffplan_tables.sql"
+  PGPASSWORD="$STORDB_PASSWORD" psql --host="$STORDB_HOST" --username="$ADMIN_DATABASE_USER" --port="$STORDB_PORT" --dbname="$STORDB_DBNAME" -f "$STORDB_SCRIPTS_DIR/create_cdrs_tables.sql"
+  PGPASSWORD="$STORDB_PASSWORD" psql --host="$STORDB_HOST" --username="$ADMIN_DATABASE_USER" --port="$STORDB_PORT" --dbname="$STORDB_DBNAME" -f "$STORDB_SCRIPTS_DIR/create_tariffplan_tables.sql"
 
   cgr-migrator -config_path "$CONFIG_DIR" -exec=*set_versions || true
 
