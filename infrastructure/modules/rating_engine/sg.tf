@@ -16,15 +16,6 @@ resource "aws_security_group_rule" "ingress_http" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
-resource "aws_security_group_rule" "icmp" {
-  type              = "ingress"
-  to_port           = -1
-  protocol          = "icmp"
-  from_port         = -1
-  security_group_id = aws_security_group.this.id
-  cidr_blocks       = ["0.0.0.0/0"]
-}
-
 resource "aws_security_group_rule" "egress" {
   type              = "egress"
   to_port           = 0

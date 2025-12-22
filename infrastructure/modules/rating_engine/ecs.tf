@@ -80,7 +80,7 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name  = "DATADB_PORT",
-          value = aws_elasticache_serverless_cache.redis.endpoint.0.port
+          value = tostring(aws_elasticache_serverless_cache.redis.endpoint.0.port)
         },
         {
           name  = "DATADB_TLS",

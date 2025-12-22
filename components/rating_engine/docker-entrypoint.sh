@@ -71,6 +71,13 @@ if [ ! -f "$CONFIG_FILE" ]; then
   },
   "apiers": {
     "enabled": true
+  },
+  "http": {
+    "json_rpc_url": "${JSON_RPC_URL:-/jsonrpc}",
+    "use_basic_auth": true,
+    "auth_users": {
+      "cgrates": "$(echo -n "${HTTP_PASSWORD}" | base64)"
+    }
   }
 }
 EOF

@@ -31,3 +31,13 @@ data "aws_iam_policy_document" "task_execution_policy" {
     ]
   }
 }
+resource "aws_iam_policy" "task_execution_policy" {
+  name = "${var.identifier}-task-execution-policy"
+
+  policy = data.aws_iam_policy_document.task_execution_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "task_execution_policy" {
+  role       = aws_iam_role.task_execution_role.id
+  policy_arn = aws_iam_policy.task_execution_policy.arn
+}
