@@ -1,5 +1,5 @@
 on: push
-name: Switch
+name: Rating Engine
 
 env:
   CI: true

@@ -18,4 +18,6 @@ module "rating_engine" {
   stordb_security_group         = data.terraform_remote_state.core_infrastructure.outputs.db_staging.security_group.id
 
   lb_rule_index = 150
+
+  min_tasks = 1
 }
