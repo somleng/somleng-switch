@@ -348,8 +348,7 @@ GEM
       unicode-emoji (~> 4.1)
     unicode-emoji (4.1.0)
     uri (1.1.1)
-    vcr (6.3.1)
-      base64
+    vcr (6.4.0)
     virtus (1.0.5)
       axiom-types (~> 0.1)
       coercible (~> 1.0)
