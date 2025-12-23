@@ -28,7 +28,6 @@ variable "max_tasks" {
   default = 2
 }
 
-
 variable "lb_rule_index" {}
 
 variable "region" {}

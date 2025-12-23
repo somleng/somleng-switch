@@ -85,8 +85,6 @@ if [ ! -f "$CONFIG_FILE" ]; then
 EOF
 fi
 
-cat $CONFIG_FILE
-
 if [ "$#" -eq 0 ]; then
   cgr-migrator -config_path "$CONFIG_DIR" -exec=*stordb || true
   exec cgr-engine -config_path "$CONFIG_DIR" -logger=*stdout
