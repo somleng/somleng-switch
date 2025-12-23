@@ -15,10 +15,10 @@ variable "stordb_port" {}
 variable "stordb_user" {}
 variable "stordb_password_parameter_arn" {}
 variable "stordb_security_group" {}
-variable "datadb_tls" {
-  default = true
+variable "stordb_ssl_mode" {
+  default = "allow"
 }
-variable "datadb_cluster" {
+variable "datadb_tls" {
   default = true
 }
 variable "min_tasks" {

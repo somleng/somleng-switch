@@ -81,6 +81,10 @@ resource "aws_ecs_task_definition" "this" {
           value = var.stordb_user
         },
         {
+          name  = "STORDB_SSL_MODE",
+          value = var.stordb_ssl_mode
+        },
+        {
           name  = "DATADB_HOST",
           value = aws_elasticache_serverless_cache.redis.endpoint.0.address
         },
@@ -91,10 +95,6 @@ resource "aws_ecs_task_definition" "this" {
         {
           name  = "DATADB_TLS",
           value = tostring(var.datadb_tls)
-        },
-        {
-          name  = "DATADB_CLUSTER",
-          value = tostring(var.datadb_cluster)
         }
       ]
     }

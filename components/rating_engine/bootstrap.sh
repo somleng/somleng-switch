@@ -32,10 +32,9 @@ cat > "$CONFIG_FILE" <<EOF
     "db_password": "${DATADB_PASSWORD}",
     "db_host": "${DATADB_HOST}",
     "db_port": ${DATADB_PORT:-6379},
-    "db_name": "${DATADB_DBNAME:-1}",
+    "db_name": "${DATADB_DBNAME:-0}",
     "opts": {
-      "redisTLS": ${DATADB_TLS:-false},
-      "redisCluster": ${DATADB_CLUSTER:-false}
+      "redisTLS": ${DATADB_TLS:-false}
     }
   }
 }

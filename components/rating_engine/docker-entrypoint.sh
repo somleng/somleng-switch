@@ -24,17 +24,19 @@ if [ ! -f "$CONFIG_FILE" ]; then
     "db_host": "${STORDB_HOST}",
     "db_port": ${STORDB_PORT:-5432},
     "opts": {
-      "sqlLogLevel": 4
+      "sqlLogLevel": 4,
+      "pgSSLMode": "${STORDB_SSL_MODE:-"disable"}"
     }
   },
   "data_db": {
     "db_type": "*redis",
+    "db_user": "${DATADB_USER}",
+    "db_password": "${DATADB_PASSWORD}",
     "db_host": "${DATADB_HOST}",
     "db_port": ${DATADB_PORT:-6379},
     "db_name": "${DATADB_DBNAME:-0}",
     "opts": {
       "redisTLS": ${DATADB_TLS:-false},
-      "redisCluster": ${DATADB_CLUSTER:-false}
     }
   },
   "sessions": {
