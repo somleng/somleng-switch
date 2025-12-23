@@ -16,6 +16,7 @@ resource "aws_lb_target_group" "this" {
     path              = var.json_rpc_url
     healthy_threshold = 3
     interval          = 10
+    matcher           = "200,401"
   }
 }
 
