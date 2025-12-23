@@ -69,7 +69,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
     "string_indexed_fields": ["*req.Account"],
   },
   "listen": {
-    "http": "${HTTP_LISTEN_ADDRESS:-"localhost:2080"}"
+    "http": "${HTTP_LISTEN_ADDRESS:-"127.0.0.1:2080"}"
   },
   "apiers": {
     "enabled": true
@@ -78,7 +78,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
     "json_rpc_url": "${JSON_RPC_URL:-/jsonrpc}",
     "use_basic_auth": true,
     "auth_users": {
-      "cgrates": "$(echo -n "${HTTP_PASSWORD}" | base64)"
+      "${JSON_RPC_USERNAME}": "$(echo -n "${HTTP_PASSWORD}" | base64)"
     }
   }
 }

@@ -65,6 +65,10 @@ resource "aws_ecs_task_definition" "this" {
           value = var.json_rpc_url
         },
         {
+          name  = "JSON_RPC_USERNAME",
+          value = var.json_rpc_username
+        },
+        {
           name  = "STORDB_DBNAME",
           value = var.stordb_dbname
         },
@@ -115,7 +119,8 @@ resource "aws_ecs_service" "this" {
     subnets = var.region.vpc.private_subnets
     security_groups = [
       aws_security_group.this.id,
-      var.stordb_security_group
+      var.stordb_security_group,
+      aws_security_group.redis.id
     ]
   }
 

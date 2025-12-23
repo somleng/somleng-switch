@@ -9,6 +9,10 @@ variable "json_rpc_url" {
   default = "/jsonrpc"
 }
 
+variable "json_rpc_username" {
+  default = "cgrates"
+}
+
 variable "stordb_dbname" {}
 variable "stordb_host" {}
 variable "stordb_port" {}
