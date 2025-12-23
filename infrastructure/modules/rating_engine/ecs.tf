@@ -58,7 +58,7 @@ resource "aws_ecs_task_definition" "this" {
       environment = [
         {
           name  = "HTTP_LISTEN_ADDRESS",
-          value = "127.0.0.1:${var.http_port}"
+          value = "localhost:${var.http_port}"
         },
         {
           name  = "JSON_RPC_URL",

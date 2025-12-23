@@ -3,7 +3,7 @@
 response=$(wget --quiet \
   --header="Content-Type: application/json" \
   --post-data='{"jsonrpc":"2.0","id":1,"method":"ApierV2.Ping","params":[]}' \
-  -O - "http://127.0.0.1:${HTTP_LISTEN_PORT:-2080}${JSON_RPC_URL:-/jsonrpc}")
+  -O - "http://${HTTP_LISTEN_ADDRESS:-127.0.0.1:2080}${JSON_RPC_URL:-/jsonrpc}")
 
 # Extract the "result" value from JSON using grep/sed
 result=$(echo "$response" | grep -o '"result"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*: *"\(.*\)"/\1/')
