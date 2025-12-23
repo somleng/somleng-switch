@@ -4,7 +4,7 @@ set -e
 CONFIG_DIR="/etc/cgrates"
 STORDB_SCRIPTS_DIR="/usr/share/cgrates/storage/postgres"
 CONFIG_FILE="$CONFIG_DIR/cgrates.json"
-ADMIN_DATABASE_USER="${ADMIN_DATABASE_USER:-postgres}"
+STORDB_USER="${STORDB_USER:-postgres}"
 
 echo "📝 Generating CGRateS config..."
 mkdir -p "$CONFIG_DIR"
@@ -24,14 +24,19 @@ cat > "$CONFIG_FILE" <<EOF
     "opts": {
       "sqlLogLevel": 4,
       "pgSSLMode": "${STORDB_SSL_MODE:-"disable"}"
-    },
+    }
   },
   "data_db": {
     "db_type": "*redis",
     "db_user": "${DATADB_USER}",
+    "db_password": "${DATADB_PASSWORD}",
     "db_host": "${DATADB_HOST}",
     "db_port": ${DATADB_PORT:-6379},
-    "db_name": "${DATADB_DBNAME:-1}"
+    "db_name": "${DATADB_DBNAME:-1}",
+    "opts": {
+      "redisTLS": ${DATADB_TLS:-false},
+      "redisCluster": ${DATADB_CLUSTER:-false}
+    }
   }
 }
 EOF
@@ -39,26 +44,15 @@ EOF
 if [ "$#" -eq 0 ]; then
   echo "🚀 Bootstrapping CGRateS database..."
 
-  # Create user if not exists
-  psql --host="$STORDB_HOST" --username=$ADMIN_DATABASE_USER --port="$STORDB_PORT" --dbname=postgres <<-SQL
-SELECT 'CREATE ROLE $STORDB_USER LOGIN PASSWORD ''$STORDB_PASSWORD'';'
-WHERE NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '$STORDB_USER')\gexec
-SQL
-
-  psql --host="$STORDB_HOST" --username=$ADMIN_DATABASE_USER --port="$STORDB_PORT" --dbname=postgres <<-SQL
-GRANT $STORDB_USER TO $ADMIN_DATABASE_USER;
-ALTER ROLE $STORDB_USER INHERIT;
-SQL
-
   # Create database if not exists
-  psql --host="$STORDB_HOST" --username=$ADMIN_DATABASE_USER --port="$STORDB_PORT" --dbname=postgres <<-SQL
+  psql --host="$STORDB_HOST" --username=$STORDB_USER --port="$STORDB_PORT" --dbname=postgres <<-SQL
 SELECT 'CREATE DATABASE $STORDB_DBNAME OWNER $STORDB_USER;'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '$STORDB_DBNAME')\gexec
 SQL
 
   # Create necessary tables
-  PGPASSWORD="$STORDB_PASSWORD" psql --host="$STORDB_HOST" --username="$ADMIN_DATABASE_USER" --port="$STORDB_PORT" --dbname="$STORDB_DBNAME" -f "$STORDB_SCRIPTS_DIR/create_cdrs_tables.sql"
-  PGPASSWORD="$STORDB_PASSWORD" psql --host="$STORDB_HOST" --username="$ADMIN_DATABASE_USER" --port="$STORDB_PORT" --dbname="$STORDB_DBNAME" -f "$STORDB_SCRIPTS_DIR/create_tariffplan_tables.sql"
+  PGPASSWORD="$STORDB_PASSWORD" psql --host="$STORDB_HOST" --username="$STORDB_USER" --port="$STORDB_PORT" --dbname="$STORDB_DBNAME" -f "$STORDB_SCRIPTS_DIR/create_cdrs_tables.sql"
+  PGPASSWORD="$STORDB_PASSWORD" psql --host="$STORDB_HOST" --username="$STORDB_USER" --port="$STORDB_PORT" --dbname="$STORDB_DBNAME" -f "$STORDB_SCRIPTS_DIR/create_tariffplan_tables.sql"
 
   cgr-migrator -config_path "$CONFIG_DIR" -exec=*set_versions || true
 

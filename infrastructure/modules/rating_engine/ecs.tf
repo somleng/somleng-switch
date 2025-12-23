@@ -31,6 +31,12 @@ resource "aws_ecs_task_definition" "this" {
           awslogs-stream-prefix = "${var.identifier}/${var.app_environment}"
         }
       },
+      healthCheck = {
+        command  = ["CMD-SHELL", "/usr/local/bin/docker-healthcheck.sh"],
+        interval = 10,
+        retries  = 10,
+        timeout  = 5
+      },
       startTimeout = 120,
       essential    = true,
       portMappings = [
