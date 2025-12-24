@@ -94,11 +94,11 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name  = "DATADB_HOST",
-          value = aws_elasticache_serverless_cache.redis.endpoint.0.address
+          value = var.datadb_cache.this.endpoint.0.address
         },
         {
           name  = "DATADB_PORT",
-          value = tostring(aws_elasticache_serverless_cache.redis.endpoint.0.port)
+          value = tostring(var.datadb_cache.this.endpoint.0.port)
         },
         {
           name  = "DATADB_TLS",
@@ -124,7 +124,7 @@ resource "aws_ecs_service" "this" {
     security_groups = [
       aws_security_group.this.id,
       var.stordb_security_group,
-      aws_security_group.redis.id
+      var.datadb_cache.security_group.id
     ]
   }
 

@@ -26,6 +26,7 @@ variable "stordb_security_group" {}
 variable "stordb_ssl_mode" {
   default = "allow"
 }
+variable "datadb_cache" {}
 variable "datadb_tls" {
   default = true
 }
