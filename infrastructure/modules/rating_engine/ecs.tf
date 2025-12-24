@@ -69,6 +69,10 @@ resource "aws_ecs_task_definition" "this" {
           value = var.json_rpc_username
         },
         {
+          name  = "CONNECTION_MODE",
+          value = var.connection_mode
+        },
+        {
           name  = "STORDB_DBNAME",
           value = var.stordb_dbname
         },

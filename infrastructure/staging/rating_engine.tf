@@ -8,7 +8,7 @@ module "rating_engine" {
   identifier            = var.rating_engine_identifier
   app_environment       = var.app_environment
 
-  app_image = data.terraform_remote_state.core.outputs.rating_engine_ecr_repository.this.repository_url
+  app_image = data.terraform_remote_state.core.outputs.rating_engine_server_ecr_repository.this.repository_url
 
   stordb_dbname                 = "cgrates_staging"
   stordb_user                   = data.terraform_remote_state.core_infrastructure.outputs.db_staging.this.master_username

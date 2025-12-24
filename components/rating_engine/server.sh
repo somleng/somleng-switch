@@ -41,28 +41,28 @@ if [ ! -f "$CONFIG_FILE" ]; then
   },
   "sessions": {
     "enabled": true,
-    "attributes_conns": ["*internal"],
-    "chargers_conns": ["*internal"],
-    "rals_conns": ["*internal"],
-    "cdrs_conns": ["*internal"],
+    "attributes_conns": ["${CONNECTION_MODE}"],
+    "chargers_conns": ["${CONNECTION_MODE}"],
+    "rals_conns": ["${CONNECTION_MODE}"],
+    "cdrs_conns": ["${CONNECTION_MODE}"],
   },
   "attributes": {
     "enabled": true
   },
   "chargers": {
     "enabled": true,
-    "attributes_conns": ["*internal"],
+    "attributes_conns": ["${CONNECTION_MODE}"],
   },
   "cdrs": {
     "enabled": true,
-    "thresholds_conns": ["*internal"],
-    "rals_conns": ["*internal"],
-    "chargers_conns": ["*internal"]
+    "thresholds_conns": ["${CONNECTION_MODE}"],
+    "rals_conns": ["${CONNECTION_MODE}"],
+    "chargers_conns": ["${CONNECTION_MODE}"]
   },
   "rals": {
     "enabled": true,
-    "thresholds_conns": ["*internal"],
-    "apiers_conns": ["*internal"]
+    "thresholds_conns": ["${CONNECTION_MODE}"],
+    "apiers_conns": ["${CONNECTION_MODE}"]
   },
   "thresholds": {
     "enabled": true,

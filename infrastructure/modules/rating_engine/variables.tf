@@ -13,6 +13,10 @@ variable "json_rpc_username" {
   default = "cgrates"
 }
 
+variable "connection_mode" {
+  default = "*internal"
+}
+
 variable "stordb_dbname" {}
 variable "stordb_host" {}
 variable "stordb_port" {}
