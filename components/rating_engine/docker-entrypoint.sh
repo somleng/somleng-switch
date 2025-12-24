@@ -41,28 +41,28 @@ if [ ! -f "$CONFIG_FILE" ]; then
   },
   "sessions": {
     "enabled": true,
-    "attributes_conns": ["*localhost"],
-    "chargers_conns": ["*localhost"],
-    "rals_conns": ["*localhost"],
-    "cdrs_conns": ["*localhost"],
+    "attributes_conns": ["*internal"],
+    "chargers_conns": ["*internal"],
+    "rals_conns": ["*internal"],
+    "cdrs_conns": ["*internal"],
   },
   "attributes": {
     "enabled": true
   },
   "chargers": {
     "enabled": true,
-    "attributes_conns": ["*localhost"],
+    "attributes_conns": ["*internal"],
   },
   "cdrs": {
-	  "enabled": true,
-    "thresholds_conns": ["*localhost"],
-    "rals_conns": ["*localhost"],
-    "chargers_conns": ["*localhost"]
+    "enabled": true,
+    "thresholds_conns": ["*internal"],
+    "rals_conns": ["*internal"],
+    "chargers_conns": ["*internal"]
   },
   "rals": {
     "enabled": true,
-    "thresholds_conns": ["*localhost"],
-    "apiers_conns": ["*localhost"]
+    "thresholds_conns": ["*internal"],
+    "apiers_conns": ["*internal"]
   },
   "thresholds": {
     "enabled": true,
