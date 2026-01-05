@@ -57,6 +57,10 @@ resource "aws_ecs_task_definition" "this" {
       ],
       environment = [
         {
+          name  = "SERVER_MODE",
+          value = "api"
+        },
+        {
           name  = "HTTP_LISTEN_ADDRESS",
           value = "0.0.0.0:${var.http_port}"
         },

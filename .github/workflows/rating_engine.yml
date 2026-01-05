@@ -3,7 +3,7 @@ name: Rating Engine
 
 env:
   CI: true
-  APP_REPOSITORY_NAME: rating-engine-server
+  APP_REPOSITORY_NAME: rating-engine
 
 jobs:
   build:
@@ -107,7 +107,6 @@ jobs:
           platforms: linux/${{ matrix.platform.arch }}
           cache-from: type=gha,scope=${{ env.APP_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
           cache-to: type=gha,mode=max,scope=${{ env.APP_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
-          target: server
           provenance: false
           tags: |
             ${{ secrets.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.image_tag }}-${{ matrix.platform.arch }}

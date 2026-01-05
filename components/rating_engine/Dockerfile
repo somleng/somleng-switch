@@ -36,6 +36,7 @@ ENTRYPOINT ["/usr/local/bin/bootstrap.sh"]
 FROM base AS runtime
 
 COPY docker-healthcheck.sh /usr/local/bin/docker-healthcheck.sh
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD /usr/local/bin/docker-healthcheck.sh
 
@@ -45,16 +46,8 @@ FROM runtime AS debug
 
 RUN apk add --no-cache ngrep jq
 
-FROM runtime AS service
+FROM runtime
 
 RUN adduser -D -u 1000 cgrates && chown cgrates:cgrates /etc/cgrates
 USER cgrates
 WORKDIR /home/cgrates
-
-FROM service AS server
-
-COPY server.sh /usr/local/bin/docker-entrypoint.sh
-
-FROM runtime AS engine
-
-COPY engine.sh /usr/local/bin/docker-entrypoint.sh

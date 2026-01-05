@@ -48,7 +48,7 @@ module "services_ecr_repository" {
   name   = "switch-services"
 }
 
-module "rating_engine_server_ecr_repository" {
+module "rating_engine_ecr_repository" {
   source = "../modules/ecr_repository"
-  name   = "rating-engine-server"
+  name   = "rating-engine"
 }

@@ -38,6 +38,6 @@ output "services_ecr_repository" {
   value = module.services_ecr_repository
 }
 
-output "rating_engine_server_ecr_repository" {
-  value = module.rating_engine_server_ecr_repository
+output "rating_engine_ecr_repository" {
+  value = module.rating_engine_ecr_repository
 }
