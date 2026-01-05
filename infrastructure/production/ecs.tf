@@ -14,7 +14,8 @@ resource "aws_ecs_cluster_capacity_providers" "this" {
     module.switch.capacity_provider.name,
     module.public_gateway.capacity_provider.name,
     module.client_gateway.capacity_provider.name,
-    module.media_proxy.capacity_provider.name
+    module.media_proxy.capacity_provider.name,
+    module.rating_engine.capacity_provider.name
   ]
 }
 

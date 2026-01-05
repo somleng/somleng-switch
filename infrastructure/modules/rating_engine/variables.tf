@@ -31,7 +31,7 @@ variable "datadb_tls" {
   default = true
 }
 variable "min_tasks" {
-  default = 0
+  default = 1
 }
 variable "max_tasks" {
   default = 2
