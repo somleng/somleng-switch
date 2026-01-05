@@ -39,7 +39,7 @@ jobs:
             },
             {
               "identifier": "rating-engine",
-              "branch": "fix-cgrates-production-deployment",
+              "branch": "master",
               "friendly_image_tag": "latest",
               "image_tag": "prod-${{ github.sha }}",
               "ecs_service": "rating-engine",
