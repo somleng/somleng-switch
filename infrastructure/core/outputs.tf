@@ -37,3 +37,7 @@ output "s3_mpeg_ecr_repository" {
 output "services_ecr_repository" {
   value = module.services_ecr_repository
 }
+
+output "rating_engine_ecr_repository" {
+  value = module.rating_engine_ecr_repository
+}

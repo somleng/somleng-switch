@@ -4,7 +4,8 @@ locals {
 }
 
 data "aws_iam_role" "this" {
-  name = local.iam_instance_profile.role
+  name       = local.iam_instance_profile.role
+  depends_on = [aws_iam_instance_profile.this]
 }
 
 data "aws_iam_policy_document" "assume_role" {
