@@ -83,7 +83,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
       }
     }
 EOF
-  elif [ "${SERVER_MODE}" = "server" ]; then
+  elif [ "${SERVER_MODE}" = "api" ]; then
     cat > "$CONFIG_FILE" <<EOF
     {
       "general": {
