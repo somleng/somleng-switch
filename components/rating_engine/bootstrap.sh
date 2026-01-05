@@ -44,7 +44,7 @@ if [ "$#" -eq 0 ]; then
   echo "🚀 Bootstrapping CGRateS database..."
 
   # Create database if not exists
-  psql --host="$STORDB_HOST" --username=$STORDB_USER --port="$STORDB_PORT" --dbname=postgres <<-SQL
+  psql --host="$STORDB_HOST" --username="$STORDB_USER" --port="$STORDB_PORT" --dbname=postgres <<-SQL
 SELECT 'CREATE DATABASE $STORDB_DBNAME OWNER $STORDB_USER;'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '$STORDB_DBNAME')\gexec
 SQL
