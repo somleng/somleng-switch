@@ -1,6 +1,6 @@
 #!/bin/sh
 
-AUTH="$(printf '%s' "${JSON_RPC_USERNAME}:${HTTP_PASSWORD}" | base64)"
+AUTH="$(printf '%s' "${JSON_RPC_USERNAME}:${JSON_RPC_PASSWORD}" | base64)"
 
 response=$(wget --quiet \
   --header="Authorization: Basic $AUTH" \
