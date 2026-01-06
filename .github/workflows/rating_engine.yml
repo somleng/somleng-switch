@@ -31,7 +31,7 @@ jobs:
           [
             {
               "identifier": "rating-engine-staging",
-              "branch": "develop",
+              "branch": "build-rating-engine-debug-image",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "rating-engine-staging",
@@ -112,6 +112,19 @@ jobs:
             ${{ secrets.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.image_tag }}-${{ matrix.platform.arch }}
             ${{ secrets.GHCR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform.arch }}
 
+      - name: Build and push debug image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          context: components/rating_engine
+          platforms: linux/${{ matrix.platform.arch }}
+          cache-from: type=gha,scope=${{ env.APP_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
+          cache-to: type=gha,mode=max,scope=${{ env.APP_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
+          target: debug
+          provenance: false
+          tags: |
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-debug-${{ matrix.platform.arch }}
+
   build-manifest:
     name: Build Manifest
     runs-on: ubuntu-latest
@@ -165,6 +178,9 @@ jobs:
 
             source_images=$(printf "${{ secrets.GHCR_REGISTRY }}/$repository:${{ matrix.friendly_image_tag }}-%s " "${platforms[@]}")
             docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/$repository:${{ matrix.friendly_image_tag }} $source_images
+
+            source_images=$(printf "${{ secrets.GHCR_REGISTRY }}/$repository:${{ matrix.friendly_image_tag }}-debug-%s " "${platforms[@]}")
+            docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/$repository:${{ matrix.friendly_image_tag }}-debug $source_images
           done
 
   deploy:
