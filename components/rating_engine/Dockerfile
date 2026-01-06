@@ -25,14 +25,6 @@ COPY --from=builder /go/bin/cgr-tester /usr/bin/cgr-tester
 COPY --from=builder /go/src/github.com/cgrates/cgrates/data /usr/share/cgrates
 RUN mkdir -p /etc/cgrates
 
-FROM base AS bootstrap
-
-RUN apk add --no-cache postgresql-client
-
-COPY bootstrap.sh /usr/local/bin/bootstrap.sh
-
-ENTRYPOINT ["/usr/local/bin/bootstrap.sh"]
-
 FROM base AS runtime
 
 COPY docker-healthcheck.sh /usr/local/bin/docker-healthcheck.sh
@@ -44,7 +36,7 @@ ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 FROM runtime AS debug
 
-RUN apk add --no-cache ngrep jq
+RUN apk add --no-cache ngrep jq postgresql-client
 
 FROM runtime
 
