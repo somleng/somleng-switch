@@ -4,6 +4,7 @@ set -e
 CONFIG_DIR="/etc/cgrates"
 STORDB_SCRIPTS_DIR="/usr/share/cgrates/storage/postgres"
 CONFIG_FILE="$CONFIG_DIR/cgrates.json"
+CONNECTION_MODE="${CONNECTION_MODE:-"*internal"}"
 
 if [ ! -f "$CONFIG_FILE" ]; then
   echo "📝 Generating CGRateS config..."
