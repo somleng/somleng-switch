@@ -47,7 +47,7 @@ resource "aws_ecs_task_definition" "this" {
       ],
       secrets = [
         {
-          name      = "HTTP_PASSWORD",
+          name      = "JSON_RPC_PASSWORD",
           valueFrom = aws_ssm_parameter.http_password.arn
         },
         {

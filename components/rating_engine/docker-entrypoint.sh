@@ -80,7 +80,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
         "json_rpc_url": "${JSON_RPC_URL:-/jsonrpc}",
         "use_basic_auth": true,
         "auth_users": {
-          "${JSON_RPC_USERNAME}": "$(echo -n "${HTTP_PASSWORD}" | base64)"
+          "${JSON_RPC_USERNAME}": "$(echo -n "${JSON_RPC_PASSWORD}" | base64)"
         }
       }
     }
@@ -155,7 +155,7 @@ EOF
         "json_rpc_url": "${JSON_RPC_URL:-/jsonrpc}",
         "use_basic_auth": true,
         "auth_users": {
-          "${JSON_RPC_USERNAME}": "$(echo -n "${HTTP_PASSWORD}" | base64)"
+          "${JSON_RPC_USERNAME}": "$(echo -n "${JSON_RPC_PASSWORD}" | base64)"
         }
       }
     }
