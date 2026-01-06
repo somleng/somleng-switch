@@ -2,7 +2,9 @@
 set -e
 
 CONFIG_DIR="/etc/cgrates"
+STORDB_SCRIPTS_DIR="/usr/share/cgrates/storage/postgres"
 CONFIG_FILE="$CONFIG_DIR/cgrates.json"
+CONNECTION_MODE="${CONNECTION_MODE:-"*internal"}"
 
 if [ ! -f "$CONFIG_FILE" ]; then
   echo "📝 Generating CGRateS config..."
@@ -165,6 +167,25 @@ EOF
 fi
 
 if [ "$#" -eq 0 ]; then
+  if [ -n "${BOOTSTRAP_DB}" ]; then
+    echo "🚀 Bootstrapping CGRateS database..."
+
+    DB_EXISTS=$(PGPASSWORD="$STORDB_PASSWORD" psql --host="$STORDB_HOST" --username="$STORDB_USER" --port="$STORDB_PORT" --dbname=postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$STORDB_DBNAME';")
+    if [ "$DB_EXISTS" = "1" ]; then
+      echo "Database $STORDB_DBNAME already exists."
+    else
+      PGPASSWORD="$STORDB_PASSWORD" psql --host="$STORDB_HOST" --username="$STORDB_USER" --port="$STORDB_PORT" --dbname=postgres -c "CREATE DATABASE \"$STORDB_DBNAME\" OWNER \"$STORDB_USER\";"
+
+      # Create necessary tables
+      PGPASSWORD="$STORDB_PASSWORD" psql --host="$STORDB_HOST" --username="$STORDB_USER" --port="$STORDB_PORT" --dbname="$STORDB_DBNAME" -f "$STORDB_SCRIPTS_DIR/create_cdrs_tables.sql"
+      PGPASSWORD="$STORDB_PASSWORD" psql --host="$STORDB_HOST" --username="$STORDB_USER" --port="$STORDB_PORT" --dbname="$STORDB_DBNAME" -f "$STORDB_SCRIPTS_DIR/create_tariffplan_tables.sql"
+
+      cgr-migrator -config_path "$CONFIG_DIR" -exec=*set_versions || true
+
+      echo "✅ Bootstrap completed."
+    fi
+  fi
+
   cgr-migrator -config_path "$CONFIG_DIR" -exec=*stordb || true
   exec cgr-engine -config_path "$CONFIG_DIR" -logger=*stdout
 else
