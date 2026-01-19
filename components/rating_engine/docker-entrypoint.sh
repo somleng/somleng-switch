@@ -57,6 +57,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
       },
       "cdrs": {
         "enabled": true,
+        "store_cdrs": true,
         "thresholds_conns": ["${CONNECTION_MODE}"],
         "rals_conns": ["${CONNECTION_MODE}"],
         "chargers_conns": ["${CONNECTION_MODE}"]
@@ -82,6 +83,10 @@ if [ ! -f "$CONFIG_FILE" ]; then
         "auth_users": {
           "${JSON_RPC_USERNAME}": "$(echo -n "${JSON_RPC_PASSWORD}" | base64)"
         }
+      },
+      "schedulers": {
+        "enabled": true,
+        "cdrs_conns": ["${CONNECTION_MODE}"]
       }
     }
 EOF
@@ -132,6 +137,7 @@ EOF
       },
       "cdrs": {
         "enabled": true,
+        "store_cdrs": true,
         "thresholds_conns": ["${CONNECTION_MODE}"],
         "rals_conns": ["${CONNECTION_MODE}"],
         "chargers_conns": ["${CONNECTION_MODE}"]
@@ -157,6 +163,10 @@ EOF
         "auth_users": {
           "${JSON_RPC_USERNAME}": "$(echo -n "${JSON_RPC_PASSWORD}" | base64)"
         }
+      },
+      "schedulers": {
+        "enabled": true,
+        "cdrs_conns": ["${CONNECTION_MODE}"]
       }
     }
 EOF
