@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       # Login to AWS to avoid rate limit
       - name: Configure AWS credentials
@@ -173,12 +173,14 @@ jobs:
         if: failure()
         run: |
           mkdir -p tmp/logs
+          mkdir -p tmp/connect_stream_test_files
           docker compose exec testing sh -c 'tar cf - *_messages.log' | tar xf - -C tmp/
+          docker compose exec testing sh -c 'tar cf - -C /testing connect_stream_test_files' | tar xf - -C tmp/
           docker compose logs freeswitch > tmp/freeswitch.log
           docker compose logs switch-app > tmp/switch-app
 
       - name: Upload logs
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: error_logs

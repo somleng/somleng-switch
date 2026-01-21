@@ -8,6 +8,7 @@
 [![Media Proxy](https://github.com/somleng/somleng-switch/actions/workflows/media_proxy.yml/badge.svg)](https://github.com/somleng/somleng-switch/actions/workflows/media_proxy.yml)
 [![S3 MPEG](https://github.com/somleng/somleng-switch/actions/workflows/s3_mpeg.yml/badge.svg)](https://github.com/somleng/somleng-switch/actions/workflows/s3_mpeg.yml)
 [![Gateway Commons](https://github.com/somleng/somleng-switch/actions/workflows/gateway_commons.yml/badge.svg)](https://github.com/somleng/somleng-switch/actions/workflows/gateway_commons.yml)
+[![Rating Engine](https://github.com/somleng/somleng-switch/actions/workflows/rating_engine.yml/badge.svg)](https://github.com/somleng/somleng-switch/actions/workflows/rating_engine.yml)
 
 [![View performance data on Skylight](https://badges.skylight.io/status/Z5dVwBwcpWaW.svg)](https://oss.skylight.io/app/applications/Z5dVwBwcpWaW)
 [![codecov](https://codecov.io/gh/somleng/somleng-switch/branch/develop/graph/badge.svg?token=nr3f5p31G6)](https://codecov.io/gh/somleng/somleng-switch)

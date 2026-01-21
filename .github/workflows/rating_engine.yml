@@ -1,12 +1,9 @@
 on: push
-name: Switch
+name: Rating Engine
 
 env:
   CI: true
-  APP_REPOSITORY_NAME: switch-app
-  WEBSERVER_REPOSITORY_NAME: switch-webserver
-  FREESWITCH_REPOSITORY_NAME: freeswitch
-  FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME: freeswitch-events
+  APP_REPOSITORY_NAME: rating-engine
 
 jobs:
   build:
@@ -20,50 +17,11 @@ jobs:
 
     defaults:
       run:
-        working-directory: components/app
-
-    env:
-      AHN_ENV: test
+        working-directory: components/rating_engine
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
-      - name: Install native dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install libpcre3-dev
-
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          working-directory: components/app
-          bundler-cache: true
-
-      - name: Run Specs
-        run: |
-          bundle exec rspec
-
-      - name: Run FreeSWITCH tests
-        working-directory: components/freeswitch
-        run: |
-          ./tests/tests.sh
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.22.x"
-
-      - name: Run tests
-        working-directory: components/freeswitch_event_logger
-        run: |
-          go get .
-          go test
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Set Deployment Matrix
         id: set-deployment-matrix
@@ -72,21 +30,19 @@ jobs:
           matrixSource=$(cat << EOF
           [
             {
-              "identifier": "switch-staging",
-              "environment": "staging",
+              "identifier": "rating-engine-staging",
               "branch": "develop",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}",
-              "ecs_service": "switch-staging",
+              "ecs_service": "rating-engine-staging",
               "ecs_cluster": "somleng-switch-staging"
             },
             {
-              "identifier": "switch",
-              "environment": "production",
+              "identifier": "rating-engine",
               "branch": "master",
               "friendly_image_tag": "latest",
               "image_tag": "prod-${{ github.sha }}",
-              "ecs_service": "switch",
+              "ecs_service": "rating-engine",
               "ecs_cluster": "somleng-switch"
             }
           ]
@@ -95,7 +51,7 @@ jobs:
           matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
           echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
           echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
-          echo "deployMatrix={\"region\":[\"ap-southeast-1\",\"us-east-1\"],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+          echo "deployMatrix={\"region\":[\"ap-southeast-1\"],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
           echo "packageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
 
   build-packages:
@@ -117,9 +73,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -146,15 +99,11 @@ jobs:
         with:
           registry: ${{ secrets.ECR_REGISTRY }}
 
-      - name: Export Polly Voices
-        run: |
-          components/freeswitch/bin/export_tts_voices > components/freeswitch/conf/autoload_configs/tts_voices.xml
-
       - name: Build and push app image
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: components/app
+          context: components/rating_engine
           platforms: linux/${{ matrix.platform.arch }}
           cache-from: type=gha,scope=${{ env.APP_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
           cache-to: type=gha,mode=max,scope=${{ env.APP_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
@@ -163,46 +112,18 @@ jobs:
             ${{ secrets.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.image_tag }}-${{ matrix.platform.arch }}
             ${{ secrets.GHCR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform.arch }}
 
-      - name: Build and push webserver image
+      - name: Build and push debug image
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: components/nginx
+          context: components/rating_engine
           platforms: linux/${{ matrix.platform.arch }}
-          cache-from: type=gha,scope=${{ env.WEBSERVER_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
-          cache-to: type=gha,mode=max,scope=${{ env.WEBSERVER_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
+          cache-from: type=gha,scope=${{ env.APP_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
+          cache-to: type=gha,mode=max,scope=${{ env.APP_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
+          target: debug
           provenance: false
           tags: |
-            ${{ secrets.ECR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.image_tag }}-${{ matrix.platform.arch }}
-            ${{ secrets.GHCR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform.arch }}
-
-      - name: Build and push FreeSWITCH image
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          context: components/freeswitch
-          build-args: |
-            signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
-          platforms: linux/${{ matrix.platform.arch }}
-          cache-from: type=gha,scope=${{ env.FREESWITCH_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
-          cache-to: type=gha,mode=max,scope=${{ env.FREESWITCH_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
-          provenance: false
-          tags: |
-            ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.image_tag }}-${{ matrix.platform.arch }}
-            ${{ secrets.GHCR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform.arch }}
-
-      - name: Build and push FreeSWITCH Event Logger image
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          context: components/freeswitch_event_logger
-          platforms: linux/${{ matrix.platform.arch }}
-          cache-from: type=gha,scope=${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
-          cache-to: type=gha,mode=max,scope=${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
-          provenance: false
-          tags: |
-            ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.image_tag }}-${{ matrix.platform.arch }}
-            ${{ secrets.GHCR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform.arch }}
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-debug-${{ matrix.platform.arch }}
 
   build-manifest:
     name: Build Manifest
@@ -248,7 +169,7 @@ jobs:
       - name: Build Manifest
         run: |
           declare -a platforms=("amd64" "arm64")
-          declare -a repositories=("${{ env.APP_REPOSITORY_NAME }}" "${{ env.WEBSERVER_REPOSITORY_NAME }}" "${{ env.FREESWITCH_REPOSITORY_NAME }}" "${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}")
+          declare -a repositories=("${{ env.APP_REPOSITORY_NAME }}")
 
           for repository in "${repositories[@]}"
           do
@@ -257,6 +178,9 @@ jobs:
 
             source_images=$(printf "${{ secrets.GHCR_REGISTRY }}/$repository:${{ matrix.friendly_image_tag }}-%s " "${platforms[@]}")
             docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/$repository:${{ matrix.friendly_image_tag }} $source_images
+
+            source_images=$(printf "${{ secrets.GHCR_REGISTRY }}/$repository:${{ matrix.friendly_image_tag }}-debug-%s " "${platforms[@]}")
+            docker buildx imagetools create -t ${{ secrets.GHCR_REGISTRY }}/$repository:${{ matrix.friendly_image_tag }}-debug $source_images
           done
 
   deploy:
@@ -281,71 +205,24 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-skip-session-tagging: true
           role-duration-seconds: 3600
-          aws-region:  ${{ matrix.region }}
+          aws-region: ${{ matrix.region }}
 
       - name: Get current task definition
         run: |
           aws ecs describe-task-definition --task-definition "${{ matrix.identifier }}" --query 'taskDefinition' > task-definition.json
 
-      - name: Prepare Webserver task definition
-        id: render-nginx-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: task-definition.json
-          container-name: nginx
-          image: ${{ secrets.ECR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-
-      - name: Prepare FreeSWITCH task definition
-        id: render-freeswitch-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ steps.render-nginx-task-def.outputs.task-definition }}
-          container-name: freeswitch
-          image: ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-
-      - name: Prepare FreeSWITCH event logger task definition
-        id: render-freeswitch-event-logger-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ steps.render-freeswitch-task-def.outputs.task-definition }}
-          container-name: freeswitch-event-logger
-          image: ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-
       - name: Prepare App task definition
         id: render-app-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ steps.render-freeswitch-event-logger-task-def.outputs.task-definition }}
+          task-definition: task-definition.json
           container-name: app
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.image_tag }}
 
-      - name: Deploy Switch
+      - name: Deploy App
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
           task-definition: ${{ steps.render-app-task-def.outputs.task-definition }}
           service: ${{ matrix.ecs_service }}
           cluster: ${{ matrix.ecs_cluster }}
           wait-for-service-stability: true
-
-  release:
-    name: Release
-    runs-on: ubuntu-latest
-    needs:
-      - build
-      - deploy
-
-    strategy:
-      matrix: ${{fromJson(needs.build.outputs.deployMatrix)}}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Create Sentry release
-        uses: getsentry/action-release@v3
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: somleng
-          SENTRY_PROJECT: somleng-switch
-        with:
-          environment: ${{ matrix.environment }}

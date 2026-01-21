@@ -18,6 +18,10 @@ variable "switch_identifier" {
   default = "switch"
 }
 
+variable "rating_engine_identifier" {
+  default = "rating-engine"
+}
+
 variable "services_identifier" {
   default = "switch-services"
 }
