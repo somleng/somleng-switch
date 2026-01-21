@@ -54,7 +54,7 @@ if ! billing_engine_create_account "sample-account-sid"; then
   exit 1
 fi
 
-if ! billing_engine_set_balance "sample-account-sid" "5m"; then
+if ! billing_engine_set_balance "sample-account-sid" "500"; then
   echo "Failed to set balance. Exiting."
   exit 1
 fi
@@ -84,7 +84,7 @@ response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls 
     "sip_profile": "nat_gateway"
   },
   "billing_parameters": {
-    "charging_mode": "postpaid"
+    "charging_mode": "prepaid"
   },
   "test_headers": {
     "X-UAS-Contact-Ip": "$uas"

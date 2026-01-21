@@ -69,8 +69,7 @@ jobs:
           push: false
           load: true
           context: components/freeswitch
-          build-args:
-            signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
+          build-args: signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
           tags: freeswitch:latest
           cache-from: type=gha,scope=integration-tests-freeswitch
           cache-to: type=gha,mode=max,scope=integration-tests-freeswitch
@@ -128,26 +127,16 @@ jobs:
           cache-from: type=gha,scope=integration-tests-gateway-bootstrap
           cache-to: type=gha,mode=max,scope=integration-tests-gateway-bootstrap
 
-      - name: Build Billing Engine Bootstrap
+      - name: Build Rating Engine
         uses: docker/build-push-action@v6
         with:
           push: false
           load: true
-          context: components/billing_engine
-          target: bootstrap
-          tags: billing-engine:bootstrap
-          cache-from: type=gha,scope=integration-tests-billing-engine-bootstrap
-          cache-to: type=gha,mode=max,scope=integration-tests-billing-engine-bootstrap
-
-      - name: Build Billing Engine
-        uses: docker/build-push-action@v6
-        with:
-          push: false
-          load: true
-          context: components/billing_engine
-          tags: billing-engine:latest
-          cache-from: type=gha,scope=integration-tests-billing-engine
-          cache-to: type=gha,mode=max,scope=integration-tests-billing-engine
+          target: debug
+          context: components/rating_engine
+          tags: rating-engine:latest-debug
+          cache-from: type=gha,scope=integration-tests-rating-engine
+          cache-to: type=gha,mode=max,scope=integration-tests-rating-engine
 
       - name: Build Testing
         uses: docker/build-push-action@v6
@@ -162,8 +151,7 @@ jobs:
       - name: Run docker compose
         run: |
           docker compose run -e DATABASE_NAME=opensips_${{ inputs.context }}_test gateway-bootstrap create_db ${{ inputs.context }}
-          docker compose run billing-engine-bootstrap
-          docker compose up --wait -d ${{ inputs.context }} media_proxy freeswitch freeswitch_event_logger switch-app billing-engine redis testing
+          docker compose up --wait -d ${{ inputs.context }} media_proxy freeswitch freeswitch_event_logger switch-app rating-engine redis testing
 
       - name: Run ${{ inputs.context }} Tests
         run: |

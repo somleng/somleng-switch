@@ -47,6 +47,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
         "chargers_conns": ["${CONNECTION_MODE}"],
         "rals_conns": ["${CONNECTION_MODE}"],
         "cdrs_conns": ["${CONNECTION_MODE}"],
+        "debit_interval": "2s"
       },
       "attributes": {
         "enabled": true
@@ -61,6 +62,19 @@ if [ ! -f "$CONFIG_FILE" ]; then
         "thresholds_conns": ["${CONNECTION_MODE}"],
         "rals_conns": ["${CONNECTION_MODE}"],
         "chargers_conns": ["${CONNECTION_MODE}"]
+      },
+      "freeswitch_agent": {
+        "enabled": true,
+        "sessions_conns": ["*bijson_localhost"],
+        "create_cdr": true,
+        "event_socket_conns": [
+          {
+            "address": "${EVENT_SOCKET_HOST}",
+            "password": "${EVENT_SOCKET_PASSWORD}",
+            "reconnects": -1,
+            "alias": ""
+          }
+        ]
       },
       "rals": {
         "enabled": true,

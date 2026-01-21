@@ -193,7 +193,7 @@ billing_engine_create_account () {
 
 billing_engine_set_balance () {
   local account="${1:-"sample-account-sid"}"
-  local balance="${2:-"5m"}"
+  local balance="${2:-"500"}"
 
   billing_engine_api "APIerSv1.SetBalance" "[
     {
@@ -203,7 +203,7 @@ billing_engine_set_balance () {
         \"Value\": \"$balance\"
       },
       \"Account\": \"$account\",
-      \"BalanceType\": \"*voice\"
+      \"BalanceType\": \"*monetary\"
     }
   ]"
 }
@@ -213,8 +213,9 @@ billing_engine_api () {
   local params="$2"
 
   response=$(
-    curl -s -X POST "http://billing-engine:$BILLING_ENGINE_HTTP_PORT/jsonrpc" \
+    curl -s -X POST "http://rating-engine:$BILLING_ENGINE_HTTP_PORT/jsonrpc" \
       -H "Content-Type: application/json" \
+      -u "cgrates:password" \
       -d "{
         \"jsonrpc\": \"2.0\",
         \"id\": 1,

@@ -13,7 +13,7 @@ services:
   redis:
     image: public.ecr.aws/docker/library/redis:alpine
     healthcheck:
-      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
 
   gateway-bootstrap:
     build:
@@ -120,11 +120,10 @@ services:
       EVENT_SOCKET_PASSWORD: secret
       REDIS_URL: "redis://redis:6379/1"
 
-  billing-engine:
+  rating-engine:
     build:
-      context: components/billing_engine
+      context: components/rating_engine
       target: debug
-    image: billing-engine:debug
     depends_on:
       redis:
         condition: service_healthy
@@ -134,7 +133,7 @@ services:
       EVENT_SOCKET_HOST: freeswitch:8021
       EVENT_SOCKET_PASSWORD: secret
       STORDB_DBNAME: "cgrates_test"
-      STORDB_USER: "cgrates"
+      STORDB_USER: "postgres"
       STORDB_PASSWORD: ""
       STORDB_HOST: "host.docker.internal"
       STORDB_PORT: 5432
@@ -142,35 +141,19 @@ services:
       DATADB_USER: "redis"
       DATADB_PORT: 6379
       DATADB_DBNAME: 2
+      CONNECTION_MODE: "*localhost"
       LOG_LEVEL: 7
       HTTP_LISTEN_ADDRESS: "0.0.0.0:2080"
+      BOOTSTRAP_DB: "true"
+      SERVER_MODE: "engine"
+      JSON_RPC_USERNAME: "cgrates"
+      JSON_RPC_PASSWORD: "password"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     expose:
       - "2080/tcp"
     ports:
       - "2080:2080"
-
-  billing-engine-bootstrap:
-    build:
-      context: components/billing_engine
-      target: bootstrap
-    image: billing-engine:bootstrap
-    depends_on:
-      redis:
-        condition: service_healthy
-    environment:
-      STORDB_DBNAME: "cgrates_test"
-      STORDB_USER: "cgrates"
-      STORDB_PASSWORD: ""
-      STORDB_HOST: "host.docker.internal"
-      STORDB_PORT: 5432
-      DATADB_HOST: "redis"
-      DATADB_USER: "redis"
-      DATADB_PORT: 6379
-      DATADB_DBNAME: 2
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   switch-app:
     build:
