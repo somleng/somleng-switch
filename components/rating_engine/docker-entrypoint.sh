@@ -189,6 +189,7 @@ if [ "$#" -eq 0 ]; then
       # Create necessary tables
       PGPASSWORD="$STORDB_PASSWORD" psql --host="$STORDB_HOST" --username="$STORDB_USER" --port="$STORDB_PORT" --dbname="$STORDB_DBNAME" -f "$STORDB_SCRIPTS_DIR/create_cdrs_tables.sql"
       PGPASSWORD="$STORDB_PASSWORD" psql --host="$STORDB_HOST" --username="$STORDB_USER" --port="$STORDB_PORT" --dbname="$STORDB_DBNAME" -f "$STORDB_SCRIPTS_DIR/create_tariffplan_tables.sql"
+      PGPASSWORD="$STORDB_PASSWORD" psql --host="$STORDB_HOST" --username="$STORDB_USER" --port="$STORDB_PORT" --dbname="$STORDB_DBNAME" -v ON_ERROR_STOP=1 -c "CREATE INDEX IF NOT EXISTS idx_cdrs_origin_id ON cdrs (origin_id); CREATE INDEX IF NOT EXISTS idx_cdrs_cost ON cdrs (cost);"
 
       cgr-migrator -config_path "$CONFIG_DIR" -exec=*set_versions || true
 
