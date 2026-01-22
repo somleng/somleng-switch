@@ -338,7 +338,7 @@ GEM
     thread_safe (0.3.6)
     tilt (2.6.1)
     timers (4.3.5)
-    twilio-ruby (7.9.1)
+    twilio-ruby (7.10.0)
       faraday (>= 0.9, < 3.0)
       jwt (>= 1.5, < 4.0)
       nokogiri (>= 1.6, < 2.0)
