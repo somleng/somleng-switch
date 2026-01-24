@@ -12,49 +12,57 @@ cat /dev/null > $log_file
 uas="$(hostname -i)"
 media_server="$(dig +short freeswitch)"
 
-reset_billing_engine_data
+carrier_sid=$(cat /proc/sys/kernel/random/uuid)
+account_sid=$(cat /proc/sys/kernel/random/uuid)
+call_sid=$(cat /proc/sys/kernel/random/uuid)
 
-if ! billing_engine_create_default_charger; then
+echo "Carrier SID: $carrier_sid"
+echo "Account SID: $account_sid"
+echo "Call SID: $call_sid"
+
+reset_rating_engine_data
+
+if ! rating_engine_create_default_charger "$carrier_sid" "$carrier_sid"; then
   echo "Failed to create default charger profile. Exiting."
   exit 1
 fi
 
-if ! billing_engine_create_destination; then
+if ! rating_engine_create_destination "$carrier_sid" "TEST_CATCHALL"; then
   echo "Failed to create destination. Exiting."
   exit 1
 fi
 
-if ! billing_engine_create_rate 1.00; then
+if ! rating_engine_create_rate "$carrier_sid" "TEST_CATCHALL" "60s" 7 "60s"; then
   echo "Failed to create rate. Exiting."
   exit 1
 fi
 
-if ! billing_engine_create_destination_rate; then
+if ! rating_engine_create_destination_rate "$carrier_sid" "TEST_CATCHALL" "TEST_CATCHALL" "TEST_CATCHALL"; then
   echo "Failed to create destination rate. Exiting."
   exit 1
 fi
 
-if ! billing_engine_create_rating_plan; then
+if ! rating_engine_create_rating_plan "$carrier_sid" "TEST_CATCHALL" "TEST_CATCHALL"; then
   echo "Failed to create rating plan. Exiting."
   exit 1
 fi
 
-if ! billing_engine_create_rating_profile; then
+if ! rating_engine_create_rating_profile "$carrier_sid" "$carrier_sid" "call" "TEST_CATCHALL" "$account_sid"; then
   echo "Failed to create rating profile. Exiting."
   exit 1
 fi
 
-if ! billing_engine_load_tariff_plan; then
+if ! rating_engine_load_tariff_plan "$carrier_sid"; then
   echo "Failed to load tariff plan. Exiting."
   exit 1
 fi
 
-if ! billing_engine_create_account "sample-account-sid"; then
+if ! rating_engine_create_account "$carrier_sid" "$account_sid"; then
   echo "Failed to create account. Exiting."
   exit 1
 fi
 
-if ! billing_engine_set_balance "sample-account-sid" "500"; then
+if ! rating_engine_set_balance "$carrier_sid" "$account_sid" "500"; then
   echo "Failed to set balance. Exiting."
   exit 1
 fi
@@ -67,9 +75,9 @@ response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls 
   "from": "2442",
   "voice_url": "https://demo.twilio.com/welcome/",
   "voice_method": "GET",
-  "sid": "sample-call-sid",
-  "account_sid": "sample-account-sid",
-  "carrier_sid": "TEST",
+  "sid": "$call_sid",
+  "account_sid": "$account_sid",
+  "carrier_sid": "$carrier_sid",
   "account_auth_token": "sample-auth-token",
   "direction": "outbound-api",
   "api_version": "2010-04-01",
@@ -84,7 +92,7 @@ response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls 
     "sip_profile": "nat_gateway"
   },
   "billing_parameters": {
-    "charging_mode": "prepaid"
+    "billing_mode": "prepaid"
   },
   "test_headers": {
     "X-UAS-Contact-Ip": "$uas"
