@@ -12,9 +12,9 @@ cat /dev/null > $log_file
 uas="$(hostname -i)"
 media_server="$(dig +short freeswitch)"
 
-carrier_sid=$(cat /proc/sys/kernel/random/uuid)
-account_sid=$(cat /proc/sys/kernel/random/uuid)
-call_sid=$(cat /proc/sys/kernel/random/uuid)
+carrier_sid="c0591700-69c6-465c-9353-7c98ec93cdc0"
+account_sid="a7570e4c-4f43-4a15-a47b-96247ba02ceb"
+call_sid="93943b68-2fa0-449f-993d-7c83a4c462e1"
 
 echo "Carrier SID: $carrier_sid"
 echo "Account SID: $account_sid"
