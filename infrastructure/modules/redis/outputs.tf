@@ -1,5 +1,5 @@
 output "this" {
-  value = aws_elasticache_serverless_cache.this
+  value = aws_elasticache_replication_group.this
 }
 
 output "security_group" {

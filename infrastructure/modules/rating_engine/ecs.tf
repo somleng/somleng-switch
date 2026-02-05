@@ -98,11 +98,11 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name  = "DATADB_HOST",
-          value = var.datadb_cache.this.endpoint.0.address
+          value = var.datadb_cache.this.primary_endpoint_address
         },
         {
           name  = "DATADB_PORT",
-          value = tostring(var.datadb_cache.this.endpoint.0.port)
+          value = tostring(var.datadb_cache.this.port)
         },
         {
           name  = "DATADB_TLS",
