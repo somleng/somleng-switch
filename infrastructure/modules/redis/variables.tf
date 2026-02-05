@@ -10,3 +10,12 @@ variable "vpc" {}
 variable "engine" {
   default = "valkey"
 }
+
+variable "node_type" {}
+variable "num_cache_clusters" {
+  default = 2
+}
+
+variable "automatic_failover_enabled" {
+  default = true
+}
