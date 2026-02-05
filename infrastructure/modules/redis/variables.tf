@@ -19,3 +19,11 @@ variable "num_cache_clusters" {
 variable "automatic_failover_enabled" {
   default = true
 }
+
+variable "transit_encryption_enabled" {
+  default = true
+}
+
+variable "transit_encryption_mode" {
+  default = "required"
+}
