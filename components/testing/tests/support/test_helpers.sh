@@ -230,7 +230,7 @@ rating_engine_set_balance () {
   rating_engine_api "APIerSv1.SetBalance" "[
     {
       \"Balance\": {
-        \"ID\": \"TEST\",
+        \"ID\": \"$account\",
         \"Weight\": 10,
         \"Blocker\": true
       },
