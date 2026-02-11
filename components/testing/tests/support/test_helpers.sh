@@ -231,7 +231,8 @@ rating_engine_set_balance () {
     {
       \"Balance\": {
         \"ID\": \"TEST\",
-        \"Weight\": 10
+        \"Weight\": 10,
+        \"Blocker\": true
       },
       \"Account\": \"$account\",
       \"Tenant\": \"$tenant\",
