@@ -30,7 +30,9 @@ class BuildCallProperties < ApplicationWorkflow
       call_sid: call_params.fetch("sid"),
       account_sid: call_params.fetch("account_sid"),
       carrier_sid: call_params.fetch("carrier_sid"),
-      billing_mode: call_params.dig("billing_parameters", "billing_mode")
+      billing_enabled: call_params.dig("billing_parameters", "enabled"),
+      billing_mode: call_params.dig("billing_parameters", "billing_mode"),
+      billing_category: call_params.dig("billing_parameters", "category")
     )
   end
 end

@@ -134,6 +134,10 @@ resource "aws_ecs_task_definition" "this" {
         {
           name  = "REDIS_URL",
           value = "redis://localhost:${var.redis_port}/1"
+        },
+        {
+          name  = "FS_PATH",
+          value = "sip:localhost:${var.sip_port}"
         }
       ]
     },

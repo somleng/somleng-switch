@@ -12,62 +12,7 @@ cat /dev/null > $log_file
 uas="$(hostname -i)"
 media_server="$(dig +short freeswitch)"
 
-carrier_sid="c0591700-69c6-465c-9353-7c98ec93cdc0"
-account_sid="a7570e4c-4f43-4a15-a47b-96247ba02ceb"
-call_sid="93943b68-2fa0-449f-993d-7c83a4c462e1"
-
-echo "Carrier SID: $carrier_sid"
-echo "Account SID: $account_sid"
-echo "Call SID: $call_sid"
-
-reset_rating_engine_data
-
-if ! rating_engine_create_default_charger "$carrier_sid" "$carrier_sid"; then
-  echo "Failed to create default charger profile. Exiting."
-  exit 1
-fi
-
-if ! rating_engine_create_destination "$carrier_sid" "TEST_CATCHALL"; then
-  echo "Failed to create destination. Exiting."
-  exit 1
-fi
-
-if ! rating_engine_create_rate "$carrier_sid" "TEST_CATCHALL" "60s" 7 "60s"; then
-  echo "Failed to create rate. Exiting."
-  exit 1
-fi
-
-if ! rating_engine_create_destination_rate "$carrier_sid" "TEST_CATCHALL" "TEST_CATCHALL" "TEST_CATCHALL"; then
-  echo "Failed to create destination rate. Exiting."
-  exit 1
-fi
-
-if ! rating_engine_create_rating_plan "$carrier_sid" "TEST_CATCHALL" "TEST_CATCHALL"; then
-  echo "Failed to create rating plan. Exiting."
-  exit 1
-fi
-
-if ! rating_engine_create_rating_profile "$carrier_sid" "$carrier_sid" "call" "TEST_CATCHALL" "$account_sid"; then
-  echo "Failed to create rating profile. Exiting."
-  exit 1
-fi
-
-if ! rating_engine_load_tariff_plan "$carrier_sid"; then
-  echo "Failed to load tariff plan. Exiting."
-  exit 1
-fi
-
-if ! rating_engine_create_account "$carrier_sid" "$account_sid"; then
-  echo "Failed to create account. Exiting."
-  exit 1
-fi
-
-if ! rating_engine_set_balance "$carrier_sid" "$account_sid" "500"; then
-  echo "Failed to set balance. Exiting."
-  exit 1
-fi
-
-response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls \
+curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/calls \
 -H 'Content-Type: application/json; charset=utf-8' \
 --data-binary @- << EOF
 {
@@ -75,9 +20,9 @@ response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls 
   "from": "2442",
   "voice_url": "https://demo.twilio.com/welcome/",
   "voice_method": "GET",
-  "sid": "$call_sid",
-  "account_sid": "$account_sid",
-  "carrier_sid": "$carrier_sid",
+  "sid": "sample-call-sid",
+  "carrier_sid": "sample-carrier-sid",
+  "account_sid": "sample-account-sid",
   "account_auth_token": "sample-auth-token",
   "direction": "outbound-api",
   "api_version": "2010-04-01",
@@ -92,16 +37,15 @@ response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls 
     "sip_profile": "nat_gateway"
   },
   "billing_parameters": {
-    "billing_mode": "prepaid"
+    "enabled": false,
+    "billing_mode": "prepaid",
+    "category": "outbound_calls"
   },
   "test_headers": {
     "X-UAS-Contact-Ip": "$uas"
   }
 }
 EOF
-)
-
-echo $response
 
 sleep 10
 

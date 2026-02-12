@@ -8,7 +8,7 @@ class DialString
   end
 
   def to_s
-    "sofia/#{external_profile}/#{address};fs_path=sip:freeswitch:5060"
+    "sofia/#{external_profile}/#{address};fs_path=#{fs_path}"
   end
 
   def address
@@ -27,5 +27,9 @@ class DialString
 
   def external_profile
     options.fetch(:sip_profile, DEFAULT_SIP_PROFILE)
+  end
+
+  def fs_path
+    AppSettings.fetch(:fs_path)
   end
 end
