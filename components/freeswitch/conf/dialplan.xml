@@ -34,12 +34,12 @@
         <action application="log"
           data="NOTICE SIP Profile: ${sofia_profile_name}, Address: ${sip_req_uri}" />
         <action application="bridge" data="sofia/${sofia_profile_name}/${sip_req_uri}" />
-      </condition>
 
-      <!-- CGRateS authorization fails -->
-      <anti-action application="log" data="ERROR CGRateS authorization failed: ${cgr_notify}" />
-      <anti-action application="set" data="proto_specific_hangup_cause=sip:403" />
-      <anti-action application="hangup" />
+        <!-- CGRateS authorization fails -->
+        <anti-action application="log" data="ERROR CGRateS authorization failed: ${cgr_notify}" />
+        <anti-action application="respond" data="403 Forbidden" />
+        <anti-action application="hangup" />
+      </condition>
     </extension>
 
     <extension name="adhearsion">

@@ -106,3 +106,10 @@ sleep 10
 if ! assert_in_file $log_file "INVITE sip:$destination@$uas"; then
 	exit 1
 fi
+
+account_response=$(rating_engine_get_account "$carrier_sid" "$account_sid")
+account_balance=$(echo "$account_response" | jq -r '.result.BalanceMap["*monetary"][0].Value')
+if [ "$account_balance" != "493" ]; then
+  echo "Account balance is ${account_balance}"
+  exit 1
+fi

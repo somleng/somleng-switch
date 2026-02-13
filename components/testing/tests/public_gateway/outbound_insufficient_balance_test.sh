@@ -7,7 +7,9 @@ source $current_dir/support/test_helpers.sh
 source $current_dir/../support/test_helpers.sh
 
 log_file=$(find . -type f -iname "uas_*_messages.log")
+cdr_server_log="cdr-server.log"
 cat /dev/null > $log_file
+cat /dev/null > $cdr_server_log
 
 uas="$(hostname -i)"
 media_server="$(dig +short freeswitch)"
@@ -101,8 +103,14 @@ response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls 
 EOF
 )
 
+echo $response
+
 sleep 10
 
-if ! assert_in_file $log_file "INVITE sip:$destination@$uas"; then
+if [ -s "$log_file" ]; then
 	exit 1
+fi
+
+if ! assert_in_file $cdr_server_log "sip%3A403"; then
+  exit 1
 fi

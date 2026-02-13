@@ -249,9 +249,24 @@ rating_engine_set_balance () {
   ]"
 }
 
+rating_engine_get_account () {
+  local tenant="${1:-"TEST"}"
+  local account="${2:-"sample-account-sid"}"
+
+  response=$(rating_engine_api "APIerSv2.GetAccount" "[
+    {
+      \"Account\": \"$account\",
+      \"Tenant\": \"$tenant\"
+    }
+  ]" "true")
+
+  echo "$response"
+}
+
 rating_engine_api () {
   local method="$1"
   local params="$2"
+  local verbose="${3:-false}"
 
   response=$(
     curl -s -X POST "http://rating-engine:$RATING_ENGINE_HTTP_PORT/jsonrpc" \
@@ -270,5 +285,9 @@ rating_engine_api () {
   if [ "$error" != "null" ]; then
     echo "Error in response: $error" >&2
     return 1
+  fi
+
+  if [ "$verbose" = "true" ]; then
+    echo "$response"
   fi
 }
