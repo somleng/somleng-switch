@@ -67,6 +67,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
         "enabled": true,
         "sessions_conns": ["*bijson_localhost"],
         "create_cdr": true,
+        "extra_fields": ["~*req.variable_sip_h_X-Somleng-CallSid"],
         "event_socket_conns": [
           {
             "address": "${EVENT_SOCKET_HOST}",
