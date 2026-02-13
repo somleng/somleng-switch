@@ -15,10 +15,7 @@ media_server="$(dig +short freeswitch)"
 carrier_sid="c0591700-69c6-465c-9353-7c98ec93cdc0"
 account_sid="a7570e4c-4f43-4a15-a47b-96247ba02ceb"
 call_sid="93943b68-2fa0-449f-993d-7c83a4c462e1"
-
-echo "Carrier SID: $carrier_sid"
-echo "Account SID: $account_sid"
-echo "Call SID: $call_sid"
+destination="85512334667"
 
 reset_rating_engine_data
 
@@ -47,7 +44,7 @@ if ! rating_engine_create_rating_plan "$carrier_sid" "TEST_CATCHALL" "TEST_CATCH
   exit 1
 fi
 
-if ! rating_engine_create_rating_profile "$carrier_sid" "$carrier_sid" "call" "TEST_CATCHALL" "$account_sid"; then
+if ! rating_engine_create_rating_profile "$carrier_sid" "$carrier_sid" "outbound_calls" "TEST_CATCHALL" "$account_sid"; then
   echo "Failed to create rating profile. Exiting."
   exit 1
 fi
@@ -71,7 +68,7 @@ response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls 
 -H 'Content-Type: application/json; charset=utf-8' \
 --data-binary @- << EOF
 {
-  "to": "+85512334667",
+  "to": "+$destination",
   "from": "2442",
   "voice_url": "https://demo.twilio.com/welcome/",
   "voice_method": "GET",
@@ -82,8 +79,9 @@ response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls 
   "direction": "outbound-api",
   "api_version": "2010-04-01",
   "default_tts_voice": "Basic.Kal",
+  "call_direction": "outbound",
   "routing_parameters": {
-    "destination": "85512334667",
+    "destination": "$destination",
     "dial_string_prefix": null,
     "plus_prefix": false,
     "national_dialing": false,
@@ -103,6 +101,8 @@ response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls 
 EOF
 )
 
-echo $response
-
 sleep 10
+
+if ! assert_in_file $log_file "INVITE sip:$destination@$uas"; then
+	exit 1
+fi

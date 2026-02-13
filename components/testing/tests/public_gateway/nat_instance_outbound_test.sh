@@ -20,11 +20,13 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
   "voice_url": "https://demo.twilio.com/welcome/",
   "voice_method": "GET",
   "sid": "sample-call-sid",
+  "carrier_sid": "sample-carrier-sid",
   "account_sid": "sample-account-sid",
   "account_auth_token": "sample-auth-token",
   "direction": "outbound-api",
   "api_version": "2010-04-01",
   "default_tts_voice": "Basic.Kal",
+  "call_direction": "outbound",
   "routing_parameters": {
     "destination": "85512334667",
     "dial_string_prefix": null,
@@ -33,6 +35,11 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
     "host": "$uas",
     "username": null,
     "sip_profile": "uac_nat_instance"
+  },
+  "billing_parameters": {
+    "enabled": false,
+    "billing_mode": "prepaid",
+    "category": "outbound_calls"
   }
 }
 EOF

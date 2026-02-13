@@ -73,6 +73,13 @@ reset_rating_engine_data() {
 
   # Truncate all tables in a single command (faster + handles FKs)
   psql -q -h "$host" -U "$user" -d "$db" -c "TRUNCATE TABLE $tables RESTART IDENTITY CASCADE;"
+
+  # Clear the cache
+  rating_engine_clear_cache
+}
+
+rating_engine_clear_cache () {
+  rating_engine_api "CacheSv1.Clear" "[]"
 }
 
 rating_engine_create_default_charger () {
@@ -175,7 +182,7 @@ rating_engine_create_rating_plan () {
 rating_engine_create_rating_profile () {
   local tpid="${1:-"TEST"}"
   local tenant="${2:-"TEST"}"
-  local category="${3:-"call"}"
+  local category="${3:-"outbound_calls"}"
   local rating_plan_id="${4:-"TEST_CATCHALL"}"
   local subject="${5:-"*any"}"
   local load_id="${6:-"somleng.org"}"
