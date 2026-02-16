@@ -8,7 +8,7 @@ class DialString
   end
 
   def to_s
-    "sofia/#{external_profile}/#{address};fs_path=#{fs_path}"
+    "{proxy_leg=true}sofia/#{external_profile}/#{address};fs_path=#{fs_path}"
   end
 
   def address

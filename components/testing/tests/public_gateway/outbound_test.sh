@@ -7,7 +7,9 @@ source $current_dir/support/test_helpers.sh
 source $current_dir/../support/test_helpers.sh
 
 log_file=$(find . -type f -iname "uas_*_messages.log")
+cdr_server_log="cdr-server.log"
 cat /dev/null > $log_file
+cat /dev/null > $cdr_server_log
 
 uas="$(hostname -i)"
 media_server="$(dig +short freeswitch)"
@@ -57,4 +59,8 @@ fi
 # Checks that FreeSWITCH sets an empty rport
 if ! assert_in_file $log_file "rport;"; then
 	exit 1
+fi
+
+if ! assert_in_file $cdr_server_log "proxy_leg"; then
+  exit 1
 fi
