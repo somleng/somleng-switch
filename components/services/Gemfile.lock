@@ -95,7 +95,7 @@ GEM
       reline (>= 0.6.0)
     public_suffix (6.0.2)
     racc (1.8.1)
-    rack (3.2.3)
+    rack (3.2.5)
     rainbow (3.1.1)
     rake (13.3.1)
     regexp_parser (2.11.3)
