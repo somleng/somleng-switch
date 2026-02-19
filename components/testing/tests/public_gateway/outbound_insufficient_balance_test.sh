@@ -103,8 +103,6 @@ response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls 
 EOF
 )
 
-echo $response
-
 sleep 10
 
 if [ -s "$log_file" ]; then

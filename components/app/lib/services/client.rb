@@ -2,6 +2,8 @@ module Services
   class Client
     attr_reader :lambda_client
 
+    ClientGatewayResponse = Data.define(:destination_address, :proxy_address)
+
     def initialize(**options)
       @lambda_client = options.fetch(:lambda_client) { default_client }
     end
@@ -14,7 +16,11 @@ module Services
           destination: destination
         }
       )
-      response.fetch("dial_string")
+
+      ClientGatewayResponse.new(
+        destination_address: response.fetch("destination_address"),
+        proxy_address: response.fetch("proxy_address")
+      )
     end
 
     private

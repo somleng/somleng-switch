@@ -2,22 +2,33 @@ require "spec_helper"
 
 RSpec.describe DialString do
   describe "#to_s" do
-    it "sets channels variables" do
-      dial_string = DialString.new(build_options(billing_parameters: { charging_mode: "postpaid" }, address: "1234@192.168.1.1"))
+    it "creates a dial string" do
+      dial_string = DialString.new(
+        build_options(
+          routing_parameters: { destination: "855716100987", host: "sip.example.com" },
+          fs_path: "sip:localhost:5060"
+        )
+      )
 
-      expect(dial_string.to_s).to eq("{cgr_reqtype=*postpaid,cgr_flags=*resources;*attributes;*sessions;*routes;*thresholds;*stats;*accounts}sofia/nat_gateway/1234@192.168.1.1")
+      expect(dial_string.to_s).to eq("{proxy_leg=true}sofia/nat_gateway/855716100987@sip.example.com;fs_path=sip:localhost:5060")
+    end
+
+    it "sets channels variables" do
+      dial_string = DialString.new(build_options)
+
+      expect(dial_string.to_s).to start_with("{proxy_leg=true}")
     end
 
     it "uses the default profile" do
       dial_string = DialString.new(build_options(address: "1234@192.168.1.1"))
 
-      expect(dial_string.to_s).to match(%r{sofia/nat_gateway/1234@192.168.1.1})
+      expect(dial_string.to_s).to match(%r{sofia/nat_gateway})
     end
 
     it "supports different profiles" do
-      dial_string = DialString.new(build_options(sip_profile: "test", address: "1234@192.168.1.1"))
+      dial_string = DialString.new(build_options(routing_parameters: { sip_profile: "test" }))
 
-      expect(dial_string.to_s).to match(%r{sofia/test/1234@192.168.1.1})
+      expect(dial_string.to_s).to match(%r{sofia/test})
     end
 
     it "builds a public gateway dial string" do
@@ -87,10 +98,14 @@ RSpec.describe DialString do
     it "build a client gateway dial string" do
       fake_services_client = instance_double(
         Services::Client,
-        build_client_gateway_dial_string: "02092960310@45.118.77.153:1619;fs_path=sip:10.10.0.20:6060"
+        build_client_gateway_dial_string:
+        Services::Client::ClientGatewayResponse.new(
+          destination_address: "02092960310@45.118.77.153:1619",
+          proxy_address: "sip:10.10.0.20:6060"
+        )
       )
 
-      result = DialString.new(
+      dial_string = DialString.new(
         build_options(
           routing_parameters: {
             destination: "8562092960310",
@@ -101,14 +116,15 @@ RSpec.describe DialString do
             services_client: fake_services_client
           }
         )
-      ).to_s
+      )
 
+      expect(dial_string.to_s).to match(%r{sofia/nat_gateway/102092960310@45.118.77.153:1619})
+      expect(dial_string.proxy_address).to eq(";fs_path=sip:10.10.0.20:6060")
       expect(
         fake_services_client
       ).to have_received(
         :build_client_gateway_dial_string).with(username: "user1", destination: "02092960310"
       )
-      expect(result).to match(%r{sofia/nat_gateway/102092960310@45.118.77.153:1619;fs_path=sip:10.10.0.20:6060})
     end
   end
 
@@ -172,6 +188,7 @@ RSpec.describe DialString do
 
   def build_options(routing_parameters: {}, billing_parameters: {}, **options)
     routing_parameters.reverse_merge!(
+      address: nil,
       destination: "855716100987",
       dial_string_prefix: nil,
       plus_prefix: false,
@@ -181,7 +198,7 @@ RSpec.describe DialString do
     )
 
     billing_parameters.reverse_merge!(
-      charging_mode: "postpaid"
+      billing_mode: "prepaid"
     )
 
     {

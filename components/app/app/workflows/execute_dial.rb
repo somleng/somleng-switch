@@ -33,26 +33,22 @@ class ExecuteDial < ExecuteTwiMLVerb
 
   def build_dial_params(phone_calls)
     phone_calls.each_with_object({}) do |phone_call, result|
-      dial_string, from = build_dial_string(phone_call)
+      dial_string = DialString.new(phone_call.to_h)
 
       result[dial_string.to_s] = {
-        from:,
+        from: dial_string.format_number(phone_call.from),
         for: verb.timeout.seconds,
         headers: SIPHeaders.new(
           call_sid: phone_call.sid,
-          account_sid: phone_call.account_sid
+          account_sid: phone_call.account_sid,
+          carrier_sid: phone_call.carrier_sid,
+          call_direction: phone_call.call_direction,
+          billing_enabled: phone_call.billing_enabled,
+          billing_mode: phone_call.billing_mode,
+          billing_category: phone_call.billing_category,
+          proxy_address: dial_string.proxy_address
         ).to_h
       }.compact
-    end
-  end
-
-  def build_dial_string(phone_call_response)
-    dial_string = DialString.new(phone_call_response.to_h)
-
-    if phone_call_response.address.present?
-      [ dial_string, nil ]
-    else
-      [ dial_string, dial_string.format_number(phone_call_response.from) ]
     end
   end
 

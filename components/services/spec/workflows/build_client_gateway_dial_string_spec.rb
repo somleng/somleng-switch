@@ -21,7 +21,10 @@ RSpec.describe BuildClientGatewayDialString, :client_gateway do
       client_identifier: "user1"
     )
 
-    expect(result).to eq(dial_string: "016701722@45.118.77.153:1634;fs_path=sip:10.10.0.20:6060")
+    expect(result).to eq(
+      destination_address: "016701722@45.118.77.153:1634",
+      proxy_address: "10.10.0.20:6060"
+    )
   end
 
   it "handles nated clients" do
@@ -37,7 +40,10 @@ RSpec.describe BuildClientGatewayDialString, :client_gateway do
       client_identifier: "user1"
     )
 
-    expect(result).to eq(dial_string: "016701722@45.118.77.153:1619;fs_path=sip:10.10.0.20:6060")
+    expect(result).to eq(
+      destination_address: "016701722@45.118.77.153:1619",
+      proxy_address: "10.10.0.20:6060"
+    )
   end
 
   it "handles unregistered clients" do
@@ -46,6 +52,9 @@ RSpec.describe BuildClientGatewayDialString, :client_gateway do
       client_identifier: "user1"
     )
 
-    expect(result).to eq(dial_string: nil)
+    expect(result).to eq(
+      destination_address: nil,
+      proxy_address: nil
+    )
   end
 end

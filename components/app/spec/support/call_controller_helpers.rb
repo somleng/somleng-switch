@@ -20,9 +20,15 @@ module CallControllerHelpers
       default_tts_voice: "Basic.Kal",
       from: "1000",
       to: "85512456869",
+      twiml: nil,
       sip_headers: SIPHeaders.new(
         call_sid:,
-        account_sid:
+        account_sid:,
+        carrier_sid: SecureRandom.uuid,
+        call_direction: "outbound",
+        billing_enabled: false,
+        billing_mode: "prepaid",
+        billing_category: "outbound_calls"
       ),
       **options
     )

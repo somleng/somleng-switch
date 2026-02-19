@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe CallController, type: :call_controller do
   describe "<Dial>" do
-    let(:parent_call_sid) { "15f55641-7728-4cab-8e2e-8077c4b3c6b4" } # From VCR cassette
+    let(:parent_call_sid) { "f371391e-25cc-4ba6-a752-ec745a59cf06" } # From VCR cassette
 
     # From: https://www.twilio.com/docs/api/twiml/dial
 
@@ -52,7 +52,12 @@ RSpec.describe CallController, type: :call_controller do
             from: match(/\A855/),
             headers: hash_including(
               "X-Somleng-CallSid" => be_present,
-              "X-Somleng-AccountSid" => be_present
+              "X-Somleng-AccountSid" => be_present,
+              "X-Somleng-CarrierSid" => be_present,
+              "X-Somleng-CallDirection" => be_present,
+              "X-Somleng-BillingEnabled" => be_present,
+              "X-Somleng-BillingMode" => be_present,
+              "X-Somleng-BillingCategory" => be_present
             )
           )
         )
@@ -103,7 +108,7 @@ RSpec.describe CallController, type: :call_controller do
 
       expect(controller).to have_received(:dial).with(
         include(
-          dial_string("016701721", profile: "test") => be_a_kind_of(Hash)
+          dial_string("85516701721", profile: "test") => be_a_kind_of(Hash)
         )
       )
     end
@@ -122,7 +127,6 @@ RSpec.describe CallController, type: :call_controller do
           <Dial>
             <Number>85516701721</Number>
             <Number>855715100860</Number>
-            <Number>85510555777</Number>
           </Dial>
         </Response>
       TWIML
@@ -132,8 +136,7 @@ RSpec.describe CallController, type: :call_controller do
       expect(controller).to have_received(:dial).with(
         include(
           dial_string("85516701721") => hash_including(from: match(/\A855/),),
-          dial_string("0715100860", profile: "test") => hash_including(from: match(/\A0/)),
-          dial_string("85510555777") => hash_including(from: match(/\A855/))
+          dial_string("855715100860") => hash_including(from: match(/\A855/)),
         ),
         any_args
       )
@@ -160,37 +163,7 @@ RSpec.describe CallController, type: :call_controller do
 
       expect(controller).to have_received(:dial).with(
         include(
-          "sofia/nat_gateway/alice@sip.example.com" => hash_including(for: 30.seconds, headers: be_a_kind_of(Hash))
-        )
-      )
-    end
-
-    it "supports callerId", :vcr, cassette: :dial_multiple_with_caller_id do
-      controller = build_controller(
-        stub_voice_commands: { dial: build_dial_status },
-        call_properties: {
-          call_sid: parent_call_sid
-        }
-      )
-
-      stub_twiml_request(controller, response: <<~TWIML)
-        <?xml version="1.0" encoding="UTF-8" ?>
-        <Response>
-          <Dial callerId="85523238265">
-            <Number>85516701721</Number>
-            <Number>855715100860</Number>
-            <Number>85510555777</Number>
-          </Dial>
-        </Response>
-      TWIML
-
-      controller.run
-
-      expect(controller).to have_received(:dial).with(
-        include(
-          dial_string("85516701721") => hash_including(from: "85523238265"),
-          dial_string("0715100860", profile: "test") => hash_including(from: "023238265"),
-          dial_string("85510555777") => hash_including(from: "85523238265")
+          dial_string("alice@sip.example.com") => hash_including(for: 30.seconds)
         )
       )
     end
@@ -405,7 +378,7 @@ RSpec.describe CallController, type: :call_controller do
         stub_twiml_request(controller, response: <<~TWIML)
           <?xml version="1.0" encoding="UTF-8" ?>
           <Response>
-            <Dial callerId="85523238265">+85516701721</Dial>
+            <Dial callerId="85523238265">+855715100860</Dial>
           </Response>
         TWIML
 
@@ -413,7 +386,7 @@ RSpec.describe CallController, type: :call_controller do
 
         expect(controller).to have_received(:dial).with(
           include(
-            dial_string("85516701721") => hash_including(from: "85523238265")
+            dial_string("0715100860") => hash_including(from: "023238265")
           )
         )
       end
@@ -457,6 +430,6 @@ RSpec.describe CallController, type: :call_controller do
   end
 
   def dial_string(number, profile: "nat_gateway")
-    match(%r{sofia/#{profile}/#{number}@.+})
+    match(%r{{proxy_leg=true}sofia/#{profile}/#{number}.*;fs_path=.+})
   end
 end

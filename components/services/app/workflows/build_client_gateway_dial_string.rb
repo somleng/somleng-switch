@@ -1,8 +1,8 @@
 class BuildClientGatewayDialString < ApplicationWorkflow
   attr_reader :destination, :client_identifier
 
-  DIAL_STRING_FORMAT = "%<destination>s@%<host>s:%<port>s".freeze
-  PROXY_PATH_FORMAT = "fs_path=sip:%<host>s:%<port>s".freeze
+  DESTINATION_ADDRESS_FORMAT = "%<destination>s@%<host>s:%<port>s".freeze
+  PROXY_ADDRESS_FORMAT = "%<host>s:%<port>s".freeze
 
   def initialize(destination:, client_identifier:)
     super()
@@ -11,20 +11,15 @@ class BuildClientGatewayDialString < ApplicationWorkflow
   end
 
   def call
+    return { destination_address: nil, proxy_address: nil } if location.nil?
+
     {
-      dial_string: build_dial_string
+      destination_address: format(DESTINATION_ADDRESS_FORMAT, destination:, host: destination_address.host, port: destination_address.port),
+      proxy_address: format(PROXY_ADDRESS_FORMAT, host: socket_address.host, port: socket_address.port),
     }
   end
 
   private
-
-  def build_dial_string
-    return if location.nil?
-
-    address = format(DIAL_STRING_FORMAT, destination:, host: destination_address.host, port: destination_address.port)
-    proxy_path = format(PROXY_PATH_FORMAT, host: socket_address.host, port: socket_address.port)
-    [ address, proxy_path ].join(";")
-  end
 
   def socket_address
     parse_socket_address(location.fetch(:socket))

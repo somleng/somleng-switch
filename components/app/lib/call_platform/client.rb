@@ -23,10 +23,13 @@ module CallPlatform
       :sid,
       :from,
       :account_sid,
+      :carrier_sid,
       :parent_call_sid,
       :routing_parameters,
-      :billing_parameters,
-      :address
+      :call_direction,
+      :billing_enabled,
+      :billing_mode,
+      :billing_category
     )
 
     RecordingResponse = Struct.new(
@@ -80,14 +83,19 @@ module CallPlatform
       json_response = make_request("/services/outbound_phone_calls", params: params.compact)
 
       json_response.fetch("phone_calls").map do |phone_call_response|
+        billing_parameters = phone_call_response.fetch("billing_parameters")
+
         OutboundPhoneCallResponse.new(
           sid: phone_call_response.fetch("sid"),
           parent_call_sid: phone_call_response.fetch("parent_call_sid"),
           account_sid: phone_call_response.fetch("account_sid"),
+          carrier_sid: phone_call_response.fetch("carrier_sid"),
           from: phone_call_response.fetch("from"),
           routing_parameters: phone_call_response.fetch("routing_parameters"),
-          billing_parameters: phone_call_response.fetch("billing_parameters"),
-          address: phone_call_response.fetch("address")
+          call_direction: phone_call_response.fetch("call_direction"),
+          billing_enabled: billing_parameters.fetch("enabled"),
+          billing_mode: billing_parameters.fetch("billing_mode"),
+          billing_category: billing_parameters.fetch("category")
         )
       end
     end

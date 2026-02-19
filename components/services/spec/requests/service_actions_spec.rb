@@ -21,7 +21,8 @@ RSpec.describe "Handle Service Actions", :client_gateway do
 
     expect(result).to eq(
       {
-        dial_string: "016701722@45.118.77.153:1619;fs_path=sip:10.10.0.20:6060"
+        destination_address: "016701722@45.118.77.153:1619",
+        proxy_address: "10.10.0.20:6060",
       }
     )
   end
