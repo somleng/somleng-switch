@@ -11,7 +11,8 @@ if AppSettings.env == "development" || AppSettings.env == "test"
 
       def to_h
         {
-          dial_string: "#{destination}@45.118.77.153:1619;fs_path=sip:10.10.0.20:6060"
+          destination_address: "#{destination}@45.118.77.153:1619",
+          proxy_address: "10.10.0.20:6060"
         }
       end
     end

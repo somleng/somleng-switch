@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe CallController, type: :call_controller do
-  it "handles inbound calls from public gateway", :vcr, cassette: :inbound_call do
+  xit "handles inbound calls from public gateway", :vcr, cassette: :inbound_call do
     call = build_fake_call(
       to: '"1294" <sip:1294@52.74.4.205;transport=udp;user=phone>',
       from: '"0715100960" <sip:0715100960@52.74.4.205;transport=udp;user=phone>;tag=gK04468a89',

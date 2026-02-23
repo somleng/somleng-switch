@@ -12,11 +12,14 @@ RSpec.describe OutboundCall do
       "twiml" => "twiml payload",
       "sid" => "sample-call-sid",
       "account_sid" => "sample-account-sid",
+      "carrier_sid" => "sample-carrier-sid",
+      "call_direction" => "outbound",
       "account_auth_token" => "sample-auth-token",
       "direction" => "outbound-api",
       "api_version" => "2010-04-01",
       "default_tts_voice" => "Basic.Kal",
       "routing_parameters" => {
+        "address" => nil,
         "destination" => "85516701721",
         "dial_string_prefix" => nil,
         "plus_prefix" => false,
@@ -24,6 +27,11 @@ RSpec.describe OutboundCall do
         "host" => "27.109.112.141",
         "username" => nil,
         "sip_profile" => "nat_gateway"
+      },
+      "billing_parameters" => {
+        "enabled" => true,
+        "billing_mode" => "prepaid",
+        "category" => "outbound_calls"
       }
     )
 
@@ -34,7 +42,7 @@ RSpec.describe OutboundCall do
 
     expect(result).to eq(outbound_call)
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      "sofia/nat_gateway/85516701721@27.109.112.141",
+      "{proxy_leg=true}sofia/nat_gateway/85516701721@27.109.112.141;fs_path=sip:localhost:5060",
       from: "2442",
       controller: CallController,
       controller_metadata: {
@@ -52,13 +60,25 @@ RSpec.describe OutboundCall do
           from: "2442",
           sip_headers: SIPHeaders.new(
             call_sid: "sample-call-sid",
-            account_sid: "sample-account-sid"
+            account_sid: "sample-account-sid",
+            carrier_sid: "sample-carrier-sid",
+            call_direction: "outbound",
+            billing_enabled: true,
+            billing_mode: "prepaid",
+            billing_category: "outbound_calls",
+            proxy_address: nil
           )
         )
       },
       headers: {
         "X-Somleng-CallSid" => "sample-call-sid",
-        "X-Somleng-AccountSid" => "sample-account-sid"
+        "X-Somleng-AccountSid" => "sample-account-sid",
+        "X-Somleng-CarrierSid" => "sample-carrier-sid",
+        "X-Somleng-CallDirection" => "outbound",
+        "X-Somleng-BillingEnabled" => "true",
+        "X-Somleng-BillingMode" => "prepaid",
+        "X-Somleng-BillingCategory" => "outbound_calls",
+        "X-Somleng-ProxyAddress" => ""
       }
     )
   end
@@ -67,6 +87,7 @@ RSpec.describe OutboundCall do
     call_params = build_call_params(
       "from" => "85523238265",
       "routing_parameters" => {
+        "address" => nil,
         "destination" => "85516701721",
         "dial_string_prefix" => nil,
         "plus_prefix" => false,
@@ -81,13 +102,14 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      "sofia/nat_gateway/016701721@27.109.112.141", hash_including(from: "023238265")
+      match("sofia/nat_gateway/016701721@27.109.112.141"), hash_including(from: "023238265")
     )
   end
 
   it "originates an outbound call through a custom sip profile" do
     call_params = build_call_params(
       "routing_parameters" => {
+        "address" => nil,
         "destination" => "85516701721",
         "dial_string_prefix" => nil,
         "plus_prefix" => false,
@@ -102,13 +124,14 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      "sofia/test/85516701721@27.109.112.141", any_args
+      match("sofia/test/85516701721@27.109.112.141"), any_args
     )
   end
 
   it "originates an outbound call through the client gateway" do
     call_params = build_call_params(
       "routing_parameters" => {
+        "address" => nil,
         "destination" => "85516701721",
         "dial_string_prefix" => nil,
         "plus_prefix" => true,
@@ -138,11 +161,14 @@ RSpec.describe OutboundCall do
       "twiml" => "twiml payload",
       "sid" => "sample-call-sid",
       "account_sid" => "sample-account-sid",
+      "carrier_sid" => "sample-carrier-sid",
       "account_auth_token" => "sample-auth-token",
+      "call_direction" => "outbound",
       "direction" => "outbound-api",
       "api_version" => "2010-04-01",
       "default_tts_voice" => "Basic.Kal",
       "routing_parameters" => {
+        "address" => nil,
         "destination" => "85516701721",
         "dial_string_prefix" => nil,
         "plus_prefix" => false,
@@ -150,6 +176,11 @@ RSpec.describe OutboundCall do
         "host" => "27.109.112.141",
         "username" => nil,
         "sip_profile" => "nat_gateway"
+      },
+      "billing_parameters" => {
+        "enabled" => true,
+        "billing_mode" => "prepaid",
+        "category" => "outbound_calls"
       }
     )
   end

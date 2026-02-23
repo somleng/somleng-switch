@@ -71,7 +71,16 @@ class CallController < Adhearsion::CallController
       to: response.to,
       from: response.from,
       default_tts_voice: response.default_tts_voice,
-      sip_headers: SIPHeaders.new(call_sid: response.call_sid, account_sid: response.account_sid)
+      sip_headers: SIPHeaders.new(
+        call_sid: response.call_sid,
+        account_sid: response.account_sid,
+        carrier_sid: response.carrier_sid,
+        call_direction: response.call_direction,
+        billing_enabled: response.billing_enabled,
+        billing_mode: response.billing_mode,
+        billing_category: response.billing_category,
+        proxy_address: nil
+      )
     )
   end
 

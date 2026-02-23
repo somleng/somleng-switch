@@ -11,11 +11,16 @@ module CallPlatform
       :account_sid,
       :auth_token,
       :call_sid,
+      :carrier_sid,
       :direction,
       :api_version,
       :to,
       :from,
       :default_tts_voice,
+      :call_direction,
+      :billing_enabled,
+      :billing_mode,
+      :billing_category,
       keyword_init: true
     )
 

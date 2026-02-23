@@ -28,7 +28,8 @@ module CallControllerHelpers
         call_direction: "outbound",
         billing_enabled: false,
         billing_mode: "prepaid",
-        billing_category: "outbound_calls"
+        billing_category: "outbound_calls",
+        proxy_address: nil
       ),
       **options
     )

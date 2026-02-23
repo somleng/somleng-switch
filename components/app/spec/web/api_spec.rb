@@ -31,11 +31,14 @@ module SomlengAdhearsion
               "status_callback_method" => "POST",
               "sid" => "sample-call-sid",
               "account_sid" => "sample-account-sid",
+              "carrier_sid" => "sample-carrier-sid",
+              "call_direction" => "outbound",
               "account_auth_token" => "sample-auth-token",
               "direction" => "outbound-api",
               "api_version" => "2010-04-01",
               "default_tts_voice" => "Basic.Kal",
               "routing_parameters" => {
+                "address" => nil,
                 "destination" => "85516701721",
                 "dial_string_prefix" => nil,
                 "plus_prefix" => false,
@@ -43,6 +46,11 @@ module SomlengAdhearsion
                 "host" => "27.109.112.141",
                 "username" => nil,
                 "sip_profile" => "nat_gateway"
+              },
+              "billing_parameters" => {
+                "enabled" => true,
+                "billing_mode" => "prepaid",
+                "category" => "outbound_calls"
               }
             ),
             {
