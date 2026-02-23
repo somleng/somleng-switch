@@ -32,8 +32,9 @@
       <condition field="${cgr_notify}" expression="^AUTH_OK$">
         <action application="log" data="NOTICE CGRateS authorization successful!" />
         <action application="log"
-          data="NOTICE SIP Profile: ${sofia_profile_name}, Address: ${sip_req_uri}" />
-        <action application="bridge" data="sofia/${sofia_profile_name}/${sip_req_uri}" />
+          data="NOTICE SIP Profile: ${sofia_profile_name}, Address: ${sip_req_uri}, Proxy Address: ${sip_h_X-Somleng-ProxyAddress}" />
+        <action application="bridge"
+          data="sofia/${sofia_profile_name}/${sip_req_uri}${sip_h_X-Somleng-ProxyAddress}" />
 
         <!-- CGRateS authorization fails -->
         <anti-action application="log" data="ERROR CGRateS authorization failed: ${cgr_notify}" />

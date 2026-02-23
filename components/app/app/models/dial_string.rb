@@ -17,7 +17,7 @@ class DialString
   def proxy_address
     return if routing_parameters.proxy_address.blank?
 
-    ";fs_path=#{routing_parameters.proxy_address}"
+    ";fs_path=sip:#{routing_parameters.proxy_address}"
   end
 
   private

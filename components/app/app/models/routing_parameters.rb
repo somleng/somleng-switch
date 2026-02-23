@@ -21,7 +21,7 @@ class RoutingParameters
     return address if address.present?
 
     result = formatted_destination
-    result = use_client_gateway? ? client_gateway_dial_string.destination_address : public_gateway_address(result)
+    result = use_client_gateway? ? client_gateway_destination_address : public_gateway_address(result)
     result.prepend(dial_string_prefix) if dial_string_prefix.present?
     result.prepend("+") if plus_prefix
     result
@@ -54,6 +54,10 @@ class RoutingParameters
 
   def formatted_destination
     format_number(destination).gsub(/\D/, "")
+  end
+
+  def client_gateway_destination_address
+    client_gateway_dial_string.destination_address.dup
   end
 
   def client_gateway_dial_string
