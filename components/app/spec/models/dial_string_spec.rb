@@ -101,7 +101,7 @@ RSpec.describe DialString do
         build_client_gateway_dial_string:
         Services::Client::ClientGatewayResponse.new(
           destination_address: "02092960310@45.118.77.153:1619",
-          proxy_address: "sip:10.10.0.20:6060"
+          proxy_address: "10.10.0.20:6060"
         )
       )
 

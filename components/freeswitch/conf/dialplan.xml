@@ -1,17 +1,16 @@
 <include>
   <context name="default">
-    <!-- remove this extension when finished debugging -->
-    <extension name="debug" continue="true">
+    <extension name="setup" continue="true">
       <condition>
-        <action application="log" data="NOTICE Dumping all variables for call ${uuid}" />
-        <action application="info" />
+        <action application="set"
+          data="bridge_dial_string=sofia/${sofia_profile_name}/${sip_req_uri}${sip_h_X-Somleng-ProxyAddress}" />
       </condition>
     </extension>
 
     <extension name="Billing_Disabled">
       <condition field="${sip_h_X-Somleng-BillingEnabled}" expression="^false$">
         <action application="log" data="NOTICE Billing is disabled for this call" />
-        <action application="bridge" data="sofia/${sofia_profile_name}/${sip_req_uri}" />
+        <action application="bridge" data="${bridge_dial_string}" />
       </condition>
     </extension>
 
@@ -33,8 +32,7 @@
         <action application="log" data="NOTICE CGRateS authorization successful!" />
         <action application="log"
           data="NOTICE SIP Profile: ${sofia_profile_name}, Address: ${sip_req_uri}, Proxy Address: ${sip_h_X-Somleng-ProxyAddress}" />
-        <action application="bridge"
-          data="sofia/${sofia_profile_name}/${sip_req_uri}${sip_h_X-Somleng-ProxyAddress}" />
+        <action application="bridge" data="${bridge_dial_string}" />
 
         <!-- CGRateS authorization fails -->
         <anti-action application="log" data="ERROR CGRateS authorization failed: ${cgr_notify}" />

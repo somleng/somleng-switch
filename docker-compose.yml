@@ -164,6 +164,8 @@ services:
         condition: service_healthy
     environment:
       AHN_CORE_HOST: freeswitch
+      CLIENT_GATEWAY_HOST: client_gateway
+      TESTING_HOST: testing
       CALL_PLATFORM_STUB_RESPONSES: "true"
       CONNECT_WS_SERVER_URL: "ws://testing:3001"
       AUDIO_FILE_URL: "http://testing:8000/scenarios/files/tone.wav"
