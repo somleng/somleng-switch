@@ -4,16 +4,13 @@
       <condition>
         <action application="set"
           data="bridge_dial_string=sofia/${sofia_profile_name}/${sip_req_uri}${sip_h_X-Somleng-ProxyAddress}" />
-
-        <action application="set" data="somleng_carrier_sid=${sip_h_X-Somleng-CarrierSid}" />
-        <action application="set" data="somleng_account_sid=${sip_h_X-Somleng-AccountSid}" />
-        <action application="set" data="somleng_billing_category=${sip_h_X-Somleng-BillingCategory}" />
-        <action application="set" data="somleng_billing_mode=${sip_h_X-Somleng-BillingMode}" />
       </condition>
     </extension>
 
-    <extension name="unset_somleng_headers" continue="true">
-      <condition>
+    <extension name="Billing_Disabled">
+      <condition field="${sip_h_X-Somleng-BillingEnabled}" expression="^false$">
+        <action application="log" data="NOTICE Billing is disabled for this call" />
+
         <action application="unset" data="sip_h_X-Somleng-AccountSid" />
         <action application="unset" data="sip_h_X-Somleng-CarrierSid" />
         <action application="unset" data="sip_h_X-Somleng-CallDirection" />
@@ -21,12 +18,7 @@
         <action application="unset" data="sip_h_X-Somleng-BillingMode" />
         <action application="unset" data="sip_h_X-Somleng-BillingCategory" />
         <action application="unset" data="sip_h_X-Somleng-ProxyAddress" />
-      </condition>
-    </extension>
 
-    <extension name="Billing_Disabled">
-      <condition field="${sip_h_X-Somleng-BillingEnabled}" expression="^false$">
-        <action application="log" data="NOTICE Billing is disabled for this call" />
         <action application="bridge" data="${bridge_dial_string}" />
       </condition>
     </extension>
@@ -36,10 +28,10 @@
         <!-- <action application="curl" data="url [headers|json] [get|head|post
         [url_encode_data]]"/> -->
         <action application="log" data="NOTICE In the CGRateS_Auth block parking the call" />
-        <action application="set" data="cgr_tenant=${somleng_carrier_sid}" />
-        <action application="set" data="cgr_account=${somleng_account_sid}" />
-        <action application="set" data="cgr_category=${somleng_billing_category}" />
-        <action application="set" data="cgr_reqtype=*${somleng_billing_mode}" />
+        <action application="set" data="cgr_tenant=${sip_h_X-Somleng-CarrierSid}" />
+        <action application="set" data="cgr_account=${sip_h_X-Somleng-AccountSid}" />
+        <action application="set" data="cgr_category=${sip_h_X-Somleng-BillingCategory}" />
+        <action application="set" data="cgr_reqtype=*${sip_h_X-Somleng-BillingMode}" />
         <action application="park" />
       </condition>
     </extension>
@@ -47,8 +39,13 @@
     <extension name="CGRateS_Auth_Ok">
       <condition field="${cgr_notify}" expression="^AUTH_OK$">
         <action application="log" data="NOTICE CGRateS authorization successful!" />
-        <action application="log"
-          data="NOTICE SIP Profile: ${sofia_profile_name}, Address: ${sip_req_uri}, Proxy Address: ${sip_h_X-Somleng-ProxyAddress}" />
+        <action application="unset" data="sip_h_X-Somleng-AccountSid" />
+        <action application="unset" data="sip_h_X-Somleng-CarrierSid" />
+        <action application="unset" data="sip_h_X-Somleng-CallDirection" />
+        <action application="unset" data="sip_h_X-Somleng-BillingEnabled" />
+        <action application="unset" data="sip_h_X-Somleng-BillingMode" />
+        <action application="unset" data="sip_h_X-Somleng-BillingCategory" />
+        <action application="unset" data="sip_h_X-Somleng-ProxyAddress" />
         <action application="bridge" data="${bridge_dial_string}" />
 
         <!-- CGRateS authorization fails -->

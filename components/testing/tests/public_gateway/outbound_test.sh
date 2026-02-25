@@ -62,6 +62,14 @@ if ! assert_in_file $log_file "rport;"; then
 	exit 1
 fi
 
+if ! assert_in_file $log_file "X-Somleng-CallSid"; then
+  exit 1
+fi
+
+if ! assert_not_in_file $log_file "X-Somleng-AccountSid"; then
+  exit 1
+fi
+
 if ! assert_in_file $cdr_server_log "proxy_leg"; then
   exit 1
 fi

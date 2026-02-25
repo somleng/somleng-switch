@@ -74,3 +74,7 @@ fi
 if ! assert_in_file $log_file "c=IN IP4 $media_proxy"; then
   exit 1
 fi
+
+if ! assert_not_in_file $log_file "X-Somleng-ProxyAddress"; then
+  exit 1
+fi
