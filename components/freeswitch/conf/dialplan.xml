@@ -4,6 +4,23 @@
       <condition>
         <action application="set"
           data="bridge_dial_string=sofia/${sofia_profile_name}/${sip_req_uri}${sip_h_X-Somleng-ProxyAddress}" />
+
+        <action application="set" data="somleng_carrier_sid=${sip_h_X-Somleng-CarrierSid}" />
+        <action application="set" data="somleng_account_sid=${sip_h_X-Somleng-AccountSid}" />
+        <action application="set" data="somleng_billing_category=${sip_h_X-Somleng-BillingCategory}" />
+        <action application="set" data="somleng_billing_mode=${sip_h_X-Somleng-BillingMode}" />
+      </condition>
+    </extension>
+
+    <extension name="unset_somleng_headers" continue="true">
+      <condition>
+        <action application="unset" data="sip_h_X-Somleng-AccountSid" />
+        <action application="unset" data="sip_h_X-Somleng-CarrierSid" />
+        <action application="unset" data="sip_h_X-Somleng-CallDirection" />
+        <action application="unset" data="sip_h_X-Somleng-BillingEnabled" />
+        <action application="unset" data="sip_h_X-Somleng-BillingMode" />
+        <action application="unset" data="sip_h_X-Somleng-BillingCategory" />
+        <action application="unset" data="sip_h_X-Somleng-ProxyAddress" />
       </condition>
     </extension>
 
@@ -19,10 +36,10 @@
         <!-- <action application="curl" data="url [headers|json] [get|head|post
         [url_encode_data]]"/> -->
         <action application="log" data="NOTICE In the CGRateS_Auth block parking the call" />
-        <action application="set" data="cgr_tenant=${sip_h_X-Somleng-CarrierSid}" />
-        <action application="set" data="cgr_account=${sip_h_X-Somleng-AccountSid}" />
-        <action application="set" data="cgr_category=${sip_h_X-Somleng-BillingCategory}" />
-        <action application="set" data="cgr_reqtype=*${sip_h_X-Somleng-BillingMode}" />
+        <action application="set" data="cgr_tenant=${somleng_carrier_sid}" />
+        <action application="set" data="cgr_account=${somleng_account_sid}" />
+        <action application="set" data="cgr_category=${somleng_billing_category}" />
+        <action application="set" data="cgr_reqtype=*${somleng_billing_mode}" />
         <action application="park" />
       </condition>
     </extension>

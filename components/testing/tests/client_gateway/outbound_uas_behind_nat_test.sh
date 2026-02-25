@@ -41,7 +41,7 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
     "national_dialing": false,
     "host": null,
     "username": "user1",
-    "sip_profile": "nat_gateway",
+    "sip_profile": "nat_gateway"
   },
   "billing_parameters": {
     "enabled": false,
