@@ -7,6 +7,7 @@ if [ "$1" = 'freeswitch' ]; then
   FS_CONTAINER_CONFIG_DIRECTORY="/etc/freeswitch/"
 
   FS_CONTAINER_BINARY="/usr/bin/freeswitch"
+  FS_SCRIPTS_DIRECTORY="/usr/share/freeswitch/scripts"
   FS_USER="freeswitch"
   FS_GROUP="daemon"
 
@@ -21,7 +22,7 @@ if [ "$1" = 'freeswitch' ]; then
   done
 
   # execute FreeSWITCH
-  exec "$FS_CONTAINER_BINARY" -u "$FS_USER" -g "$FS_GROUP" -nonat -storage "$FS_STORAGE_DIRECTORY"
+  exec "$FS_CONTAINER_BINARY" -u "$FS_USER" -g "$FS_GROUP" -nonat -storage "$FS_STORAGE_DIRECTORY" -scripts "$FS_SCRIPTS_DIRECTORY"
 fi
 
 exec "$@"

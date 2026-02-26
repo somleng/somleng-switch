@@ -1,13 +1,14 @@
 <include>
   <context name="default">
     <extension name="setup" continue="true">
-      <condition>
+      <condition field="${sip_h_X-Somleng-CallDirection}" expression="^outbound$">
         <action application="set"
           data="bridge_dial_string=sofia/${sofia_profile_name}/${sip_req_uri}${sip_h_X-Somleng-ProxyAddress}" />
       </condition>
     </extension>
 
     <extension name="Billing_Disabled">
+      <condition field="${sip_h_X-Somleng-CallDirection}" expression="^outbound$" />
       <condition field="${sip_h_X-Somleng-BillingEnabled}" expression="^false$">
         <action application="log" data="NOTICE Billing is disabled for this call" />
 
@@ -24,6 +25,7 @@
     </extension>
 
     <extension name="CGRateS_Auth">
+      <condition field="${sip_h_X-Somleng-CallDirection}" expression="^outbound$" />
       <condition field="${cgr_notify}" expression="^$">
         <!-- <action application="curl" data="url [headers|json] [get|head|post
         [url_encode_data]]"/> -->
@@ -37,6 +39,7 @@
     </extension>
 
     <extension name="CGRateS_Auth_Ok">
+      <condition field="${sip_h_X-Somleng-CallDirection}" expression="^outbound$" />
       <condition field="${cgr_notify}" expression="^AUTH_OK$">
         <action application="log" data="NOTICE CGRateS authorization successful!" />
         <action application="unset" data="sip_h_X-Somleng-AccountSid" />
@@ -52,6 +55,14 @@
         <anti-action application="log" data="ERROR CGRateS authorization failed: ${cgr_notify}" />
         <anti-action application="respond" data="403 Forbidden" />
         <anti-action application="hangup" />
+      </condition>
+    </extension>
+
+
+    <extension name="Create_Inbound_Call">
+      <condition field="${sip_h_X-Somleng-CallDirection}" expression="^$">
+        <action application="lua" data="create_inbound_call.lua" />
+        <action application="park" />
       </condition>
     </extension>
 
