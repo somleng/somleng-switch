@@ -1,6 +1,18 @@
 <include>
   <context name="default">
-    <extension name="setup" continue="true">
+    <extension name="debug" continue="true">
+      <condition>
+        <action application="info" />
+      </condition>
+    </extension>
+
+    <extension name="Setup" continue="true">
+      <condition>
+        <action application="set" data="fs_host_ip=$${local_ip_v4}" />
+      </condition>
+    </extension>
+
+    <extension name="Outbound_Setup" continue="true">
       <condition field="${sip_h_X-Somleng-CallDirection}" expression="^outbound$">
         <action application="set"
           data="bridge_dial_string=sofia/${sofia_profile_name}/${sip_req_uri}${sip_h_X-Somleng-ProxyAddress}" />
