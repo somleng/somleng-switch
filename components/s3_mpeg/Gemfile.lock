@@ -56,9 +56,10 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.6)
-    sentry-ruby (6.3.0)
+    sentry-ruby (6.4.1)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
+      logger
     simplecov (0.22.0)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
