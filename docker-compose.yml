@@ -101,6 +101,9 @@ services:
       FS_LOG_LEVEL: "debug"
       FS_MOD_JSON_CDR_URL: "http://testing:9000"
       FS_CALL_PLATFORM_HOST: http://fake_call_platform:3000
+      FS_CALL_PLATFORM_USERNAME: "services"
+      FS_CALL_PLATFORM_PASSWORD: "password"
+      FS_REGION: "hydrogen"
     expose:
       - "5060/udp"
       - "5222/tcp"
@@ -218,6 +221,8 @@ services:
     environment:
       CONNECT_WS_SERVER_URL: "ws://testing:3001"
       AUDIO_FILE_URL: "http://testing:8000/scenarios/files/tone.wav"
+      CALL_PLATFORM_USERNAME: "services"
+      CALL_PLATFORM_PASSWORD: "password"
     healthcheck:
       test:
         [

@@ -6,12 +6,6 @@
       </condition>
     </extension>
 
-    <extension name="Setup" continue="true">
-      <condition>
-        <action application="set" data="fs_host_ip=$${local_ip_v4}" />
-      </condition>
-    </extension>
-
     <extension name="Outbound_Setup" continue="true">
       <condition field="${sip_h_X-Somleng-CallDirection}" expression="^outbound$">
         <action application="set"
@@ -19,7 +13,7 @@
       </condition>
     </extension>
 
-    <extension name="Billing_Disabled">
+    <extension name="Outbound_Billing_Disabled">
       <condition field="${sip_h_X-Somleng-CallDirection}" expression="^outbound$" />
       <condition field="${sip_h_X-Somleng-BillingEnabled}" expression="^false$">
         <action application="log" data="NOTICE Billing is disabled for this call" />
@@ -36,7 +30,7 @@
       </condition>
     </extension>
 
-    <extension name="CGRateS_Auth">
+    <extension name="Outbound_CGRateS_Auth">
       <condition field="${sip_h_X-Somleng-CallDirection}" expression="^outbound$" />
       <condition field="${cgr_notify}" expression="^$">
         <!-- <action application="curl" data="url [headers|json] [get|head|post
@@ -50,7 +44,7 @@
       </condition>
     </extension>
 
-    <extension name="CGRateS_Auth_Ok">
+    <extension name="Outbound_CGRateS_Auth_Ok">
       <condition field="${sip_h_X-Somleng-CallDirection}" expression="^outbound$" />
       <condition field="${cgr_notify}" expression="^AUTH_OK$">
         <action application="log" data="NOTICE CGRateS authorization successful!" />
@@ -70,19 +64,24 @@
       </condition>
     </extension>
 
-
-    <extension name="Create_Inbound_Call">
-      <condition field="${sip_h_X-Somleng-CallDirection}" expression="^$">
+    <extension name="Inbound_Create_Call">
+      <condition field="${sip_h_X-Somleng-CallDirection}" expression="^$" />
+      <condition field="${cgr_notify}" expression="^$">
         <action application="lua" data="create_inbound_call.lua" />
-        <action application="park" />
       </condition>
     </extension>
 
-    <extension name="adhearsion">
-      <!-- THIS IS ONLY FOR INBOUND -->
-      <condition>
-        <action application="log" data="NOTICE IN ADHEARSION BLOCK" />
+    <extension name="Inbound_CGRateS_Auth_Ok">
+      <condition field="${sip_h_X-Somleng-CallDirection}" expression="^$" />
+      <condition field="${cgr_notify}" expression="^AUTH_OK$">
+        <action application="log" data="NOTICE Inbound CGRateS authorization successful!" />
         <action application="rayo" />
+
+        <!-- CGRateS authorization fails -->
+        <anti-action application="log"
+          data="ERROR Inbound CGRateS authorization failed: ${cgr_notify}" />
+        <anti-action application="respond" data="403 Forbidden" />
+        <anti-action application="hangup" />
       </condition>
     </extension>
   </context>

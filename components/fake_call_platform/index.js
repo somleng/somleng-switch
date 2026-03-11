@@ -1,5 +1,6 @@
 import { createServer } from 'node:http'
 import crypto from 'node:crypto'
+import { z } from 'zod'
 
 const hostname = '0.0.0.0'
 const port = 3000
@@ -29,26 +30,60 @@ const TEST_NUMBERS = {
   },
 }
 
+class AuthenticationError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = 'AuthenticationError'
+  }
+}
+
+const InboundPhoneCallsSchema = z.object({
+  to: z.string(),
+  from: z.string(),
+  external_id: z.string(),
+  host: z.string(),
+  source_ip: z.string(),
+  region: z.string(),
+  client_identifier: z.string().optional().nullable(),
+  variables: z.object({
+    sip_from_host: z.string(),
+    sip_to_host: z.string(),
+    sip_network_ip: z.string(),
+    sip_via_host: z.string()
+  })
+})
+
 const server = createServer(async (req, res) => {
   try {
+    if (req.url === '/health_checks') {
+      res.statusCode = 200
+      res.end(JSON.stringify({}))
+      return
+    }
+
+    authenticate(req)
+
     res.statusCode = 201
     res.setHeader('Content-Type', 'application/json')
 
     switch(req.url) {
-      case '/health_checks':
-        res.statusCode = 200
       case '/services/phone_call_events':
       case '/services/tts_events':
       case '/services/media_stream_events':
+        assertHTTPMethod(req, 'POST')
+
         res.end(JSON.stringify({}))
         break
       case '/services/inbound_phone_calls':
+        assertHTTPMethod(req, 'POST')
         await handleInboundPhoneCalls(req, res)
         break
       case '/services/outbound_phone_calls':
+        assertHTTPMethod(req, 'POST')
         await handleOutboundPhoneCalls(req, res)
         break
       case '/services/media_streams':
+        assertHTTPMethod(req, 'POST')
         await handleMediaStreams(req, res)
         break
       default:
@@ -62,19 +97,46 @@ const server = createServer(async (req, res) => {
     }
   } catch (error) {
     console.error(error)
-    res.statusCode = 500
-    res.end(JSON.stringify({ error: 'Internal Server Error' }))
+    if (error instanceof AuthenticationError) {
+      res.statusCode = 401
+      res.end(JSON.stringify({ error: 'Unauthorized' }))
+    } else {
+      res.statusCode = 500
+      res.end(JSON.stringify({ error: 'Internal Server Error' }))
+    }
   }
 })
 
+const authenticate = (req) => {
+  const authHeader = req.headers["authorization"]
+  if (!authHeader) {
+    throw new AuthenticationError('Unauthorized')
+  }
+
+  const { CALL_PLATFORM_USERNAME, CALL_PLATFORM_PASSWORD } = process.env
+  if (!CALL_PLATFORM_USERNAME || !CALL_PLATFORM_PASSWORD) {
+    throw new Error('CALL_PLATFORM_USERNAME and CALL_PLATFORM_PASSWORD must be set')
+  }
+
+  const base64Credentials = authHeader.split(" ")[1]
+  const credentials = Buffer.from(base64Credentials, "base64").toString("utf8")
+  const [username, password] = credentials.split(":")
+
+  if (username !== CALL_PLATFORM_USERNAME || password !== CALL_PLATFORM_PASSWORD) {
+    throw new AuthenticationError('Unauthorized')
+  }
+}
+
 const handleInboundPhoneCalls = async (req, res) => {
-  const { to, from } = await parseBody(req)
+  const data = await parseBody(req)
+  const { to, from } = InboundPhoneCallsSchema.parse(data)
 
   const testNumber = to in TEST_NUMBERS ? TEST_NUMBERS[to] : DEFAULT_TEST_NUMBER
   const response = {
     voice_url: null,
     voice_method: null,
     twiml: testNumber.twimlResponse,
+    carrier_sid: crypto.randomUUID(),
     account_sid: crypto.randomUUID(),
     auth_token: crypto.randomUUID(),
     call_sid: crypto.randomUUID(),
@@ -82,7 +144,12 @@ const handleInboundPhoneCalls = async (req, res) => {
     to,
     from,
     api_version: "2010-04-01",
-    default_tts_voice: "Basic.Kal"
+    default_tts_voice: "Basic.Kal",
+    billing_parameters: {
+      enabled: false,
+      category: "inbound_calls",
+      billing_mode: "prepaid"
+    }
   }
 
   res.end(JSON.stringify(response))
@@ -123,7 +190,13 @@ const handleOutboundPhoneCalls = async (req, res) => {
   res.end(JSON.stringify(response))
 }
 
-const handleRecordings = async (_req, res) => {
+const handleRecordings = async (req, res) => {
+  if (req.url === '/services/recordings') {
+    assertHTTPMethod(req, 'POST')
+  } else {
+    assertHTTPMethod(req, 'PATCH')
+  }
+
   res.end(JSON.stringify({ sid: crypto.randomUUID(), url: 'https://api.somleng.org/cowbell.mp3'}))
 }
 
@@ -134,6 +207,12 @@ const handleMediaStreams = async (_req, res) => {
 const parseBody = async (req) => {
   const body = await new Response(req).text()
   return body ? JSON.parse(body) : {}
+}
+
+const assertHTTPMethod = (req, method) => {
+  if (req.method !== method) {
+    throw new Error(`Expected ${method} request, got ${req.method}`)
+  }
 }
 
 server.listen(port, hostname, () => {

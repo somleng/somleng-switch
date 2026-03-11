@@ -42,43 +42,26 @@ class CallController < Adhearsion::CallController
   def build_call_properties
     return metadata[:call_properties] if metadata[:call_properties].present?
 
-    call_serializer = CallSerializer.new(call)
-
-    response = call_platform_client.create_inbound_call(
-      to: call.variables.fetch("variable_sip_h_x_somleng_callee_identity"),
-      from: call.variables.fetch("variable_sip_h_x_somleng_caller_identity"),
-      external_id: call_serializer.id,
-      host: call_serializer.host,
-      region: AppSettings.fetch(:region),
-      source_ip: call.variables["variable_sip_h_x_src_ip"] || call.variables["variable_sip_via_host"],
-      client_identifier: call.variables["variable_sip_h_x_somleng_client_identifier"],
-      variables: {
-        sip_from_host: call.variables["variable_sip_from_host"],
-        sip_to_host: call.variables["variable_sip_to_host"],
-        sip_network_ip: call.variables["variable_sip_network_ip"],
-        sip_via_host: call.variables["variable_sip_via_host"]
-      }
-    )
     CallProperties.new(
-      voice_url: response.voice_url,
-      voice_method: response.voice_method,
-      twiml: response.twiml,
-      account_sid: response.account_sid,
-      auth_token: response.auth_token,
-      call_sid: response.call_sid,
-      direction: response.direction,
-      api_version: response.api_version,
-      to: response.to,
-      from: response.from,
-      default_tts_voice: response.default_tts_voice,
+      voice_url: call.variables.fetch("variable_somleng_voice_url"),
+      voice_method: call.variables.fetch("variable_somleng_voice_method"),
+      twiml: call.variables.fetch("variable_somleng_twiml"),
+      account_sid: call.variables.fetch("variable_somleng_account_sid"),
+      auth_token: call.variables.fetch("variable_somleng_auth_token"),
+      call_sid: call.variables.fetch("variable_somleng_call_sid"),
+      direction: call.variables.fetch("variable_somleng_direction"),
+      api_version: call.variables.fetch("variable_somleng_api_version"),
+      to: call.variables.fetch("variable_somleng_to"),
+      from: call.variables.fetch("variable_somleng_from"),
+      default_tts_voice: call.variables.fetch("variable_somleng_default_tts_voice"),
       sip_headers: SIPHeaders.new(
-        call_sid: response.call_sid,
-        account_sid: response.account_sid,
-        carrier_sid: response.carrier_sid,
-        call_direction: response.call_direction,
-        billing_enabled: response.billing_enabled,
-        billing_mode: response.billing_mode,
-        billing_category: response.billing_category,
+        call_sid: call.variables.fetch("variable_somleng_call_sid"),
+        account_sid: call.variables.fetch("variable_somleng_account_sid"),
+        carrier_sid: call.variables.fetch("variable_somleng_carrier_sid"),
+        call_direction: call.variables.fetch("variable_somleng_call_direction"),
+        billing_enabled: call.variables.fetch("variable_somleng_billing_enabled"),
+        billing_mode: call.variables.fetch("variable_somleng_billing_mode"),
+        billing_category: call.variables.fetch("variable_somleng_billing_category"),
         proxy_address: nil
       )
     )

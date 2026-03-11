@@ -11,5 +11,8 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
   }
 }
