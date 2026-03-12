@@ -6,9 +6,17 @@ current_dir=$(dirname "$(readlink -f "$0")")
 source $current_dir/support/test_helpers.sh
 source $current_dir/../support/test_helpers.sh
 
-log_file=$(find . -type f -iname "uas_*_messages.log")
+scenario=$current_dir/../../scenarios/uas.xml
+sipp_pid=$(start_sipp_server $scenario)
+
+# ensure sipp is killed when script exits
+cleanup() {
+  kill "$sipp_pid" 2>/dev/null || true
+}
+
+trap cleanup EXIT INT TERM
+
 cdr_server_log="cdr-server.log"
-cat /dev/null > $log_file
 cat /dev/null > $cdr_server_log
 
 uas="$(hostname -i)"
@@ -96,9 +104,6 @@ response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls 
     "enabled": true,
     "billing_mode": "prepaid",
     "category": "outbound_calls"
-  },
-  "test_headers": {
-    "X-UAS-Contact-Ip": "$uas"
   }
 }
 EOF
@@ -106,6 +111,7 @@ EOF
 
 sleep 10
 
+log_file=$(find_sipp_log_file $scenario)
 if [ -s "$log_file" ]; then
 	exit 1
 fi

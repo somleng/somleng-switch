@@ -6,6 +6,16 @@ current_dir=$(dirname "$(readlink -f "$0")")
 source $current_dir/support/test_helpers.sh
 source $current_dir/../support/test_helpers.sh
 
+scenario=$current_dir/../../scenarios/uas.xml
+sipp_pid=$(start_sipp_server $scenario)
+
+# ensure sipp is killed when script exits
+cleanup() {
+  kill "$sipp_pid" 2>/dev/null || true
+}
+
+trap cleanup EXIT INT TERM
+
 uas="$(hostname -i)"
 call_sid="$(cat /proc/sys/kernel/random/uuid)"
 
@@ -32,9 +42,6 @@ output=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:$SWITCH_PORT/
     "host": "$uas",
     "username": null,
     "sip_profile": "nat_gateway"
-  },
-  "test_headers": {
-    "X-UAS-Contact-Ip": "$uas"
   }
 }
 EOF

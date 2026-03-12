@@ -291,3 +291,21 @@ rating_engine_api () {
     echo "$response"
   fi
 }
+
+start_sipp_server () {
+  local scenario="$1"
+  local scenario_name=$(basename "$scenario" .xml)
+
+  rm -rf "${scenario_name}"_*_messages.log
+
+  pkill sipp || true
+  sipp -sf "$scenario" -trace_msg > /dev/null 2>&1 &
+  echo $!
+}
+
+find_sipp_log_file () {
+  local scenario="$1"
+  local scenario_name=$(basename "$scenario" .xml)
+
+  find . -type f -iname "${scenario_name}"_*_messages.log
+}

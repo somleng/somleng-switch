@@ -1,9 +1,5 @@
 #!/bin/sh
 
-if [ -n "${UAS}" ]; then
-  sipp -sf ./scenarios/uas.xml -bg -trace_msg
-fi
-
 if [ "$1" = "services" ]; then
   WS_SERVER_PORT="${WS_SERVER_PORT:="3001"}"
   FILE_SERVER_PORT="${FILE_SERVER_PORT:="8000"}"

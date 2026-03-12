@@ -141,6 +141,7 @@ const handleInboundPhoneCalls = async (req, res) => {
     auth_token: crypto.randomUUID(),
     call_sid: crypto.randomUUID(),
     direction: "inbound",
+    call_direction: "inbound",
     to,
     from,
     api_version: "2010-04-01",

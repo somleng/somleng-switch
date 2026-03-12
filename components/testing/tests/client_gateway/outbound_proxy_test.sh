@@ -6,8 +6,15 @@ current_dir=$(dirname "$(readlink -f "$0")")
 source $current_dir/support/test_helpers.sh
 source $current_dir/../support/test_helpers.sh
 
-log_file=$(find . -type f -iname "uas_*_messages.log")
-cat /dev/null > $log_file
+scenario=$current_dir/../../scenarios/uas.xml
+sipp_pid=$(start_sipp_server $scenario)
+
+# ensure sipp is killed when script exits
+cleanup() {
+  kill "$sipp_pid" 2>/dev/null || true
+}
+
+trap cleanup EXIT INT TERM
 
 reset_opensips_db
 create_rtpengine_entry "udp:media_proxy:2223"
@@ -48,9 +55,6 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
     "enabled": false,
     "billing_mode": "prepaid",
     "category": "outbound_calls"
-  },
-  "test_headers": {
-    "X-UAS-Contact-Ip": "$uas"
   }
 }
 EOF
@@ -59,6 +63,7 @@ sleep 10
 
 reset_opensips_db
 
+log_file=$(find_sipp_log_file $scenario)
 if ! assert_in_file $log_file "ACK sip:$uas"; then
   exit 1
 fi

@@ -43,9 +43,9 @@ class CallController < Adhearsion::CallController
     return metadata[:call_properties] if metadata[:call_properties].present?
 
     CallProperties.new(
-      voice_url: call.variables.fetch("variable_somleng_voice_url"),
-      voice_method: call.variables.fetch("variable_somleng_voice_method"),
-      twiml: call.variables.fetch("variable_somleng_twiml"),
+      voice_url: call.variables["variable_somleng_voice_url"],
+      voice_method: call.variables["variable_somleng_voice_method"],
+      twiml: call.variables["variable_somleng_twiml"],
       account_sid: call.variables.fetch("variable_somleng_account_sid"),
       auth_token: call.variables.fetch("variable_somleng_auth_token"),
       call_sid: call.variables.fetch("variable_somleng_call_sid"),
