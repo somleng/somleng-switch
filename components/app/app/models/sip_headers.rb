@@ -12,4 +12,8 @@ SIPHeaders = Data.define(:call_sid, :account_sid, :carrier_sid, :call_direction,
       "X-Somleng-ExternalProfile" => external_profile
     }.transform_values(&:to_s)
   end
+
+  def billing_enabled?
+    billing_enabled.to_s == "true"
+  end
 end

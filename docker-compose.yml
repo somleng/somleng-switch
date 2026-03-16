@@ -207,6 +207,8 @@ services:
       FILE_SERVER_LOG_FILE: http-server.log
       RATING_ENGINE_HTTP_USER: "cgrates"
       RATING_ENGINE_HTTP_PASSWORD: "password"
+      CARRIER_SID: "c0591700-69c6-465c-9353-7c98ec93cdc0"
+      ACCOUNT_SID: "a7570e4c-4f43-4a15-a47b-96247ba02ceb"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -222,6 +224,8 @@ services:
       AUDIO_FILE_URL: "http://testing:8000/scenarios/files/tone.wav"
       CALL_PLATFORM_USERNAME: "services"
       CALL_PLATFORM_PASSWORD: "password"
+      CARRIER_SID: "c0591700-69c6-465c-9353-7c98ec93cdc0"
+      ACCOUNT_SID: "a7570e4c-4f43-4a15-a47b-96247ba02ceb"
     healthcheck:
       test:
         [

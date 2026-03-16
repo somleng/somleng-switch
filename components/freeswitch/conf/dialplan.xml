@@ -36,8 +36,6 @@
     <extension name="Outbound_CGRateS_Auth">
       <condition field="${sip_h_X-Somleng-CallDirection}" expression="^outbound$" />
       <condition field="${cgr_notify}" expression="^$">
-        <!-- <action application="curl" data="url [headers|json] [get|head|post
-        [url_encode_data]]"/> -->
         <action application="log" data="NOTICE In the CGRateS_Auth block parking the call" />
         <action application="set" data="cgr_tenant=${sip_h_X-Somleng-CarrierSid}" />
         <action application="set" data="cgr_account=${sip_h_X-Somleng-AccountSid}" />
@@ -79,6 +77,7 @@
       <condition field="${sip_h_X-Somleng-CallDirection}" expression="^$" />
       <condition field="${cgr_notify}" expression="^AUTH_OK$">
         <action application="log" data="NOTICE Inbound CGRateS authorization successful!" />
+        <action application="set" data="cgr_reqtype=*none" />
         <action application="rayo" />
 
         <!-- CGRateS authorization fails -->

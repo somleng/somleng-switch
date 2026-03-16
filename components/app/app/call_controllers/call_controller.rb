@@ -9,6 +9,16 @@ class CallController < Adhearsion::CallController
   def run
     @call_properties = build_call_properties
 
+    if call_properties.sip_headers.billing_enabled?
+      call.write_command(
+        Rayo::Command::SetVar.new(
+          uuid: call.id,
+          name: "cgr_reqtype",
+          value: "*#{call_properties.sip_headers.billing_mode}"
+        )
+      )
+    end
+
     twiml = prepare_twiml(call_properties)
     execute_twiml(twiml)
   end

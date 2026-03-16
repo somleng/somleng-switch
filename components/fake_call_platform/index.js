@@ -5,17 +5,19 @@ import { z } from 'zod'
 const hostname = '0.0.0.0'
 const port = 3000
 
-const { CONNECT_WS_SERVER_URL, AUDIO_FILE_URL } = process.env
+const { CONNECT_WS_SERVER_URL, AUDIO_FILE_URL, CARRIER_SID, ACCOUNT_SID } = process.env
 
 const connectWsServerUrl = CONNECT_WS_SERVER_URL || 'wss://example.com'
 const audioFileUrl = AUDIO_FILE_URL || 'https://api.twilio.com/cowbell.mp3'
 
 const DEFAULT_TEST_NUMBER = {
-  twimlResponse: '<Response><Play>https://demo.twilio.com/docs/classic.mp3</Play></Response>'
+  twimlResponse: '<Response><Play>https://demo.twilio.com/docs/classic.mp3</Play></Response>',
+  billingEnabled: false
 }
 const TEST_NUMBERS = {
   '1111': {
-    twimlResponse: '<Response><Say>Hello World!</Say><Hangup /></Response>'
+    twimlResponse: '<Response><Say>Hello World!</Say><Hangup /></Response>',
+    billingEnabled: false
   },
   '2222': {
     twimlResponse: `
@@ -26,8 +28,13 @@ const TEST_NUMBERS = {
           </Stream>
         </Connect>
         <Play>${audioFileUrl}</Play>
-      </Response>`
+      </Response>`,
+    billingEnabled: false
   },
+  '3333': {
+    twimlResponse: '<Response><Say>Hello World!</Say><Hangup /></Response>',
+    billingEnabled: true
+  }
 }
 
 class AuthenticationError extends Error {
@@ -136,8 +143,8 @@ const handleInboundPhoneCalls = async (req, res) => {
     voice_url: null,
     voice_method: null,
     twiml: testNumber.twimlResponse,
-    carrier_sid: crypto.randomUUID(),
-    account_sid: crypto.randomUUID(),
+    carrier_sid: CARRIER_SID,
+    account_sid: ACCOUNT_SID,
     auth_token: crypto.randomUUID(),
     call_sid: crypto.randomUUID(),
     direction: "inbound",
@@ -147,7 +154,7 @@ const handleInboundPhoneCalls = async (req, res) => {
     api_version: "2010-04-01",
     default_tts_voice: "Basic.Kal",
     billing_parameters: {
-      enabled: false,
+      enabled: testNumber.billingEnabled,
       category: "inbound_calls",
       billing_mode: "prepaid"
     }
@@ -164,8 +171,8 @@ const handleOutboundPhoneCalls = async (req, res) => {
       {
         sid: crypto.randomUUID(),
         parent_call_sid,
-        account_sid: crypto.randomUUID(),
-        carrier_sid: crypto.randomUUID(),
+        account_sid: ACCOUNT_SID,
+        carrier_sid: CARRIER_SID,
         from: "1234",
         call_direction: "outbound",
         routing_parameters: {

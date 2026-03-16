@@ -6,22 +6,18 @@ current_dir=$(dirname "$(readlink -f "$0")")
 source $current_dir/support/test_helpers.sh
 source $current_dir/../support/test_helpers.sh
 
-scenario=$current_dir/../../scenarios/uas.xml
-sipp_pid=$(start_sipp_server $scenario)
+scenario=$current_dir/../../scenarios/smart_inbound.xml
 
-# ensure sipp is killed when script exits
-cleanup() {
-  kill "$sipp_pid" 2>/dev/null || true
-}
+log_file="smart_inbound_*_messages.log"
+rm -f $log_file
 
-trap cleanup EXIT INT TERM
-
-
-uas="$(hostname -i)"
 media_server="$(dig +short freeswitch)"
+public_gateway="$(dig +short public_gateway)"
 
-call_sid="93943b68-2fa0-449f-993d-7c83a4c462e1"
-destination="85512334667"
+reset_opensips_db
+create_load_balancer_entry "gw" "5060" "2"
+create_address_entry "$(hostname -i)" "2"
+reload_opensips_tables
 
 reset_rating_engine_data
 
@@ -50,7 +46,7 @@ if ! rating_engine_create_rating_plan "$CARRIER_SID" "TEST_CATCHALL" "TEST_CATCH
   exit 1
 fi
 
-if ! rating_engine_create_rating_profile "$CARRIER_SID" "$CARRIER_SID" "outbound_calls" "TEST_CATCHALL" "$ACCOUNT_SID"; then
+if ! rating_engine_create_rating_profile "$CARRIER_SID" "$CARRIER_SID" "inbound_calls" "TEST_CATCHALL" "$ACCOUNT_SID"; then
   echo "Failed to create rating profile. Exiting."
   exit 1
 fi
@@ -70,55 +66,9 @@ if ! rating_engine_set_balance "$CARRIER_SID" "$ACCOUNT_SID" "500"; then
   exit 1
 fi
 
-response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls \
--H 'Content-Type: application/json; charset=utf-8' \
---data-binary @- << EOF
-{
-  "to": "+$destination",
-  "from": "2442",
-  "voice_url": "https://demo.twilio.com/welcome/",
-  "voice_method": "GET",
-  "sid": "$call_sid",
-  "account_sid": "$ACCOUNT_SID",
-  "carrier_sid": "$CARRIER_SID",
-  "account_auth_token": "sample-auth-token",
-  "direction": "outbound-api",
-  "api_version": "2010-04-01",
-  "default_tts_voice": "Basic.Kal",
-  "call_direction": "outbound",
-  "routing_parameters": {
-    "address": null,
-    "destination": "$destination",
-    "dial_string_prefix": null,
-    "plus_prefix": false,
-    "national_dialing": false,
-    "host": "$uas",
-    "username": null,
-    "sip_profile": "nat_gateway"
-  },
-  "billing_parameters": {
-    "enabled": true,
-    "billing_mode": "prepaid",
-    "category": "outbound_calls"
-  }
-}
-EOF
-)
+sipp -sf $scenario public_gateway:5060 -s 3333 -m 1 -trace_msg > /dev/null
 
-sleep 10
-
-log_file=$(find_sipp_log_file $scenario)
-if ! assert_in_file $log_file "INVITE sip:$destination@$uas"; then
-	exit 1
-fi
-
-if ! assert_in_file $log_file "X-Somleng-CallSid"; then
-  exit 1
-fi
-
-if ! assert_not_in_file $log_file "X-Somleng-AccountSid"; then
-  exit 1
-fi
+reset_opensips_db
 
 account_response=$(rating_engine_get_account "$CARRIER_SID" "$ACCOUNT_SID")
 account_balance=$(echo "$account_response" | jq -r '.result.BalanceMap["*monetary"][0].Value')
