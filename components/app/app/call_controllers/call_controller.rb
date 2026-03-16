@@ -57,7 +57,7 @@ class CallController < Adhearsion::CallController
       voice_method: call.variables["variable_somleng_voice_method"],
       twiml: call.variables["variable_somleng_twiml"],
       account_sid: call.variables.fetch("variable_somleng_account_sid"),
-      auth_token: call.variables.fetch("variable_somleng_auth_token"),
+      auth_token: call.variables.fetch("variable_somleng_account_auth_token"),
       call_sid: call.variables.fetch("variable_somleng_call_sid"),
       direction: call.variables.fetch("variable_somleng_direction"),
       api_version: call.variables.fetch("variable_somleng_api_version"),

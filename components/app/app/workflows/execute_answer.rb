@@ -15,7 +15,7 @@ class ExecuteAnswer < ApplicationWorkflow
   private
 
   def answer(headers = {})
-    context.answer(call_properties.sip_headers.to_h.reverse_merge(headers))
+    context.answer(call_properties.sip_headers.to_h.slice("X-Somleng-CallSid").reverse_merge(headers))
   end
 
   def answered?

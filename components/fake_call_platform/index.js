@@ -153,7 +153,7 @@ const handleInboundPhoneCalls = async (req, res) => {
     twiml: testNumber.twimlResponse,
     carrier_sid: CARRIER_SID,
     account_sid: ACCOUNT_SID,
-    auth_token: crypto.randomUUID(),
+    account_auth_token: crypto.randomUUID(),
     sid: crypto.randomUUID(),
     direction: "inbound",
     call_direction: "inbound",
