@@ -294,12 +294,13 @@ rating_engine_api () {
 
 start_sipp_server () {
   local scenario="$1"
+  local contact_ip="${2:-$(hostname -i)}"
   local scenario_name=$(basename "$scenario" .xml)
 
   rm -rf "${scenario_name}"_*_messages.log
 
   pkill sipp || true
-  sipp -sf "$scenario" -trace_msg > /dev/null 2>&1 &
+  sipp -sf "$scenario" -key contact_ip "$contact_ip" -trace_msg > /dev/null 2>&1 &
   echo $!
 }
 

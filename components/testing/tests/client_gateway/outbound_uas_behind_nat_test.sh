@@ -6,8 +6,8 @@ current_dir=$(dirname "$(readlink -f "$0")")
 source $current_dir/support/test_helpers.sh
 source $current_dir/../support/test_helpers.sh
 
-scenario=$current_dir/../../scenarios/uas_nat.xml
-sipp_pid=$(start_sipp_server $scenario)
+scenario=$current_dir/../../scenarios/uas.xml
+sipp_pid=$(start_sipp_server $scenario "100.65.107.153")
 
 # ensure sipp is killed when script exits
 cleanup() {

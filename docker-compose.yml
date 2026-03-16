@@ -207,7 +207,6 @@ services:
       FILE_SERVER_LOG_FILE: http-server.log
       RATING_ENGINE_HTTP_USER: "cgrates"
       RATING_ENGINE_HTTP_PASSWORD: "password"
-      UAS: "true"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:

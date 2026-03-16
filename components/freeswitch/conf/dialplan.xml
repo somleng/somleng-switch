@@ -27,6 +27,8 @@
         <action application="unset" data="sip_h_X-Somleng-ProxyAddress" />
         <action application="unset" data="sip_h_X-Somleng-ExternalProfile" />
 
+        <action application="set" data="cgr_reqtype=*none" />
+
         <action application="bridge" data="${bridge_dial_string}" />
       </condition>
     </extension>
