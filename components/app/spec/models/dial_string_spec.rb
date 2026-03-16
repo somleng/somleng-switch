@@ -25,12 +25,6 @@ RSpec.describe DialString do
       expect(dial_string.to_s).to match(%r{sofia/uac_internal})
     end
 
-    it "supports different profiles" do
-      dial_string = DialString.new(build_options(routing_parameters: { sip_profile: "test" }))
-
-      expect(dial_string.to_s).to match(%r{sofia/test})
-    end
-
     it "builds a public gateway dial string" do
       dial_string = DialString.new(
         build_options(
@@ -125,6 +119,14 @@ RSpec.describe DialString do
       ).to have_received(
         :build_client_gateway_dial_string).with(username: "user1", destination: "02092960310"
       )
+    end
+  end
+
+  describe "#external_profile" do
+    it "returns the SIP profile from the routing parameters" do
+      dial_string = DialString.new(build_options(routing_parameters: { sip_profile: "test" }))
+
+      expect(dial_string.external_profile).to eq("test")
     end
   end
 

@@ -4,26 +4,6 @@ module CallPlatform
   class Client
     class InvalidRequestError < StandardError; end
 
-    InboundPhoneCallResponse = Struct.new(
-      :voice_url,
-      :voice_method,
-      :twiml,
-      :account_sid,
-      :auth_token,
-      :call_sid,
-      :carrier_sid,
-      :direction,
-      :api_version,
-      :to,
-      :from,
-      :default_tts_voice,
-      :call_direction,
-      :billing_enabled,
-      :billing_mode,
-      :billing_category,
-      keyword_init: true
-    )
-
     OutboundPhoneCallResponse = Data.define(
       :sid,
       :from,
@@ -65,23 +45,6 @@ module CallPlatform
 
     def notify_media_stream_event(params)
       notify_request("/services/media_stream_events", params)
-    end
-
-    def create_inbound_call(params)
-      json_response = make_request("/services/inbound_phone_calls", params: params)
-      InboundPhoneCallResponse.new(
-        voice_url: json_response.fetch("voice_url"),
-        voice_method: json_response.fetch("voice_method"),
-        twiml: json_response.fetch("twiml"),
-        account_sid: json_response.fetch("account_sid"),
-        auth_token: json_response.fetch("account_auth_token"),
-        call_sid: json_response.fetch("sid"),
-        direction: json_response.fetch("direction"),
-        to: json_response.fetch("to"),
-        from: json_response.fetch("from"),
-        api_version: json_response.fetch("api_version"),
-        default_tts_voice: json_response.fetch("default_tts_voice")
-      )
     end
 
     def create_outbound_calls(params)

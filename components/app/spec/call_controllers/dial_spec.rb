@@ -108,7 +108,11 @@ RSpec.describe CallController, type: :call_controller do
 
       expect(controller).to have_received(:dial).with(
         include(
-          dial_string("85516701721", profile: "test") => be_a_kind_of(Hash)
+          dial_string("85516701721") => hash_including(
+            headers: hash_including(
+              "X-Somleng-ExternalProfile" => "test"
+            )
+          )
         )
       )
     end
@@ -429,7 +433,7 @@ RSpec.describe CallController, type: :call_controller do
     instance_double(Adhearsion::OutboundCall, id: SecureRandom.uuid, **options)
   end
 
-  def dial_string(number, profile: "nat_gateway")
-    match(%r{{proxy_leg=true}sofia/#{profile}/#{number}.*;fs_path=.+})
+  def dial_string(number)
+    match(%r{{proxy_leg=true}sofia/uac_internal/#{number}.*;fs_path=.+})
   end
 end

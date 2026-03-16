@@ -14,4 +14,3 @@ end
 
 require_relative "call_platform/configuration"
 require_relative "call_platform/client"
-require_relative "call_platform/fake_client"

@@ -36,11 +36,7 @@ class CallController < Adhearsion::CallController
   end
 
   def call_platform_client
-    if CallPlatform.configuration.stub_responses
-      CallPlatform::FakeClient.new
-    else
-      CallPlatform::Client.new
-    end
+    CallPlatform::Client.new
   end
 
   private
