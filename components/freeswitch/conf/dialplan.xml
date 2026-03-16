@@ -9,7 +9,7 @@
     <extension name="Outbound_Setup" continue="true">
       <condition field="${sip_h_X-Somleng-CallDirection}" expression="^outbound$">
         <action application="set"
-          data="bridge_dial_string=sofia/${sofia_profile_name}/${sip_req_uri}${sip_h_X-Somleng-ProxyAddress}" />
+          data="bridge_dial_string=sofia/${sip_h_X-Somleng-ExternalProfile}/${sip_req_uri}${sip_h_X-Somleng-ProxyAddress}" />
       </condition>
     </extension>
 
@@ -25,6 +25,7 @@
         <action application="unset" data="sip_h_X-Somleng-BillingMode" />
         <action application="unset" data="sip_h_X-Somleng-BillingCategory" />
         <action application="unset" data="sip_h_X-Somleng-ProxyAddress" />
+        <action application="unset" data="sip_h_X-Somleng-ExternalProfile" />
 
         <action application="bridge" data="${bridge_dial_string}" />
       </condition>
@@ -55,6 +56,7 @@
         <action application="unset" data="sip_h_X-Somleng-BillingMode" />
         <action application="unset" data="sip_h_X-Somleng-BillingCategory" />
         <action application="unset" data="sip_h_X-Somleng-ProxyAddress" />
+        <action application="unset" data="sip_h_X-Somleng-ExternalProfile" />
         <action application="bridge" data="${bridge_dial_string}" />
 
         <!-- CGRateS authorization fails -->

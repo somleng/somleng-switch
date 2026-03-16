@@ -42,7 +42,7 @@ RSpec.describe OutboundCall do
 
     expect(result).to eq(outbound_call)
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      "{proxy_leg=true}sofia/nat_gateway/85516701721@27.109.112.141;fs_path=sip:localhost:5060",
+      "{proxy_leg=true}sofia/uac_internal/85516701721@27.109.112.141;fs_path=sip:localhost:5060",
       from: "2442",
       controller: CallController,
       controller_metadata: {
@@ -66,7 +66,8 @@ RSpec.describe OutboundCall do
             billing_enabled: true,
             billing_mode: "prepaid",
             billing_category: "outbound_calls",
-            proxy_address: nil
+            proxy_address: nil,
+            external_profile: "nat_gateway"
           )
         )
       },
@@ -78,7 +79,8 @@ RSpec.describe OutboundCall do
         "X-Somleng-BillingEnabled" => "true",
         "X-Somleng-BillingMode" => "prepaid",
         "X-Somleng-BillingCategory" => "outbound_calls",
-        "X-Somleng-ProxyAddress" => ""
+        "X-Somleng-ProxyAddress" => "",
+        "X-Somleng-ExternalProfile" => "nat_gateway"
       }
     )
   end
@@ -102,7 +104,7 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      match("sofia/nat_gateway/016701721@27.109.112.141"), hash_including(from: "023238265")
+      match("sofia/uac_internal/016701721@27.109.112.141"), hash_including(from: "023238265")
     )
   end
 
@@ -124,7 +126,10 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      match("sofia/test/85516701721@27.109.112.141"), any_args
+      match("sofia/uac_internal/85516701721@27.109.112.141"),
+      hash_including(
+        headers: hash_including("X-Somleng-ExternalProfile" => "test")
+      )
     )
   end
 
@@ -146,7 +151,7 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      %r{sofia/nat_gateway/\+85516701721@.+}, any_args
+      %r{sofia/uac_internal/\+85516701721@.+}, any_args
     )
   end
 

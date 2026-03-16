@@ -4,34 +4,37 @@
 -->
 
 <!-- Generic -->
-<X-PRE-PROCESS cmd="set" data="log_directory=/var/log/freeswitch"/>
+<X-PRE-PROCESS cmd="set" data="log_directory=/var/log/freeswitch" />
 
 <!-- External SIP Profiles -->
-<X-PRE-PROCESS cmd="set" data="ext_profile_nat_gateway_sip_port=5060"/>
-<X-PRE-PROCESS cmd="exec-set" data="ext_profile_nat_gateway_ip=hostname -i"/>
+<X-PRE-PROCESS cmd="set" data="ext_profile_nat_gateway_sip_port=5060" />
+<X-PRE-PROCESS cmd="exec-set" data="ext_profile_nat_gateway_ip=hostname -i" />
 
-<X-PRE-PROCESS cmd="set" data="ext_profile_uas_nat_instance_sip_port=5080"/>
-<X-PRE-PROCESS cmd="set" data="ext_profile_uac_nat_instance_sip_port=5081"/>
-<X-PRE-PROCESS cmd="exec-set" data="ext_profile_nat_instance_ip=hostname -i"/>
+<X-PRE-PROCESS cmd="set" data="ext_profile_uas_nat_instance_sip_port=5080" />
+<X-PRE-PROCESS cmd="set" data="ext_profile_uac_nat_instance_sip_port=5081" />
+<X-PRE-PROCESS cmd="exec-set" data="ext_profile_nat_instance_ip=hostname -i" />
+
+<!-- Internal SIP Profiles -->
+<X-PRE-PROCESS cmd="set" data="internal_profile_uac_sip_port=5061" />
 
 <!-- mod_json_cdr -->
-<X-PRE-PROCESS cmd="set" data="mod_json_cdr_url=https://www.example.com/path"/>
-<X-PRE-PROCESS cmd="set" data="mod_json_cdr_password=password"/>
+<X-PRE-PROCESS cmd="set" data="mod_json_cdr_url=https://www.example.com/path" />
+<X-PRE-PROCESS cmd="set" data="mod_json_cdr_password=password" />
 
 <!-- mod_rayo -->
-<X-PRE-PROCESS cmd="set" data="mod_rayo_port=5222"/>
-<X-PRE-PROCESS cmd="set" data="mod_rayo_password=secret"/>
-<X-PRE-PROCESS cmd="set" data="mod_rayo_max_idle_secs=300"/>
+<X-PRE-PROCESS cmd="set" data="mod_rayo_port=5222" />
+<X-PRE-PROCESS cmd="set" data="mod_rayo_password=secret" />
+<X-PRE-PROCESS cmd="set" data="mod_rayo_max_idle_secs=300" />
 
 <!-- mod_event_socket -->
-<X-PRE-PROCESS cmd="set" data="event_socket_port=8021"/>
-<X-PRE-PROCESS cmd="set" data="event_socket_password=secret"/>
+<X-PRE-PROCESS cmd="set" data="event_socket_port=8021" />
+<X-PRE-PROCESS cmd="set" data="event_socket_password=secret" />
 
 <!-- mod_http_cache -->
-<X-PRE-PROCESS cmd="set" data="recordings_bucket_access_key_id=xyz"/>
-<X-PRE-PROCESS cmd="set" data="recordings_bucket_secret_access_key=secret"/>
-<X-PRE-PROCESS cmd="set" data="recordings_bucket_name=recording"/>
-<X-PRE-PROCESS cmd="set" data="recordings_bucket_region=ap-southeast-1"/>
+<X-PRE-PROCESS cmd="set" data="recordings_bucket_access_key_id=xyz" />
+<X-PRE-PROCESS cmd="set" data="recordings_bucket_secret_access_key=secret" />
+<X-PRE-PROCESS cmd="set" data="recordings_bucket_name=recording" />
+<X-PRE-PROCESS cmd="set" data="recordings_bucket_region=ap-southeast-1" />
 
 <!-- logging -->
-<X-PRE-PROCESS cmd="set" data="log_level=info"/>
+<X-PRE-PROCESS cmd="set" data="log_level=info" />

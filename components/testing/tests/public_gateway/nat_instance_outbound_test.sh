@@ -35,7 +35,7 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
   "default_tts_voice": "Basic.Kal",
   "call_direction": "outbound",
   "routing_parameters": {
-    "address": "$uas",
+    "address": null,
     "destination": "85512334667",
     "dial_string_prefix": null,
     "plus_prefix": false,

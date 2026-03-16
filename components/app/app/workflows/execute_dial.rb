@@ -46,7 +46,8 @@ class ExecuteDial < ExecuteTwiMLVerb
           billing_enabled: phone_call.billing_enabled,
           billing_mode: phone_call.billing_mode,
           billing_category: phone_call.billing_category,
-          proxy_address: dial_string.proxy_address
+          proxy_address: dial_string.proxy_address,
+          external_profile: dial_string.external_profile
         ).to_h
       }.compact
     end

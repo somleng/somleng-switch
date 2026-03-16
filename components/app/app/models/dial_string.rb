@@ -7,7 +7,7 @@ class DialString
   end
 
   def to_s
-    "{proxy_leg=true}sofia/#{external_profile}/#{destination_address};fs_path=#{fs_path}"
+    "{proxy_leg=true}sofia/uac_internal/#{destination_address};fs_path=#{fs_path}"
   end
 
   def format_number(...)
@@ -20,6 +20,10 @@ class DialString
     ";fs_path=sip:#{routing_parameters.proxy_address}"
   end
 
+  def external_profile
+    routing_parameters.sip_profile
+  end
+
   private
 
   def routing_parameters
@@ -28,9 +32,5 @@ class DialString
 
   def destination_address
     routing_parameters.destination_address
-  end
-
-  def external_profile
-    routing_parameters.sip_profile
   end
 end

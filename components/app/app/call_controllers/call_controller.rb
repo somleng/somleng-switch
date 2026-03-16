@@ -62,7 +62,8 @@ class CallController < Adhearsion::CallController
         billing_enabled: call.variables.fetch("variable_somleng_billing_enabled"),
         billing_mode: call.variables.fetch("variable_somleng_billing_mode"),
         billing_category: call.variables.fetch("variable_somleng_billing_category"),
-        proxy_address: nil
+        proxy_address: nil,
+        external_profile: nil
       )
     )
   end

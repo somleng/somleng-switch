@@ -29,7 +29,8 @@ module CallControllerHelpers
         billing_enabled: false,
         billing_mode: "prepaid",
         billing_category: "outbound_calls",
-        proxy_address: nil
+        proxy_address: nil,
+        external_profile: nil
       ),
       **options
     )

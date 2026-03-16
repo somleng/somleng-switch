@@ -10,7 +10,7 @@ RSpec.describe DialString do
         )
       )
 
-      expect(dial_string.to_s).to eq("{proxy_leg=true}sofia/nat_gateway/855716100987@sip.example.com;fs_path=sip:localhost:5060")
+      expect(dial_string.to_s).to eq("{proxy_leg=true}sofia/uac_internal/855716100987@sip.example.com;fs_path=sip:localhost:5060")
     end
 
     it "sets channels variables" do
@@ -22,7 +22,7 @@ RSpec.describe DialString do
     it "uses the default profile" do
       dial_string = DialString.new(build_options(address: "1234@192.168.1.1"))
 
-      expect(dial_string.to_s).to match(%r{sofia/nat_gateway})
+      expect(dial_string.to_s).to match(%r{sofia/uac_internal})
     end
 
     it "supports different profiles" do
@@ -44,7 +44,7 @@ RSpec.describe DialString do
         )
       )
 
-      expect(dial_string.to_s).to match(%r{sofia/nat_gateway/855716100987@sip.example.com})
+      expect(dial_string.to_s).to match(%r{sofia/uac_internal/855716100987@sip.example.com})
     end
 
     it "builds a dial string with a plus prefix" do
@@ -60,7 +60,7 @@ RSpec.describe DialString do
         )
       )
 
-      expect(dial_string.to_s).to match(%r{sofia/nat_gateway/\+1234855716100987@sip.example.com})
+      expect(dial_string.to_s).to match(%r{sofia/uac_internal/\+1234855716100987@sip.example.com})
     end
 
     it "builds a dial string for national dialing for countries with a trunk prefix" do
@@ -76,7 +76,7 @@ RSpec.describe DialString do
         )
       )
 
-      expect(dial_string.to_s).to match(%r{sofia/nat_gateway/0716100987@sip.example.com})
+      expect(dial_string.to_s).to match(%r{sofia/uac_internal/0716100987@sip.example.com})
     end
 
     it "builds a dial string for national dialing for countries without a trunk prefix" do
@@ -92,7 +92,7 @@ RSpec.describe DialString do
         )
       )
 
-      expect(dial_string.to_s).to match(%r{sofia/nat_gateway/6505130514@sip.example.com})
+      expect(dial_string.to_s).to match(%r{sofia/uac_internal/6505130514@sip.example.com})
     end
 
     it "build a client gateway dial string" do
@@ -118,7 +118,7 @@ RSpec.describe DialString do
         )
       )
 
-      expect(dial_string.to_s).to match(%r{sofia/nat_gateway/102092960310@45.118.77.153:1619})
+      expect(dial_string.to_s).to match(%r{sofia/uac_internal/102092960310@45.118.77.153:1619})
       expect(dial_string.proxy_address).to eq(";fs_path=sip:10.10.0.20:6060")
       expect(
         fake_services_client
