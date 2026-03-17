@@ -16,7 +16,7 @@ const DEFAULT_TEST_NUMBER = {
     "<Response><Play>https://demo.twilio.com/docs/classic.mp3</Play></Response>",
   billingEnabled: false,
 };
-const FORBIDDEN_TEST_NUMBER = "4444"
+const FORBIDDEN_TEST_NUMBER = "4444";
 const TEST_NUMBERS = {
   1111: {
     twimlResponse: "<Response><Say>Hello World!</Say><Hangup /></Response>",
@@ -41,7 +41,11 @@ const TEST_NUMBERS = {
   5555: {
     twimlResponse: "<Response><Dial>85510551006</Dial></Response>",
     billingEnabled: true,
-  }
+  },
+  6666: {
+    twimlResponse: "<Response><Reject /></Response>",
+    billingEnabled: true,
+  },
 };
 
 class AuthenticationError extends Error {
@@ -188,31 +192,29 @@ const handleOutboundPhoneCalls = async (req, res) => {
   const { parent_call_sid, destinations } = data;
 
   const response = {
-    phone_calls: destinations.map((to) => (
-      {
-        sid: crypto.randomUUID(),
-        parent_call_sid,
-        account_sid: ACCOUNT_SID,
-        carrier_sid: CARRIER_SID,
-        from: "1234",
-        call_direction: "outbound",
-        routing_parameters: {
-          address: null,
-          destination: to,
-          dial_string_prefix: null,
-          plus_prefix: false,
-          national_dialing: false,
-          host: "testing",
-          username: null,
-          sip_profile: "nat_gateway",
-        },
-        billing_parameters: {
-          enabled: true,
-          category: "outbound_calls",
-          billing_mode: "prepaid",
-        },
-      }
-    )),
+    phone_calls: destinations.map((to) => ({
+      sid: crypto.randomUUID(),
+      parent_call_sid,
+      account_sid: ACCOUNT_SID,
+      carrier_sid: CARRIER_SID,
+      from: "1234",
+      call_direction: "outbound",
+      routing_parameters: {
+        address: null,
+        destination: to,
+        dial_string_prefix: null,
+        plus_prefix: false,
+        national_dialing: false,
+        host: "testing",
+        username: null,
+        sip_profile: "nat_gateway",
+      },
+      billing_parameters: {
+        enabled: true,
+        category: "outbound_calls",
+        billing_mode: "prepaid",
+      },
+    })),
   };
 
   res.end(JSON.stringify(response));

@@ -1,4 +1,8 @@
 SIPHeaders = Data.define(:call_sid, :account_sid, :carrier_sid, :call_direction, :billing_enabled, :billing_mode, :billing_category, :proxy_address, :external_profile) do
+  def billing_enabled?
+    billing_enabled.to_s == "true"
+  end
+
   def to_h
     {
       "X-Somleng-CallSid" => call_sid,
@@ -13,7 +17,7 @@ SIPHeaders = Data.define(:call_sid, :account_sid, :carrier_sid, :call_direction,
     }.transform_values(&:to_s)
   end
 
-  def billing_enabled?
-    billing_enabled.to_s == "true"
+  def response_headers
+    to_h.slice("X-Somleng-CallSid")
   end
 end

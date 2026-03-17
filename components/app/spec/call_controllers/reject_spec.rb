@@ -18,7 +18,8 @@ RSpec.describe CallController, type: :call_controller do
     # Any other response will result in an answered call and your account will be billed.
 
     it "rejects the call" do
-      controller = build_controller(stub_voice_commands: :reject)
+      call_sid = SecureRandom.uuid
+      controller = build_controller(call_properties: { call_sid: }, stub_voice_commands: :reject)
       stub_twiml_request(controller, response: <<~TWIML)
         <?xml version="1.0" encoding="UTF-8" ?>
         <Response>
@@ -28,7 +29,9 @@ RSpec.describe CallController, type: :call_controller do
 
       controller.run
 
-      expect(controller).to have_received(:reject).with(:decline, any_args)
+      expect(controller).to have_received(:reject).with(
+        :decline, { "X-Somleng-CallSid" => call_sid }
+      )
     end
   end
 
@@ -48,7 +51,7 @@ RSpec.describe CallController, type: :call_controller do
       # If this attribute's value isn't set, the default is "rejected."
 
       it "rejects the call with a reason" do
-        controller = build_controller(stub_voice_commands: :play_audio)
+        controller = build_controller(stub_voice_commands: :reject)
         stub_twiml_request(controller, response: <<~TWIML)
           <?xml version="1.0" encoding="UTF-8" ?>
           <Response>
