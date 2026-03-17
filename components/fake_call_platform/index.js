@@ -16,6 +16,7 @@ const DEFAULT_TEST_NUMBER = {
     "<Response><Play>https://demo.twilio.com/docs/classic.mp3</Play></Response>",
   billingEnabled: false,
 };
+const FORBIDDEN_TEST_NUMBER = "4444"
 const TEST_NUMBERS = {
   1111: {
     twimlResponse: "<Response><Say>Hello World!</Say><Hangup /></Response>",
@@ -144,6 +145,12 @@ const authenticate = (req) => {
 const handleInboundPhoneCalls = async (req, res) => {
   const data = await parseBody(req);
   const { to, from } = InboundPhoneCallsSchema.parse(data);
+
+  if (to === FORBIDDEN_TEST_NUMBER) {
+    res.statusCode = 422;
+    res.end(JSON.stringify({ error: "Unprocessable Entity" }));
+    return;
+  }
 
   const testNumber =
     to in TEST_NUMBERS ? TEST_NUMBERS[to] : DEFAULT_TEST_NUMBER;

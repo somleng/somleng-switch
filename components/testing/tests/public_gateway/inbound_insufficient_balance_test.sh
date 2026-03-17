@@ -6,10 +6,13 @@ current_dir=$(dirname "$(readlink -f "$0")")
 source $current_dir/support/test_helpers.sh
 source $current_dir/../support/test_helpers.sh
 
-scenario=$current_dir/../../scenarios/smart_inbound.xml
+scenario=$current_dir/../../scenarios/inbound_forbidden.xml
 
-log_file="smart_inbound_*_messages.log"
+log_file="inbound_forbidden_*_messages.log"
 rm -f $log_file
+
+cdr_server_log="cdr-server.log"
+cat /dev/null > $cdr_server_log
 
 media_server="$(dig +short freeswitch)"
 public_gateway="$(dig +short public_gateway)"
@@ -72,7 +75,11 @@ reset_opensips_db
 
 account_response=$(rating_engine_get_account "$CARRIER_SID" "$ACCOUNT_SID")
 account_balance=$(echo "$account_response" | jq -r '.result.BalanceMap["*monetary"][0].Value')
-if [ "$account_balance" != "493" ]; then
+if [ "$account_balance" != "5" ]; then
   echo "Account balance is ${account_balance}"
   exit 1
+fi
+
+if ! assert_in_file "$log_file" "403 Forbidden"; then
+	exit 1
 fi

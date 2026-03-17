@@ -114,6 +114,13 @@ if [ -s "$log_file" ]; then
 	exit 1
 fi
 
-if ! assert_in_file $cdr_server_log "sip%3A403"; then
+if ! assert_in_file $cdr_server_log "403%20Forbidden"; then
+  exit 1
+fi
+
+account_response=$(rating_engine_get_account "$CARRIER_SID" "$ACCOUNT_SID")
+account_balance=$(echo "$account_response" | jq -r '.result.BalanceMap["*monetary"][0].Value')
+if [ "$account_balance" != "5" ]; then
+  echo "Account balance is ${account_balance}"
   exit 1
 fi

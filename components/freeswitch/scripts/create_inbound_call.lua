@@ -1,4 +1,4 @@
-freeswitch.consoleLog("info", "Creating inbound call")
+freeswitch.consoleLog("DEBUG", "Creating inbound call")
 
 local json = require "cjson"
 local mime = require("mime")
@@ -37,12 +37,20 @@ local credentials = mime.b64(call_platform_username .. ":" .. call_platform_pass
 local headers = "append_headers 'Authorization: Basic " .. credentials .. "'"
 
 local body = json.encode(payload)
-local params = call_platform_host .. "/services/inbound_phone_calls " .. headers .. " post " .. body
+local params = call_platform_host .. "/services/inbound_phone_calls " .. headers .. " post " .. body .. " json"
 
-local response = api:execute("curl", params)
-local data = json.decode(response)
+local raw_response = api:execute("curl", params)
 
-freeswitch.consoleLog("INFO", json.encode(data) .. "\n")
+freeswitch.consoleLog("DEBUG", raw_response .. "\n")
+local response = json.decode(raw_response)
+
+if not string.match(response.status_code, "^2") then
+  session:execute("respond", "403 Forbidden")
+  session:execute("hangup")
+  return
+end
+
+local data = json.decode(response.body)
 
 session:setVariable("somleng_voice_url", safe_string(data.voice_url))
 session:setVariable("somleng_voice_method", safe_string(data.voice_method))
