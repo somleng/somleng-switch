@@ -263,6 +263,12 @@ rating_engine_get_account () {
   echo "$response"
 }
 
+rating_engine_get_cdrs () {
+  response=$(rating_engine_api "APIerSv2.GetCDRs" "[]" "true")
+
+  echo "$response"
+}
+
 rating_engine_api () {
   local method="$1"
   local params="$2"

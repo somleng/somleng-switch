@@ -76,3 +76,10 @@ if [ "$account_balance" != "493" ]; then
   echo "Account balance is ${account_balance}"
   exit 1
 fi
+
+cdrs_response=$(rating_engine_get_cdrs)
+cdr_call_sid=$(echo "$cdrs_response" | jq -r '.result[0].ExtraFields["variable_sip_rh_X-Somleng-CallSid"]')
+if [ -z "$cdr_call_sid" ] || [ "$cdr_call_sid" = "null" ]; then
+  echo "CDR: ${cdrs_response}"
+  exit 1
+fi
