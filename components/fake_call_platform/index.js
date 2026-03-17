@@ -106,7 +106,11 @@ const server = createServer(async (req, res) => {
         res.end(JSON.stringify({ error: "Not Found" }));
     }
   } catch (error) {
-    console.error(error);
+    const data = await parseBody(req)
+
+    console.error("Request data:", data);
+    console.error("Error:", error);
+
     if (error instanceof AuthenticationError) {
       res.statusCode = 401;
       res.end(JSON.stringify({ error: "Unauthorized" }));

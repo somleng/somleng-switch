@@ -28,13 +28,16 @@ output=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:$SWITCH_PORT/
   "voice_url": null,
   "voice_method": null,
   "twiml": "<Response><Connect><Stream url=\"ws://$uas:$WS_SERVER_PORT\" /></Connect></Response>",
+  "carrier_sid": "sample-carrier-sid",
   "sid": "$call_sid",
   "account_sid": "sample-account-sid",
   "account_auth_token": "sample-auth-token",
   "direction": "outbound-api",
   "api_version": "2010-04-01",
   "default_tts_voice": "Basic.Kal",
+  "call_direction": "outbound",
   "routing_parameters": {
+    "address": null,
     "destination": "85512334667",
     "dial_string_prefix": null,
     "plus_prefix": false,
@@ -42,6 +45,11 @@ output=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:$SWITCH_PORT/
     "host": "$uas",
     "username": null,
     "sip_profile": "nat_gateway"
+  },
+  "billing_parameters": {
+    "enabled": false,
+    "billing_mode": "prepaid",
+    "category": "outbound_calls"
   }
 }
 EOF

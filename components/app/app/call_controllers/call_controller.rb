@@ -114,8 +114,7 @@ class CallController < Adhearsion::CallController
       call_properties:,
       phone_call: call,
       call_platform_client:,
-      logger:,
-      stub_call_platform_responses: CallPlatform.configuration.stub_responses
+      logger:
     )
   end
 
