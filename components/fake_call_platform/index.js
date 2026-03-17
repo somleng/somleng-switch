@@ -38,6 +38,10 @@ const TEST_NUMBERS = {
     twimlResponse: "<Response><Say>Hello World!</Say><Hangup /></Response>",
     billingEnabled: true,
   },
+  5555: {
+    twimlResponse: "<Response><Dial>85510551006</Dial></Response>",
+    billingEnabled: true,
+  }
 };
 
 class AuthenticationError extends Error {
@@ -106,9 +110,6 @@ const server = createServer(async (req, res) => {
         res.end(JSON.stringify({ error: "Not Found" }));
     }
   } catch (error) {
-    const data = await parseBody(req)
-
-    console.error("Request data:", data);
     console.error("Error:", error);
 
     if (error instanceof AuthenticationError) {
@@ -183,10 +184,11 @@ const handleInboundPhoneCalls = async (req, res) => {
 };
 
 const handleOutboundPhoneCalls = async (req, res) => {
-  const { parent_call_sid } = await parseBody(req);
+  const data = await parseBody(req);
+  const { parent_call_sid, destinations } = data;
 
   const response = {
-    phone_calls: [
+    phone_calls: destinations.map((to) => (
       {
         sid: crypto.randomUUID(),
         parent_call_sid,
@@ -196,21 +198,21 @@ const handleOutboundPhoneCalls = async (req, res) => {
         call_direction: "outbound",
         routing_parameters: {
           address: null,
-          destination: "8551055100678",
+          destination: to,
           dial_string_prefix: null,
           plus_prefix: false,
           national_dialing: false,
-          host: "27.109.112.141",
+          host: "testing",
           username: null,
           sip_profile: "nat_gateway",
         },
         billing_parameters: {
-          enabled: false,
+          enabled: true,
           category: "outbound_calls",
           billing_mode: "prepaid",
         },
-      },
-    ],
+      }
+    )),
   };
 
   res.end(JSON.stringify(response));
