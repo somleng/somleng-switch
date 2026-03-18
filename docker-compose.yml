@@ -29,6 +29,8 @@ services:
       DATABASE_PORT: 5432
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    profiles:
+      - gateway-bootstrap
 
   public_gateway:
     build:

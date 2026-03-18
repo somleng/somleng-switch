@@ -21,3 +21,10 @@ jobs:
     uses: ./.github/workflows/integration_tests.yml
     needs: [s3_mpeg, services]
     secrets: inherit
+
+  deploy:
+    uses: ./.github/workflows/s3_mpeg.yml
+    with:
+      context: deploy
+    needs: [integration_tests]
+    secrets: inherit
