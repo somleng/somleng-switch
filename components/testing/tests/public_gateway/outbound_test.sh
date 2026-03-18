@@ -10,7 +10,6 @@ source $current_dir/../support/test_helpers.sh
 scenario=$current_dir/../../scenarios/uas.xml
 sipp_pid=$(start_sipp_server $scenario)
 
-# ensure sipp is killed when script exits
 cleanup() {
   kill "$sipp_pid" 2>/dev/null || true
 }

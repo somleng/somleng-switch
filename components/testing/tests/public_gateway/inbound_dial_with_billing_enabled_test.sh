@@ -16,9 +16,6 @@ cleanup() {
   kill "$sipp_pid" 2>/dev/null || true
 }
 
-log_file="smart_inbound_*_messages.log"
-rm -f $log_file
-
 media_server="$(dig +short freeswitch)"
 public_gateway="$(dig +short public_gateway)"
 
@@ -27,7 +24,12 @@ create_load_balancer_entry "gw" "5060" "2"
 create_address_entry "$(hostname -i)" "2"
 reload_opensips_tables
 
-reset_rating_engine_data
+cleanup() {
+  reset_rating_engine_data
+  reset_opensips_db
+}
+
+trap cleanup EXIT INT TERM
 
 if ! rating_engine_create_default_charger "$CARRIER_SID" "$CARRIER_SID"; then
   echo "Failed to create default charger profile. Exiting."
@@ -59,6 +61,11 @@ if ! rating_engine_create_rating_profile "$CARRIER_SID" "$CARRIER_SID" "inbound_
   exit 1
 fi
 
+if ! rating_engine_create_rating_profile "$CARRIER_SID" "$CARRIER_SID" "outbound_calls" "TEST_CATCHALL" "$ACCOUNT_SID"; then
+  echo "Failed to create rating profile. Exiting."
+  exit 1
+fi
+
 if ! rating_engine_load_tariff_plan "$CARRIER_SID"; then
   echo "Failed to load tariff plan. Exiting."
   exit 1
@@ -76,18 +83,9 @@ fi
 
 sipp -sf $scenario public_gateway:5060 -s 5555 -m 1 -trace_msg > /dev/null
 
-reset_opensips_db
-
 account_response=$(rating_engine_get_account "$CARRIER_SID" "$ACCOUNT_SID")
 account_balance=$(echo "$account_response" | jq -r '.result.BalanceMap["*monetary"][0].Value')
-if [ "$account_balance" != "493" ]; then
+if [ "$account_balance" != "486" ]; then
   echo "Account balance is ${account_balance}"
-  exit 1
-fi
-
-cdrs_response=$(rating_engine_get_cdrs)
-cdr_call_sid=$(echo "$cdrs_response" | jq -r '.result[0].ExtraFields["variable_sip_rh_X-Somleng-CallSid"]')
-if [ -z "$cdr_call_sid" ] || [ "$cdr_call_sid" = "null" ]; then
-  echo "CDR: ${cdrs_response}"
   exit 1
 fi

@@ -303,11 +303,17 @@ start_sipp_server () {
   local contact_ip="${2:-$(hostname -i)}"
   local scenario_name=$(basename "$scenario" .xml)
 
-  rm -rf "${scenario_name}"_*_messages.log
+  clear_sipp_log_file "$scenario"
 
   pkill sipp || true
   sipp -sf "$scenario" -key contact_ip "$contact_ip" -trace_msg > /dev/null 2>&1 &
   echo $!
+}
+
+clear_sipp_log_file () {
+  local scenario_name="$1"
+
+  rm -rf "${scenario_name}"_*_messages.log
 }
 
 find_sipp_log_file () {
