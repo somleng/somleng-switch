@@ -5,8 +5,14 @@ env:
   CI: true
 
 jobs:
-  unit_tests:
+  s3_mpeg:
     uses: ./.github/workflows/s3_mpeg.yml
+    with:
+      context: unit-tests
+    secrets: inherit
+
+  services:
+    uses: ./.github/workflows/services.yml
     with:
       context: unit-tests
     secrets: inherit

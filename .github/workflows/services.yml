@@ -1,12 +1,18 @@
-on: push
 name: Services
+on:
+  workflow_call:
+    inputs:
+      context:
+        required: true
+        type: string
 
 env:
   CI: true
   REPOSITORY_NAME: switch-services
 
 jobs:
-  build:
+  unit-tests:
+    if: ${{ inputs.context == 'unit-tests' }}
     name: Build
     runs-on: ubuntu-latest
     outputs:
@@ -21,7 +27,6 @@ jobs:
       PGHOST: localhost
       PGUSER: postgres
       RAILS_ENV: test
-      CI: true
 
     services:
       postgres:
@@ -54,6 +59,14 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
+  set-deployment-matrix:
+    name: Set Deployment Matrix
+    runs-on: ubuntu-latest
+    if: ${{ inputs.context == 'deploy' }}
+    outputs:
+      matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
+      matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
+    steps:
       - name: Set Deployment Matrix
         id: set-deployment-matrix
         run: |
@@ -84,16 +97,16 @@ jobs:
   build-packages:
     name: Build Packages
     runs-on: ubuntu-24.04-arm
-    if: needs.build.outputs.matrixLength > 0
+    if: needs.set-deployment-matrix.outputs.matrixLength > 0
     permissions:
       contents: read
       packages: write
 
     strategy:
-      matrix: ${{fromJson(needs.build.outputs.matrix)}}
+      matrix: ${{fromJson(needs.set-deployment-matrix.outputs.matrix)}}
 
     needs:
-      - build
+      - set-deployment-matrix
 
     steps:
       - name: Checkout
@@ -142,10 +155,10 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     needs:
-      - build
+      - set-deployment-matrix
       - build-packages
 
-    if: needs.build.outputs.matrixLength > 0
+    if: needs.set-deployment-matrix.outputs.matrixLength > 0
     defaults:
       run:
         working-directory: components/services
@@ -156,7 +169,7 @@ jobs:
       AWS_DEFAULT_REGION: ap-southeast-1
 
     strategy:
-      matrix: ${{fromJson(needs.build.outputs.matrix)}}
+      matrix: ${{fromJson(needs.set-deployment-matrix.outputs.matrix)}}
 
     steps:
       - name: Checkout
