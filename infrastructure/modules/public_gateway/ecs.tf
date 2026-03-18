@@ -92,8 +92,11 @@ resource "aws_ecs_task_definition" "this" {
           value = tostring(var.sip_alternative_port)
         },
         {
-          name  = "SIP_ADVERTISED_IP",
-          value = tostring(var.global_accelerator.ip_sets[0].ip_addresses[0])
+          name = "SIP_ADVERTISED_IP",
+          value = coalesce(
+            try(var.global_accelerator.ip_sets[0].ip_addresses[0], null),
+            var.load_balancer.eips[0].public_ip,
+          )
         }
       ]
     },
@@ -128,7 +131,6 @@ resource "aws_ecs_task_definition" "this" {
 }
 
 resource "aws_ecs_service" "public_gateway" {
-  count           = var.min_tasks > 0 ? 1 : 0
   name            = aws_ecs_task_definition.this.family
   cluster         = var.ecs_cluster.id
   task_definition = aws_ecs_task_definition.this.arn
