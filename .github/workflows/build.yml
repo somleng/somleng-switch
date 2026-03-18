@@ -6,11 +6,7 @@ env:
 
 jobs:
   unit_tests:
-    strategy:
-      matrix:
-        component: [s3_mpeg]
-
-    uses: ./.github/workflows/${{ matrix.component }}.yml
+    uses: ./.github/workflows/s3_mpeg.yml
     with:
       context: unit-tests
     secrets: inherit
