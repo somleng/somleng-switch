@@ -10,6 +10,7 @@ module "public_gateway" {
 
   app_image       = data.terraform_remote_state.core.outputs.public_gateway_ecr_repository.this.repository_url
   scheduler_image = data.terraform_remote_state.core.outputs.gateway_scheduler_ecr_repository.this.repository_url
+  load_balancer   = data.terraform_remote_state.core.outputs.public_gateway_nlb
 
   sip_port             = var.sip_port
   sip_alternative_port = var.sip_alternative_port
@@ -21,5 +22,4 @@ module "public_gateway" {
   db_host               = data.terraform_remote_state.core_infrastructure.outputs.db.this.endpoint
   db_port               = data.terraform_remote_state.core_infrastructure.outputs.db.this.port
   global_accelerator    = data.terraform_remote_state.core_infrastructure.outputs.global_accelerator
-  logs_bucket           = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.logs_bucket
 }
