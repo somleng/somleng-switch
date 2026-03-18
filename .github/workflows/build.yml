@@ -16,3 +16,8 @@ jobs:
     with:
       context: unit-tests
     secrets: inherit
+
+  integration_tests:
+    uses: ./.github/workflows/integration_tests.yml
+    needs: [s3_mpeg, services]
+    secrets: inherit

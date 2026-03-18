@@ -1,10 +1,5 @@
 name: Integration Tests
-on:
-  workflow_call:
-    inputs:
-      context:
-        required: true
-        type: string
+on: workflow_call
 
 jobs:
   build:
@@ -160,12 +155,13 @@ jobs:
 
       - name: Run docker compose
         run: |
-          docker compose run -e DATABASE_NAME=opensips_${{ inputs.context }}_test gateway-bootstrap create_db ${{ inputs.context }}
-          docker compose up --wait -d ${{ inputs.context }} media_proxy freeswitch freeswitch_event_logger switch-app rating-engine redis testing fake_call_platform
+          docker compose run -e DATABASE_NAME=opensips_public_gateway_test gateway-bootstrap create_db public_gateway
+          docker compose run -e DATABASE_NAME=opensips_client_gateway_test gateway-bootstrap create_db client_gateway
+          docker compose up --wait -d
 
-      - name: Run ${{ inputs.context }} Tests
+      - name: Run Integration Tests
         run: |
-          docker compose exec testing ./tests.sh ./tests/${{ inputs.context }}
+          docker compose exec testing ./tests.sh
 
       - name: Fetch logs from container
         if: failure()
