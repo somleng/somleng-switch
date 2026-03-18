@@ -13,12 +13,36 @@ jobs:
     uses: ./.github/workflows/services.yml
     secrets: inherit
 
+  switch:
+    uses: ./.github/workflows/switch.yml
+    secrets: inherit
+
   integration_tests:
     uses: ./.github/workflows/integration_tests.yml
     needs: [s3_mpeg, services]
     secrets: inherit
 
-  deploy:
+  deploy_s3_mpeg:
     uses: ./.github/workflows/s3_mpeg_deploy.yml
-    needs: [integration_tests]
+    needs: integration_tests
+    secrets: inherit
+
+  deploy_services:
+    uses: ./.github/workflows/services_deploy.yml
+    needs: integration_tests
+    secrets: inherit
+
+  deploy_switch:
+    uses: ./.github/workflows/switch_deploy.yml
+    needs: integration_tests
+    secrets: inherit
+
+  deploy_public_gateway:
+    uses: ./.github/workflows/public_gateway_deploy.yml
+    needs: integration_tests
+    secrets: inherit
+
+  deploy_client_gateway:
+    uses: ./.github/workflows/client_gateway_deploy.yml
+    needs: integration_tests
     secrets: inherit

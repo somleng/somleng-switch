@@ -1,4 +1,4 @@
-on: push
+on: workflow_call
 name: Public Gateway
 
 env:
@@ -7,14 +7,8 @@ env:
   GATEWAY_SCHEDULER_REPOSITORY_NAME: gateway-scheduler
 
 jobs:
-  integration_tests:
-    uses: ./.github/workflows/integration_tests.yml
-    with:
-      context: public_gateway
-    secrets: inherit
-
-  build:
-    name: Build
+  set-deployment-matrix:
+    name: Set Deployment Matrix
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
@@ -58,13 +52,12 @@ jobs:
     name: Build Packages
     runs-on: ubuntu-latest
     needs:
-      - integration_tests
-      - build
+      - set-deployment-matrix
 
-    if: needs.build.outputs.matrixLength > 0
+    if: needs.set-deployment-matrix.outputs.matrixLength > 0
 
     strategy:
-      matrix: ${{fromJson(needs.build.outputs.matrix)}}
+      matrix: ${{fromJson(needs.set-deployment-matrix.outputs.matrix)}}
 
     steps:
       - name: Checkout
@@ -113,13 +106,13 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     needs:
-      - build
+      - set-deployment-matrix
       - build_packages
 
-    if: needs.build.outputs.deploy == 'true'
+    if: needs.set-deployment-matrix.outputs.deploy == 'true'
 
     strategy:
-      matrix: ${{fromJson(needs.build.outputs.matrix)}}
+      matrix: ${{fromJson(needs.set-deployment-matrix.outputs.matrix)}}
 
     steps:
       - name: Configure AWS credentials
