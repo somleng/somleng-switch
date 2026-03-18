@@ -64,6 +64,29 @@ module SomlengAdhearsion
             private?: true
           )
         end
+
+        context "when the request is invalid" do
+          around do |example|
+            original_raise_errors = Application.raise_errors
+            original_dump_errors = Application.dump_errors
+            Application.set :raise_errors, false
+            Application.set :dump_errors, false
+            example.run
+            Application.set :raise_errors, original_raise_errors
+            Application.set :dump_errors, original_dump_errors
+          end
+
+          it "returns a 500 error" do
+            basic_authorize "adhearsion", "password"
+            post(
+              "/calls",
+              "invalid-json",
+            )
+
+            expect(last_response.status).to eq(500)
+            expect(last_response.body).to eq("Internal Server Error")
+          end
+        end
       end
 
       describe "DELETE /calls/:id" do

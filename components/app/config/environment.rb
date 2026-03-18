@@ -11,7 +11,6 @@ $LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
 require "call_platform"
 require "services"
 require "rayo"
-require "cgrates"
 
 require_relative "app_settings"
 Dir["#{__dir__}/../app/**/*.rb"].each { |f| require f }

@@ -311,7 +311,8 @@ start_sipp_server () {
 }
 
 clear_sipp_log_file () {
-  local scenario_name="$1"
+  local scenario="$1"
+  local scenario_name=$(basename "$scenario" .xml)
 
   rm -rf "${scenario_name}"_*_messages.log
 }
