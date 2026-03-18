@@ -7,14 +7,10 @@ env:
 jobs:
   s3_mpeg:
     uses: ./.github/workflows/s3_mpeg.yml
-    with:
-      context: unit-tests
     secrets: inherit
 
   services:
     uses: ./.github/workflows/services.yml
-    with:
-      context: unit-tests
     secrets: inherit
 
   integration_tests:
@@ -23,8 +19,6 @@ jobs:
     secrets: inherit
 
   deploy:
-    uses: ./.github/workflows/s3_mpeg.yml
-    with:
-      context: deploy
+    uses: ./.github/workflows/s3_mpeg_deploy.yml
     needs: [integration_tests]
     secrets: inherit

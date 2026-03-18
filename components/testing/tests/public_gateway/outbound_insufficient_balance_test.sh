@@ -114,7 +114,7 @@ if [ -s "$log_file" ]; then
 	exit 1
 fi
 
-if ! assert_in_file $cdr_server_log "403%20Forbidden"; then
+if ! assert_in_file $cdr_server_log "sip%3A403"; then
   exit 1
 fi
 
