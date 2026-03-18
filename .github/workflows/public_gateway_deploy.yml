@@ -28,8 +28,7 @@ jobs:
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "public-gateway-staging",
-              "ecs_cluster": "somleng-switch-staging",
-              "deploy": false
+              "ecs_cluster": "somleng-switch-staging"
             },
             {
               "identifier": "public-gateway",
@@ -37,8 +36,7 @@ jobs:
               "friendly_image_tag": "latest",
               "image_tag": "prod-${{ github.sha }}",
               "ecs_service": "public-gateway",
-              "ecs_cluster": "somleng-switch",
-              "deploy": true
+              "ecs_cluster": "somleng-switch"
             }
           ]
           EOF
@@ -46,7 +44,6 @@ jobs:
           matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
           echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
           echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
-          echo "deploy=$(echo $matrix | jq '.[0].deploy')" >> $GITHUB_OUTPUT
 
   build_packages:
     name: Build Packages
@@ -109,7 +106,7 @@ jobs:
       - set-deployment-matrix
       - build_packages
 
-    if: needs.set-deployment-matrix.outputs.deploy == 'true'
+    if: needs.set-deployment-matrix.outputs.matrixLength > 0
 
     strategy:
       matrix: ${{fromJson(needs.set-deployment-matrix.outputs.matrix)}}
