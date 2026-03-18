@@ -1,0 +1,16 @@
+name: Build
+on: push
+
+env:
+  CI: true
+
+jobs:
+  unit_tests:
+    strategy:
+      matrix:
+        component: [s3_mpeg]
+
+    uses: ./.github/workflows/${{ matrix.component }}.yml
+    with:
+      context: unit-tests
+    secrets: inherit
