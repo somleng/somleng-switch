@@ -15,9 +15,6 @@ source $current_dir/../support/test_helpers.sh
 scenario=$current_dir/../../scenarios/gateway_down.xml
 freeswitch_uas_scenario=$current_dir/../../scenarios/freeswitch_timeout.xml
 
-log_file="gateway_down_*_messages.log"
-rm -f $log_file
-
 public_gateway="$(dig +short public_gateway)"
 
 reset_opensips_db
@@ -25,6 +22,7 @@ create_load_balancer_entry "gw" "5061" "1" "$(hostname -i)"
 create_address_entry "$(hostname -i)" "1"
 reload_opensips_tables
 
+clear_sipp_log_file "$scenario"
 nohup sipp -sf $freeswitch_uas_scenario -p 5061 -aa -trace_msg -trace_err &
 sipp_server_pid=$!
 
@@ -33,6 +31,8 @@ sipp -sf $scenario public_gateway:5060 -s 1234 -m 1 -trace_msg -trace_err > /dev
 kill $sipp_server_pid
 
 reset_opensips_db
+
+log_file=$(find_sipp_log_file $scenario)
 
 # Assert 500 All GW are down is returned to the UAC.
 if ! assert_in_file "$log_file" "All GW are down"; then

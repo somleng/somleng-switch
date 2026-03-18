@@ -63,6 +63,7 @@ if ! rating_engine_set_balance "$CARRIER_SID" "$ACCOUNT_SID" "500"; then
   exit 1
 fi
 
+clear_sipp_log_file "$scenario"
 sipp -sf $scenario public_gateway:5060 -s 6666 -m 1 -trace_msg > /dev/null
 
 reset_opensips_db

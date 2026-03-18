@@ -8,9 +8,6 @@ source $current_dir/../support/test_helpers.sh
 
 scenario=$current_dir/../../scenarios/smart_inbound.xml
 
-log_file="smart_inbound_*_messages.log"
-rm -f $log_file
-
 media_server="$(dig +short freeswitch)"
 public_gateway="$(dig +short public_gateway)"
 
@@ -66,6 +63,7 @@ if ! rating_engine_set_balance "$CARRIER_SID" "$ACCOUNT_SID" "500"; then
   exit 1
 fi
 
+clear_sipp_log_file "$scenario"
 sipp -sf $scenario public_gateway:5060 -s 3333 -m 1 -trace_msg > /dev/null
 
 reset_opensips_db

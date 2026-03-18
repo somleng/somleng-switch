@@ -8,9 +8,6 @@ source $current_dir/../support/test_helpers.sh
 
 scenario=$current_dir/../../scenarios/inbound_forbidden.xml
 
-log_file="inbound_forbidden_*_messages.log"
-rm -f $log_file
-
 cdr_server_log="cdr-server.log"
 cat /dev/null > $cdr_server_log
 
@@ -69,9 +66,12 @@ if ! rating_engine_set_balance "$CARRIER_SID" "$ACCOUNT_SID" "5"; then
   exit 1
 fi
 
+clear_sipp_log_file "$scenario"
 sipp -sf $scenario public_gateway:5060 -s 3333 -m 1 -trace_msg > /dev/null
 
 reset_opensips_db
+
+log_file=$(find_sipp_log_file $scenario)
 
 account_response=$(rating_engine_get_account "$CARRIER_SID" "$ACCOUNT_SID")
 account_balance=$(echo "$account_response" | jq -r '.result.BalanceMap["*monetary"][0].Value')

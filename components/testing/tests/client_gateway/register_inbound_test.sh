@@ -8,9 +8,6 @@ source $current_dir/../support/test_helpers.sh
 
 scenario=$current_dir/../../scenarios/register_inbound.xml
 
-log_file="register_inbound_*_messages.log"
-rm -f $log_file
-
 reset_opensips_db
 
 uac=$(hostname -i)
@@ -23,10 +20,12 @@ create_subscriber_entry "user1" "password" "somleng.org"
 create_rtpengine_entry "udp:media_proxy:2223"
 reload_opensips_tables
 
+clear_sipp_log_file "$scenario"
 sipp -sf $scenario client_gateway:5060 -s "1234" -key username "user1" -key contact_ip "$uac" -au "user1" -ap "password" -m 1 -trace_msg > /dev/null
 
 reset_opensips_db
 
+log_file=$(find_sipp_log_file $scenario)
 if ! assert_in_file $log_file "Record-Route: <sip:$client_gateway:5060;lr;r2=on>"; then
   exit 1
 fi

@@ -35,9 +35,6 @@ source $current_dir/../support/test_helpers.sh
 scenario=$current_dir/../../scenarios/uac_connect.xml
 artifacts_dir=connect_stream_test_files
 
-log_file="uac_connect_*_messages.log"
-rm -f $log_file
-
 media_server="$(dig +short freeswitch)"
 
 reset_opensips_db
@@ -52,6 +49,7 @@ mkdir -p $artifacts_dir
 nohup tcpdump -Xvv -i eth0 -s0 -w $artifacts_dir/uac_connect.pcap &
 tcpdump_pid=$!
 
+clear_sipp_log_file "$scenario"
 sipp -sf $scenario public_gateway:5060 -key username "+855715100850" -s 2222 -m 1 -trace_msg > /dev/null
 
 reset_opensips_db
@@ -88,6 +86,7 @@ if [[ "$play_verb_audio_md5" != "$expected_audio_md5" ]]; then
 	exit 1
 fi
 
+log_file=$(find_sipp_log_file $scenario)
 # Assert correct IP in SDP
 if ! assert_in_file $log_file "c=IN IP4 $media_server"; then
 	exit 1
