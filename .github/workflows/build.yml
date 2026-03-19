@@ -19,7 +19,7 @@ jobs:
 
   integration_tests:
     uses: ./.github/workflows/integration_tests.yml
-    needs: [s3_mpeg, services]
+    needs: [switch, s3_mpeg, services]
     secrets: inherit
 
   deploy_s3_mpeg:
@@ -44,5 +44,10 @@ jobs:
 
   deploy_client_gateway:
     uses: ./.github/workflows/client_gateway_deploy.yml
+    needs: integration_tests
+    secrets: inherit
+
+  deploy_media_proxy:
+    uses: ./.github/workflows/media_proxy_deploy.yml
     needs: integration_tests
     secrets: inherit
