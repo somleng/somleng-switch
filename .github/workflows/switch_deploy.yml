@@ -4,6 +4,7 @@ name: Switch
 env:
   CI: true
   APP_REPOSITORY_NAME: switch-app
+  RATING_ENGINE_REPOSITORY_NAME: rating-engine
   WEBSERVER_REPOSITORY_NAME: switch-webserver
   FREESWITCH_REPOSITORY_NAME: freeswitch
   FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME: freeswitch-events
@@ -264,11 +265,19 @@ jobs:
           container-name: freeswitch-event-logger
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
 
+      - name: Prepare Rating Engine task definition
+        id: render-rating-engine-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-freeswitch-event-logger-task-def.outputs.task-definition }}
+          container-name: rating-engine
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.RATING_ENGINE_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+
       - name: Prepare App task definition
         id: render-app-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ steps.render-freeswitch-event-logger-task-def.outputs.task-definition }}
+          task-definition: ${{ steps.render-rating-engine-task-def.outputs.task-definition }}
           container-name: app
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.image_tag }}
 

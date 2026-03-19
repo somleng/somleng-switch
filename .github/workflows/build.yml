@@ -32,11 +32,6 @@ jobs:
     needs: integration_tests
     secrets: inherit
 
-  deploy_switch:
-    uses: ./.github/workflows/switch_deploy.yml
-    needs: integration_tests
-    secrets: inherit
-
   deploy_public_gateway:
     uses: ./.github/workflows/public_gateway_deploy.yml
     needs: integration_tests
@@ -50,4 +45,14 @@ jobs:
   deploy_media_proxy:
     uses: ./.github/workflows/media_proxy_deploy.yml
     needs: integration_tests
+    secrets: inherit
+
+  deploy_rating_engine:
+    uses: ./.github/workflows/rating_engine_deploy.yml
+    needs: integration_tests
+    secrets: inherit
+
+  deploy_switch:
+    uses: ./.github/workflows/switch_deploy.yml
+    needs: [integration_tests, deploy_rating_engine]
     secrets: inherit

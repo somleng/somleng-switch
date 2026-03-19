@@ -54,15 +54,11 @@ resource "aws_appautoscaling_policy" "freeswitch_session_count" {
   }
 }
 
-# https://github.com/hashicorp/terraform-provider-aws/issues/40780
-# Note that we need to also manually set the value
-# Enable metric filter on transformed logs = true
-# using the AWS console
-
 resource "aws_cloudwatch_log_metric_filter" "freeswitch_session_count" {
-  name           = "${var.identifier}-SessionCount"
-  pattern        = "{ $.Session-Count = * }"
-  log_group_name = aws_cloudwatch_log_group.freeswitch_event_logger.name
+  name                      = "${var.identifier}-SessionCount"
+  pattern                   = "{ $.Session-Count = * }"
+  log_group_name            = aws_cloudwatch_log_group.this.name
+  apply_on_transformed_logs = true
 
   metric_transformation {
     name      = "${var.identifier}-SessionCount"
@@ -74,55 +70,36 @@ resource "aws_cloudwatch_log_metric_filter" "freeswitch_session_count" {
     unit = "Count"
   }
 
-  depends_on = [null_resource.freeswitch_session_count_log_transformer]
+  depends_on = [aws_cloudwatch_log_transformer.freeswitch_session_count]
 }
 
-resource "null_resource" "freeswitch_session_count_log_transformer" {
-  triggers = {
-    replace = local.freeswitch_session_count_log_transformer_command
+resource "aws_cloudwatch_log_transformer" "freeswitch_session_count" {
+  log_group_arn = aws_cloudwatch_log_group.this.arn
+  transformer_config {
+    parse_json {}
   }
 
-  provisioner "local-exec" {
-    when    = create
-    command = local.freeswitch_session_count_log_transformer_command
-  }
-}
-
-locals {
-  freeswitch_session_count_log_transformer_command = "aws logs put-transformer --region ${var.region.aws_region} --cli-input-json '${jsonencode(
-    {
-      logGroupIdentifier = aws_cloudwatch_log_group.freeswitch_event_logger.name,
-      transformerConfig = [
-        {
-          parseJSON = {}
-        },
-        {
-          copyValue = {
-            entries = [
-              {
-                source            = "@logGroupName",
-                target            = "log-group-name",
-                overwriteIfExists = false
-              },
-              {
-                source            = "@logGroupStream",
-                target            = "log-group-stream",
-                overwriteIfExists = false
-              }
-            ]
-          }
-        },
-        {
-          splitString = {
-            entries = [
-              {
-                source    = "log-group-stream",
-                delimiter = "/"
-              }
-            ]
-          }
-        }
-      ]
+  transformer_config {
+    copy_value {
+      entry {
+        source              = "@logGroupName"
+        target              = "log-group-name"
+        overwrite_if_exists = false
+      }
+      entry {
+        source              = "@logGroupStream"
+        target              = "log-group-stream"
+        overwrite_if_exists = false
+      }
     }
-  )}'"
+  }
+
+  transformer_config {
+    split_string {
+      entry {
+        source    = "log-group-stream"
+        delimiter = "/"
+      }
+    }
+  }
 }

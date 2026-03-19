@@ -26,9 +26,9 @@ resource "aws_ecs_task_definition" "this" {
       logConfiguration = {
         logDriver = "awslogs",
         options = {
-          awslogs-group         = aws_cloudwatch_log_group.nginx.name,
+          awslogs-group         = aws_cloudwatch_log_group.this.name,
           awslogs-region        = var.region.aws_region,
-          awslogs-stream-prefix = "${var.identifier}/${var.app_environment}"
+          awslogs-stream-prefix = var.identifier
         }
       },
       essential = true,
@@ -51,9 +51,9 @@ resource "aws_ecs_task_definition" "this" {
       logConfiguration = {
         logDriver = "awslogs",
         options = {
-          awslogs-group         = aws_cloudwatch_log_group.app.name,
+          awslogs-group         = aws_cloudwatch_log_group.this.name,
           awslogs-region        = var.region.aws_region,
-          awslogs-stream-prefix = "${var.identifier}/${var.app_environment}"
+          awslogs-stream-prefix = var.identifier
         }
       },
       startTimeout = 120,
@@ -147,9 +147,9 @@ resource "aws_ecs_task_definition" "this" {
       logConfiguration = {
         logDriver = "awslogs",
         options = {
-          awslogs-group         = aws_cloudwatch_log_group.freeswitch.name,
+          awslogs-group         = aws_cloudwatch_log_group.this.name,
           awslogs-region        = var.region.aws_region,
-          awslogs-stream-prefix = "${var.identifier}/${var.app_environment}"
+          awslogs-stream-prefix = var.identifier
         }
       },
       startTimeout = 120,
@@ -278,9 +278,9 @@ resource "aws_ecs_task_definition" "this" {
       logConfiguration = {
         logDriver = "awslogs",
         options = {
-          awslogs-group         = aws_cloudwatch_log_group.redis.name,
+          awslogs-group         = aws_cloudwatch_log_group.this.name,
           awslogs-region        = var.region.aws_region,
-          awslogs-stream-prefix = "${var.identifier}/${var.app_environment}"
+          awslogs-stream-prefix = var.identifier
         }
       },
       essential = true,
@@ -302,9 +302,8 @@ resource "aws_ecs_task_definition" "this" {
       logConfiguration = {
         logDriver = "awslogs",
         options = {
-          awslogs-group         = aws_cloudwatch_log_group.freeswitch_event_logger.name,
-          awslogs-region        = var.region.aws_region,
-          awslogs-stream-prefix = "${var.identifier}/${var.app_environment}"
+          awslogs-group  = aws_cloudwatch_log_group.this.name,
+          awslogs-region = var.region.aws_region,
         }
       },
       startTimeout = 120,
@@ -333,6 +332,102 @@ resource "aws_ecs_task_definition" "this" {
         {
           name  = "REDIS_URL",
           value = "redis://localhost:${var.redis_port}/1"
+        }
+      ]
+    },
+    {
+      name  = "rating-engine",
+      image = "${var.rating_engine_image}:latest",
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.this.name,
+          awslogs-region        = var.region.aws_region,
+          awslogs-stream-prefix = var.identifier
+        }
+      },
+      startTimeout = 120,
+      essential    = true,
+      secrets = [
+        {
+          name      = "EVENT_SOCKET_PASSWORD",
+          valueFrom = local.freeswitch_event_socket_password_parameter.arn
+        },
+        {
+          name      = "JSON_RPC_PASSWORD",
+          valueFrom = var.rating_engine_json_rpc_password_parameter_arn
+        },
+        {
+          name      = "STORDB_PASSWORD",
+          valueFrom = var.rating_engine_stordb_password_parameter_arn
+        }
+      ],
+      dependsOn = [
+        {
+          containerName = "freeswitch",
+          condition     = "HEALTHY"
+        }
+      ],
+      environment = [
+        {
+          name  = "SERVER_MODE",
+          value = "engine"
+        },
+        {
+          name  = "LOG_LEVEL",
+          value = "3"
+        },
+        {
+          name  = "STORDB_DBNAME",
+          value = var.rating_engine_stordb_dbname
+        },
+        {
+          name  = "STORDB_HOST",
+          value = var.rating_engine_stordb_host
+        },
+        {
+          name  = "STORDB_PORT",
+          value = tostring(var.rating_engine_stordb_port)
+        },
+        {
+          name  = "STORDB_USER",
+          value = var.rating_engine_stordb_user
+        },
+        {
+          name  = "STORDB_SSL_MODE",
+          value = var.rating_engine_stordb_ssl_mode
+        },
+        {
+          name  = "DATADB_HOST",
+          value = var.rating_engine_datadb_cache.this.primary_endpoint_address
+        },
+        {
+          name  = "DATADB_PORT",
+          value = tostring(var.rating_engine_datadb_cache.this.port)
+        },
+        {
+          name  = "DATADB_TLS",
+          value = tostring(var.rating_engine_datadb_tls)
+        },
+        {
+          name  = "CONNECTION_MODE",
+          value = var.rating_engine_connection_mode
+        },
+        {
+          name  = "EVENT_SOCKET_HOST",
+          value = "localhost:${var.freeswitch_event_socket_port}"
+        },
+        {
+          name  = "HTTP_LISTEN_ADDRESS",
+          value = "0.0.0.0:${var.rating_engine_http_port}"
+        },
+        {
+          name  = "JSON_RPC_URL",
+          value = var.rating_engine_json_rpc_url
+        },
+        {
+          name  = "JSON_RPC_USERNAME",
+          value = var.rating_engine_json_rpc_username
         }
       ]
     }

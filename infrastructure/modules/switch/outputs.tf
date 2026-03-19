@@ -117,3 +117,35 @@ output "target_event_bus" {
 output "lb_rule_index" {
   value = var.lb_rule_index
 }
+
+output "rating_engine_image" {
+  value = var.rating_engine_image
+}
+
+output "rating_engine_json_rpc_password_parameter_arn" {
+  value = var.rating_engine_json_rpc_password_parameter_arn
+}
+
+output "rating_engine_stordb_password_parameter_arn" {
+  value = var.rating_engine_stordb_password_parameter_arn
+}
+
+output "rating_engine_stordb_dbname" {
+  value = var.rating_engine_stordb_dbname
+}
+
+output "rating_engine_stordb_host" {
+  value = var.rating_engine_stordb_host
+}
+
+output "rating_engine_stordb_port" {
+  value = var.rating_engine_stordb_port
+}
+
+output "rating_engine_stordb_user" {
+  value = var.rating_engine_stordb_user
+}
+
+output "rating_engine_datadb_cache" {
+  value = var.rating_engine_datadb_cache
+}

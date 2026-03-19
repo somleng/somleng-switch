@@ -1,6 +1,7 @@
 variable "identifier" {}
 variable "app_environment" {}
 variable "app_image" {}
+variable "json_rpc_password_parameter_arn" {}
 
 variable "http_port" {
   default = 2080

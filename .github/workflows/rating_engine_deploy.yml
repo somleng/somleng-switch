@@ -1,13 +1,13 @@
-on: push
 name: Rating Engine
+on: workflow_call
 
 env:
   CI: true
   APP_REPOSITORY_NAME: rating-engine
 
 jobs:
-  build:
-    name: Build
+  set-deployment-matrix:
+    name: Set Deployment Matrix
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
@@ -56,15 +56,15 @@ jobs:
 
   build-packages:
     name: Build Packages
-    if: needs.build.outputs.matrixLength > 0
+    if: needs.set-deployment-matrix.outputs.matrixLength > 0
 
     strategy:
-      matrix: ${{fromJSON(needs.build.outputs.packageMatrix)}}
+      matrix: ${{fromJSON(needs.set-deployment-matrix.outputs.packageMatrix)}}
       fail-fast: false
 
     runs-on: ${{ matrix.platform.runner }}
     needs:
-      - build
+      - set-deployment-matrix
 
     permissions:
       contents: read
@@ -130,11 +130,11 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      - build
+      - set-deployment-matrix
       - build-packages
 
     strategy:
-      matrix: ${{fromJSON(needs.build.outputs.matrix)}}
+      matrix: ${{fromJSON(needs.set-deployment-matrix.outputs.matrix)}}
 
     permissions:
       contents: read
@@ -187,11 +187,11 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     needs:
-      - build
+      - set-deployment-matrix
       - build-manifest
 
     strategy:
-      matrix: ${{fromJSON(needs.build.outputs.deployMatrix)}}
+      matrix: ${{fromJSON(needs.set-deployment-matrix.outputs.deployMatrix)}}
 
     steps:
       - name: Checkout
