@@ -1,5 +1,4 @@
 resource "aws_globalaccelerator_listener" "this" {
-  count           = var.global_accelerator != null ? 1 : 0
   accelerator_arn = var.global_accelerator.id
   protocol        = "UDP"
 
@@ -15,8 +14,7 @@ resource "aws_globalaccelerator_listener" "this" {
 }
 
 resource "aws_globalaccelerator_endpoint_group" "public_gateway" {
-  count        = var.global_accelerator != null ? 1 : 0
-  listener_arn = aws_globalaccelerator_listener.this[count.index].id
+  listener_arn = aws_globalaccelerator_listener.this.id
 
   endpoint_configuration {
     endpoint_id                    = var.load_balancer.this.arn

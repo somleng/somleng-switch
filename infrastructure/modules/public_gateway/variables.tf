@@ -14,9 +14,7 @@ variable "db_username" {}
 variable "db_host" {}
 variable "db_port" {}
 variable "load_balancer" {}
-variable "global_accelerator" {
-  default = null
-}
+variable "global_accelerator" {}
 
 variable "opensips_fifo_name" {
   default = "/var/opensips/opensips_fifo"

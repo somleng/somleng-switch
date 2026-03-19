@@ -19,4 +19,5 @@ module "public_gateway" {
   db_username           = data.terraform_remote_state.core_infrastructure.outputs.db_staging.this.master_username
   db_host               = data.terraform_remote_state.core_infrastructure.outputs.db_staging.this.endpoint
   db_port               = data.terraform_remote_state.core_infrastructure.outputs.db_staging.this.port
+  global_accelerator    = data.terraform_remote_state.core_infrastructure.outputs.global_accelerator
 }

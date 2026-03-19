@@ -92,11 +92,8 @@ resource "aws_ecs_task_definition" "this" {
           value = tostring(var.sip_alternative_port)
         },
         {
-          name = "SIP_ADVERTISED_IP",
-          value = coalesce(
-            try(var.global_accelerator.ip_sets[0].ip_addresses[0], null),
-            var.load_balancer.eips[0].public_ip,
-          )
+          name  = "SIP_ADVERTISED_IP",
+          value = var.global_accelerator.ip_sets[0].ip_addresses[0]
         }
       ]
     },
