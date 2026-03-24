@@ -22,7 +22,7 @@ resource "aws_ecs_task_definition" "this" {
   container_definitions = jsonencode([
     {
       name  = "app",
-      image = "${var.app_image}:latest",
+      image = "${var.configuration.image}:latest",
       logConfiguration = {
         logDriver = "awslogs",
         options = {
@@ -41,18 +41,18 @@ resource "aws_ecs_task_definition" "this" {
       essential    = true,
       portMappings = [
         {
-          containerPort = var.http_port,
+          containerPort = var.configuration.http_port,
           protocol      = "tcp"
         }
       ],
       secrets = [
         {
           name      = "JSON_RPC_PASSWORD",
-          valueFrom = var.json_rpc_password_parameter_arn
+          valueFrom = var.configuration.http_password_parameter.arn
         },
         {
           name      = "STORDB_PASSWORD",
-          valueFrom = var.stordb_password_parameter_arn
+          valueFrom = var.configuration.stordb_password_parameter.arn
         },
       ],
       environment = [
@@ -62,51 +62,51 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name  = "HTTP_LISTEN_ADDRESS",
-          value = "0.0.0.0:${var.http_port}"
+          value = "0.0.0.0:${var.configuration.http_port}"
         },
         {
           name  = "JSON_RPC_URL",
-          value = var.json_rpc_url
+          value = var.configuration.json_rpc_url
         },
         {
           name  = "JSON_RPC_USERNAME",
-          value = var.json_rpc_username
+          value = var.configuration.json_rpc_username
         },
         {
           name  = "CONNECTION_MODE",
-          value = var.connection_mode
+          value = var.configuration.connection_mode
         },
         {
           name  = "STORDB_DBNAME",
-          value = var.stordb_dbname
+          value = var.configuration.stordb_dbname
         },
         {
           name  = "STORDB_HOST",
-          value = var.stordb_host
+          value = var.configuration.stordb_host
         },
         {
           name  = "STORDB_PORT",
-          value = tostring(var.stordb_port)
+          value = tostring(var.configuration.stordb_port)
         },
         {
           name  = "STORDB_USER",
-          value = var.stordb_user
+          value = var.configuration.stordb_user
         },
         {
           name  = "STORDB_SSL_MODE",
-          value = var.stordb_ssl_mode
+          value = var.configuration.stordb_ssl_mode
         },
         {
           name  = "DATADB_HOST",
-          value = var.datadb_cache.this.primary_endpoint_address
+          value = var.configuration.datadb_cache.this.primary_endpoint_address
         },
         {
           name  = "DATADB_PORT",
-          value = tostring(var.datadb_cache.this.port)
+          value = tostring(var.configuration.datadb_cache.this.port)
         },
         {
           name  = "DATADB_TLS",
-          value = tostring(var.datadb_tls)
+          value = tostring(var.configuration.datadb_tls)
         }
       ]
     }
@@ -127,8 +127,8 @@ resource "aws_ecs_service" "this" {
     subnets = var.region.vpc.private_subnets
     security_groups = [
       aws_security_group.this.id,
-      var.stordb_security_group,
-      var.datadb_cache.security_group.id
+      var.configuration.stordb_security_group.id,
+      var.configuration.datadb_cache.security_group.id
     ]
   }
 
@@ -144,7 +144,7 @@ resource "aws_ecs_service" "this" {
   load_balancer {
     target_group_arn = aws_lb_target_group.this.arn
     container_name   = "app"
-    container_port   = var.http_port
+    container_port   = var.configuration.http_port
   }
 
   deployment_circuit_breaker {

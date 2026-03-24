@@ -73,8 +73,8 @@ data "aws_iam_policy_document" "task_execution_policy" {
       var.call_platform_password_parameter.arn,
       local.recordings_bucket_access_key_id_parameter.arn,
       local.recordings_bucket_secret_access_key_parameter.arn,
-      var.rating_engine_json_rpc_password_parameter_arn,
-      var.rating_engine_stordb_password_parameter_arn,
+      var.rating_engine_configuration.http_password_parameter.arn,
+      var.rating_engine_configuration.stordb_password_parameter.arn,
     ]
   }
 }

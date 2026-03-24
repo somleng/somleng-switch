@@ -33,15 +33,7 @@ module "switch" {
   nat_gateway_ip                                     = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc.nat_public_ips[0]
   alternative_sip_outbound_ip                        = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.nat_instance.public_ip
   nat_instance_ip                                    = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.nat_instance.public_ip
-
-  rating_engine_image                           = data.terraform_remote_state.core.outputs.rating_engine_ecr_repository.this.repository_url
-  rating_engine_json_rpc_password_parameter_arn = aws_ssm_parameter.rating_engine_http_password.arn
-  rating_engine_stordb_password_parameter_arn   = data.terraform_remote_state.core_infrastructure.outputs.db_staging.master_password_parameter.arn
-  rating_engine_stordb_dbname                   = "cgrates_staging"
-  rating_engine_stordb_host                     = data.terraform_remote_state.core_infrastructure.outputs.db_staging.this.endpoint
-  rating_engine_stordb_port                     = data.terraform_remote_state.core_infrastructure.outputs.db_staging.this.port
-  rating_engine_stordb_user                     = data.terraform_remote_state.core_infrastructure.outputs.db_staging.this.master_username
-  rating_engine_datadb_cache                    = module.redis
+  rating_engine_configuration                        = module.rating_engine_configuration
 }
 
 module "switch_helium" {
@@ -81,15 +73,7 @@ module "switch_helium" {
   freeswitch_event_logger_image                 = module.switch.freeswitch_event_logger_image
   internal_route53_zone                         = module.switch.internal_route53_zone
   target_event_bus                              = module.switch.target_event_bus
-
-  rating_engine_image                           = module.switch.rating_engine_image
-  rating_engine_json_rpc_password_parameter_arn = module.switch.rating_engine_json_rpc_password_parameter_arn
-  rating_engine_stordb_password_parameter_arn   = module.switch.rating_engine_stordb_password_parameter_arn
-  rating_engine_stordb_dbname                   = module.switch.rating_engine_stordb_dbname
-  rating_engine_stordb_host                     = module.switch.rating_engine_stordb_host
-  rating_engine_stordb_port                     = module.switch.rating_engine_stordb_port
-  rating_engine_stordb_user                     = module.switch.rating_engine_stordb_user
-  rating_engine_datadb_cache                    = module.switch.rating_engine_datadb_cache
+  rating_engine_configuration                   = module.rating_engine_configuration
 
   providers = {
     aws = aws.helium

@@ -4,6 +4,7 @@ variable "app_environment" {}
 variable "lb_rule_index" {}
 variable "region" {}
 variable "call_platform_password_parameter" {}
+variable "rating_engine_configuration" {}
 
 variable "target_group_name" {
   default = null
@@ -90,7 +91,6 @@ variable "cache_security_group_name" {
 }
 variable "internal_route53_zone" {}
 variable "app_image" {}
-variable "rating_engine_image" {}
 variable "nginx_image" {}
 variable "freeswitch_image" {}
 variable "freeswitch_event_logger_image" {}
@@ -128,49 +128,4 @@ variable "min_tasks" {
 
 variable "webserver_port" {
   default = 80
-}
-
-variable "rating_engine_http_port" {
-  default = 2080
-}
-
-variable "rating_engine_json_rpc_password_parameter_arn" {
-}
-
-variable "rating_engine_stordb_password_parameter_arn" {
-}
-
-variable "rating_engine_stordb_dbname" {
-}
-
-variable "rating_engine_stordb_host" {
-}
-
-variable "rating_engine_stordb_port" {
-}
-
-variable "rating_engine_stordb_user" {
-}
-
-variable "rating_engine_stordb_ssl_mode" {
-  default = "allow"
-}
-
-variable "rating_engine_datadb_cache" {
-}
-
-variable "rating_engine_datadb_tls" {
-  default = true
-}
-
-variable "rating_engine_connection_mode" {
-  default = "*internal"
-}
-
-variable "rating_engine_json_rpc_url" {
-  default = "/jsonrpc"
-}
-
-variable "rating_engine_json_rpc_username" {
-  default = "cgrates"
 }

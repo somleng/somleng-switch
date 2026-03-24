@@ -337,7 +337,7 @@ resource "aws_ecs_task_definition" "this" {
     },
     {
       name  = "rating-engine",
-      image = "${var.rating_engine_image}:latest",
+      image = "${var.rating_engine_configuration.image}:latest",
       logConfiguration = {
         logDriver = "awslogs",
         options = {
@@ -355,11 +355,11 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name      = "JSON_RPC_PASSWORD",
-          valueFrom = var.rating_engine_json_rpc_password_parameter_arn
+          valueFrom = var.rating_engine_configuration.http_password_parameter.arn
         },
         {
           name      = "STORDB_PASSWORD",
-          valueFrom = var.rating_engine_stordb_password_parameter_arn
+          valueFrom = var.rating_engine_configuration.stordb_password_parameter.arn
         }
       ],
       dependsOn = [
@@ -379,39 +379,39 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name  = "STORDB_DBNAME",
-          value = var.rating_engine_stordb_dbname
+          value = var.rating_engine_configuration.stordb_dbname
         },
         {
           name  = "STORDB_HOST",
-          value = var.rating_engine_stordb_host
+          value = var.rating_engine_configuration.stordb_host
         },
         {
           name  = "STORDB_PORT",
-          value = tostring(var.rating_engine_stordb_port)
+          value = tostring(var.rating_engine_configuration.stordb_port)
         },
         {
           name  = "STORDB_USER",
-          value = var.rating_engine_stordb_user
+          value = var.rating_engine_configuration.stordb_user
         },
         {
           name  = "STORDB_SSL_MODE",
-          value = var.rating_engine_stordb_ssl_mode
+          value = var.rating_engine_configuration.stordb_ssl_mode
         },
         {
           name  = "DATADB_HOST",
-          value = var.rating_engine_datadb_cache.this.primary_endpoint_address
+          value = var.rating_engine_configuration.datadb_cache.this.primary_endpoint_address
         },
         {
           name  = "DATADB_PORT",
-          value = tostring(var.rating_engine_datadb_cache.this.port)
+          value = tostring(var.rating_engine_configuration.datadb_cache.this.port)
         },
         {
           name  = "DATADB_TLS",
-          value = tostring(var.rating_engine_datadb_tls)
+          value = tostring(var.rating_engine_configuration.datadb_tls)
         },
         {
           name  = "CONNECTION_MODE",
-          value = var.rating_engine_connection_mode
+          value = var.rating_engine_configuration.connection_mode
         },
         {
           name  = "EVENT_SOCKET_HOST",
@@ -419,15 +419,15 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name  = "HTTP_LISTEN_ADDRESS",
-          value = "0.0.0.0:${var.rating_engine_http_port}"
+          value = "0.0.0.0:${var.rating_engine_configuration.http_port}"
         },
         {
           name  = "JSON_RPC_URL",
-          value = var.rating_engine_json_rpc_url
+          value = var.rating_engine_configuration.json_rpc_url
         },
         {
           name  = "JSON_RPC_USERNAME",
-          value = var.rating_engine_json_rpc_username
+          value = var.rating_engine_configuration.json_rpc_username
         }
       ]
     }
@@ -456,7 +456,9 @@ resource "aws_ecs_service" "this" {
   network_configuration {
     subnets = var.region.vpc.private_subnets
     security_groups = [
-      aws_security_group.this.id
+      aws_security_group.this.id,
+      var.rating_engine_configuration.stordb_security_group.id,
+      var.rating_engine_configuration.datadb_cache.security_group.id
     ]
   }
 
