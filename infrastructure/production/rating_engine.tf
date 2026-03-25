@@ -14,7 +14,6 @@ module "rating_engine" {
   stordb_host                   = data.terraform_remote_state.core_infrastructure.outputs.db.this.endpoint
   stordb_port                   = data.terraform_remote_state.core_infrastructure.outputs.db.this.port
   stordb_password_parameter_arn = data.terraform_remote_state.core_infrastructure.outputs.db.master_password_parameter.arn
-  stordb_security_group         = data.terraform_remote_state.core_infrastructure.outputs.db.security_group.id
   datadb_cache                  = module.redis
 
   lb_rule_index = 50

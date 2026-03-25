@@ -8,7 +8,6 @@ variable "client_gateway_group" {}
 variable "db_password_parameter" {}
 variable "call_platform_password_parameter" {}
 variable "freeswitch_event_socket_password_parameter" {}
-variable "db_security_group" {}
 variable "freeswitch_event_socket_port" {}
 variable "db_username" {}
 variable "db_host" {}

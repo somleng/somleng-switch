@@ -8,7 +8,7 @@ resource "aws_lambda_function" "this" {
   memory_size   = 512
 
   vpc_config {
-    security_group_ids = [aws_security_group.this.id, var.db_security_group.id]
+    security_group_ids = [aws_security_group.this.id]
     subnet_ids         = var.vpc.private_subnets
   }
 

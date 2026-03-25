@@ -7,7 +7,6 @@ module "container_instances" {
   associate_public_ip_address = true
   max_capacity                = var.max_tasks * 2
   cluster_name                = var.ecs_cluster.name
-  security_groups             = [var.db_security_group.id]
   user_data = var.assign_eips ? [
     {
       path = "/opt/assign_eip.sh",

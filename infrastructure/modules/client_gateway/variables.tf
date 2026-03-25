@@ -8,7 +8,6 @@ variable "scheduler_image" {}
 variable "sip_port" {}
 variable "subdomain" {}
 variable "route53_zone" {}
-variable "db_security_group" {}
 variable "db_password_parameter" {}
 variable "db_name" {}
 variable "db_username" {}

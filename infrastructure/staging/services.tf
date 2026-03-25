@@ -16,7 +16,6 @@ module "services" {
   call_platform_password_parameter           = data.aws_ssm_parameter.call_platform_password
   freeswitch_event_socket_password_parameter = data.aws_ssm_parameter.freeswitch_event_socket_password
 
-  db_security_group            = data.terraform_remote_state.core_infrastructure.outputs.db_staging.security_group
   db_username                  = data.terraform_remote_state.core_infrastructure.outputs.db_staging.this.master_username
   db_host                      = data.terraform_remote_state.core_infrastructure.outputs.db_staging.this.endpoint
   db_port                      = data.terraform_remote_state.core_infrastructure.outputs.db_staging.this.port
