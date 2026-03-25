@@ -1,6 +1,6 @@
 # https://apt.opensips.org/packages.php?os=bookworm
 
-FROM public.ecr.aws/docker/library/debian:bookworm-slim AS bootstrap
+FROM public.ecr.aws/docker/library/debian:bookworm-slim AS base
 
 USER root
 
@@ -8,6 +8,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 ARG OPENSIPS_VERSION=3.6
 ARG OPENSIPS_BUILD=releases
+
+FROM base AS bootstrap
 
 RUN apt-get -y update -qq && apt-get -y install gnupg2 ca-certificates curl && \
     curl https://apt.opensips.org/opensips-org.gpg -o /usr/share/keyrings/opensips-org.gpg && \
@@ -28,14 +30,7 @@ ENV DATABASE_NAME="opensips"
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["create_db"]
 
-FROM public.ecr.aws/docker/library/debian:bookworm-slim AS build
-
-USER root
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-ARG OPENSIPS_VERSION=3.6
-ARG OPENSIPS_BUILD=releases
+FROM base AS build
 
 RUN apt-get -y update -qq && apt-get -y install gnupg2 ca-certificates iproute2 curl netcat-traditional jq && \
     curl https://apt.opensips.org/opensips-org.gpg -o /usr/share/keyrings/opensips-org.gpg && \
