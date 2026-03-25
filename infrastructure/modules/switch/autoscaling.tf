@@ -57,7 +57,7 @@ resource "aws_appautoscaling_policy" "freeswitch_session_count" {
 resource "aws_cloudwatch_log_metric_filter" "freeswitch_session_count" {
   name                      = "${var.identifier}-SessionCount"
   pattern                   = "{ $.Session-Count = * }"
-  log_group_name            = aws_cloudwatch_log_group.this.name
+  log_group_name            = aws_cloudwatch_log_group.freeswitch_event_logger.name
   apply_on_transformed_logs = true
 
   metric_transformation {
@@ -74,7 +74,7 @@ resource "aws_cloudwatch_log_metric_filter" "freeswitch_session_count" {
 }
 
 resource "aws_cloudwatch_log_transformer" "freeswitch_session_count" {
-  log_group_arn = aws_cloudwatch_log_group.this.arn
+  log_group_arn = aws_cloudwatch_log_group.freeswitch_event_logger.arn
   transformer_config {
     parse_json {}
   }

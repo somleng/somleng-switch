@@ -302,8 +302,9 @@ resource "aws_ecs_task_definition" "this" {
       logConfiguration = {
         logDriver = "awslogs",
         options = {
-          awslogs-group  = aws_cloudwatch_log_group.this.name,
-          awslogs-region = var.region.aws_region,
+          awslogs-group         = aws_cloudwatch_log_group.freeswitch_event_logger.name,
+          awslogs-region        = var.region.aws_region,
+          awslogs-stream-prefix = var.identifier
         }
       },
       startTimeout = 120,

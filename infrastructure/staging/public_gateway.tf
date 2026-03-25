@@ -9,7 +9,7 @@ module "public_gateway" {
   app_image             = data.terraform_remote_state.core.outputs.public_gateway_ecr_repository.this.repository_url
   scheduler_image       = data.terraform_remote_state.core.outputs.gateway_scheduler_ecr_repository.this.repository_url
   load_balancer         = data.terraform_remote_state.core.outputs.public_gateway_nlb
-  min_tasks             = 0
+  min_tasks             = 1
   max_tasks             = 2
   sip_port              = var.sip_port
   sip_alternative_port  = var.sip_alternative_port
