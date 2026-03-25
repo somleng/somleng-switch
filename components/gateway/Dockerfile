@@ -28,15 +28,13 @@ ENV DATABASE_NAME="opensips"
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["create_db"]
 
-# Build
-
 FROM public.ecr.aws/docker/library/debian:bookworm-slim AS build
 
 USER root
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-ARG OPENSIPS_VERSION=3.4
+ARG OPENSIPS_VERSION=3.6
 ARG OPENSIPS_BUILD=releases
 
 RUN apt-get -y update -qq && apt-get -y install gnupg2 ca-certificates iproute2 curl netcat-traditional jq && \
@@ -48,14 +46,10 @@ RUN apt-get -y update -qq && apt-get -y install gnupg2 ca-certificates iproute2 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["opensips"]
 
-# Public Gateway
-
 FROM build AS public_gateway
 
 COPY public_gateway/opensips.cfg /etc/opensips/opensips.cfg
 COPY public_gateway/docker-entrypoint.sh /docker-entrypoint.sh
-
-# Client Gateway
 
 FROM build AS client_gateway
 
