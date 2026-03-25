@@ -172,6 +172,10 @@ jobs:
           docker compose exec testing sh -c 'tar cf - -C /testing connect_stream_test_files' | tar xf - -C tmp/
           docker compose logs freeswitch > tmp/freeswitch.log
           docker compose logs switch-app > tmp/switch-app
+          docker compose logs public_gateway > tmp/public_gateway.log
+          docker compose logs client_gateway > tmp/client_gateway.log
+          docker compose logs media_proxy > tmp/media_proxy.log
+          docker compose logs rating-engine > tmp/rating-engine.log
 
       - name: Upload logs
         uses: actions/upload-artifact@v6
