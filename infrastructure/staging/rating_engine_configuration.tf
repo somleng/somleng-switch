@@ -3,7 +3,6 @@ module "rating_engine_configuration" {
 
   identifier                = var.rating_engine_identifier
   image                     = data.terraform_remote_state.core.outputs.rating_engine_ecr_repository.this.repository_url
-  stordb_security_group     = data.terraform_remote_state.core_infrastructure.outputs.db_staging.security_group
   stordb_password_parameter = data.terraform_remote_state.core_infrastructure.outputs.db_staging.master_password_parameter
   stordb_dbname             = "cgrates_staging"
   stordb_host               = data.terraform_remote_state.core_infrastructure.outputs.db_staging.this.endpoint

@@ -10,9 +10,6 @@ output "http_password_parameter" {
 output "stordb_password_parameter" {
   value = var.stordb_password_parameter
 }
-output "stordb_security_group" {
-  value = var.stordb_security_group
-}
 output "stordb_dbname" {
   value = var.stordb_dbname
 }

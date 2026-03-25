@@ -456,9 +456,7 @@ resource "aws_ecs_service" "this" {
   network_configuration {
     subnets = var.region.vpc.private_subnets
     security_groups = [
-      aws_security_group.this.id,
-      var.rating_engine_configuration.stordb_security_group.id,
-      var.rating_engine_configuration.datadb_cache.security_group.id
+      aws_security_group.this.id
     ]
   }
 

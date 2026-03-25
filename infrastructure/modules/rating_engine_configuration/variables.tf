@@ -5,7 +5,6 @@ variable "stordb_dbname" {}
 variable "stordb_host" {}
 variable "stordb_port" {}
 variable "stordb_user" {}
-variable "stordb_security_group" {}
 variable "stordb_ssl_mode" {
   default = "allow"
 }
