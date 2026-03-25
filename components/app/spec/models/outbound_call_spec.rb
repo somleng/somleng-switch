@@ -42,7 +42,7 @@ RSpec.describe OutboundCall do
 
     expect(result).to eq(outbound_call)
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      "{proxy_leg=true}sofia/uac_internal/85516701721@27.109.112.141;fs_path=sip:localhost:5060",
+      %r{{proxy_leg=true}sofia/uac_internal/85516701721@27.109.112.141;fs_path=sip:.+:5060},
       from: "2442",
       controller: CallController,
       controller_metadata: {

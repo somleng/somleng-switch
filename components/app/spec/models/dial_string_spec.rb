@@ -6,7 +6,8 @@ RSpec.describe DialString do
       dial_string = DialString.new(
         build_options(
           routing_parameters: { destination: "855716100987", host: "sip.example.com" },
-          fs_path: "sip:localhost:5060"
+          fs_host: "localhost",
+          fs_port: 5060
         )
       )
 

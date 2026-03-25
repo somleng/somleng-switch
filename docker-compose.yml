@@ -176,7 +176,8 @@ services:
       AHN_CORE_LOGGING_LEVEL: "debug"
       AWS_DEFAULT_REGION: "ap-southeast-1"
       REDIS_URL: "redis://redis:6379/1"
-      FS_PATH: "sip:freeswitch:5060"
+      FS_HOST: "freeswitch"
+      FS_PORT: 5060
       CALL_PLATFORM_HOST: http://fake_call_platform:3000
     healthcheck:
       test:

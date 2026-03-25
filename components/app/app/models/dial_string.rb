@@ -1,9 +1,10 @@
 class DialString
-  attr_reader :options, :fs_path
+  attr_reader :options, :fs_host, :fs_port
 
   def initialize(options)
     @options = options.symbolize_keys
-    @fs_path = options.fetch(:fs_path) { AppSettings.fetch(:fs_path) }
+    @fs_host = options.fetch(:fs_host) { AppSettings.fetch(:fs_host) }
+    @fs_port = options.fetch(:fs_port) { AppSettings.fetch(:fs_port) }
   end
 
   def to_s
@@ -32,5 +33,9 @@ class DialString
 
   def destination_address
     routing_parameters.destination_address
+  end
+
+  def fs_path
+    "sip:#{fs_host}:#{fs_port}"
   end
 end

@@ -136,8 +136,8 @@ resource "aws_ecs_task_definition" "this" {
           value = "redis://localhost:${var.redis_port}/1"
         },
         {
-          name  = "FS_PATH",
-          value = "sip:localhost:${var.sip_port}"
+          name  = "FS_PORT",
+          value = tostring(var.sip_port)
         }
       ]
     },
