@@ -102,6 +102,10 @@ output "freeswitch_event_logger_image" {
   value = var.freeswitch_event_logger_image
 }
 
+output "freeswitch_log_level" {
+  value = var.freeswitch_log_level
+}
+
 output "internal_route53_zone" {
   value = var.internal_route53_zone
 }

@@ -118,6 +118,10 @@ variable "freeswitch_event_socket_port" {
   default = 8021
 }
 
+variable "freeswitch_log_level" {
+  default = "info"
+}
+
 variable "max_tasks" {
   default = 4
 }

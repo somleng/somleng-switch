@@ -21,7 +21,6 @@ module "switch" {
   ecs_cluster                                        = aws_ecs_cluster.this
   sip_port                                           = var.sip_port
   sip_alternative_port                               = var.sip_alternative_port
-  freeswitch_event_socket_port                       = var.freeswitch_event_socket_port
   call_platform_password_parameter                   = data.aws_ssm_parameter.call_platform_password
   services_function                                  = module.services
   internal_route53_zone                              = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_internal_somleng_org
@@ -29,6 +28,8 @@ module "switch" {
   nginx_image                                        = data.terraform_remote_state.core.outputs.webserver_ecr_repository.this.repository_url
   freeswitch_image                                   = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository.this.repository_url
   freeswitch_event_logger_image                      = data.terraform_remote_state.core.outputs.freeswitch_event_logger_ecr_repository.this.repository_url
+  freeswitch_event_socket_port                       = var.freeswitch_event_socket_port
+  freeswitch_log_level                               = var.freeswitch_log_level
   external_sip_outbound_ip                           = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc.nat_public_ips[0]
   nat_gateway_ip                                     = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc.nat_public_ips[0]
   alternative_sip_outbound_ip                        = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.nat_instance.public_ip
@@ -56,7 +57,6 @@ module "switch_helium" {
   application_master_key_parameter              = module.switch.application_master_key_parameter
   rayo_password_parameter                       = module.switch.rayo_password_parameter
   http_password_parameter                       = module.switch.http_password_parameter
-  freeswitch_event_socket_password_parameter    = module.switch.freeswitch_event_socket_password_parameter
   container_instance_profile                    = module.switch.container_instances.iam_instance_profile
   iam_task_role                                 = module.switch.iam_task_role
   iam_task_execution_role                       = module.switch.iam_task_execution_role
@@ -64,13 +64,15 @@ module "switch_helium" {
   max_tasks                                     = module.switch.max_tasks
   sip_port                                      = module.switch.sip_port
   sip_alternative_port                          = module.switch.sip_alternative_port
-  freeswitch_event_socket_port                  = module.switch.freeswitch_event_socket_port
   call_platform_password_parameter              = module.switch.call_platform_password_parameter
   services_function                             = module.switch.services_function
   app_image                                     = module.switch.app_image
   nginx_image                                   = module.switch.nginx_image
   freeswitch_image                              = module.switch.freeswitch_image
   freeswitch_event_logger_image                 = module.switch.freeswitch_event_logger_image
+  freeswitch_event_socket_port                  = module.switch.freeswitch_event_socket_port
+  freeswitch_event_socket_password_parameter    = module.switch.freeswitch_event_socket_password_parameter
+  freeswitch_log_level                          = module.switch.freeswitch_log_level
   internal_route53_zone                         = module.switch.internal_route53_zone
   target_event_bus                              = module.switch.target_event_bus
   rating_engine_configuration                   = module.rating_engine_configuration

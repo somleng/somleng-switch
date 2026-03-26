@@ -269,7 +269,11 @@ resource "aws_ecs_task_definition" "this" {
         {
           name  = "FS_EVENT_SOCKET_PORT",
           value = tostring(var.freeswitch_event_socket_port)
-        }
+        },
+        {
+          name  = "FS_LOG_LEVEL",
+          value = var.freeswitch_log_level
+        },
       ]
     },
     {

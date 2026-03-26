@@ -61,3 +61,7 @@ variable "sip_alternative_port" {
 variable "freeswitch_event_socket_port" {
   default = 8021
 }
+
+variable "freeswitch_log_level" {
+  default = "debug"
+}
