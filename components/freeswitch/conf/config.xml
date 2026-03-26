@@ -15,7 +15,7 @@
 <X-PRE-PROCESS cmd="exec-set" data="ext_profile_nat_instance_ip=hostname -i" />
 
 <!-- Internal SIP Profiles -->
-<X-PRE-PROCESS cmd="set" data="internal_profile_uac_sip_port=5061" />
+<X-PRE-PROCESS cmd="set" data="internal_sip_port=5061" />
 
 <!-- mod_json_cdr -->
 <X-PRE-PROCESS cmd="set" data="mod_json_cdr_url=https://www.example.com/path" />

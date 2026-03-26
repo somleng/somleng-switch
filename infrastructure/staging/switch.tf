@@ -20,6 +20,7 @@ module "switch" {
   region                                             = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region
   ecs_cluster                                        = aws_ecs_cluster.this
   sip_port                                           = var.sip_port
+  internal_sip_port                                  = var.internal_sip_port
   sip_alternative_port                               = var.sip_alternative_port
   call_platform_password_parameter                   = data.aws_ssm_parameter.call_platform_password
   services_function                                  = module.services
@@ -64,6 +65,7 @@ module "switch_helium" {
   min_tasks                                     = module.switch.min_tasks
   max_tasks                                     = module.switch.max_tasks
   sip_port                                      = module.switch.sip_port
+  internal_sip_port                             = module.switch.internal_sip_port
   sip_alternative_port                          = module.switch.sip_alternative_port
   call_platform_password_parameter              = module.switch.call_platform_password_parameter
   services_function                             = module.switch.services_function

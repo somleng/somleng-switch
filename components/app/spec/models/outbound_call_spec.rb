@@ -42,7 +42,7 @@ RSpec.describe OutboundCall do
 
     expect(result).to eq(outbound_call)
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      %r{{proxy_leg=true}sofia/uac_internal/85516701721@27.109.112.141;fs_path=sip:.+:5060},
+      %r{{proxy_leg=true}sofia/internal/85516701721@27.109.112.141;fs_path=sip:.+:5060},
       from: "2442",
       controller: CallController,
       controller_metadata: {
@@ -104,7 +104,7 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      match("sofia/uac_internal/016701721@27.109.112.141"), hash_including(from: "023238265")
+      match("sofia/internal/016701721@27.109.112.141"), hash_including(from: "023238265")
     )
   end
 
@@ -126,7 +126,7 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      match("sofia/uac_internal/85516701721@27.109.112.141"),
+      match("sofia/internal/85516701721@27.109.112.141"),
       hash_including(
         headers: hash_including("X-Somleng-ExternalProfile" => "test")
       )
@@ -151,7 +151,7 @@ RSpec.describe OutboundCall do
     OutboundCall.new(call_params).initiate
 
     expect(Adhearsion::OutboundCall).to have_received(:originate).with(
-      %r{sofia/uac_internal/\+85516701721@.+}, any_args
+      %r{sofia/internal/\+85516701721@.+}, any_args
     )
   end
 

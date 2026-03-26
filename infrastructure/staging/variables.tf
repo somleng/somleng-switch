@@ -54,6 +54,10 @@ variable "sip_port" {
   default = 6060
 }
 
+variable "internal_sip_port" {
+  default = 6061
+}
+
 variable "sip_alternative_port" {
   default = 6080
 }

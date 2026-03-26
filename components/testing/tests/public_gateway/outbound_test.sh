@@ -8,6 +8,7 @@ source $current_dir/support/test_helpers.sh
 source $current_dir/../support/test_helpers.sh
 
 scenario=$current_dir/../../scenarios/uas.xml
+artifacts_dir=public_gateway_outbound_test_files
 sipp_pid=$(start_sipp_server $scenario)
 
 cleanup() {
@@ -21,6 +22,13 @@ cat /dev/null > $cdr_server_log
 
 uas="$(hostname -i)"
 media_server="$(dig +short freeswitch)"
+
+rm -rf $artifacts_dir
+mkdir -p $artifacts_dir
+
+# start tcpdump in background
+nohup tcpdump -Xvv -i eth0 -s0 -w $artifacts_dir/uas.pcap &
+tcpdump_pid=$!
 
 curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/calls \
 -H 'Content-Type: application/json; charset=utf-8' \
@@ -57,6 +65,14 @@ curl -s -o /dev/null -XPOST -u "adhearsion:password" http://switch-app:8080/call
 EOF
 
 sleep 10
+
+# kill tcpdump
+kill $tcpdump_pid
+
+# extract RTP from PCAP
+tshark -n -r $artifacts_dir/uas.pcap -2 -R rtp -T fields -e rtp.payload | tr -d '\n',':' | xxd -r -p > $artifacts_dir/uas.rtp
+# Convert RTP to wav
+sox -t al -r 8000 -c 1 $artifacts_dir/uas.rtp $artifacts_dir/uas_full_audio.wav
 
 log_file=$(find_sipp_log_file $scenario)
 if ! assert_in_file $log_file "c=IN IP4 $media_server"; then

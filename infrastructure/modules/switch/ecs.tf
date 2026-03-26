@@ -137,7 +137,7 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name  = "FS_PORT",
-          value = tostring(var.sip_port)
+          value = tostring(var.internal_sip_port)
         }
       ]
     },
@@ -278,6 +278,10 @@ resource "aws_ecs_task_definition" "this" {
           name  = "FS_SIP_TRACE",
           value = var.freeswitch_sip_trace
         },
+        {
+          name  = "FS_INTERNAL_SIP_PORT",
+          value = tostring(var.internal_sip_port)
+        }
       ]
     },
     {

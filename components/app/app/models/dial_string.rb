@@ -8,7 +8,7 @@ class DialString
   end
 
   def to_s
-    "{proxy_leg=true}sofia/uac_internal/#{destination_address};fs_path=#{fs_path}"
+    "{proxy_leg=true}sofia/internal/#{destination_address};fs_path=#{fs_path}"
   end
 
   def format_number(...)

@@ -434,6 +434,6 @@ RSpec.describe CallController, type: :call_controller do
   end
 
   def dial_string(number)
-    match(%r{{proxy_leg=true}sofia/uac_internal/#{number}.*;fs_path=.+})
+    match(%r{{proxy_leg=true}sofia/internal/#{number}.*;fs_path=.+})
   end
 end

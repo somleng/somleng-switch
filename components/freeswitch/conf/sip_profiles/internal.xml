@@ -1,8 +1,8 @@
-<profile name="uac_internal">
+<profile name="internal">
   <settings>
     <X-PRE-PROCESS cmd="include" data="shared/settings.xml" />
 
-    <param name="sip-port" value="$${internal_profile_uac_sip_port}" />
+    <param name="sip-port" value="$${internal_sip_port}" />
     <param name="ext-sip-ip" value="$${local_ip_v4}" />
     <param name="ext-rtp-ip" value="$${local_ip_v4}" />
   </settings>

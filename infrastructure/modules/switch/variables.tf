@@ -103,6 +103,7 @@ variable "route53_record" {
   default = null
 }
 variable "sip_port" {}
+variable "internal_sip_port" {}
 variable "sip_alternative_port" {}
 
 variable "appserver_port" {

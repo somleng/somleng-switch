@@ -29,7 +29,6 @@
 
         <action application="set" data="cgr_reqtype=*none" />
 
-        <action application="set" data="bypass_media=true"/>
         <action application="bridge" data="${bridge_dial_string}" />
       </condition>
     </extension>
@@ -58,7 +57,6 @@
         <action application="unset" data="sip_h_X-Somleng-BillingCategory" />
         <action application="unset" data="sip_h_X-Somleng-ProxyAddress" />
         <action application="unset" data="sip_h_X-Somleng-ExternalProfile" />
-        <action application="set" data="bypass_media=true"/>
         <action application="bridge" data="${bridge_dial_string}" />
 
         <!-- CGRateS authorization fails -->

@@ -66,6 +66,10 @@ output "sip_port" {
   value = var.sip_port
 }
 
+output "internal_sip_port" {
+  value = var.internal_sip_port
+}
+
 output "cache_name" {
   value = var.cache_name
 }
