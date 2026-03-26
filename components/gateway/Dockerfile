@@ -15,7 +15,7 @@ RUN apt-get -y update -qq && apt-get -y install gnupg2 ca-certificates curl && \
     curl https://apt.opensips.org/opensips-org.gpg -o /usr/share/keyrings/opensips-org.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bookworm ${OPENSIPS_VERSION}-${OPENSIPS_BUILD}" >/etc/apt/sources.list.d/opensips.list && \
     echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bookworm cli-nightly" >/etc/apt/sources.list.d/opensips-cli.list && \
-    apt-get -y update -qq && apt-get -y install opensips opensips-postgres-module opensips-cli opensips-postgres-dbschema python3-psycopg2 python3-sqlalchemy python3-sqlalchemy-utils && \
+    apt-get -y update -qq && apt-get -y install opensips opensips-postgres-module opensips-tlsmgm-module opensips-cli opensips-postgres-dbschema python3-psycopg2 python3-sqlalchemy python3-sqlalchemy-utils && \
     apt-get purge -y --auto-remove curl && \
     rm -rf /var/lib/apt/lists/*
 
@@ -35,7 +35,7 @@ FROM base AS build
 RUN apt-get -y update -qq && apt-get -y install gnupg2 ca-certificates iproute2 curl netcat-traditional jq && \
     curl https://apt.opensips.org/opensips-org.gpg -o /usr/share/keyrings/opensips-org.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bookworm ${OPENSIPS_VERSION}-${OPENSIPS_BUILD}" >/etc/apt/sources.list.d/opensips.list && \
-    apt-get -y update -qq && apt-get -y install opensips opensips-postgres-module opensips-auth-modules && \
+    apt-get -y update -qq && apt-get -y install opensips opensips-postgres-module opensips-tlsmgm-module opensips-auth-modules && \
     rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
