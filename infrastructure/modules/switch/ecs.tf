@@ -274,6 +274,10 @@ resource "aws_ecs_task_definition" "this" {
           name  = "FS_LOG_LEVEL",
           value = var.freeswitch_log_level
         },
+        {
+          name  = "FS_SIP_TRACE",
+          value = var.freeswitch_sip_trace
+        },
       ]
     },
     {

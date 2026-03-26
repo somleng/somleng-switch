@@ -106,6 +106,10 @@ output "freeswitch_log_level" {
   value = var.freeswitch_log_level
 }
 
+output "freeswitch_sip_trace" {
+  value = var.freeswitch_sip_trace
+}
+
 output "internal_route53_zone" {
   value = var.internal_route53_zone
 }

@@ -65,3 +65,7 @@ variable "freeswitch_event_socket_port" {
 variable "freeswitch_log_level" {
   default = "debug"
 }
+
+variable "freeswitch_sip_trace" {
+  default = "yes"
+}

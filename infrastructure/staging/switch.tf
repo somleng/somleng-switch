@@ -30,6 +30,7 @@ module "switch" {
   freeswitch_event_logger_image                      = data.terraform_remote_state.core.outputs.freeswitch_event_logger_ecr_repository.this.repository_url
   freeswitch_event_socket_port                       = var.freeswitch_event_socket_port
   freeswitch_log_level                               = var.freeswitch_log_level
+  freeswitch_sip_trace                               = var.freeswitch_sip_trace
   external_sip_outbound_ip                           = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc.nat_public_ips[0]
   nat_gateway_ip                                     = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc.nat_public_ips[0]
   alternative_sip_outbound_ip                        = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.nat_instance.public_ip
@@ -73,6 +74,7 @@ module "switch_helium" {
   freeswitch_event_socket_port                  = module.switch.freeswitch_event_socket_port
   freeswitch_event_socket_password_parameter    = module.switch.freeswitch_event_socket_password_parameter
   freeswitch_log_level                          = module.switch.freeswitch_log_level
+  freeswitch_sip_trace                          = module.switch.freeswitch_sip_trace
   internal_route53_zone                         = module.switch.internal_route53_zone
   target_event_bus                              = module.switch.target_event_bus
   rating_engine_configuration                   = module.rating_engine_configuration

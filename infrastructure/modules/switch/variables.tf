@@ -122,6 +122,10 @@ variable "freeswitch_log_level" {
   default = "info"
 }
 
+variable "freeswitch_sip_trace" {
+  default = "no"
+}
+
 variable "max_tasks" {
   default = 4
 }
