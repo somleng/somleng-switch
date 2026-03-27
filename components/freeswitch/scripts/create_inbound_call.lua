@@ -34,7 +34,7 @@ local payload = {
 
 
 local credentials = mime.b64(call_platform_username .. ":" .. call_platform_password)
-local headers = "append_headers 'Authorization: Basic " .. credentials .. "'"
+local headers = "append_headers 'Authorization: Basic " .. credentials .. "' append_headers 'Accept: application/json' append_headers 'Content-Type: application/json'"
 
 local body = json.encode(payload)
 local params = call_platform_host .. "/services/inbound_phone_calls " .. headers .. " post " .. body .. " json"

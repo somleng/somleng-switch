@@ -79,6 +79,12 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    if (req.headers["content-type"] !== "application/json") {
+      res.statusCode = 400;
+      res.end(JSON.stringify({ error: "Unsupported Media Type" }));
+      return;
+    }
+
     authenticate(req);
 
     res.statusCode = 201;
