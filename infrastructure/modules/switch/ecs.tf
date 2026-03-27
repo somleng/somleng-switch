@@ -138,6 +138,14 @@ resource "aws_ecs_task_definition" "this" {
         {
           name  = "FS_PORT",
           value = tostring(var.internal_sip_port)
+        },
+        {
+          name  = "CALL_PLATFORM_HOST",
+          value = var.call_platform_host
+        },
+        {
+          name  = "CALL_PLATFORM_USERNAME",
+          value = var.call_platform_username
         }
       ]
     },
@@ -207,6 +215,10 @@ resource "aws_ecs_task_definition" "this" {
         {
           name      = "FS_EVENT_SOCKET_PASSWORD",
           valueFrom = local.freeswitch_event_socket_password_parameter.arn
+        },
+        {
+          name      = "FS_CALL_PLATFORM_PASSWORD",
+          valueFrom = var.call_platform_password_parameter.arn
         }
       ],
       environment = [
@@ -281,6 +293,18 @@ resource "aws_ecs_task_definition" "this" {
         {
           name  = "FS_INTERNAL_SIP_PORT",
           value = tostring(var.internal_sip_port)
+        },
+        {
+          name  = "FS_CALL_PLATFORM_HOST",
+          value = var.call_platform_host
+        },
+        {
+          name  = "FS_CALL_PLATFORM_USERNAME",
+          value = var.call_platform_username
+        },
+        {
+          name  = "FS_REGION",
+          value = var.region.alias
         }
       ]
     },

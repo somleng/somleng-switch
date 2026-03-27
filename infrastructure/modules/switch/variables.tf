@@ -5,7 +5,8 @@ variable "lb_rule_index" {}
 variable "region" {}
 variable "call_platform_password_parameter" {}
 variable "rating_engine_configuration" {}
-
+variable "call_platform_host" {}
+variable "call_platform_username" {}
 variable "target_group_name" {
   default = null
 }

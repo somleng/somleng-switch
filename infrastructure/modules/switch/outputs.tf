@@ -82,6 +82,14 @@ output "freeswitch_event_socket_port" {
   value = var.freeswitch_event_socket_port
 }
 
+output "call_platform_host" {
+  value = var.call_platform_host
+}
+
+output "call_platform_username" {
+  value = var.call_platform_username
+}
+
 output "call_platform_password_parameter" {
   value = var.call_platform_password_parameter
 }

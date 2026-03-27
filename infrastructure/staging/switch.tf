@@ -22,6 +22,8 @@ module "switch" {
   sip_port                                           = var.sip_port
   internal_sip_port                                  = var.internal_sip_port
   sip_alternative_port                               = var.sip_alternative_port
+  call_platform_host                                 = "https://api-staging.somleng.org"
+  call_platform_username                             = "services"
   call_platform_password_parameter                   = data.aws_ssm_parameter.call_platform_password
   services_function                                  = module.services
   internal_route53_zone                              = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_internal_somleng_org
@@ -67,6 +69,8 @@ module "switch_helium" {
   sip_port                                      = module.switch.sip_port
   internal_sip_port                             = module.switch.internal_sip_port
   sip_alternative_port                          = module.switch.sip_alternative_port
+  call_platform_host                            = module.switch.call_platform_host
+  call_platform_username                        = module.switch.call_platform_username
   call_platform_password_parameter              = module.switch.call_platform_password_parameter
   services_function                             = module.switch.services_function
   app_image                                     = module.switch.app_image
