@@ -275,7 +275,7 @@ rating_engine_api () {
   local verbose="${3:-false}"
 
   response=$(
-    curl -s -X POST "http://rating-engine:$RATING_ENGINE_HTTP_PORT/jsonrpc" \
+    curl -s -X POST "http://rating-engine-api:$RATING_ENGINE_HTTP_PORT/jsonrpc" \
       -H "Content-Type: application/json" \
       -u "$RATING_ENGINE_HTTP_USER:$RATING_ENGINE_HTTP_PASSWORD" \
       -d "{
