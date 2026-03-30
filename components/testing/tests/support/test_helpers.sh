@@ -101,12 +101,16 @@ rating_engine_create_default_charger () {
 rating_engine_create_destination () {
   local tpid="${1:-"TEST"}"
   local id="${2:-"TEST_CATCHALL"}"
+  local prefixes="${3:-"0,1,2,3,4,5,6,7,8,9"}"
+  local json_prefixes
+  json_prefixes=$(printf '"%s",' ${prefixes//,/ })
+  json_prefixes="[${json_prefixes%,}]"
 
   rating_engine_api "APIerSv2.SetTPDestination" "[
     {
       \"TPid\": \"$tpid\",
       \"ID\": \"$id\",
-      \"Prefixes\": [\"0\",\"1\",\"2\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\"]
+      \"Prefixes\": $json_prefixes
     }
   ]"
 }
@@ -160,21 +164,34 @@ rating_engine_create_destination_rate () {
 }
 
 rating_engine_create_rating_plan () {
-  local tpid="${1:-"TEST"}"
-  local id="${2:-"TEST_CATCHALL"}"
-  local destination_rates_id="${3:-"TEST_CATCHALL"}"
+  local tpid="${1:-TEST}"
+  local id="${2:-TEST_CATCHALL}"
+  local destination_rates_ids="${3:-TEST_CATCHALL}"
+
+  # Convert CSV into space-separated list
+  local dest_rates
+  dest_rates=$(echo "$destination_rates_ids" | tr ',' ' ')
+
+  # Build JSON bindings array
+  local bindings="["
+  local first=true
+  local weight=10
+  for dr in $dest_rates; do
+    if [ "$first" = true ]; then
+      first=false
+    else
+      bindings="$bindings,"
+    fi
+    bindings="$bindings{\"TimingId\":\"*any\",\"Weight\":$weight,\"DestinationRatesId\":\"$dr\"}"
+    weight=$((weight + 10))
+  done
+  bindings="$bindings]"
 
   rating_engine_api "APIerSv1.SetTPRatingPlan" "[
     {
       \"TPid\": \"$tpid\",
       \"ID\": \"$id\",
-      \"RatingPlanBindings\": [
-        {
-          \"TimingId\": \"*any\",
-          \"Weight\": 10,
-          \"DestinationRatesId\": \"$destination_rates_id\"
-        }
-      ]
+      \"RatingPlanBindings\": $bindings
     }
   ]"
 }

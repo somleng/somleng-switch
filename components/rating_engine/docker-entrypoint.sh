@@ -109,22 +109,10 @@ if [ ! -f "$CONFIG_FILE" ]; then
       },
       "caches": {
         "partitions": {
-          "*destinations": {
-            "ttl": "${CACHE_TTL:-"60s"}",
-          },
           "*reverse_destinations": {
             "ttl": "${CACHE_TTL:-"60s"}",
           },
           "*rating_plans": {
-            "ttl": "${CACHE_TTL:-"60s"}",
-          },
-          "*rating_profiles": {
-            "ttl": "${CACHE_TTL:-"60s"}",
-          },
-          "*charger_profiles": {
-            "ttl": "${CACHE_TTL:-"60s"}",
-          },
-          "*load_ids": {
             "ttl": "${CACHE_TTL:-"60s"}",
           }
         }

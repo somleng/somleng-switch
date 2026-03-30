@@ -106,3 +106,38 @@ if [ "$account_balance" != "488" ]; then
   echo "Account balance is ${account_balance}"
   exit 1
 fi
+
+if ! rating_engine_create_destination "$CARRIER_SID" "TEST_PROMO" "3333"; then
+  echo "Failed to create destination. Exiting."
+  exit 1
+fi
+
+if ! rating_engine_create_rate "$CARRIER_SID" "TEST_PROMO" "60s" 4 "60s"; then
+  echo "Failed to create rate. Exiting."
+  exit 1
+fi
+
+if ! rating_engine_create_destination_rate "$CARRIER_SID" "TEST_PROMO" "TEST_PROMO" "TEST_PROMO"; then
+  echo "Failed to create destination rate. Exiting."
+  exit 1
+fi
+
+if ! rating_engine_create_rating_plan "$CARRIER_SID" "TEST_CATCHALL" "TEST_PROMO,TEST_CATCHALL"; then
+  echo "Failed to create rating plan. Exiting."
+  exit 1
+fi
+
+if ! rating_engine_load_tariff_plan "$CARRIER_SID"; then
+  echo "Failed to load tariff plan. Exiting."
+  exit 1
+fi
+
+clear_sipp_log_file "$scenario"
+sipp -sf $scenario public_gateway:5060 -s 3333 -m 1 -trace_msg > /dev/null
+
+account_response=$(rating_engine_get_account "$CARRIER_SID" "$ACCOUNT_SID")
+account_balance=$(echo "$account_response" | jq -r '.result.BalanceMap["*monetary"][0].Value')
+if [ "$account_balance" != "484" ]; then
+  echo "Account balance is ${account_balance}"
+  exit 1
+fi
