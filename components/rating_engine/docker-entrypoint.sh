@@ -106,6 +106,28 @@ if [ ! -f "$CONFIG_FILE" ]; then
       "schedulers": {
         "enabled": true,
         "cdrs_conns": ["${CONNECTION_MODE}"]
+      },
+      "caches": {
+        "partitions": {
+          "*destinations": {
+            "ttl": "${CACHE_TTL:-"60s"}",
+          },
+          "*reverse_destinations": {
+            "ttl": "${CACHE_TTL:-"60s"}",
+          },
+          "*rating_plans": {
+            "ttl": "${CACHE_TTL:-"60s"}",
+          },
+          "*rating_profiles": {
+            "ttl": "${CACHE_TTL:-"60s"}",
+          },
+          "*charger_profiles": {
+            "ttl": "${CACHE_TTL:-"60s"}",
+          },
+          "*load_ids": {
+            "ttl": "${CACHE_TTL:-"60s"}",
+          }
+        }
       }
     }
 EOF

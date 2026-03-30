@@ -179,6 +179,7 @@ services:
       DATADB_PORT: 6379
       DATADB_DBNAME: 2
       CONNECTION_MODE: "*localhost"
+      CACHE_TTL: "0s"
       LOG_LEVEL: 7
       BOOTSTRAP_DB: "true"
       SERVER_MODE: "engine"
