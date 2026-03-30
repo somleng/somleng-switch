@@ -69,7 +69,8 @@ if [ ! -f "$CONFIG_FILE" ]; then
         "create_cdr": true,
         "extra_fields": [
           "~*req.variable_sip_h_X-Somleng-CallSid",
-          "~*req.variable_sip_rh_X-Somleng-CallSid"
+          "~*req.variable_sip_rh_X-Somleng-CallSid",
+          "~*req.variable_somleng_call_sid"
         ],
         "event_socket_conns": [
           {

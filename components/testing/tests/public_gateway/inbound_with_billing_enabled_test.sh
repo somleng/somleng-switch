@@ -81,3 +81,9 @@ if [ -z "$cdr_call_sid" ] || [ "$cdr_call_sid" = "null" ]; then
   echo "CDR: ${cdrs_response}"
   exit 1
 fi
+
+cdr_call_sid=$(echo "$cdrs_response" | jq -r '.result[0].ExtraFields["variable_somleng_call_sid"]')
+if [ -z "$cdr_call_sid" ] || [ "$cdr_call_sid" = "null" ]; then
+  echo "CDR: ${cdrs_response}"
+  exit 1
+fi
