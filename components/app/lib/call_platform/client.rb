@@ -36,19 +36,19 @@ module CallPlatform
     end
 
     def notify_call_event(params)
-      notify_request("/services/phone_call_events", params)
+      notify_request("/phone_call_events", params)
     end
 
     def notify_tts_event(params)
-      notify_request("/services/tts_events", params)
+      notify_request("/tts_events", params)
     end
 
     def notify_media_stream_event(params)
-      notify_request("/services/media_stream_events", params)
+      notify_request("/media_stream_events", params)
     end
 
     def create_outbound_calls(params)
-      json_response = make_request("/services/outbound_phone_calls", params: params.compact)
+      json_response = make_request("/outbound_phone_calls", params: params.compact)
 
       json_response.fetch("phone_calls").map do |phone_call_response|
         billing_parameters = phone_call_response.fetch("billing_parameters")
@@ -69,21 +69,21 @@ module CallPlatform
     end
 
     def create_recording(params)
-      json_response = make_request("/services/recordings", params:)
+      json_response = make_request("/recordings", params:)
       RecordingResponse.new(
         id: json_response.fetch("sid")
       )
     end
 
     def create_media_stream(params)
-      json_response = make_request("/services/media_streams", params:)
+      json_response = make_request("/media_streams", params:)
       AudioStreamResponse.new(
         id: json_response.fetch("sid")
       )
     end
 
     def update_recording(recording_id, params)
-      json_response = make_request("/services/recordings/#{recording_id}", http_method: :patch, params: params)
+      json_response = make_request("/recordings/#{recording_id}", http_method: :patch, params: params)
       RecordingResponse.new(
         id: json_response.fetch("sid"),
         url: json_response.fetch("url")

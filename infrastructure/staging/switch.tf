@@ -1,7 +1,7 @@
 module "switch" {
   source = "../modules/switch"
 
-  json_cdr_url                                       = "https://api-staging.somleng.org/services/call_data_records"
+  json_cdr_url                                       = "https://services-staging.somleng.org/call_data_records"
   target_group_name                                  = "switch-staging-internal"
   cache_name                                         = "switch-staging-cache"
   cache_security_group_name                          = "switch-staging-efs-cache"
@@ -22,7 +22,7 @@ module "switch" {
   sip_port                                           = var.sip_port
   internal_sip_port                                  = var.internal_sip_port
   sip_alternative_port                               = var.sip_alternative_port
-  call_platform_host                                 = "https://api-staging.somleng.org"
+  call_platform_host                                 = "https://services-staging.somleng.org"
   call_platform_username                             = "services"
   call_platform_password_parameter                   = data.aws_ssm_parameter.call_platform_password
   services_function                                  = module.services

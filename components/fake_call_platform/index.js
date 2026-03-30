@@ -91,27 +91,27 @@ const server = createServer(async (req, res) => {
     res.setHeader("Content-Type", "application/json");
 
     switch (req.url) {
-      case "/services/phone_call_events":
-      case "/services/tts_events":
-      case "/services/media_stream_events":
+      case "/phone_call_events":
+      case "/tts_events":
+      case "/media_stream_events":
         assertHTTPMethod(req, "POST");
 
         res.end(JSON.stringify({}));
         break;
-      case "/services/inbound_phone_calls":
+      case "/inbound_phone_calls":
         assertHTTPMethod(req, "POST");
         await handleInboundPhoneCalls(req, res);
         break;
-      case "/services/outbound_phone_calls":
+      case "/outbound_phone_calls":
         assertHTTPMethod(req, "POST");
         await handleOutboundPhoneCalls(req, res);
         break;
-      case "/services/media_streams":
+      case "/media_streams":
         assertHTTPMethod(req, "POST");
         await handleMediaStreams(req, res);
         break;
       default:
-        if (req.url.startsWith("/services/recordings")) {
+        if (req.url.startsWith("/recordings")) {
           await handleRecordings(req, res);
           return;
         }
@@ -227,7 +227,7 @@ const handleOutboundPhoneCalls = async (req, res) => {
 };
 
 const handleRecordings = async (req, res) => {
-  if (req.url === "/services/recordings") {
+  if (req.url === "/recordings") {
     assertHTTPMethod(req, "POST");
   } else {
     assertHTTPMethod(req, "PATCH");

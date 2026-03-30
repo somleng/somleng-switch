@@ -102,7 +102,7 @@ RSpec.describe CallController, type: :call_controller do
 
           controller.run
 
-          expect(WebMock).to(have_requested(:post, "http://api.lvh.me:3000/services/recordings").with { |request|
+          expect(WebMock).to(have_requested(:post, "http://services.lvh.me:3000/recordings").with { |request|
             params = JSON.parse(request.body)
 
             expect(params).to include(

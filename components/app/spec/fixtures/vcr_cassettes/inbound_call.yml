@@ -57,7 +57,7 @@ http_interactions:
   recorded_at: Mon, 16 Mar 2026 16:55:38 GMT
 - request:
     method: post
-    uri: http://api.lvh.me:3000/services/tts_events
+    uri: http://services.lvh.me:3000/tts_events
     body:
       encoding: UTF-8
       string: '{"phone_call":"9802a301-aed5-41c8-b662-e3d3180a3eb4","tts_voice":"Basic.Kal","num_chars":43}'

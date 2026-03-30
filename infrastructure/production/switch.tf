@@ -1,7 +1,7 @@
 module "switch" {
   source = "../modules/switch"
 
-  json_cdr_url                                       = "https://api.somleng.org/services/call_data_records"
+  json_cdr_url                                       = "https://services.somleng.org/call_data_records"
   target_group_name                                  = "switch-internal"
   cache_name                                         = "somleng-switch-cache"
   cache_security_group_name                          = "switch-efs-cache"
@@ -20,6 +20,8 @@ module "switch" {
   sip_port                                           = var.sip_port
   sip_alternative_port                               = var.sip_alternative_port
   freeswitch_event_socket_port                       = var.freeswitch_event_socket_port
+  call_platform_host                                 = "https://services.somleng.org"
+  call_platform_username                             = "services"
   call_platform_password_parameter                   = data.aws_ssm_parameter.call_platform_password
   services_function                                  = module.services
   internal_route53_zone                              = data.terraform_remote_state.core_infrastructure.outputs.route53_zone_internal_somleng_org
@@ -63,6 +65,8 @@ module "switch_helium" {
   sip_port                                      = module.switch.sip_port
   sip_alternative_port                          = module.switch.sip_alternative_port
   freeswitch_event_socket_port                  = module.switch.freeswitch_event_socket_port
+  call_platform_host                            = module.switch.call_platform_host
+  call_platform_username                        = module.switch.call_platform_username
   call_platform_password_parameter              = module.switch.call_platform_password_parameter
   services_function                             = module.switch.services_function
   app_image                                     = module.switch.app_image

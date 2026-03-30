@@ -102,7 +102,7 @@ services:
       FS_MOD_RAYO_MAX_IDLE_SECS: 5
       FS_LOG_LEVEL: "debug"
       FS_MOD_JSON_CDR_URL: "http://testing:9000"
-      FS_CALL_PLATFORM_HOST: http://fake_call_platform:3000
+      FS_CALL_PLATFORM_HOST: http://services.fake_call_platform:3000
       FS_CALL_PLATFORM_USERNAME: "services"
       FS_CALL_PLATFORM_PASSWORD: "password"
       FS_REGION: "hydrogen"
@@ -178,7 +178,7 @@ services:
       REDIS_URL: "redis://redis:6379/1"
       FS_HOST: "freeswitch"
       FS_PORT: 5060
-      CALL_PLATFORM_HOST: http://fake_call_platform:3000
+      CALL_PLATFORM_HOST: http://services.fake_call_platform:3000
     healthcheck:
       test:
         [

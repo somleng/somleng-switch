@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: http://api.lvh.me:3000/services/outbound_phone_calls
+    uri: http://services.lvh.me:3000/outbound_phone_calls
     body:
       encoding: UTF-8
       string: '{"destinations":["855715100860"],"parent_call_sid":"f371391e-25cc-4ba6-a752-ec745a59cf06","from":"85523238265"}'

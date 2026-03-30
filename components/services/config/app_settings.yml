@@ -1,5 +1,5 @@
 default: &default
-  call_platform_host: '<%= ENV.fetch("CALL_PLATFORM_HOST", "https://api.somleng.org") %>'
+  call_platform_host: '<%= ENV.fetch("CALL_PLATFORM_HOST", "https://services.somleng.org") %>'
   call_platform_username: '<%= ENV.fetch("CALL_PLATFORM_USERNAME", "services") %>'
 
 production: &production
@@ -12,7 +12,7 @@ production: &production
 
 staging:
   <<: *production
-  call_platform_host: '<%= ENV.fetch("CALL_PLATFORM_HOST", "https://api-staging.somleng.org") %>'
+  call_platform_host: '<%= ENV.fetch("CALL_PLATFORM_HOST", "https://services-staging.somleng.org") %>'
 
 development: &development
   <<: *default
