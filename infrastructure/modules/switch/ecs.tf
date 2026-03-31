@@ -412,7 +412,7 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name  = "LOG_LEVEL",
-          value = "3"
+          value = tostring(var.rating_engine_configuration.log_level)
         },
         {
           name  = "STORDB_DBNAME",

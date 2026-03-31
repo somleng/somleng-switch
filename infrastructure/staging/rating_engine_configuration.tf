@@ -9,4 +9,5 @@ module "rating_engine_configuration" {
   stordb_port               = data.terraform_remote_state.core_infrastructure.outputs.db_staging.this.port
   stordb_user               = data.terraform_remote_state.core_infrastructure.outputs.db_staging.this.master_username
   datadb_cache              = module.redis
+  log_level                 = 7
 }

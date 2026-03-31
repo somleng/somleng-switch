@@ -26,3 +26,7 @@ variable "json_rpc_username" {
 variable "http_port" {
   default = 2080
 }
+
+variable "log_level" {
+  default = 3
+}

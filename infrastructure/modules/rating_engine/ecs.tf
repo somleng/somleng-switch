@@ -107,6 +107,10 @@ resource "aws_ecs_task_definition" "this" {
         {
           name  = "DATADB_TLS",
           value = tostring(var.configuration.datadb_tls)
+        },
+        {
+          name = "LOG_LEVEL",
+          value = tostring(var.configuration.log_level)
         }
       ]
     }

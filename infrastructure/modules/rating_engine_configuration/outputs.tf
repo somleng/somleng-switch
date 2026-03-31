@@ -43,3 +43,6 @@ output "json_rpc_username" {
 output "http_port" {
   value = var.http_port
 }
+output "log_level" {
+  value = var.log_level
+}
