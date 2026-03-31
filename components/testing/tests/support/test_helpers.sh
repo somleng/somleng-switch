@@ -203,6 +203,7 @@ rating_engine_create_rating_profile () {
   local rating_plan_id="${4:-"TEST_CATCHALL"}"
   local subject="${5:-"*any"}"
   local load_id="${6:-"somleng.org"}"
+  local overwrite="${7:-true}"
 
   rating_engine_api "APIerSv1.SetTPRatingProfile" "[
     {
@@ -210,7 +211,7 @@ rating_engine_create_rating_profile () {
         {
           \"RatingPlanId\": \"$rating_plan_id\",
           \"FallbackSubjects\": null,
-          \"ActivationTime\": null
+          \"ActivationTime\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"
         }
       ],
       \"LoadId\": \"$load_id\",
@@ -218,6 +219,23 @@ rating_engine_create_rating_profile () {
       \"TPid\": \"$tpid\",
       \"Tenant\": \"$tenant\",
       \"Subject\": \"$subject\"
+    }
+  ]"
+
+  rating_engine_api "APIerSv1.SetRatingProfile" "[
+    {
+      \"RatingPlanActivations\": [
+        {
+          \"RatingPlanId\": \"$rating_plan_id\",
+          \"FallbackSubjects\": null,
+          \"ActivationTime\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"
+        }
+      ],
+      \"LoadId\": \"$load_id\",
+      \"Category\": \"$category\",
+      \"Tenant\": \"$tenant\",
+      \"Subject\": \"$subject\",
+      \"Overwrite\": $overwrite
     }
   ]"
 }
