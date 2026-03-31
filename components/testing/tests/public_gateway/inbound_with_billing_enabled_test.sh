@@ -42,11 +42,6 @@ if ! rating_engine_create_rating_plan "$CARRIER_SID" "TEST_CATCHALL" "TEST_CATCH
   exit 1
 fi
 
-if ! rating_engine_load_tariff_plan "$CARRIER_SID"; then
-  echo "Failed to load tariff plan. Exiting."
-  exit 1
-fi
-
 if ! rating_engine_create_rating_profile "$CARRIER_SID" "$CARRIER_SID" "inbound_calls" "TEST_CATCHALL" "$ACCOUNT_SID"; then
   echo "Failed to create rating profile. Exiting."
   exit 1

@@ -205,6 +205,8 @@ rating_engine_create_rating_profile () {
   local load_id="${6:-"somleng.org"}"
   local overwrite="${7:-true}"
 
+  rating_engine_load_tariff_plan "$tpid"
+
   rating_engine_api "APIerSv1.SetTPRatingProfile" "[
     {
       \"RatingPlanActivations\": [
