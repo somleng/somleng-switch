@@ -110,10 +110,13 @@ if [ ! -f "$CONFIG_FILE" ]; then
       "caches": {
         "partitions": {
           "*reverse_destinations": {
-            "ttl": "${CACHE_TTL:-"60s"}",
+            "ttl": "${CACHE_TTL:-"60s"}"
           },
           "*rating_plans": {
-            "ttl": "${CACHE_TTL:-"60s"}",
+            "ttl": "${CACHE_TTL:-"60s"}"
+          },
+          "*rating_profiles": {
+            "ttl": "${CACHE_TTL:-"60s"}"
           }
         }
       }

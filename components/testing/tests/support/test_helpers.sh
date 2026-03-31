@@ -222,6 +222,29 @@ rating_engine_create_rating_profile () {
   ]"
 }
 
+rating_engine_remove_rating_profile () {
+  local tpid="${1:-"TEST"}"
+  local tenant="${2:-"TEST"}"
+  local category="${3:-"outbound_calls"}"
+  local subject="${4:-"*any"}"
+  local load_id="${5:-"somleng.org"}"
+
+  rating_engine_api "APIerSv1.RemoveTPRatingProfile" "[
+    {
+      \"TPid\": \"$tpid\",
+      \"RatingProfileId\": \"$load_id:$tenant:$category:$subject\"
+    }
+  ]"
+
+  rating_engine_api "APIerSv1.RemoveRatingProfile" "[
+    {
+      \"Tenant\": \"$tenant\",
+      \"Category\": \"$category\",
+      \"Subject\": \"$subject\"
+    }
+  ]"
+}
+
 rating_engine_load_tariff_plan () {
   local tpid="${1:-"TEST"}"
 

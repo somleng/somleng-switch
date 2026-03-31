@@ -141,3 +141,18 @@ if [ "$account_balance" != "484" ]; then
   echo "Account balance is ${account_balance}"
   exit 1
 fi
+
+if ! rating_engine_remove_rating_profile "$CARRIER_SID" "$CARRIER_SID" "inbound_calls" "$ACCOUNT_SID"; then
+  echo "Failed to remove tariff profile. Exiting."
+  exit 1
+fi
+
+clear_sipp_log_file "$scenario"
+sipp -sf $scenario public_gateway:5060 -s 3333 -m 1 -trace_msg > /dev/null
+
+account_response=$(rating_engine_get_account "$CARRIER_SID" "$ACCOUNT_SID")
+account_balance=$(echo "$account_response" | jq -r '.result.BalanceMap["*monetary"][0].Value')
+if [ "$account_balance" != "484" ]; then
+  echo "Account balance is ${account_balance}"
+  exit 1
+fi
