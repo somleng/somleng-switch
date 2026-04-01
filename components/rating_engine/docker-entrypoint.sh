@@ -16,7 +16,9 @@ if [ ! -f "$CONFIG_FILE" ]; then
       "general": {
         "log_level": ${LOG_LEVEL:-3},
         "logger": "*stdout",
-        "default_request_type": "*postpaid"
+        "default_request_type": "*postpaid",
+        "connect_timeout": "${CONNECT_TIMEOUT:-"1s"}",
+        "reply_timeout": "${REPLY_TIMEOUT:-"2s"}"
       },
       "stor_db": {
         "db_type": "*postgres",

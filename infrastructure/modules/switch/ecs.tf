@@ -415,6 +415,14 @@ resource "aws_ecs_task_definition" "this" {
           value = tostring(var.rating_engine_configuration.log_level)
         },
         {
+          name  = "CONNECT_TIMEOUT",
+          value = var.rating_engine_configuration.connect_timeout
+        },
+        {
+          name  = "REPLY_TIMEOUT",
+          value = var.rating_engine_configuration.reply_timeout
+        },
+        {
           name  = "STORDB_DBNAME",
           value = var.rating_engine_configuration.stordb_dbname
         },

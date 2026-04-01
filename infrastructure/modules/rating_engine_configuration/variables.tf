@@ -30,3 +30,11 @@ variable "http_port" {
 variable "log_level" {
   default = 3
 }
+
+variable "connect_timeout" {
+  default = "1s"
+}
+
+variable "reply_timeout" {
+  default = "2s"
+}

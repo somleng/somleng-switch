@@ -46,3 +46,9 @@ output "http_port" {
 output "log_level" {
   value = var.log_level
 }
+output "connect_timeout" {
+  value = var.connect_timeout
+}
+output "reply_timeout" {
+  value = var.reply_timeout
+}
