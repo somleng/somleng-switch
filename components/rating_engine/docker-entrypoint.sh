@@ -124,7 +124,12 @@ if [ ! -f "$CONFIG_FILE" ]; then
       },
       "rpc_conns": {
         "${CONNECTION_MODE}": {
-          "reply_timeout": "${REPLY_TIMEOUT:-"2s"}"
+          "conns": [
+            {
+              "connect_timeout": "${CONNECT_TIMEOUT:-"1s"}",
+              "reply_timeout": "${REPLY_TIMEOUT:-"2s"}"
+            }
+          ]
         }
       }
     }
