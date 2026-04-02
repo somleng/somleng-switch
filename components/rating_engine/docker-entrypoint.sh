@@ -121,16 +121,6 @@ if [ ! -f "$CONFIG_FILE" ]; then
             "ttl": "${CACHE_TTL:-"60s"}"
           }
         }
-      },
-      "rpc_conns": {
-        "${CONNECTION_MODE}": {
-          "conns": [
-            {
-              "connect_timeout": "${CONNECT_TIMEOUT:-"1s"}",
-              "reply_timeout": "${REPLY_TIMEOUT:-"2s"}"
-            }
-          ]
-        }
       }
     }
 EOF

@@ -36,7 +36,7 @@ ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 FROM runtime AS debug
 
-RUN apk add --no-cache ngrep jq postgresql-client
+RUN apk add --no-cache ngrep jq postgresql-client iproute2
 
 FROM runtime
 
