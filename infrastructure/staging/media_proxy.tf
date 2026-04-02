@@ -10,6 +10,6 @@ module "media_proxy" {
   app_image         = data.terraform_remote_state.core.outputs.media_proxy_ecr_repository.this.repository_url
   services_function = module.services
 
-  min_tasks = 0
+  min_tasks = 1
   max_tasks = 2
 }
