@@ -13,7 +13,7 @@ module "client_gateway" {
 
   app_image       = data.terraform_remote_state.core.outputs.client_gateway_ecr_repository.this.repository_url
   scheduler_image = data.terraform_remote_state.core.outputs.gateway_scheduler_ecr_repository.this.repository_url
-  min_tasks       = 1
+  min_tasks       = 0
   max_tasks       = 2
 
   assign_eips = false

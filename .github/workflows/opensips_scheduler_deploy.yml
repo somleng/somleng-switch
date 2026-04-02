@@ -19,7 +19,7 @@ jobs:
           matrixSource=$(cat << EOF
           [
             {
-              "branch": "add_billing_engine",
+              "branch": "develop",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}"
             },

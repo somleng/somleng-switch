@@ -11,5 +11,5 @@ module "rating_engine" {
 
   lb_rule_index = 150
 
-  min_tasks = 1
+  min_tasks = 0
 }

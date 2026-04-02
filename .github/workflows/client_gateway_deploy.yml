@@ -25,7 +25,7 @@ jobs:
           [
             {
               "identifier": "client-gateway-staging",
-              "branch": "add_billing_engine",
+              "branch": "develop",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "client-gateway-staging",

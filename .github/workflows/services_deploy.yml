@@ -22,7 +22,7 @@ jobs:
             {
               "identifier": "switch-services-staging",
               "environment": "staging",
-              "branch": "add_billing_engine",
+              "branch": "develop",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}"
             },
