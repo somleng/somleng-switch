@@ -9,6 +9,21 @@ module SomlengAdhearsion
 
       set :host_authorization, { permitted_hosts: [] }
 
+      set :dump_errors, true
+      set :show_exceptions, false
+
+      error do
+        error_details = env['rack.errors']
+        error_details.rewind
+
+        logger = Logger.new($stdout)
+        logger.level = AppSettings.fetch(:ahn_core_loglevel)
+        logger.error error_details.read
+
+        "Internal Server Error"
+      end
+
+
       configure :development do
         require "sinatra/reloader"
 

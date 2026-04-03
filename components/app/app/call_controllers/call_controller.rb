@@ -8,6 +8,7 @@ class CallController < Adhearsion::CallController
   instrument_method
   def run
     @call_properties = build_call_properties
+    enable_billing if call_properties.sip_headers.billing_enabled?
 
     twiml = prepare_twiml(call_properties)
     execute_twiml(twiml)
@@ -26,14 +27,20 @@ class CallController < Adhearsion::CallController
   end
 
   def call_platform_client
-    if CallPlatform.configuration.stub_responses
-      CallPlatform::FakeClient.new
-    else
-      CallPlatform::Client.new
-    end
+    CallPlatform::Client.new
   end
 
   private
+
+  def enable_billing
+    call.write_command(
+      Rayo::Command::SetVar.new(
+        uuid: call.id,
+        name: "cgr_reqtype",
+        value: "*#{call_properties.sip_headers.billing_mode}"
+      )
+    )
+  end
 
   def register_event_handlers
     NotifyCallEvent.subscribe_events(call, client: call_platform_client)
@@ -42,36 +49,29 @@ class CallController < Adhearsion::CallController
   def build_call_properties
     return metadata[:call_properties] if metadata[:call_properties].present?
 
-    call_serializer = CallSerializer.new(call)
-
-    response = call_platform_client.create_inbound_call(
-      to: call.variables.fetch("variable_sip_h_x_somleng_callee_identity"),
-      from: call.variables.fetch("variable_sip_h_x_somleng_caller_identity"),
-      external_id: call_serializer.id,
-      host: call_serializer.host,
-      region: AppSettings.fetch(:region),
-      source_ip: call.variables["variable_sip_h_x_src_ip"] || call.variables["variable_sip_via_host"],
-      client_identifier: call.variables["variable_sip_h_x_somleng_client_identifier"],
-      variables: {
-        sip_from_host: call.variables["variable_sip_from_host"],
-        sip_to_host: call.variables["variable_sip_to_host"],
-        sip_network_ip: call.variables["variable_sip_network_ip"],
-        sip_via_host: call.variables["variable_sip_via_host"]
-      }
-    )
     CallProperties.new(
-      voice_url: response.voice_url,
-      voice_method: response.voice_method,
-      twiml: response.twiml,
-      account_sid: response.account_sid,
-      auth_token: response.auth_token,
-      call_sid: response.call_sid,
-      direction: response.direction,
-      api_version: response.api_version,
-      to: response.to,
-      from: response.from,
-      default_tts_voice: response.default_tts_voice,
-      sip_headers: SIPHeaders.new(call_sid: response.call_sid, account_sid: response.account_sid)
+      voice_url: call.variables["variable_somleng_voice_url"],
+      voice_method: call.variables["variable_somleng_voice_method"],
+      twiml: call.variables["variable_somleng_twiml"],
+      account_sid: call.variables.fetch("variable_somleng_account_sid"),
+      auth_token: call.variables.fetch("variable_somleng_account_auth_token"),
+      call_sid: call.variables.fetch("variable_somleng_call_sid"),
+      direction: call.variables.fetch("variable_somleng_direction"),
+      api_version: call.variables.fetch("variable_somleng_api_version"),
+      to: call.variables.fetch("variable_somleng_to"),
+      from: call.variables.fetch("variable_somleng_from"),
+      default_tts_voice: call.variables.fetch("variable_somleng_default_tts_voice"),
+      sip_headers: SIPHeaders.new(
+        call_sid: call.variables.fetch("variable_somleng_call_sid"),
+        account_sid: call.variables.fetch("variable_somleng_account_sid"),
+        carrier_sid: call.variables.fetch("variable_somleng_carrier_sid"),
+        call_direction: call.variables.fetch("variable_somleng_call_direction"),
+        billing_enabled: call.variables.fetch("variable_somleng_billing_enabled"),
+        billing_mode: call.variables.fetch("variable_somleng_billing_mode"),
+        billing_category: call.variables.fetch("variable_somleng_billing_category"),
+        proxy_address: nil,
+        external_profile: nil
+      )
     )
   end
 
@@ -115,8 +115,7 @@ class CallController < Adhearsion::CallController
       call_properties:,
       phone_call: call,
       call_platform_client:,
-      logger:,
-      stub_call_platform_responses: CallPlatform.configuration.stub_responses
+      logger:
     )
   end
 

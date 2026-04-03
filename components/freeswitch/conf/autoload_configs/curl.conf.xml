@@ -1,0 +1,5 @@
+<configuration name="curl.conf" description="cURL module">
+  <settings>
+    <param name="validate-certs" value="true"/>
+  </settings>
+</configuration>

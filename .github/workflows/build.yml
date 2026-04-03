@@ -1,0 +1,63 @@
+name: Build
+on: push
+
+env:
+  CI: true
+
+jobs:
+  s3_mpeg:
+    uses: ./.github/workflows/s3_mpeg.yml
+    secrets: inherit
+
+  services:
+    uses: ./.github/workflows/services.yml
+    secrets: inherit
+
+  switch:
+    uses: ./.github/workflows/switch.yml
+    secrets: inherit
+
+  integration_tests:
+    uses: ./.github/workflows/integration_tests.yml
+    needs: [switch, s3_mpeg, services]
+    secrets: inherit
+
+  deploy_opensips_scheduler:
+    uses: ./.github/workflows/opensips_scheduler_deploy.yml
+    needs: integration_tests
+    secrets: inherit
+
+  deploy_s3_mpeg:
+    uses: ./.github/workflows/s3_mpeg_deploy.yml
+    needs: integration_tests
+    secrets: inherit
+
+  deploy_services:
+    uses: ./.github/workflows/services_deploy.yml
+    needs: integration_tests
+    secrets: inherit
+
+  deploy_public_gateway:
+    uses: ./.github/workflows/public_gateway_deploy.yml
+    needs: [deploy_opensips_scheduler]
+    secrets: inherit
+
+  deploy_client_gateway:
+    uses: ./.github/workflows/client_gateway_deploy.yml
+    needs: [deploy_opensips_scheduler]
+    secrets: inherit
+
+  deploy_media_proxy:
+    uses: ./.github/workflows/media_proxy_deploy.yml
+    needs: integration_tests
+    secrets: inherit
+
+  deploy_rating_engine:
+    uses: ./.github/workflows/rating_engine_deploy.yml
+    needs: integration_tests
+    secrets: inherit
+
+  deploy_switch:
+    uses: ./.github/workflows/switch_deploy.yml
+    needs: deploy_rating_engine
+    secrets: inherit

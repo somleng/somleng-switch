@@ -1,9 +1,90 @@
 <include>
   <context name="default">
-    <extension name="adhearsion">
-      <action application="start_dtmf"/>
+    <extension name="debug" continue="true">
       <condition>
-        <action application="rayo"/>
+        <action application="info" />
+      </condition>
+    </extension>
+
+    <extension name="Outbound_Setup" continue="true">
+      <condition field="${sip_h_X-Somleng-CallDirection}" expression="^outbound$">
+        <action application="set"
+          data="bridge_dial_string=sofia/${sip_h_X-Somleng-ExternalProfile}/${sip_req_uri}${sip_h_X-Somleng-ProxyAddress}" />
+      </condition>
+    </extension>
+
+    <extension name="Outbound_Billing_Disabled">
+      <condition field="${sip_h_X-Somleng-CallDirection}" expression="^outbound$" />
+      <condition field="${sip_h_X-Somleng-BillingEnabled}" expression="^false$">
+        <action application="log" data="NOTICE Billing is disabled for this call" />
+
+        <action application="unset" data="sip_h_X-Somleng-AccountSid" />
+        <action application="unset" data="sip_h_X-Somleng-CarrierSid" />
+        <action application="unset" data="sip_h_X-Somleng-CallDirection" />
+        <action application="unset" data="sip_h_X-Somleng-BillingEnabled" />
+        <action application="unset" data="sip_h_X-Somleng-BillingMode" />
+        <action application="unset" data="sip_h_X-Somleng-BillingCategory" />
+        <action application="unset" data="sip_h_X-Somleng-ProxyAddress" />
+        <action application="unset" data="sip_h_X-Somleng-ExternalProfile" />
+
+        <action application="set" data="cgr_reqtype=*none" />
+
+        <action application="bridge" data="${bridge_dial_string}" />
+      </condition>
+    </extension>
+
+    <extension name="Outbound_CGRateS_Auth">
+      <condition field="${sip_h_X-Somleng-CallDirection}" expression="^outbound$" />
+      <condition field="${cgr_notify}" expression="^$">
+        <action application="log" data="NOTICE In the CGRateS_Auth block parking the call" />
+        <action application="set" data="cgr_tenant=${sip_h_X-Somleng-CarrierSid}" />
+        <action application="set" data="cgr_account=${sip_h_X-Somleng-AccountSid}" />
+        <action application="set" data="cgr_category=${sip_h_X-Somleng-BillingCategory}" />
+        <action application="set" data="cgr_reqtype=*${sip_h_X-Somleng-BillingMode}" />
+        <action application="park" />
+      </condition>
+    </extension>
+
+    <extension name="Outbound_CGRateS_Auth_Ok">
+      <condition field="${sip_h_X-Somleng-CallDirection}" expression="^outbound$" />
+      <condition field="${cgr_notify}" expression="^AUTH_OK$">
+        <action application="log" data="NOTICE CGRateS authorization successful!" />
+        <action application="unset" data="sip_h_X-Somleng-AccountSid" />
+        <action application="unset" data="sip_h_X-Somleng-CarrierSid" />
+        <action application="unset" data="sip_h_X-Somleng-CallDirection" />
+        <action application="unset" data="sip_h_X-Somleng-BillingEnabled" />
+        <action application="unset" data="sip_h_X-Somleng-BillingMode" />
+        <action application="unset" data="sip_h_X-Somleng-BillingCategory" />
+        <action application="unset" data="sip_h_X-Somleng-ProxyAddress" />
+        <action application="unset" data="sip_h_X-Somleng-ExternalProfile" />
+        <action application="bridge" data="${bridge_dial_string}" />
+
+        <!-- CGRateS authorization fails -->
+        <anti-action application="log" data="ERROR CGRateS authorization failed: ${cgr_notify}" />
+        <anti-action application="respond" data="403 Forbidden" />
+        <anti-action application="hangup" />
+      </condition>
+    </extension>
+
+    <extension name="Inbound_Create_Call">
+      <condition field="${sip_h_X-Somleng-CallDirection}" expression="^$" />
+      <condition field="${cgr_notify}" expression="^$">
+        <action application="lua" data="create_inbound_call.lua" />
+      </condition>
+    </extension>
+
+    <extension name="Inbound_CGRateS_Auth_Ok">
+      <condition field="${sip_h_X-Somleng-CallDirection}" expression="^$" />
+      <condition field="${cgr_notify}" expression="^AUTH_OK$">
+        <action application="log" data="NOTICE Inbound CGRateS authorization successful!" />
+        <action application="set" data="cgr_reqtype=*none" />
+        <action application="rayo" />
+
+        <!-- CGRateS authorization fails -->
+        <anti-action application="log"
+          data="ERROR Inbound CGRateS authorization failed: ${cgr_notify}" />
+        <anti-action application="respond" data="403 Forbidden" />
+        <anti-action application="hangup" />
       </condition>
     </extension>
   </context>

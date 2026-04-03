@@ -1,10 +1,5 @@
 name: Integration Tests
-on:
-  workflow_call:
-    inputs:
-      context:
-        required: true
-        type: string
+on: workflow_call
 
 jobs:
   build:
@@ -69,8 +64,7 @@ jobs:
           push: false
           load: true
           context: components/freeswitch
-          build-args:
-            signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
+          build-args: signalwire_token=${{ secrets.SIGNALWIRE_TOKEN }}
           tags: freeswitch:latest
           cache-from: type=gha,scope=integration-tests-freeswitch
           cache-to: type=gha,mode=max,scope=integration-tests-freeswitch
@@ -128,6 +122,17 @@ jobs:
           cache-from: type=gha,scope=integration-tests-gateway-bootstrap
           cache-to: type=gha,mode=max,scope=integration-tests-gateway-bootstrap
 
+      - name: Build Rating Engine
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          load: true
+          target: debug
+          context: components/rating_engine
+          tags: rating-engine:latest-debug
+          cache-from: type=gha,scope=integration-tests-rating-engine
+          cache-to: type=gha,mode=max,scope=integration-tests-rating-engine
+
       - name: Build Testing
         uses: docker/build-push-action@v6
         with:
@@ -138,14 +143,25 @@ jobs:
           cache-from: type=gha,scope=integration-tests-testing
           cache-to: type=gha,mode=max,scope=integration-tests-testing
 
+      - name: Build Fake Call Platform
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          load: true
+          context: components/fake_call_platform
+          tags: fake_call_platform:latest
+          cache-from: type=gha,scope=integration-tests-fake-call-platform
+          cache-to: type=gha,mode=max,scope=integration-tests-fake-call-platform
+
       - name: Run docker compose
         run: |
-          docker compose run -e DATABASE_NAME=opensips_${{ inputs.context }}_test gateway-bootstrap create_db ${{ inputs.context }}
-          docker compose up --wait -d ${{ inputs.context }} media_proxy freeswitch freeswitch_event_logger switch-app redis testing
+          docker compose run -e DATABASE_NAME=opensips_public_gateway_test gateway-bootstrap create_db public_gateway
+          docker compose run -e DATABASE_NAME=opensips_client_gateway_test gateway-bootstrap create_db client_gateway
+          docker compose up --wait -d
 
-      - name: Run ${{ inputs.context }} Tests
+      - name: Run Integration Tests
         run: |
-          docker compose exec testing ./tests.sh ./tests/${{ inputs.context }}
+          docker compose exec testing ./tests.sh
 
       - name: Fetch logs from container
         if: failure()
@@ -156,6 +172,10 @@ jobs:
           docker compose exec testing sh -c 'tar cf - -C /testing connect_stream_test_files' | tar xf - -C tmp/
           docker compose logs freeswitch > tmp/freeswitch.log
           docker compose logs switch-app > tmp/switch-app
+          docker compose logs public_gateway > tmp/public_gateway.log
+          docker compose logs client_gateway > tmp/client_gateway.log
+          docker compose logs media_proxy > tmp/media_proxy.log
+          docker compose logs rating-engine > tmp/rating-engine.log
 
       - name: Upload logs
         uses: actions/upload-artifact@v6

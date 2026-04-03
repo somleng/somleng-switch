@@ -16,9 +16,8 @@ module "client_gateway" {
   min_tasks       = 0
   max_tasks       = 2
 
-  db_security_group = data.terraform_remote_state.core_infrastructure.outputs.db_staging.security_group
-  assign_eips       = false
-  sip_port          = var.sip_port
+  assign_eips = false
+  sip_port    = var.sip_port
 
   db_name               = var.client_gateway_db_name
   db_password_parameter = data.terraform_remote_state.core_infrastructure.outputs.db_staging.master_password_parameter

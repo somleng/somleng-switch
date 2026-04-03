@@ -1,6 +1,8 @@
 if AppSettings.env == "development" || AppSettings.env == "test"
   ENV["AWS_DEFAULT_REGION"] ||= "ap-southeast-1"
 
+  require "resolv"
+
   FAKE_LAMBDA_RESPONSES = {
     "BuildClientGatewayDialString" => Class.new do
       attr_reader :destination
@@ -10,9 +12,21 @@ if AppSettings.env == "development" || AppSettings.env == "test"
       end
 
       def to_h
+        destination_host = ENV.fetch("TESTING_HOST", "10.0.0.1")
+        client_gateway_host = ENV.fetch("CLIENT_GATEWAY_HOST", "10.0.0.2")
+
         {
-          dial_string: "#{destination}@45.118.77.153:1619;fs_path=sip:10.10.0.20:6060"
+          destination_address: "#{destination}@#{resolve_address(destination_host)}:5060",
+          proxy_address: resolve_address(client_gateway_host)
         }
+      end
+
+      private
+
+      def resolve_address(hostname)
+        Resolv.getaddress(hostname)
+      rescue Resolv::ResolvError
+        hostname
       end
     end
   }.freeze

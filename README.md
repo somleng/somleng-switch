@@ -1,17 +1,6 @@
 # SomlengSWITCH
 
-
-[![Public Gateway](https://github.com/somleng/somleng-switch/actions/workflows/public_gateway.yml/badge.svg)](https://github.com/somleng/somleng-switch/actions/workflows/public_gateway.yml)
-[![Client Gateway](https://github.com/somleng/somleng-switch/actions/workflows/client_gateway.yml/badge.svg)](https://github.com/somleng/somleng-switch/actions/workflows/client_gateway.yml)
-[![Switch](https://github.com/somleng/somleng-switch/actions/workflows/switch.yml/badge.svg)](https://github.com/somleng/somleng-switch/actions/workflows/switch.yml)
-[![Services](https://github.com/somleng/somleng-switch/actions/workflows/services.yml/badge.svg)](https://github.com/somleng/somleng-switch/actions/workflows/services.yml)
-[![Media Proxy](https://github.com/somleng/somleng-switch/actions/workflows/media_proxy.yml/badge.svg)](https://github.com/somleng/somleng-switch/actions/workflows/media_proxy.yml)
-[![S3 MPEG](https://github.com/somleng/somleng-switch/actions/workflows/s3_mpeg.yml/badge.svg)](https://github.com/somleng/somleng-switch/actions/workflows/s3_mpeg.yml)
-[![Gateway Commons](https://github.com/somleng/somleng-switch/actions/workflows/gateway_commons.yml/badge.svg)](https://github.com/somleng/somleng-switch/actions/workflows/gateway_commons.yml)
-[![Rating Engine](https://github.com/somleng/somleng-switch/actions/workflows/rating_engine.yml/badge.svg)](https://github.com/somleng/somleng-switch/actions/workflows/rating_engine.yml)
-
-[![View performance data on Skylight](https://badges.skylight.io/status/Z5dVwBwcpWaW.svg)](https://oss.skylight.io/app/applications/Z5dVwBwcpWaW)
-[![codecov](https://codecov.io/gh/somleng/somleng-switch/branch/develop/graph/badge.svg?token=nr3f5p31G6)](https://codecov.io/gh/somleng/somleng-switch)
+[![Build](https://github.com/somleng/somleng-switch/actions/workflows/build.yml/badge.svg)](https://github.com/somleng/somleng-switch/actions/workflows/build.yml)
 
 SomlengSWITCH is a modular, open-source platform designed to facilitate programmable voice and messaging applications.
 It serves as the core engine for Somleng's Telco-as-a-Service (TaaS) and Communications Platform-as-a-Service (CPaaS) offerings.

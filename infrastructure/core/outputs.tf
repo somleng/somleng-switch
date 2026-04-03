@@ -41,3 +41,7 @@ output "services_ecr_repository" {
 output "rating_engine_ecr_repository" {
   value = module.rating_engine_ecr_repository
 }
+
+output "public_gateway_nlb" {
+  value = module.public_gateway_nlb
+}

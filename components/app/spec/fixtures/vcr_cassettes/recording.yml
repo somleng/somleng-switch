@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: http://api.lvh.me:3000/services/recordings
+    uri: http://services.lvh.me:3000/recordings
     body:
       encoding: UTF-8
       string: '{"phone_call_id":"0e5dca40-1545-4aa1-9120-fac43c09bc90","recording_status_callback_url":null,"recording_status_callback_method":null}'
@@ -55,7 +55,7 @@ http_interactions:
   recorded_at: Fri, 25 Mar 2022 09:53:07 GMT
 - request:
     method: patch
-    uri: http://api.lvh.me:3000/services/recordings/39cbca96-2634-4c0a-a6c5-2e7c611d200e
+    uri: http://services.lvh.me:3000/recordings/39cbca96-2634-4c0a-a6c5-2e7c611d200e
     body:
       encoding: UTF-8
       string: '{"raw_recording_url":"https://recording.s3.ap-southeast-1.amazonaws.com/9c76f7f6-3aff-4f7b-a76a-0d017b5df900-2.wav","duration":5,"external_id":"component-id"}'

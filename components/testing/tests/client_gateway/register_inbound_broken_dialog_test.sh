@@ -8,7 +8,7 @@ source $current_dir/../support/test_helpers.sh
 
 scenario=$current_dir/../../scenarios/register_inbound_broken_dialog.xml
 
-reset_db
+reset_opensips_db
 
 client_gateway="$(dig +short client_gateway)"
 create_domain_entry "$client_gateway"
@@ -19,4 +19,4 @@ reload_opensips_tables
 
 sipp -sf $scenario client_gateway:5060 -s "1234" -key username "user1" -au "user1" -ap "password" -m 1 -trace_msg > /dev/null
 
-reset_db
+reset_opensips_db

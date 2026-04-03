@@ -15,7 +15,8 @@ class TwiMLEndpoint
     http_method = HTTP_METHODS.fetch(http_method, :post)
 
     if http_method == :get
-      uri.query_values = uri.query_values(Array).to_a.concat(call_params.to_a)
+      query_values = URI.decode_www_form(uri.query.to_s)
+      uri.query = URI.encode_www_form(query_values.concat(call_params.to_a))
       self.last_response = http_client.get(
         uri,
         headers: {

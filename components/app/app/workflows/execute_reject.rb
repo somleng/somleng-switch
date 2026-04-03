@@ -5,7 +5,7 @@ class ExecuteReject < ExecuteTwiMLVerb
 
   private
 
-  def reject(reason, headers = {})
-    context.reject(reason, call_properties.sip_headers.to_h.reverse_merge(headers))
+  def reject(reason)
+    context.reject(reason, call_properties.sip_headers.response_headers)
   end
 end

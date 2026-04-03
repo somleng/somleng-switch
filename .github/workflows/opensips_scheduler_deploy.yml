@@ -1,12 +1,11 @@
-name: Gateway Commons
-on: push
+name: OpenSIPS Scheduler
+on: workflow_call
 env:
-  GATEWAY_REPOSITORY_NAME: gateway
   GATEWAY_SCHEDULER_REPOSITORY_NAME: gateway-scheduler
 
 jobs:
-  build:
-    name: Build
+  set-deployment-matrix:
+    name: Set Deployment Matrix
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
@@ -20,13 +19,11 @@ jobs:
           matrixSource=$(cat << EOF
           [
             {
-              "identifier": "gateway-commons-staging",
               "branch": "develop",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}"
             },
             {
-              "identifier": "gateway-commons",
               "branch": "master",
               "friendly_image_tag": "latest",
               "image_tag": "prod-${{ github.sha }}"
@@ -41,13 +38,13 @@ jobs:
   build-packages:
     name: Build Packages
     runs-on: ubuntu-latest
-    if: needs.build.outputs.matrixLength > 0
+    if: needs.set-deployment-matrix.outputs.matrixLength > 0
 
     strategy:
-      matrix: ${{fromJson(needs.build.outputs.matrix)}}
+      matrix: ${{fromJson(needs.set-deployment-matrix.outputs.matrix)}}
 
     needs:
-      - build
+      - set-deployment-matrix
 
     steps:
       - name: Checkout
@@ -84,22 +81,9 @@ jobs:
           context: components/opensips_scheduler
           push: true
           platforms: linux/amd64
-          cache-from: type=gha,scope=${{ matrix.identifier }}-gateway-scheduler
-          cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-gateway-scheduler
+          cache-from: type=gha,scope=gateway-scheduler
+          cache-to: type=gha,mode=max,scope=gateway-scheduler
           tags: |
             ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_SCHEDULER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
             ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_SCHEDULER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-amd64
             ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_SCHEDULER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
-
-      - name: Build and push Gateway
-        uses: docker/build-push-action@v6
-        with:
-          context: components/gateway
-          target: bootstrap
-          push: true
-          platforms: linux/amd64
-          cache-from: type=gha,scope=${{ matrix.identifier }}-gateway
-          cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}-gateway
-          tags: |
-            ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:bootstrap-amd64
-            ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_REPOSITORY_NAME }}:bootstrap

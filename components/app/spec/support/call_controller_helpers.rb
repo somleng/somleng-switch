@@ -20,9 +20,17 @@ module CallControllerHelpers
       default_tts_voice: "Basic.Kal",
       from: "1000",
       to: "85512456869",
+      twiml: nil,
       sip_headers: SIPHeaders.new(
         call_sid:,
-        account_sid:
+        account_sid:,
+        carrier_sid: SecureRandom.uuid,
+        call_direction: "outbound",
+        billing_enabled: false,
+        billing_mode: "prepaid",
+        billing_category: "outbound_calls",
+        proxy_address: nil,
+        external_profile: nil
       ),
       **options
     )
@@ -44,7 +52,21 @@ module CallControllerHelpers
     variables.reverse_merge!(
       "variable_sip_from_host" => "192.168.1.1",
       "variable_sip_to_host" => "192.168.2.1",
-      "variable_sip_network_ip" => "192.168.3.1"
+      "variable_sip_network_ip" => "192.168.3.1",
+      "variable_somleng_twiml" => "<Response><Say>Hello, World!</Say><Play>https://example.com/audio.mp3</Play></Response>",
+      "variable_somleng_account_sid" => SecureRandom.uuid,
+      "variable_somleng_account_auth_token" => SecureRandom.alphanumeric,
+      "variable_somleng_carrier_sid" => SecureRandom.uuid,
+      "variable_somleng_call_sid" => SecureRandom.uuid,
+      "variable_somleng_direction" => "inbound",
+      "variable_somleng_api_version" => "2010-04-01",
+      "variable_somleng_to" => "85512456869",
+      "variable_somleng_from" => "1000",
+      "variable_somleng_default_tts_voice" => "Basic.Kal",
+      "variable_somleng_billing_enabled" => false,
+      "variable_somleng_billing_mode" => "prepaid",
+      "variable_somleng_billing_category" => "outbound_calls",
+      "variable_somleng_call_direction" => "inbound"
     )
 
     fake_call = instance_spy(

@@ -2,17 +2,17 @@
 http_interactions:
 - request:
     method: post
-    uri: http://api.lvh.me:3000/services/outbound_phone_calls
+    uri: http://services.lvh.me:3000/outbound_phone_calls
     body:
       encoding: UTF-8
-      string: '{"destinations":["85516701721"],"parent_call_sid":"15f55641-7728-4cab-8e2e-8077c4b3c6b4"}'
+      string: '{"destinations":["85516701721"],"parent_call_sid":"f371391e-25cc-4ba6-a752-ec745a59cf06"}'
     headers:
       Accept:
       - application/json
       Content-Type:
       - application/json
       User-Agent:
-      - Faraday v2.9.1
+      - Faraday v2.14.0
       Authorization:
       - Basic c2VydmljZXM6cGFzc3dvcmQ=
       Accept-Encoding:
@@ -35,21 +35,21 @@ http_interactions:
       Content-Type:
       - application/vnd.api+json; charset=utf-8
       Etag:
-      - W/"4a3000e843b1adffb20577d4a4a55d79"
+      - W/"106f41dd4ceac11104e8b4f0d7b2fe5f"
       Cache-Control:
       - max-age=0, private, must-revalidate
       X-Request-Id:
-      - a9ccc08a-e921-4ef2-9c99-21c1da025163
+      - 8291cd90-4ccf-49de-9903-f3bf962de8cc
       X-Runtime:
-      - '0.267990'
+      - '0.545868'
       Server-Timing:
-      - start_processing.action_controller;dur=0.01, sql.active_record;dur=13.47,
-        instantiation.active_record;dur=8.33, transaction.active_record;dur=3.15,
-        process_action.action_controller;dur=72.64
+      - start_processing.action_controller;dur=0.00, sql.active_record;dur=82.20,
+        instantiation.active_record;dur=29.87, start_transaction.active_record;dur=0.00,
+        transaction.active_record;dur=13.34, process_action.action_controller;dur=303.53
       Content-Length:
-      - '484'
+      - '701'
     body:
       encoding: UTF-8
-      string: '{"phone_calls":[{"created_at":"2024-06-26T05:26:04Z","updated_at":"2024-06-26T05:26:04Z","sid":"2dc44a7f-67a2-4a2d-a6f0-93c073973061","parent_call_sid":"15f55641-7728-4cab-8e2e-8077c4b3c6b4","account_sid":"96b4557a-341c-46b3-ba3c-a1793e9dae3c","from":"+855715100678","routing_parameters":{"destination":"+85516701721","dial_string_prefix":null,"plus_prefix":false,"national_dialing":false,"host":"host.docker.internal:5061","username":null,"sip_profile":"nat_gateway"},"address":null}]}'
-  recorded_at: Wed, 26 Jun 2024 05:26:04 GMT
-recorded_with: VCR 6.2.0
+      string: '{"phone_calls":[{"created_at":"2026-02-19T11:03:59Z","updated_at":"2026-02-19T11:03:59Z","sid":"7aeec2c7-1180-441d-964d-1d05ea0dd2d6","account_sid":"aed0ac11-ea6e-408a-9ffe-cb6567656fcb","carrier_sid":"c7f8279d-2ad6-4956-abc7-f41c1667d2ef","parent_call_sid":"f371391e-25cc-4ba6-a752-ec745a59cf06","from":"+855715100678","direction":"outbound-dial","call_direction":"outbound","routing_parameters":{"address":null,"destination":"85516701721","dial_string_prefix":null,"plus_prefix":false,"national_dialing":false,"host":"host.docker.internal:5061","username":null,"sip_profile":"nat_gateway"},"billing_parameters":{"enabled":false,"category":"outbound_calls","billing_mode":"prepaid"},"address":null}]}'
+  recorded_at: Thu, 19 Feb 2026 11:03:59 GMT
+recorded_with: VCR 6.4.0

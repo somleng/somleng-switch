@@ -4,29 +4,17 @@ module CallPlatform
   class Client
     class InvalidRequestError < StandardError; end
 
-    InboundPhoneCallResponse = Struct.new(
-      :voice_url,
-      :voice_method,
-      :twiml,
-      :account_sid,
-      :auth_token,
-      :call_sid,
-      :direction,
-      :api_version,
-      :to,
-      :from,
-      :default_tts_voice,
-      keyword_init: true
-    )
-
-    OutboundPhoneCallResponse = Struct.new(
+    OutboundPhoneCallResponse = Data.define(
       :sid,
       :from,
       :account_sid,
+      :carrier_sid,
       :parent_call_sid,
       :routing_parameters,
-      :address,
-      keyword_init: true
+      :call_direction,
+      :billing_enabled,
+      :billing_mode,
+      :billing_category
     )
 
     RecordingResponse = Struct.new(
@@ -48,65 +36,54 @@ module CallPlatform
     end
 
     def notify_call_event(params)
-      notify_request("/services/phone_call_events", params)
+      notify_request("/phone_call_events", params)
     end
 
     def notify_tts_event(params)
-      notify_request("/services/tts_events", params)
+      notify_request("/tts_events", params)
     end
 
     def notify_media_stream_event(params)
-      notify_request("/services/media_stream_events", params)
-    end
-
-    def create_inbound_call(params)
-      json_response = make_request("/services/inbound_phone_calls", params: params)
-      InboundPhoneCallResponse.new(
-        voice_url: json_response.fetch("voice_url"),
-        voice_method: json_response.fetch("voice_method"),
-        twiml: json_response.fetch("twiml"),
-        account_sid: json_response.fetch("account_sid"),
-        auth_token: json_response.fetch("account_auth_token"),
-        call_sid: json_response.fetch("sid"),
-        direction: json_response.fetch("direction"),
-        to: json_response.fetch("to"),
-        from: json_response.fetch("from"),
-        api_version: json_response.fetch("api_version"),
-        default_tts_voice: json_response.fetch("default_tts_voice")
-      )
+      notify_request("/media_stream_events", params)
     end
 
     def create_outbound_calls(params)
-      json_response = make_request("/services/outbound_phone_calls", params: params.compact)
+      json_response = make_request("/outbound_phone_calls", params: params.compact)
 
       json_response.fetch("phone_calls").map do |phone_call_response|
+        billing_parameters = phone_call_response.fetch("billing_parameters")
+
         OutboundPhoneCallResponse.new(
           sid: phone_call_response.fetch("sid"),
           parent_call_sid: phone_call_response.fetch("parent_call_sid"),
           account_sid: phone_call_response.fetch("account_sid"),
+          carrier_sid: phone_call_response.fetch("carrier_sid"),
           from: phone_call_response.fetch("from"),
           routing_parameters: phone_call_response.fetch("routing_parameters"),
-          address: phone_call_response.fetch("address")
+          call_direction: phone_call_response.fetch("call_direction"),
+          billing_enabled: billing_parameters.fetch("enabled"),
+          billing_mode: billing_parameters.fetch("billing_mode"),
+          billing_category: billing_parameters.fetch("category")
         )
       end
     end
 
     def create_recording(params)
-      json_response = make_request("/services/recordings", params:)
+      json_response = make_request("/recordings", params:)
       RecordingResponse.new(
         id: json_response.fetch("sid")
       )
     end
 
     def create_media_stream(params)
-      json_response = make_request("/services/media_streams", params:)
+      json_response = make_request("/media_streams", params:)
       AudioStreamResponse.new(
         id: json_response.fetch("sid")
       )
     end
 
     def update_recording(recording_id, params)
-      json_response = make_request("/services/recordings/#{recording_id}", http_method: :patch, params: params)
+      json_response = make_request("/recordings/#{recording_id}", http_method: :patch, params: params)
       RecordingResponse.new(
         id: json_response.fetch("sid"),
         url: json_response.fetch("url")

@@ -440,7 +440,7 @@ RSpec.describe CallController, type: :call_controller do
       end
 
       it "handles nested <Say>" do
-        tts_event_request = stub_request(:post, "http://api.lvh.me:3000/services/tts_events")
+        tts_event_request = stub_request(:post, "http://services.lvh.me:3000/tts_events")
 
         controller = build_controller(
           stub_voice_commands: { ask: build_input_result(nil) },

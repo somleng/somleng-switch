@@ -44,7 +44,7 @@ RUN apt-get update && apt-get install --no-install-recommends -yq libssl-dev lib
     echo "deb [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" > /etc/apt/sources.list.d/freeswitch.list && \
     echo "deb-src [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" >> /etc/apt/sources.list.d/freeswitch.list && \
     apt-get update --allow-releaseinfo-change && \
-    apt-get -y install --no-install-recommends sipsak netcat-traditional ffmpeg \
+    apt-get -y install --no-install-recommends lua-cjson lua-socket sipsak netcat-traditional ffmpeg \
             freeswitch \
             freeswitch-mod-console \
             freeswitch-mod-event-socket \
@@ -62,13 +62,18 @@ RUN apt-get update && apt-get install --no-install-recommends -yq libssl-dev lib
             freeswitch-mod-json-cdr \
             freeswitch-mod-flite \
             freeswitch-mod-tone-stream \
-            freeswitch-mod-tts-commandline && \
+            freeswitch-mod-tts-commandline \
+            freeswitch-mod-lua \
+            freeswitch-mod-curl && \
             apt-get purge -y --auto-remove wget gnupg2 lsb-release \
             && apt-get clean \
             && rm -rf /var/lib/apt/lists/*
 
 # Copy the Freeswitch configuration
 COPY --link conf/ /etc/freeswitch
+
+# Copy the Freeswitch scripts
+COPY --link scripts /usr/share/freeswitch/scripts
 
 # Copy Bin Files
 COPY --link bin/ /usr/local/bin/

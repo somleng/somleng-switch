@@ -9,9 +9,9 @@ resource "aws_security_group" "this" {
 
 resource "aws_security_group_rule" "ingress_http" {
   type              = "ingress"
-  to_port           = var.http_port
+  to_port           = var.configuration.http_port
   protocol          = "TCP"
-  from_port         = var.http_port
+  from_port         = var.configuration.http_port
   security_group_id = aws_security_group.this.id
   cidr_blocks       = ["0.0.0.0/0"]
 }

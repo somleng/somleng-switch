@@ -13,7 +13,7 @@ services:
   redis:
     image: public.ecr.aws/docker/library/redis:alpine
     healthcheck:
-      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
 
   gateway-bootstrap:
     build:
@@ -29,6 +29,8 @@ services:
       DATABASE_PORT: 5432
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    profiles:
+      - gateway-bootstrap
 
   public_gateway:
     build:
@@ -99,6 +101,11 @@ services:
       FS_EVENT_SOCKET_PORT: 8021
       FS_MOD_RAYO_MAX_IDLE_SECS: 5
       FS_LOG_LEVEL: "debug"
+      FS_MOD_JSON_CDR_URL: "http://testing:9000"
+      FS_CALL_PLATFORM_HOST: http://fake_call_platform:3000
+      FS_CALL_PLATFORM_USERNAME: "services"
+      FS_CALL_PLATFORM_PASSWORD: "password"
+      FS_REGION: "hydrogen"
     expose:
       - "5060/udp"
       - "5222/tcp"
@@ -119,6 +126,68 @@ services:
       EVENT_SOCKET_PASSWORD: secret
       REDIS_URL: "redis://redis:6379/1"
 
+  rating-engine-api:
+    build:
+      context: components/rating_engine
+      target: debug
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      STORDB_DBNAME: "cgrates_test"
+      STORDB_USER: "postgres"
+      STORDB_PASSWORD: ""
+      STORDB_HOST: "host.docker.internal"
+      STORDB_PORT: 5432
+      DATADB_HOST: "redis"
+      DATADB_USER: "redis"
+      DATADB_PORT: 6379
+      DATADB_DBNAME: 2
+      CONNECTION_MODE: "*localhost"
+      LOG_LEVEL: 7
+      HTTP_LISTEN_ADDRESS: "0.0.0.0:2080"
+      BOOTSTRAP_DB: "true"
+      SERVER_MODE: "api"
+      JSON_RPC_USERNAME: "cgrates"
+      JSON_RPC_PASSWORD: "password"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    expose:
+      - "2080/tcp"
+    ports:
+      - "2080:2080"
+
+  rating-engine:
+    build:
+      context: components/rating_engine
+      target: debug
+    depends_on:
+      redis:
+        condition: service_healthy
+      freeswitch:
+        condition: service_healthy
+    environment:
+      EVENT_SOCKET_HOST: freeswitch:8021
+      EVENT_SOCKET_PASSWORD: secret
+      STORDB_DBNAME: "cgrates_test"
+      STORDB_USER: "postgres"
+      STORDB_PASSWORD: ""
+      STORDB_HOST: "host.docker.internal"
+      STORDB_PORT: 5432
+      DATADB_HOST: "redis"
+      DATADB_USER: "redis"
+      DATADB_PORT: 6379
+      DATADB_DBNAME: 2
+      CONNECTION_MODE: "*localhost"
+      CACHE_TTL: "0s"
+      LOG_LEVEL: 7
+      BOOTSTRAP_DB: "true"
+      SERVER_MODE: "engine"
+      JSON_RPC_USERNAME: "cgrates"
+      JSON_RPC_PASSWORD: "password"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
   switch-app:
     build:
       context: components/app
@@ -128,12 +197,15 @@ services:
         condition: service_healthy
     environment:
       AHN_CORE_HOST: freeswitch
-      CALL_PLATFORM_STUB_RESPONSES: "true"
-      CONNECT_WS_SERVER_URL: "ws://testing:3001"
-      AUDIO_FILE_URL: "http://testing:8000/scenarios/files/tone.wav"
+      CLIENT_GATEWAY_HOST: client_gateway
+      TESTING_HOST: testing
       AHN_CORE_HTTP_PORT: "8080"
+      AHN_CORE_LOGGING_LEVEL: "debug"
       AWS_DEFAULT_REGION: "ap-southeast-1"
       REDIS_URL: "redis://redis:6379/1"
+      FS_HOST: "freeswitch"
+      FS_PORT: 5060
+      CALL_PLATFORM_HOST: http://fake_call_platform:3000
     healthcheck:
       test:
         [
@@ -151,17 +223,47 @@ services:
       context: components/testing
     image: testing:latest
     environment:
+      RATING_ENGINE_STORDB_DBNAME: "cgrates_test"
+      RATING_ENGINE_DATADB_REDIS_URL: "redis://redis:6379/2"
       DATABASE_HOST: host.docker.internal
       DATABASE_PORT: 5432
       DATABASE_USERNAME: postgres
       FIFO_DIR: /opensips/fifo
       WS_SERVER_PORT: 3001
       FILE_SERVER_PORT: 8000
+      CDR_SERVER_PORT: 9000
       SWITCH_PORT: 8080
+      RATING_ENGINE_HTTP_PORT: 2080
       FILE_SERVER_LOG_FILE: http-server.log
-      UAS: "true"
+      RATING_ENGINE_HTTP_USER: "cgrates"
+      RATING_ENGINE_HTTP_PASSWORD: "password"
+      CARRIER_SID: "c0591700-69c6-465c-9353-7c98ec93cdc0"
+      ACCOUNT_SID: "a7570e4c-4f43-4a15-a47b-96247ba02ceb"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
       - workspace:/workspace
       - opensips_fifo:/opensips/fifo
+
+  fake_call_platform:
+    build:
+      context: components/fake_call_platform
+    image: fake_call_platform:latest
+    environment:
+      CONNECT_WS_SERVER_URL: "ws://testing:3001"
+      AUDIO_FILE_URL: "http://testing:8000/scenarios/files/tone.wav"
+      CALL_PLATFORM_USERNAME: "services"
+      CALL_PLATFORM_PASSWORD: "password"
+      CARRIER_SID: "c0591700-69c6-465c-9353-7c98ec93cdc0"
+      ACCOUNT_SID: "a7570e4c-4f43-4a15-a47b-96247ba02ceb"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --server-response --spider --quiet http://0.0.0.0:3000/health_checks 2>&1 | grep '200 OK' > /dev/null",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    expose:
+      - "3000/tcp"

@@ -1,4 +1,4 @@
-on: push
+on: workflow_call
 name: Public Gateway
 
 env:
@@ -7,14 +7,8 @@ env:
   GATEWAY_SCHEDULER_REPOSITORY_NAME: gateway-scheduler
 
 jobs:
-  integration_tests:
-    uses: ./.github/workflows/integration_tests.yml
-    with:
-      context: public_gateway
-    secrets: inherit
-
-  build:
-    name: Build
+  set-deployment-matrix:
+    name: Set Deployment Matrix
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
@@ -34,8 +28,7 @@ jobs:
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "public-gateway-staging",
-              "ecs_cluster": "somleng-switch-staging",
-              "deploy": false
+              "ecs_cluster": "somleng-switch-staging"
             },
             {
               "identifier": "public-gateway",
@@ -43,8 +36,7 @@ jobs:
               "friendly_image_tag": "latest",
               "image_tag": "prod-${{ github.sha }}",
               "ecs_service": "public-gateway",
-              "ecs_cluster": "somleng-switch",
-              "deploy": true
+              "ecs_cluster": "somleng-switch"
             }
           ]
           EOF
@@ -52,19 +44,17 @@ jobs:
           matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
           echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
           echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
-          echo "deploy=$(echo $matrix | jq '.[0].deploy')" >> $GITHUB_OUTPUT
 
   build_packages:
     name: Build Packages
     runs-on: ubuntu-latest
     needs:
-      - integration_tests
-      - build
+      - set-deployment-matrix
 
-    if: needs.build.outputs.matrixLength > 0
+    if: needs.set-deployment-matrix.outputs.matrixLength > 0
 
     strategy:
-      matrix: ${{fromJson(needs.build.outputs.matrix)}}
+      matrix: ${{fromJson(needs.set-deployment-matrix.outputs.matrix)}}
 
     steps:
       - name: Checkout
@@ -113,13 +103,13 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     needs:
-      - build
+      - set-deployment-matrix
       - build_packages
 
-    if: needs.build.outputs.deploy == 'true'
+    if: needs.set-deployment-matrix.outputs.matrixLength > 0
 
     strategy:
-      matrix: ${{fromJson(needs.build.outputs.matrix)}}
+      matrix: ${{fromJson(needs.set-deployment-matrix.outputs.matrix)}}
 
     steps:
       - name: Configure AWS credentials

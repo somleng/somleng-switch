@@ -9,7 +9,8 @@ module Services
             invoke: {
               payload: StringIO.new(
                 {
-                  "dial_string" => "dial-string"
+                  "destination_address" => "destination-address",
+                  "proxy_address" => "proxy-address"
                 }.to_json
               )
             }
@@ -21,7 +22,12 @@ module Services
           username: "user1",
           destination: "85516701722"
         )
-        expect(result).to eq("dial-string")
+        expect(result).to eq(
+          Services::Client::ClientGatewayResponse.new(
+            destination_address: "destination-address",
+            proxy_address: "proxy-address"
+          )
+        )
 
         build_client_gateway_dial_string_request = lambda_client.api_requests.first
         expect(build_client_gateway_dial_string_request).to match(

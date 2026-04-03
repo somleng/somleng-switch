@@ -36,7 +36,7 @@ class ExecuteTwiML < ApplicationWorkflow
           ExecuteConnect.call(
             TwiML::ConnectVerb.parse(
               verb,
-              allow_insecure_urls: options[:stub_call_platform_responses]
+              allow_insecure_urls: AppSettings.env.in?(%w[development test])
             ), **options
           )
         else

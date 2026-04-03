@@ -124,11 +124,11 @@ RSpec.describe "Handles SQS Message" do
       }.to_json
     )
 
-    stub_request(:post, "https://api.somleng.org/services/call_service_capacities")
+    stub_request(:post, "https://services.somleng.org/call_service_capacities")
 
     invoke_lambda(payload:)
 
-    expect(WebMock).to have_requested(:post, "https://api.somleng.org/services/call_service_capacities").with(body: { region: "hydrogen", capacity: 0 }.to_json)
+    expect(WebMock).to have_requested(:post, "https://services.somleng.org/call_service_capacities").with(body: { region: "hydrogen", capacity: 0 }.to_json)
   end
 
   def subscriber

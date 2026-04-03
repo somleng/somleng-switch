@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: http://api.lvh.me:3000/services/phone_call_events
+    uri: http://services.lvh.me:3000/phone_call_events
     body:
       encoding: UTF-8
       string: '{"type":"completed","phone_call":"5c8102f2-262a-418a-96b9-aa79789af621","variables":{"sip_term_status":"200","answer_epoch":"1607752961"}}'

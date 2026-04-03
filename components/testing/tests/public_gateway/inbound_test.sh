@@ -8,20 +8,33 @@ source $current_dir/../support/test_helpers.sh
 
 scenario=$current_dir/../../scenarios/smart_inbound.xml
 
-log_file="smart_inbound_*_messages.log"
-rm -f $log_file
-
 media_server="$(dig +short freeswitch)"
 public_gateway="$(dig +short public_gateway)"
 
-reset_db
+reset_opensips_db
 create_load_balancer_entry "gw" "5060" "2"
 create_address_entry "$(hostname -i)" "2"
 reload_opensips_tables
 
+cleanup() {
+	reset_opensips_db
+}
+
+trap cleanup EXIT INT TERM
+
+clear_sipp_log_file "$scenario"
+
 sipp -sf $scenario public_gateway:5060 -s 1234 -m 1 -trace_msg > /dev/null
 
-reset_db
+log_file=$(find_sipp_log_file $scenario)
+
+if ! assert_in_file $log_file "X-Somleng-CallSid"; then
+  exit 1
+fi
+
+if ! assert_not_in_file $log_file "X-Somleng-AccountSid"; then
+  exit 1
+fi
 
 # Assert correct IP in SDP
 if ! assert_in_file "$log_file" "c=IN IP4 $media_server"; then

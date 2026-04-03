@@ -1,31 +1,41 @@
 class DialString
-  attr_reader :options
-
-  DEFAULT_SIP_PROFILE = "nat_gateway".freeze
+  attr_reader :options, :fs_host, :fs_port
 
   def initialize(options)
     @options = options.symbolize_keys
+    @fs_host = options.fetch(:fs_host) { AppSettings.fetch(:fs_host) }
+    @fs_port = options.fetch(:fs_port) { AppSettings.fetch(:fs_port) }
   end
 
   def to_s
-    "sofia/#{external_profile}/#{address}"
-  end
-
-  def address
-    options.fetch(:address) { routing_parameters.address }
+    "{proxy_leg=true}sofia/internal/#{destination_address};fs_path=#{fs_path}"
   end
 
   def format_number(...)
     routing_parameters.format_number(...)
   end
 
-  private
+  def proxy_address
+    return if routing_parameters.proxy_address.blank?
 
-  def routing_parameters
-    @routing_parameters ||= RoutingParameters.new(options)
+    ";fs_path=sip:#{routing_parameters.proxy_address}"
   end
 
   def external_profile
-    options.fetch(:sip_profile, DEFAULT_SIP_PROFILE)
+    routing_parameters.sip_profile
+  end
+
+  private
+
+  def routing_parameters
+    @routing_parameters ||= RoutingParameters.new(options.fetch(:routing_parameters))
+  end
+
+  def destination_address
+    routing_parameters.destination_address
+  end
+
+  def fs_path
+    "sip:#{fs_host}:#{fs_port}"
   end
 end

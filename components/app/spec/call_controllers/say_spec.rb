@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.describe CallController, type: :call_controller do
   describe "<Say>" do
     before do
-      stub_request(:post, "http://api.lvh.me:3000/services/tts_events")
+      stub_request(:post, "http://services.lvh.me:3000/tts_events")
     end
     # https://www.twilio.com/docs/api/twiml/say
 
@@ -47,7 +47,7 @@ RSpec.describe CallController, type: :call_controller do
           expect(fetch_ssml_attribute(ssml, :lang)).to eq("en-US")
         end
 
-        expect(WebMock).to(have_requested(:post, "http://api.lvh.me:3000/services/tts_events").with { |request|
+        expect(WebMock).to(have_requested(:post, "http://services.lvh.me:3000/tts_events").with { |request|
           request_payload = JSON.parse(request.body)
           expect(request_payload).to eq(
             "phone_call" => controller.call_properties.call_sid,

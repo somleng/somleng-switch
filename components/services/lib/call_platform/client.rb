@@ -11,7 +11,7 @@ module CallPlatform
     end
 
     def update_capacity(params)
-      notify_request("/services/call_service_capacities", params)
+      notify_request("/call_service_capacities", params)
     end
 
     private

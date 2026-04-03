@@ -4,7 +4,9 @@ variable "app_environment" {}
 variable "lb_rule_index" {}
 variable "region" {}
 variable "call_platform_password_parameter" {}
-
+variable "rating_engine_configuration" {}
+variable "call_platform_host" {}
+variable "call_platform_username" {}
 variable "target_group_name" {
   default = null
 }
@@ -102,6 +104,7 @@ variable "route53_record" {
   default = null
 }
 variable "sip_port" {}
+variable "internal_sip_port" {}
 variable "sip_alternative_port" {}
 
 variable "appserver_port" {
@@ -115,6 +118,14 @@ variable "redis_port" {
 }
 variable "freeswitch_event_socket_port" {
   default = 8021
+}
+
+variable "freeswitch_log_level" {
+  default = "info"
+}
+
+variable "freeswitch_sip_trace" {
+  default = "no"
 }
 
 variable "max_tasks" {

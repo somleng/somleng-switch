@@ -93,7 +93,7 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name  = "SIP_ADVERTISED_IP",
-          value = tostring(var.global_accelerator.ip_sets[0].ip_addresses[0])
+          value = var.global_accelerator.ip_sets[0].ip_addresses[0]
         }
       ]
     },
@@ -128,7 +128,6 @@ resource "aws_ecs_task_definition" "this" {
 }
 
 resource "aws_ecs_service" "public_gateway" {
-  count           = var.min_tasks > 0 ? 1 : 0
   name            = aws_ecs_task_definition.this.family
   cluster         = var.ecs_cluster.id
   task_definition = aws_ecs_task_definition.this.arn
@@ -137,8 +136,7 @@ resource "aws_ecs_service" "public_gateway" {
   network_configuration {
     subnets = var.vpc.private_subnets
     security_groups = [
-      aws_security_group.this.id,
-      var.db_security_group.id
+      aws_security_group.this.id
     ]
   }
 

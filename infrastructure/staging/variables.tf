@@ -54,10 +54,22 @@ variable "sip_port" {
   default = 6060
 }
 
+variable "internal_sip_port" {
+  default = 6061
+}
+
 variable "sip_alternative_port" {
   default = 6080
 }
 
 variable "freeswitch_event_socket_port" {
   default = 8021
+}
+
+variable "freeswitch_log_level" {
+  default = "debug"
+}
+
+variable "freeswitch_sip_trace" {
+  default = "yes"
 }

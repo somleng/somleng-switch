@@ -26,8 +26,8 @@ data "aws_iam_policy_document" "task_execution_policy" {
     effect  = "Allow"
     actions = ["ssm:GetParameters"]
     resources = [
-      var.stordb_password_parameter_arn,
-      aws_ssm_parameter.http_password.arn,
+      var.configuration.stordb_password_parameter.arn,
+      var.configuration.http_password_parameter.arn,
     ]
   }
 }

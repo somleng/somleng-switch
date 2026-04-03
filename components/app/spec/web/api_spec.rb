@@ -31,11 +31,14 @@ module SomlengAdhearsion
               "status_callback_method" => "POST",
               "sid" => "sample-call-sid",
               "account_sid" => "sample-account-sid",
+              "carrier_sid" => "sample-carrier-sid",
+              "call_direction" => "outbound",
               "account_auth_token" => "sample-auth-token",
               "direction" => "outbound-api",
               "api_version" => "2010-04-01",
               "default_tts_voice" => "Basic.Kal",
               "routing_parameters" => {
+                "address" => nil,
                 "destination" => "85516701721",
                 "dial_string_prefix" => nil,
                 "plus_prefix" => false,
@@ -43,6 +46,11 @@ module SomlengAdhearsion
                 "host" => "27.109.112.141",
                 "username" => nil,
                 "sip_profile" => "nat_gateway"
+              },
+              "billing_parameters" => {
+                "enabled" => true,
+                "billing_mode" => "prepaid",
+                "category" => "outbound_calls"
               }
             ),
             {
@@ -55,6 +63,29 @@ module SomlengAdhearsion
           expect(IPAddr.new(json_response["host"])).to have_attributes(
             private?: true
           )
+        end
+
+        context "when the request is invalid" do
+          around do |example|
+            original_raise_errors = Application.raise_errors
+            original_dump_errors = Application.dump_errors
+            Application.set :raise_errors, false
+            Application.set :dump_errors, false
+            example.run
+            Application.set :raise_errors, original_raise_errors
+            Application.set :dump_errors, original_dump_errors
+          end
+
+          it "returns a 500 error" do
+            basic_authorize "adhearsion", "password"
+            post(
+              "/calls",
+              "invalid-json",
+            )
+
+            expect(last_response.status).to eq(500)
+            expect(last_response.body).to eq("Internal Server Error")
+          end
         end
       end
 

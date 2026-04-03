@@ -42,7 +42,7 @@ RSpec.describe TwiMLEndpoint do
     expect(twiml).to include("<Say>Hello World</Say>")
     expect(WebMock).to(have_requested(:any, expected_voice_url).with { |request|
       validator = Twilio::Security::RequestValidator.new(auth_token)
-      expect(validator.validate(expected_voice_url, {}, request.headers["X-Twilio-Signature"])).to eq(true)
+      expect(validator.validate(expected_voice_url, {}, request.headers["X-Twilio-Signature"])).to be(true)
     })
   end
 end

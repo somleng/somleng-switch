@@ -6,6 +6,16 @@ current_dir=$(dirname "$(readlink -f "$0")")
 source $current_dir/support/test_helpers.sh
 source $current_dir/../support/test_helpers.sh
 
+scenario=$current_dir/../../scenarios/uas.xml
+sipp_pid=$(start_sipp_server $scenario)
+
+# ensure sipp is killed when script exits
+cleanup() {
+  kill "$sipp_pid" 2>/dev/null || true
+}
+
+trap cleanup EXIT INT TERM
+
 uas="$(hostname -i)"
 call_sid="$(cat /proc/sys/kernel/random/uuid)"
 
@@ -18,13 +28,16 @@ output=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:$SWITCH_PORT/
   "voice_url": null,
   "voice_method": null,
   "twiml": "<Response><Connect><Stream url=\"ws://$uas:$WS_SERVER_PORT\" /></Connect></Response>",
+  "carrier_sid": "sample-carrier-sid",
   "sid": "$call_sid",
   "account_sid": "sample-account-sid",
   "account_auth_token": "sample-auth-token",
   "direction": "outbound-api",
   "api_version": "2010-04-01",
   "default_tts_voice": "Basic.Kal",
+  "call_direction": "outbound",
   "routing_parameters": {
+    "address": null,
     "destination": "85512334667",
     "dial_string_prefix": null,
     "plus_prefix": false,
@@ -33,8 +46,10 @@ output=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:$SWITCH_PORT/
     "username": null,
     "sip_profile": "nat_gateway"
   },
-  "test_headers": {
-    "X-UAS-Contact-Ip": "$uas"
+  "billing_parameters": {
+    "enabled": false,
+    "billing_mode": "prepaid",
+    "category": "outbound_calls"
   }
 }
 EOF

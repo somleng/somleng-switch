@@ -16,7 +16,9 @@ if [ ! -f "$CONFIG_FILE" ]; then
       "general": {
         "log_level": ${LOG_LEVEL:-3},
         "logger": "*stdout",
-        "default_request_type": "*postpaid"
+        "default_request_type": "*postpaid",
+        "connect_timeout": "${CONNECT_TIMEOUT:-"1s"}",
+        "reply_timeout": "${REPLY_TIMEOUT:-"2s"}"
       },
       "stor_db": {
         "db_type": "*postgres",
@@ -47,6 +49,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
         "chargers_conns": ["${CONNECTION_MODE}"],
         "rals_conns": ["${CONNECTION_MODE}"],
         "cdrs_conns": ["${CONNECTION_MODE}"],
+        "debit_interval": "2s"
       },
       "attributes": {
         "enabled": true
@@ -61,6 +64,24 @@ if [ ! -f "$CONFIG_FILE" ]; then
         "thresholds_conns": ["${CONNECTION_MODE}"],
         "rals_conns": ["${CONNECTION_MODE}"],
         "chargers_conns": ["${CONNECTION_MODE}"]
+      },
+      "freeswitch_agent": {
+        "enabled": true,
+        "sessions_conns": ["*bijson_localhost"],
+        "create_cdr": true,
+        "extra_fields": [
+          "~*req.variable_sip_h_X-Somleng-CallSid",
+          "~*req.variable_sip_rh_X-Somleng-CallSid",
+          "~*req.variable_somleng_call_sid"
+        ],
+        "event_socket_conns": [
+          {
+            "address": "${EVENT_SOCKET_HOST}",
+            "password": "${EVENT_SOCKET_PASSWORD}",
+            "reconnects": -1,
+            "alias": ""
+          }
+        ]
       },
       "rals": {
         "enabled": true,
@@ -87,6 +108,19 @@ if [ ! -f "$CONFIG_FILE" ]; then
       "schedulers": {
         "enabled": true,
         "cdrs_conns": ["${CONNECTION_MODE}"]
+      },
+      "caches": {
+        "partitions": {
+          "*reverse_destinations": {
+            "ttl": "${CACHE_TTL:-"60s"}"
+          },
+          "*rating_plans": {
+            "ttl": "${CACHE_TTL:-"60s"}"
+          },
+          "*rating_profiles": {
+            "ttl": "${CACHE_TTL:-"60s"}"
+          }
+        }
       }
     }
 EOF

@@ -66,6 +66,10 @@ output "sip_port" {
   value = var.sip_port
 }
 
+output "internal_sip_port" {
+  value = var.internal_sip_port
+}
+
 output "cache_name" {
   value = var.cache_name
 }
@@ -76,6 +80,14 @@ output "sip_alternative_port" {
 
 output "freeswitch_event_socket_port" {
   value = var.freeswitch_event_socket_port
+}
+
+output "call_platform_host" {
+  value = var.call_platform_host
+}
+
+output "call_platform_username" {
+  value = var.call_platform_username
 }
 
 output "call_platform_password_parameter" {
@@ -102,6 +114,14 @@ output "freeswitch_event_logger_image" {
   value = var.freeswitch_event_logger_image
 }
 
+output "freeswitch_log_level" {
+  value = var.freeswitch_log_level
+}
+
+output "freeswitch_sip_trace" {
+  value = var.freeswitch_sip_trace
+}
+
 output "internal_route53_zone" {
   value = var.internal_route53_zone
 }
@@ -116,4 +136,8 @@ output "target_event_bus" {
 
 output "lb_rule_index" {
   value = var.lb_rule_index
+}
+
+output "rating_engine_configuration" {
+  value = var.rating_engine_configuration
 }

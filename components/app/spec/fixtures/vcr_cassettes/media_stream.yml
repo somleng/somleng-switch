@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: http://api.lvh.me:3000/services/media_streams
+    uri: http://services.lvh.me:3000/media_streams
     body:
       encoding: UTF-8
       string: '{"phone_call_id":"6f362591-ab86-4d1a-b39b-40c87e7929fc","url":"wss://mystream.ngrok.io/audiostream","custom_parameters":{},"tracks":"inbound"}'
@@ -54,7 +54,7 @@ http_interactions:
   recorded_at: Wed, 27 Mar 2024 10:05:04 GMT
 - request:
     method: post
-    uri: http://api.lvh.me:3000/services/media_stream_events
+    uri: http://services.lvh.me:3000/media_stream_events
     body:
       encoding: UTF-8
       string: '{"media_stream_id":"0edc29ef-e45f-408a-89f2-3266ce3352b6","event":{"type":"connect"}}'
@@ -103,7 +103,7 @@ http_interactions:
   recorded_at: Wed, 27 Mar 2024 10:05:04 GMT
 - request:
     method: post
-    uri: http://api.lvh.me:3000/services/media_stream_events
+    uri: http://services.lvh.me:3000/media_stream_events
     body:
       encoding: UTF-8
       string: '{"media_stream_id":"0edc29ef-e45f-408a-89f2-3266ce3352b6","event":{"type":"start"}}'
@@ -152,7 +152,7 @@ http_interactions:
   recorded_at: Wed, 27 Mar 2024 10:05:04 GMT
 - request:
     method: post
-    uri: http://api.lvh.me:3000/services/media_stream_events
+    uri: http://services.lvh.me:3000/media_stream_events
     body:
       encoding: UTF-8
       string: '{"media_stream_id":"0edc29ef-e45f-408a-89f2-3266ce3352b6","event":{"type":"disconnect"}}'

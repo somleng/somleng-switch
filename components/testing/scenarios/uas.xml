@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE scenario SYSTEM "sipp.dtd">
 
 <!-- This program is free software; you can redistribute it and/or      -->
@@ -27,9 +27,6 @@
   <!-- can be useful if you want to reject reINVITEs and keep the       -->
   <!-- media stream flowing.                                            -->
   <recv request="INVITE" crlf="true" rrs="true">
-    <action>
-      <ereg regexp=".*" search_in="hdr" header="X-UAS-Contact-Ip: " check_it="true" assign_to="contact_ip" />
-    </action>
   </recv>
 
   <!-- The '[last_*]' keyword is replaced automatically by the          -->
@@ -52,7 +49,7 @@
       [last_To:];tag=[pid]SIPpTag01[call_number]
       [last_Call-ID:]
       [last_CSeq:]
-      Contact: <sip:[$contact_ip]:[local_port];transport=[transport]>
+      Contact: <sip:[contact_ip]:[local_port];transport=[transport]>
       Content-Length: 0
 
     ]]>
@@ -68,7 +65,7 @@
       [last_Call-ID:]
       [last_CSeq:]
       [last_Record-Route:]
-      Contact: <sip:[$contact_ip]:[local_port];transport=[transport]>
+      Contact: <sip:[contact_ip]:[local_port];transport=[transport]>
       Content-Type: application/sdp
       Content-Length: [len]
 
@@ -84,9 +81,9 @@
   </send>
 
   <recv request="ACK"
-        optional="true"
-        rtd="true"
-        crlf="true">
+    optional="true"
+    rtd="true"
+    crlf="true">
   </recv>
 
   <recv request="BYE">
@@ -101,7 +98,7 @@
       [last_To:]
       [last_Call-ID:]
       [last_CSeq:]
-      Contact: <sip:[$contact_ip]:[local_port];transport=[transport]>
+      Contact: <sip:[contact_ip]:[local_port];transport=[transport]>
       Content-Length: 0
 
     ]]>
@@ -109,13 +106,13 @@
 
   <!-- Keep the call open for a while in case the 200 is lost to be     -->
   <!-- able to retransmit it if we receive the BYE again.               -->
-  <timewait milliseconds="4000"/>
+  <timewait milliseconds="4000" />
 
 
   <!-- definition of the response time repartition table (unit is ms)   -->
-  <ResponseTimeRepartition value="10, 20, 30, 40, 50, 100, 150, 200"/>
+  <ResponseTimeRepartition value="10, 20, 30, 40, 50, 100, 150, 200" />
 
   <!-- definition of the call length repartition table (unit is ms)     -->
-  <CallLengthRepartition value="10, 50, 100, 500, 1000, 5000, 10000"/>
+  <CallLengthRepartition value="10, 50, 100, 500, 1000, 5000, 10000" />
 
 </scenario>

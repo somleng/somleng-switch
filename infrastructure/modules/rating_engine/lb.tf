@@ -5,7 +5,7 @@ locals {
 
 resource "aws_lb_target_group" "this" {
   name                 = local.target_group_name
-  port                 = var.http_port
+  port                 = var.configuration.http_port
   protocol             = "HTTP"
   vpc_id               = var.region.vpc.vpc_id
   target_type          = "ip"
@@ -13,7 +13,7 @@ resource "aws_lb_target_group" "this" {
 
   health_check {
     protocol          = "HTTP"
-    path              = var.json_rpc_url
+    path              = var.configuration.json_rpc_url
     healthy_threshold = 3
     interval          = 10
     matcher           = "200,401"

@@ -36,5 +36,5 @@ group :test do
   gem "simplecov-cobertura", require: false
   gem "twilio-ruby"
   gem "vcr"
-  gem "webmock"
+  gem "webmock", github: "bblimke/webmock"
 end

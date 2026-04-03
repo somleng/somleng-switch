@@ -14,8 +14,7 @@ module "client_gateway" {
   app_image       = data.terraform_remote_state.core.outputs.client_gateway_ecr_repository.this.repository_url
   scheduler_image = data.terraform_remote_state.core.outputs.gateway_scheduler_ecr_repository.this.repository_url
 
-  db_security_group = data.terraform_remote_state.core_infrastructure.outputs.db.security_group
-  sip_port          = var.sip_port
+  sip_port = var.sip_port
 
   db_password_parameter = data.terraform_remote_state.core_infrastructure.outputs.db.master_password_parameter
   db_name               = var.client_gateway_db_name

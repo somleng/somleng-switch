@@ -1,60 +1,8 @@
 ---
 http_interactions:
 - request:
-    method: post
-    uri: http://api.lvh.me:3000/services/inbound_phone_calls
-    body:
-      encoding: UTF-8
-      string: '{"to":"1294","from":"0715100960","external_id":"06c0c60a-47a2-426a-87e9-95ea85d22bf2","source_ip":"27.109.112.141","client_identifier":null,"variables":{"sip_from_host":"192.168.1.1","sip_to_host":"192.168.2.1","sip_network_ip":"10.0.0.1","sip_via_host":null}}'
-    headers:
-      Accept:
-      - application/json
-      Content-Type:
-      - application/json
-      User-Agent:
-      - Faraday v2.7.11
-      Authorization:
-      - Basic c2VydmljZXM6cGFzc3dvcmQ=
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 201
-      message: Created
-    headers:
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-Xss-Protection:
-      - '0'
-      X-Content-Type-Options:
-      - nosniff
-      X-Permitted-Cross-Domain-Policies:
-      - none
-      Referrer-Policy:
-      - strict-origin-when-cross-origin
-      Content-Type:
-      - application/vnd.api+json; charset=utf-8
-      Etag:
-      - W/"8aa42d1e00281587f058e37db761f7c9"
-      Cache-Control:
-      - max-age=0, private, must-revalidate
-      X-Request-Id:
-      - daa15cf3-8d31-4958-ad86-2dced50b69d7
-      X-Runtime:
-      - '0.052932'
-      Server-Timing:
-      - start_processing.action_controller;dur=0.00, sql.active_record;dur=16.44,
-        instantiation.active_record;dur=0.24, transaction.active_record;dur=26.56,
-        process_action.action_controller;dur=43.11
-      Content-Length:
-      - '498'
-    body:
-      encoding: UTF-8
-      string: '{"created_at":"2023-10-20T05:06:28Z","updated_at":"2023-10-20T05:06:28Z","voice_url":"https://demo.twilio.com/docs/voice.xml","voice_method":"GET","status_callback_url":null,"status_callback_method":null,"twiml":null,"to":"1294","from":"+855715100960","sid":"23233573-25be-486d-9631-c33d6f5eb80c","account_sid":"10304d06-de4a-40b5-9453-2ab15ebf5c52","account_auth_token":"LaCY_bLXWZUp9CpFMvBwQiLUn5Kry20lRxOUeERqFPI","direction":"inbound","api_version":"2010-04-01","default_tts_voice":"Basic.Kal"}'
-  recorded_at: Fri, 20 Oct 2023 05:06:28 GMT
-- request:
     method: get
-    uri: https://demo.twilio.com/docs/voice.xml?AccountSid=10304d06-de4a-40b5-9453-2ab15ebf5c52&ApiVersion=2010-04-01&CallSid=23233573-25be-486d-9631-c33d6f5eb80c&CallStatus=ringing&Called=1294&Caller=%2B855715100960&Direction=inbound&From=%2B855715100960&To=1294
+    uri: https://demo.twilio.com/docs/voice.xml?AccountSid=1b2ce123-cffc-4188-bdb6-d6a76ab10cf1&ApiVersion=2010-04-01&CallSid=9802a301-aed5-41c8-b662-e3d3180a3eb4&CallStatus=ringing&Called=85512456869&Caller=1000&Direction=inbound&From=1000&To=85512456869
     body:
       encoding: ASCII-8BIT
       string: ''
@@ -68,7 +16,7 @@ http_interactions:
       Cache-Control:
       - max-age=259200
       X-Twilio-Signature:
-      - 1TPqVlvI+EzgGUzcXsHjIF4lAlU=
+      - 0+b0ct1SJKoITuPmOFqDiFGTgFI=
       Connection:
       - close
       Host:
@@ -79,47 +27,47 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 20 Oct 2023 05:06:29 GMT
+      - Mon, 16 Mar 2026 16:55:37 GMT
       Content-Type:
       - text/xml
       Content-Length:
-      - '192'
+      - '209'
       Connection:
       - close
       Server:
       - nginx
       Last-Modified:
-      - Tue, 13 Jun 2023 19:18:49 GMT
+      - Wed, 11 Feb 2026 00:49:07 GMT
       Vary:
       - Accept-Encoding
       Etag:
-      - '"6488c119-c0"'
+      - '"698bd203-d1"'
       X-Shenanigans:
       - none
       Accept-Ranges:
       - bytes
     body:
       encoding: ASCII-8BIT
-      string: |
+      string: |-
         <?xml version="1.0" encoding="UTF-8"?>
         <Response>
-            <Say voice="woman">Thanks for trying our documentation. Enjoy!</Say>
+            <Say voice="Polly.Joanna-Generative">Thanks for trying our documentation. Enjoy!</Say>
             <Play>http://demo.twilio.com/docs/classic.mp3</Play>
         </Response>
-  recorded_at: Fri, 20 Oct 2023 05:06:29 GMT
+  recorded_at: Mon, 16 Mar 2026 16:55:38 GMT
 - request:
     method: post
-    uri: http://api.lvh.me:3000/services/tts_events
+    uri: http://services.lvh.me:3000/tts_events
     body:
       encoding: UTF-8
-      string: '{"phone_call":"23233573-25be-486d-9631-c33d6f5eb80c","tts_voice":"Basic.Slt","num_chars":43}'
+      string: '{"phone_call":"9802a301-aed5-41c8-b662-e3d3180a3eb4","tts_voice":"Basic.Kal","num_chars":43}'
     headers:
       Accept:
       - application/json
       Content-Type:
       - application/json
       User-Agent:
-      - Faraday v2.7.11
+      - Faraday v2.14.0
       Authorization:
       - Basic c2VydmljZXM6cGFzc3dvcmQ=
       Accept-Encoding:
@@ -144,16 +92,18 @@ http_interactions:
       Cache-Control:
       - no-cache
       X-Request-Id:
-      - 5ecc33fd-b6fb-4c51-a946-288f2bb3567b
+      - f90ba008-3016-4ac1-9854-8fdeca8b0b35
       X-Runtime:
-      - '0.034691'
+      - '0.304286'
       Server-Timing:
-      - sql.active_record;dur=8.08, start_processing.action_controller;dur=0.00, instantiation.active_record;dur=0.23,
-        transaction.active_record;dur=8.13, process_action.action_controller;dur=18.49
+      - sql.active_record;dur=75.50, start_processing.action_controller;dur=0.00,
+        describe_voices.Polly.aws;dur=5.71, instantiation.active_record;dur=9.76,
+        start_transaction.active_record;dur=0.00, transaction.active_record;dur=9.71,
+        process_action.action_controller;dur=152.34
       Content-Length:
       - '0'
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 20 Oct 2023 05:06:29 GMT
-recorded_with: VCR 6.2.0
+  recorded_at: Mon, 16 Mar 2026 16:55:38 GMT
+recorded_with: VCR 6.4.0

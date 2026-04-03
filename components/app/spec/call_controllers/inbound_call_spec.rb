@@ -1,15 +1,19 @@
 require "spec_helper"
 
 RSpec.describe CallController, type: :call_controller do
+  let(:call_sid) { "9802a301-aed5-41c8-b662-e3d3180a3eb4" }
+  let(:account_sid) { "1b2ce123-cffc-4188-bdb6-d6a76ab10cf1" }
+  let(:voice_url) { "https://demo.twilio.com/docs/voice.xml" }
+  let(:voice_method) { "GET" }
+
   it "handles inbound calls from public gateway", :vcr, cassette: :inbound_call do
+    call_sid = "9802a301-aed5-41c8-b662-e3d3180a3eb4"
     call = build_fake_call(
-      to: '"1294" <sip:1294@52.74.4.205;transport=udp;user=phone>',
-      from: '"0715100960" <sip:0715100960@52.74.4.205;transport=udp;user=phone>;tag=gK04468a89',
       variables: {
-        "variable_sip_h_x_somleng_caller_identity" => "0715100960",
-        "variable_sip_h_x_somleng_callee_identity" => "1294",
-        "variable_sip_network_ip" => "10.0.0.1",
-        "variable_sip_h_x_src_ip" => "27.109.112.141"
+        "variable_somleng_call_sid" => call_sid,
+        "variable_somleng_account_sid" => account_sid,
+        "variable_somleng_voice_url" => voice_url,
+        "variable_somleng_voice_method" => voice_method
       }
     )
     controller = CallController.new(call)
@@ -18,44 +22,37 @@ RSpec.describe CallController, type: :call_controller do
     controller.run
 
     expect(controller).to have_received(:answer).with(
-      "X-Somleng-CallSid" => be_present,
-      "X-Somleng-AccountSid" => be_present
+      "X-Somleng-CallSid" => call_sid
     )
     expect(controller).to have_received(:say)
-    expect(controller).to have_received(:play_audio)
-    expect(WebMock).to(have_requested(:post, "http://api.lvh.me:3000/services/inbound_phone_calls").with { |request|
-      request_body = JSON.parse(request.body)
-      expect(request_body).to include(
-        "from" => "0715100960",
-        "external_id" => call.id,
-        "host" => be_present,
-        "region" => be_present
-      )
-    })
+    expect(controller).to have_received(:play_audio).with("http://demo.twilio.com/docs/classic.mp3")
   end
 
-  it "handles inbound calls from client gateway", :vcr, cassette: :inbound_call do
+  it "enables billing", :vcr, cassette: :inbound_call do
+    call_id = SecureRandom.uuid
     call = build_fake_call(
-      to: '"016243111" <sip:016243111@192.168.0.75;transport=udp;user=phone>',
-      from: '"user1" <sip:user1@192.168.0.75;transport=udp;user=phone>;tag=gK04468a89',
+      id: call_id,
       variables: {
-        "variable_sip_h_x_somleng_client_identifier" => "user1",
-        "variable_sip_h_x_somleng_caller_identity" => "0715100960", # from Remote Party ID Header
-        "variable_sip_h_x_somleng_callee_identity" => "016243111",
-        "variable_sip_network_ip" => "10.0.0.1"
+        "variable_somleng_call_sid" => call_sid,
+        "variable_somleng_account_sid" => account_sid,
+        "variable_somleng_voice_url" => voice_url,
+        "variable_somleng_voice_method" => voice_method,
+        "variable_somleng_billing_enabled" => "true",
+        "variable_somleng_billing_mode" => "prepaid"
       }
     )
 
     controller = CallController.new(call)
     stub_controller_voice_commands(controller, voice_commands: %i[say play_audio])
-
     controller.run
 
-    expect(WebMock).to(have_requested(:post, "http://api.lvh.me:3000/services/inbound_phone_calls").with { |request|
-    request_body = JSON.parse(request.body)
-    expect(request_body).to include(
-      "client_identifier" => "user1"
-    )
-  })
+    expect(call).to have_received(:write_command) do |command|
+      expect(command).to be_a(Rayo::Command::SetVar)
+      expect(command).to have_attributes(
+        uuid: call_id,
+        name: "cgr_reqtype",
+        value: "*prepaid"
+      )
+    end
   end
 end
