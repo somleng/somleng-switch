@@ -49,6 +49,7 @@ class OutboundCall
       billing_enabled: call_params.dig("billing_parameters", "enabled"),
       billing_mode: call_params.dig("billing_parameters", "billing_mode"),
       billing_category: call_params.dig("billing_parameters", "category"),
+      destination: dial_string.destination,
       proxy_address: dial_string.proxy_address,
       external_profile: dial_string.external_profile
     )

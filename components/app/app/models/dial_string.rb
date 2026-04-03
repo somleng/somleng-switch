@@ -25,6 +25,10 @@ class DialString
     routing_parameters.sip_profile
   end
 
+  def destination
+    routing_parameters.destination
+  end
+
   private
 
   def routing_parameters

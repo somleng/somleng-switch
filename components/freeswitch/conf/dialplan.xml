@@ -26,6 +26,7 @@
         <action application="unset" data="sip_h_X-Somleng-BillingCategory" />
         <action application="unset" data="sip_h_X-Somleng-ProxyAddress" />
         <action application="unset" data="sip_h_X-Somleng-ExternalProfile" />
+        <action application="unset" data="sip_h_X-Somleng-Destination" />
 
         <action application="set" data="cgr_reqtype=*none" />
 
@@ -40,6 +41,8 @@
         <action application="set" data="cgr_tenant=${sip_h_X-Somleng-CarrierSid}" />
         <action application="set" data="cgr_account=${sip_h_X-Somleng-AccountSid}" />
         <action application="set" data="cgr_category=${sip_h_X-Somleng-BillingCategory}" />
+        <action application="set" data="cgr_destination=${sip_h_X-Somleng-Destination}" />
+
         <action application="set" data="cgr_reqtype=*${sip_h_X-Somleng-BillingMode}" />
         <action application="park" />
       </condition>
@@ -57,6 +60,7 @@
         <action application="unset" data="sip_h_X-Somleng-BillingCategory" />
         <action application="unset" data="sip_h_X-Somleng-ProxyAddress" />
         <action application="unset" data="sip_h_X-Somleng-ExternalProfile" />
+        <action application="unset" data="sip_h_X-Somleng-Destination" />
         <action application="bridge" data="${bridge_dial_string}" />
 
         <!-- CGRateS authorization fails -->

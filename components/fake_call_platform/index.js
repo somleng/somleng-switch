@@ -160,15 +160,18 @@ const authenticate = (req) => {
 const handleInboundPhoneCalls = async (req, res) => {
   const data = await parseBody(req);
   const { to, from } = InboundPhoneCallsSchema.parse(data);
+  const destination = to.replace(/\D/g, "");
 
-  if (to === FORBIDDEN_TEST_NUMBER) {
+  if (destination === FORBIDDEN_TEST_NUMBER) {
     res.statusCode = 422;
     res.end(JSON.stringify({ error: "Unprocessable Entity" }));
     return;
   }
 
   const testNumber =
-    to in TEST_NUMBERS ? TEST_NUMBERS[to] : DEFAULT_TEST_NUMBER;
+    destination in TEST_NUMBERS
+      ? TEST_NUMBERS[destination]
+      : DEFAULT_TEST_NUMBER;
   const response = {
     voice_url: null,
     voice_method: null,
@@ -179,7 +182,7 @@ const handleInboundPhoneCalls = async (req, res) => {
     sid: crypto.randomUUID(),
     direction: "inbound",
     call_direction: "inbound",
-    to,
+    to: destination,
     from,
     api_version: "2010-04-01",
     default_tts_voice: "Basic.Kal",
