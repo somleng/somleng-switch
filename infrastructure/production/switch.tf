@@ -18,6 +18,7 @@ module "switch" {
   region                                             = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region
   ecs_cluster                                        = aws_ecs_cluster.this
   sip_port                                           = var.sip_port
+  internal_sip_port                                  = var.internal_sip_port
   sip_alternative_port                               = var.sip_alternative_port
   freeswitch_event_socket_port                       = var.freeswitch_event_socket_port
   call_platform_host                                 = "https://services.somleng.org"
@@ -34,6 +35,7 @@ module "switch" {
   nat_gateway_ip                                     = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc.nat_public_ips[0]
   alternative_sip_outbound_ip                        = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.nat_instance.public_ip
   nat_instance_ip                                    = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.nat_instance.public_ip
+  rating_engine_configuration                        = module.rating_engine_configuration
 }
 
 module "switch_helium" {
@@ -63,6 +65,7 @@ module "switch_helium" {
   min_tasks                                     = module.switch.min_tasks
   max_tasks                                     = module.switch.max_tasks
   sip_port                                      = module.switch.sip_port
+  internal_sip_port                             = module.switch.internal_sip_port
   sip_alternative_port                          = module.switch.sip_alternative_port
   freeswitch_event_socket_port                  = module.switch.freeswitch_event_socket_port
   call_platform_host                            = module.switch.call_platform_host
@@ -75,6 +78,7 @@ module "switch_helium" {
   freeswitch_event_logger_image                 = module.switch.freeswitch_event_logger_image
   internal_route53_zone                         = module.switch.internal_route53_zone
   target_event_bus                              = module.switch.target_event_bus
+  rating_engine_configuration                   = module.rating_engine_configuration
 
   providers = {
     aws = aws.helium
