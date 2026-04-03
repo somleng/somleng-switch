@@ -76,6 +76,7 @@ if data.billing_parameters.enabled then
   session:setVariable("cgr_tenant", data.carrier_sid)
   session:setVariable("cgr_account", data.account_sid)
   session:setVariable("cgr_category", data.billing_parameters.category)
+  session:setVariable("cgr_destination", data.to)
   session:setVariable("cgr_reqtype", "*" .. data.billing_parameters.billing_mode)
 
   session:execute("park")

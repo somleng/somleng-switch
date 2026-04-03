@@ -58,7 +58,7 @@ if ! rating_engine_set_balance "$CARRIER_SID" "$ACCOUNT_SID" "500"; then
 fi
 
 clear_sipp_log_file "$scenario"
-sipp -sf $scenario public_gateway:5060 -s 3333 -m 1 -trace_msg > /dev/null
+sipp -sf $scenario public_gateway:5060 -s +3333 -m 1 -trace_msg > /dev/null
 
 account_response=$(rating_engine_get_account "$CARRIER_SID" "$ACCOUNT_SID")
 account_balance=$(echo "$account_response" | jq -r '.result.BalanceMap["*monetary"][0].Value')

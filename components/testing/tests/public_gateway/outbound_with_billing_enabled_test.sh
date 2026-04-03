@@ -90,7 +90,7 @@ response=$(curl -s -XPOST -u "adhearsion:password" http://switch-app:8080/calls 
     "address": null,
     "destination": "$destination",
     "dial_string_prefix": null,
-    "plus_prefix": false,
+    "plus_prefix": true,
     "national_dialing": false,
     "host": "$uas",
     "username": null,
@@ -108,7 +108,7 @@ EOF
 sleep 10
 
 log_file=$(find_sipp_log_file $scenario)
-if ! assert_in_file $log_file "INVITE sip:$destination@$uas"; then
+if ! assert_in_file $log_file "INVITE sip:+$destination@$uas"; then
 	exit 1
 fi
 

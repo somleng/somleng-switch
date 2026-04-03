@@ -22,6 +22,7 @@ module CallControllerHelpers
       to: "85512456869",
       twiml: nil,
       sip_headers: SIPHeaders.new(
+        destination: "85512456869",
         call_sid:,
         account_sid:,
         carrier_sid: SecureRandom.uuid,

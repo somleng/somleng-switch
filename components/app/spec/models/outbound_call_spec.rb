@@ -67,7 +67,8 @@ RSpec.describe OutboundCall do
             billing_mode: "prepaid",
             billing_category: "outbound_calls",
             proxy_address: nil,
-            external_profile: "nat_gateway"
+            external_profile: "nat_gateway",
+            destination: "85516701721"
           )
         )
       },
@@ -80,7 +81,8 @@ RSpec.describe OutboundCall do
         "X-Somleng-BillingMode" => "prepaid",
         "X-Somleng-BillingCategory" => "outbound_calls",
         "X-Somleng-ProxyAddress" => "",
-        "X-Somleng-ExternalProfile" => "nat_gateway"
+        "X-Somleng-ExternalProfile" => "nat_gateway",
+        "X-Somleng-Destination" => "85516701721"
       }
     )
   end

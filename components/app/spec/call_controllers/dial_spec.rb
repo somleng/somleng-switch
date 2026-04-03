@@ -57,7 +57,8 @@ RSpec.describe CallController, type: :call_controller do
               "X-Somleng-CallDirection" => be_present,
               "X-Somleng-BillingEnabled" => be_present,
               "X-Somleng-BillingMode" => be_present,
-              "X-Somleng-BillingCategory" => be_present
+              "X-Somleng-BillingCategory" => be_present,
+              "X-Somleng-Destination" => be_present
             )
           )
         )
