@@ -16,11 +16,19 @@ create_load_balancer_entry () {
 assert_in_file () {
   filename="$1"
   test_string="$2"
-  expected_count="$3"
+  is_base64="$3"
+  expected_count="$4"
 
   file=$(find . -type f -iname "$(basename "$filename")")
 
-  actual_count=$(grep -o "$test_string" "$file" 2>/dev/null | wc -l)
+  # Choose how to read the file
+  if [ "$is_base64" = "base64" ]; then
+    content=$(base64 -d "$file" 2>/dev/null)
+  else
+    content=$(cat "$file")
+  fi
+
+  actual_count=$(printf "%s" "$content" | grep -o "$test_string" | wc -l)
 
   if [ -z "$expected_count" ]; then
     # Only check it exists at least once
@@ -29,7 +37,7 @@ assert_in_file () {
 Error:
 Expected "$test_string" to be found in $file but was not:
 
-$(cat "$file")
+$content
 EOT
       return 1
     fi
@@ -40,7 +48,7 @@ EOT
 Error:
 Expected "$test_string" to appear $expected_count time(s) in $file but found $actual_count:
 
-$(cat "$file")
+$content
 EOT
       return 1
     fi
