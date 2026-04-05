@@ -22,6 +22,8 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
+cdr_server_log="cdr-server.log"
+cat /dev/null > $cdr_server_log
 clear_sipp_log_file "$scenario"
 
 sipp -sf $scenario public_gateway:5060 -s 1234 -m 1 -trace_msg > /dev/null
@@ -46,6 +48,6 @@ if ! assert_in_file "$log_file" "Record-Route: <sip:$public_gateway:5060"; then
 	exit 1
 fi
 
-if ! assert_in_file $cdr_server_log "record_cdr"; then
+if ! assert_in_file $cdr_server_log "\"record_cdr\": \"true\"" 1; then
   exit 1
 fi
