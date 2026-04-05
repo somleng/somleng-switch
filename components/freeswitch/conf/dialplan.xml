@@ -1,7 +1,8 @@
 <include>
   <context name="default">
-    <extension name="debug" continue="true">
+    <extension name="Call_Setup" continue="true">
       <condition>
+        <action application="set" data="record_cdr=true" />
         <action application="info" />
       </condition>
     </extension>

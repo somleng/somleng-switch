@@ -45,3 +45,7 @@ fi
 if ! assert_in_file "$log_file" "Record-Route: <sip:$public_gateway:5060"; then
 	exit 1
 fi
+
+if ! assert_in_file $cdr_server_log "record_cdr" 1; then
+  exit 1
+fi
