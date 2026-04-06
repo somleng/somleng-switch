@@ -71,6 +71,13 @@ const InboundPhoneCallsSchema = z.object({
   }),
 });
 
+const PhoneCallUpdateSchema = z.object({
+  phone_call_sid: z.string(),
+  switch_proxy_identifier: z.string(),
+});
+
+const CallHeartbeatSchema = z.array(z.string()).min(1);
+
 const server = createServer(async (req, res) => {
   try {
     if (req.url === "/health_checks") {
@@ -110,9 +117,15 @@ const server = createServer(async (req, res) => {
         assertHTTPMethod(req, "POST");
         await handleMediaStreams(req, res);
         break;
+      case "/call_heartbeats":
+        handleCallHeartbeats(req, res);
+        break;
       default:
         if (req.url.startsWith("/recordings")) {
           await handleRecordings(req, res);
+          return;
+        } else if (req.url.startsWith("/phone_calls")) {
+          await handlePhoneCallUpdate(req, res);
           return;
         }
 
@@ -242,6 +255,26 @@ const handleRecordings = async (req, res) => {
       url: "https://api.somleng.org/cowbell.mp3",
     }),
   );
+};
+
+const handlePhoneCallUpdate = async (req, res) => {
+  assertHTTPMethod(req, "PATCH");
+  const data = await parseBody(req);
+  PhoneCallUpdateSchema.parse(data);
+
+  res.statusCode = 204;
+
+  res.end(JSON.stringify({}));
+};
+
+const handleCallHeartbeats = async (req, res) => {
+  assertHTTPMethod(req, "POST");
+  const data = await parseBody(req);
+  CallHeartbeatSchema.parse(data);
+
+  res.statusCode = 201;
+
+  res.end(JSON.stringify({}));
 };
 
 const handleMediaStreams = async (_req, res) => {

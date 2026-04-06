@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -25,6 +28,33 @@ func (nopLogger) Notice(string) error  { return nil }
 func (nopLogger) Warning(string) error { return nil }
 
 const modTwilioStreamPrefix = "mod_twilio_stream"
+
+type CallPlatformClient struct {
+	Host     string
+	Username string
+	Password string
+	Client   *http.Client
+}
+
+func NewCallPlatformClient() *CallPlatformClient {
+	return &CallPlatformClient{
+		Host:     os.Getenv("FS_CALL_PLATFORM_HOST"),
+		Username: os.Getenv("FS_CALL_PLATFORM_USERNAME"),
+		Password: os.Getenv("FS_CALL_PLATFORM_PASSWORD"),
+		Client:   &http.Client{Timeout: 10 * time.Second},
+	}
+}
+
+func (c *CallPlatformClient) newRequest(method, path string, body any) *http.Request {
+	jsonData, _ := json.Marshal(body)
+
+	req, _ := http.NewRequest(method, c.Host+path, bytes.NewBuffer(jsonData))
+
+	req.Header.Set("Content-Type", "application/json")
+	req.SetBasicAuth(c.Username, c.Password)
+
+	return req
+}
 
 // Formats the event as map and prints it out
 func logHeartbeat(eventStr string, connIdx int) {
@@ -64,28 +94,119 @@ func parseCustomEvent(eventStr string) (string, string, error) {
 func channelEventHandler(eventStr string, connIdx int) {
 	event := fsock.FSEventStrToMap(eventStr, []string{})
 
-	// jsonString, _ := json.Marshal(event)
-	formattedJsonString, _ := json.MarshalIndent(event, "", "  ")
-	fmt.Println(string(formattedJsonString))
+	// Ignore outbound legs
+	if event["Call-Direction"] != "inbound" {
+		return
+	}
 
-	// eventName := event["Event-Name"]
-	// uuid := event["Unique-ID"]
+	switch event["Event-Name"] {
+	case "CHANNEL_CREATE":
+		handleProxyChannelCreate(event)
+	}
+}
 
-	// fmt.Println("Received event: " + +" for call with uuid: " + uuid)
+func handleProxyChannelCreate(event map[string]string) {
+	if event["variable_sip_h_X-Somleng-CallDirection"] != "outbound" {
+		return
+	}
 
-	// if uuid == "" {
-	// 	return
-	// }
+	client := NewCallPlatformClient()
+	client.UpdateCallProxyIdentifier(
+		event["variable_sip_h_X-Somleng-CallSid"],
+		event["variable_call_uuid"],
+	)
+}
 
-	// switch eventName {
-	// case "CHANNEL_CREATE":
-	// 	activeUUIDs[uuid] = true
-	// 	fmt.Println("Call started:", uuid)
+func (c *CallPlatformClient) UpdateCallProxyIdentifier(callPlatformId, proxyIdentifier string) {
+	go func() {
+		payload := map[string]interface{}{
+			"phone_call_sid":          callPlatformId,
+			"switch_proxy_identifier": proxyIdentifier,
+		}
 
-	// case "CHANNEL_HANGUP", "CHANNEL_DESTROY":
-	// 	delete(activeUUIDs, uuid)
-	// 	fmt.Println("Call ended:", uuid)
-	// }
+		req := c.newRequest("PATCH", "/phone_calls/"+callPlatformId, payload)
+		resp, err := c.Client.Do(req)
+		if err != nil {
+			println("HTTP request failed:", err.Error())
+		}
+		defer resp.Body.Close()
+	}()
+}
+
+func (c *CallPlatformClient) CreateCallHeartbeats(callUUIDs []string) {
+	go func() {
+		req := c.newRequest("POST", "/call_heartbeats", callUUIDs)
+		resp, err := c.Client.Do(req)
+
+		if err != nil {
+			println("HTTP request failed:", err.Error())
+		}
+		defer resp.Body.Close()
+	}()
+}
+
+func fetchActiveCallUUIDs(fs *fsock.FSock) []string {
+	resp, err := fs.SendApiCmd("show channels as json")
+	if err != nil {
+		return []string{}
+	}
+
+	payload := make(map[string]any)
+	if err := json.Unmarshal([]byte(resp), &payload); err != nil {
+		return []string{}
+	}
+
+	rawRows, exists := payload["rows"]
+	if !exists {
+		return []string{}
+	}
+
+	rows := rawRows.([]any)
+
+	uuidSet := make(map[string]struct{})
+	for _, row := range rows {
+		rowMap := row.(map[string]any)
+
+		// Only include inbound calls
+		if direction := rowMap["direction"].(string); direction != "inbound" {
+			continue
+		}
+
+		uuidSet[rowMap["call_uuid"].(string)] = struct{}{}
+	}
+
+	var uuids []string
+	for uuid := range uuidSet {
+		uuids = append(uuids, uuid)
+	}
+
+	return uuids
+}
+
+func getCallHeartbeatInterval() time.Duration {
+	intervalEnv := os.Getenv("CALL_STATUS_HEARTBEAT_INTERVAL_SECONDS")
+
+	if intervalEnv != "" {
+		secs, _ := strconv.Atoi(intervalEnv)
+		return time.Duration(secs) * time.Second
+	}
+
+	return 30 * time.Second
+}
+
+func callStatusUpdates(fs *fsock.FSock, callPlatformClient *CallPlatformClient) {
+	ticker := time.NewTicker(getCallHeartbeatInterval())
+	defer ticker.Stop()
+
+	for range ticker.C {
+		callUUIDs := fetchActiveCallUUIDs(fs)
+
+		if len(callUUIDs) == 0 {
+			continue
+		}
+
+		callPlatformClient.CreateCallHeartbeats(callUUIDs)
+	}
 }
 
 func customEventHandler(ctx context.Context, redisClient *redis.Client, eventStr string) {
@@ -135,27 +256,28 @@ func main() {
 			"HEARTBEAT",
 			"CUSTOM",
 			"CHANNEL_CREATE",
-			"CHANNEL_HANGUP",
-			"CHANNEL_DESTROY",
 		},
 	}
 
 	evHandlers := map[string][]func(string, int){
-		"HEARTBEAT":       {logHeartbeat},
-		"ALL":             {customEventHandlerWrapper},
-		"CHANNEL_CREATE":  {channelEventHandler},
-		"CHANNEL_HANGUP":  {channelEventHandler},
-		"CHANNEL_DESTROY": {channelEventHandler},
+		"HEARTBEAT":      {logHeartbeat},
+		"ALL":            {customEventHandlerWrapper},
+		"CHANNEL_CREATE": {channelEventHandler},
 	}
 
 	event_socket_host := os.Getenv("EVENT_SOCKET_HOST")
 	event_socket_password := os.Getenv("EVENT_SOCKET_PASSWORD")
 
 	errChan := make(chan error)
-	_, err := fsock.NewFSock(event_socket_host, event_socket_password, 10, 60, 0, fibDuration, evHandlers, evFilters, nopLogger{}, 0, false, errChan)
+	fs, err := fsock.NewFSock(event_socket_host, event_socket_password, 10, 60, 0, fibDuration, evHandlers, evFilters, nopLogger{}, 0, false, errChan)
 	if err != nil {
 		fmt.Printf("FreeSWITCH error: %s\n", err)
 		return
 	}
+
+	callPlatformClient := NewCallPlatformClient()
+
+	go callStatusUpdates(fs, callPlatformClient)
+
 	<-errChan
 }

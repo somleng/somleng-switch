@@ -122,6 +122,10 @@ services:
       freeswitch:
         condition: service_healthy
     environment:
+      FS_CALL_PLATFORM_HOST: http://fake_call_platform:3000
+      FS_CALL_PLATFORM_USERNAME: "services"
+      FS_CALL_PLATFORM_PASSWORD: "password"
+      CALL_STATUS_HEARTBEAT_INTERVAL_SECONDS: "1"
       EVENT_SOCKET_HOST: freeswitch:8021
       EVENT_SOCKET_PASSWORD: secret
       REDIS_URL: "redis://redis:6379/1"
