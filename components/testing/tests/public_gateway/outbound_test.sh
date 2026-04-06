@@ -75,6 +75,8 @@ if ! assert_not_in_file $log_file "X-Somleng-AccountSid"; then
   exit 1
 fi
 
-if ! assert_in_file $cdr_server_log "proxy_leg"; then
+convert_base64_logs "$cdr_server_log" "decoded_cdr_server.log"
+
+if ! assert_in_file "decoded_cdr_server.log" "\"record_cdr\":\"true\"" 1; then
   exit 1
 fi

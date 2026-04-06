@@ -169,6 +169,7 @@ jobs:
           mkdir -p tmp/logs
           mkdir -p tmp/connect_stream_test_files
           docker compose exec testing sh -c 'tar cf - *_messages.log' | tar xf - -C tmp/
+          docker compose exec testing sh -c 'tar cf - cdr-server.log' | tar xf - -C tmp/
           docker compose exec testing sh -c 'tar cf - -C /testing connect_stream_test_files' | tar xf - -C tmp/
           docker compose logs freeswitch > tmp/freeswitch.log
           docker compose logs switch-app > tmp/switch-app

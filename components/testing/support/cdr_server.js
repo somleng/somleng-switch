@@ -1,48 +1,50 @@
 const http = require("http");
-const querystring = require("querystring");
 
 const port = process.env.CDR_SERVER_PORT || 9000;
 
-function logRequest(req, body) {
-  const params = querystring.parse(body); // parse URL-encoded body
-  const rawBase64 = params.cdr || "";
+function logRequest(req, rawBodyBuffer) {
+  // Convert to string ONLY once, after fully receiving the body
+  const body = rawBodyBuffer.toString("utf8");
 
-  let decoded = "";
+  // Parse URL-encoded body safely
+  const params = new URLSearchParams(body);
+  const rawBase64 = params.get("cdr") || "";
+
+  // Log raw base64 (what you want for assertions)
+  console.log(rawBase64);
+
+  // Optional: debug decode (uncomment if needed)
+  /*
   try {
-    decoded = Buffer.from(rawBase64, "base64").toString("utf-8");
+    const decoded = Buffer.from(rawBase64, "base64");
+    console.log("---- decoded preview ----");
+    console.log(decoded.toString("utf8").slice(0, 200));
   } catch (err) {
-    decoded = `[Failed to decode Base64: ${err.message}]`;
+    console.error("Failed to decode base64:", err);
   }
-
-  jsonStr = decoded
-    .replace(/\bNaN\b/gi, "null")
-    .replace(/\bInfinity\b/gi, "null")
-    .replace(/\b-Infinity\b/gi, "null");
-
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-
-  try {
-    const json = JSON.parse(jsonStr);
-    console.log(JSON.stringify(json, null, 2));
-  } catch (err) {
-    console.warn(`[Warning] Failed to parse JSON: ${err.message}`);
-    console.log("Decoded content:\n", jsonStr);
-  }
-
-  console.log("\n");
+  */
 }
 
 const server = http.createServer((req, res) => {
-  let body = "";
+  const chunks = [];
 
   req.on("data", (chunk) => {
-    body += chunk.toString();
+    chunks.push(chunk); // keep raw bytes
   });
 
   req.on("end", () => {
-    logRequest(req, body);
+    const rawBodyBuffer = Buffer.concat(chunks);
+
+    logRequest(req, rawBodyBuffer);
+
     res.writeHead(200, { "Content-Type": "text/plain" });
     res.end("OK");
+  });
+
+  req.on("error", (err) => {
+    console.error("Request error:", err);
+    res.writeHead(500);
+    res.end("Error");
   });
 });
 

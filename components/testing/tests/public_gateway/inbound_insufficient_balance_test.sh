@@ -8,9 +8,6 @@ source $current_dir/../support/test_helpers.sh
 
 scenario=$current_dir/../../scenarios/inbound_forbidden.xml
 
-cdr_server_log="cdr-server.log"
-cat /dev/null > $cdr_server_log
-
 media_server="$(dig +short freeswitch)"
 public_gateway="$(dig +short public_gateway)"
 

@@ -13,20 +13,50 @@ create_load_balancer_entry () {
   -c "INSERT INTO load_balancer (group_id, dst_uri, resources, probe_mode) VALUES('$group_id', 'sip:$host:$port', '$gateway_identifier=fs://:secret@freeswitch:8021', 2);"
 }
 
+convert_base64_logs() {
+  input_file="$1"
+  output_file="$2"
+
+  : > "$output_file"
+
+  while IFS= read -r line; do
+    echo "$line" | base64 -d >> "$output_file"
+    echo >> "$output_file"  # add newline between entries
+  done < "$input_file"
+}
+
 assert_in_file () {
   filename="$1"
   test_string="$2"
+  expected_count="$3"
 
-  file=$(find . -type f -iname $(basename "$filename"))
+  file=$(find . -type f -iname "$(basename "$filename")")
+  content=$(cat "$file")
 
-  if ! grep -q "$test_string" $file; then
-    cat <<-EOT
-		Error:
-		Expected $test_string to be found in $file but was not:
-		`cat $file`
-		EOT
+  actual_count=$(printf "%s" "$content" | grep -o "$test_string" | wc -l)
 
-    return 1
+  if [ -z "$expected_count" ]; then
+    # Only check it exists at least once
+    if [ "$actual_count" -eq 0 ]; then
+      cat <<-EOT
+Error:
+Expected "$test_string" to be found in $file but was not:
+
+$content
+EOT
+      return 1
+    fi
+  else
+    # Check exact count
+    if [ "$actual_count" -ne "$expected_count" ]; then
+      cat <<-EOT
+Error:
+Expected "$test_string" to appear $expected_count time(s) in $file but found $actual_count:
+
+$content
+EOT
+      return 1
+    fi
   fi
 }
 
