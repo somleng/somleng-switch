@@ -13,20 +13,25 @@ create_load_balancer_entry () {
   -c "INSERT INTO load_balancer (group_id, dst_uri, resources, probe_mode) VALUES('$group_id', 'sip:$host:$port', '$gateway_identifier=fs://:secret@freeswitch:8021', 2);"
 }
 
+convert_base64_logs() {
+  input_file="$1"
+  output_file="$2"
+
+  : > "$output_file"
+
+  while IFS= read -r line; do
+    echo "$line" | base64 -d >> "$output_file"
+    echo >> "$output_file"  # add newline between entries
+  done < "$input_file"
+}
+
 assert_in_file () {
   filename="$1"
   test_string="$2"
-  is_base64="$3"
-  expected_count="$4"
+  expected_count="$3"
 
   file=$(find . -type f -iname "$(basename "$filename")")
-
-  # Choose how to read the file
-  if [ "$is_base64" = "base64" ]; then
-    content=$(base64 -d "$file" 2>/dev/null)
-  else
-    content=$(cat "$file")
-  fi
+  content=$(cat "$file")
 
   actual_count=$(printf "%s" "$content" | grep -o "$test_string" | wc -l)
 
