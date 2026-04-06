@@ -34,7 +34,7 @@ func logHeartbeat(eventStr string, connIdx int) {
 	fmt.Println(string(jsonString))
 }
 
-func parseEvent(eventStr string) (string, string, error) {
+func parseCustomEvent(eventStr string) (string, string, error) {
 	eventMap := fsock.FSEventStrToMap(eventStr, []string{})
 
 	eventName := eventMap["Event-Subclass"]
@@ -61,8 +61,35 @@ func parseEvent(eventStr string) (string, string, error) {
 	return redisChannel, eventMap["Event-Payload"], nil
 }
 
+func channelEventHandler(eventStr string, connIdx int) {
+	event := fsock.FSEventStrToMap(eventStr, []string{})
+
+	// jsonString, _ := json.Marshal(event)
+	formattedJsonString, _ := json.MarshalIndent(event, "", "  ")
+	fmt.Println(string(formattedJsonString))
+
+	// eventName := event["Event-Name"]
+	// uuid := event["Unique-ID"]
+
+	// fmt.Println("Received event: " + +" for call with uuid: " + uuid)
+
+	// if uuid == "" {
+	// 	return
+	// }
+
+	// switch eventName {
+	// case "CHANNEL_CREATE":
+	// 	activeUUIDs[uuid] = true
+	// 	fmt.Println("Call started:", uuid)
+
+	// case "CHANNEL_HANGUP", "CHANNEL_DESTROY":
+	// 	delete(activeUUIDs, uuid)
+	// 	fmt.Println("Call ended:", uuid)
+	// }
+}
+
 func customEventHandler(ctx context.Context, redisClient *redis.Client, eventStr string) {
-	redisChannel, redisMsg, parseEventError := parseEvent(eventStr)
+	redisChannel, redisMsg, parseEventError := parseCustomEvent(eventStr)
 
 	if parseEventError != nil {
 		fmt.Println("Error: " + parseEventError.Error())
@@ -104,12 +131,21 @@ func main() {
 	}
 
 	evFilters := map[string][]string{
-		"Event-Name": {"HEARTBEAT", "CUSTOM"},
+		"Event-Name": {
+			"HEARTBEAT",
+			"CUSTOM",
+			"CHANNEL_CREATE",
+			"CHANNEL_HANGUP",
+			"CHANNEL_DESTROY",
+		},
 	}
 
 	evHandlers := map[string][]func(string, int){
-		"HEARTBEAT": {logHeartbeat},
-		"ALL":       {customEventHandlerWrapper},
+		"HEARTBEAT":       {logHeartbeat},
+		"ALL":             {customEventHandlerWrapper},
+		"CHANNEL_CREATE":  {channelEventHandler},
+		"CHANNEL_HANGUP":  {channelEventHandler},
+		"CHANNEL_DESTROY": {channelEventHandler},
 	}
 
 	event_socket_host := os.Getenv("EVENT_SOCKET_HOST")
