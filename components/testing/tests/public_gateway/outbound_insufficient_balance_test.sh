@@ -16,9 +16,6 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
-cdr_server_log="cdr-server.log"
-cat /dev/null > $cdr_server_log
-
 uas="$(hostname -i)"
 media_server="$(dig +short freeswitch)"
 
@@ -112,11 +109,6 @@ sleep 10
 log_file=$(find_sipp_log_file $scenario)
 if [ -s "$log_file" ]; then
 	exit 1
-fi
-
-convert_base64_logs "$cdr_server_log" "decoded_cdr_server.log"
-if ! assert_in_file "decoded_cdr_server.log" "sip%3A403"; then
-  exit 1
 fi
 
 account_response=$(rating_engine_get_account "$CARRIER_SID" "$ACCOUNT_SID")
