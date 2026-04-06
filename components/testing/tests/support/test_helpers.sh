@@ -20,6 +20,11 @@ convert_base64_logs() {
   : > "$output_file"
 
   while IFS= read -r line; do
+    # Append until length is a multiple of 4 (for base64 padding)
+    while [ $(( ${#line} % 4 )) -ne 0 ]; do
+      line="${line}="
+    done
+
     echo "$line" | base64 -d >> "$output_file"
     echo >> "$output_file"  # add newline between entries
   done < "$input_file"
