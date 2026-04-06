@@ -105,7 +105,7 @@ jobs:
           components/freeswitch/bin/export_tts_voices > components/freeswitch/conf/autoload_configs/tts_voices.xml
 
       - name: Build and push app image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           push: true
           context: components/app
@@ -118,7 +118,7 @@ jobs:
             ${{ secrets.GHCR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform.arch }}
 
       - name: Build and push webserver image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           push: true
           context: components/nginx
@@ -131,7 +131,7 @@ jobs:
             ${{ secrets.GHCR_REGISTRY }}/${{ env.WEBSERVER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform.arch }}
 
       - name: Build and push FreeSWITCH image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           push: true
           context: components/freeswitch
@@ -146,7 +146,7 @@ jobs:
             ${{ secrets.GHCR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform.arch }}
 
       - name: Build and push FreeSWITCH Event Logger image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           push: true
           context: components/freeswitch_event_logger

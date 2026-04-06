@@ -100,7 +100,7 @@ jobs:
           registry: ${{ secrets.ECR_REGISTRY }}
 
       - name: Build and push app image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           push: true
           context: components/rating_engine
@@ -113,7 +113,7 @@ jobs:
             ${{ secrets.GHCR_REGISTRY }}/${{ env.APP_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform.arch }}
 
       - name: Build and push debug image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           push: true
           context: components/rating_engine
