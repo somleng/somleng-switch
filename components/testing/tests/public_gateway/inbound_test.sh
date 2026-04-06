@@ -48,6 +48,7 @@ if ! assert_in_file "$log_file" "Record-Route: <sip:$public_gateway:5060"; then
 	exit 1
 fi
 
-if ! assert_in_file $cdr_server_log "\"record_cdr\":\"true\"" "base64" 1; then
-  exit 1s
+convert_base64_logs "$cdr_server_log" "decoded_cdr_server.log"
+if ! assert_in_file "decoded_cdr_server.log" "\"record_cdr\":\"true\"" 1; then
+  exit 1
 fi

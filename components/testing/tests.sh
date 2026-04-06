@@ -10,7 +10,7 @@ echo "Running tests..."
 
 current_dir=$(dirname "$(readlink -f "$0")")
 dir=${1:-"$current_dir/tests"}
-tests=$(find $dir -type f -name \*.sh)
+tests=$(find $dir -type f -name \*_test.sh)
 
 max_retries=5
 for f in $tests; do

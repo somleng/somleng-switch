@@ -114,7 +114,8 @@ if [ -s "$log_file" ]; then
 	exit 1
 fi
 
-if ! assert_in_file $cdr_server_log "sip%3A403" "base64"; then
+convert_base64_logs "$cdr_server_log" "decoded_cdr_server.log"
+if ! assert_in_file "decoded_cdr_server.log" "sip%3A403"; then
   exit 1
 fi
 
