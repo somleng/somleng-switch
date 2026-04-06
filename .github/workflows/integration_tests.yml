@@ -168,7 +168,6 @@ jobs:
         run: |
           mkdir -p tmp/logs
           mkdir -p tmp/connect_stream_test_files
-          docker compose exec testing sh -c 'ls -lat'
           docker compose exec testing sh -c 'tar cf - *_messages.log' | tar xf - -C tmp/
           docker compose exec testing sh -c 'tar cf - cdr-server.log' | tar xf - -C tmp/
           docker compose exec testing sh -c 'tar cf - decoded_cdr_server.log' | tar xf - -C tmp/
