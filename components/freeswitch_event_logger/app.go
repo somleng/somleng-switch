@@ -120,7 +120,7 @@ func handleProxyChannelCreate(event map[string]string) {
 func (c *CallPlatformClient) UpdateCallProxyIdentifier(callPlatformId, proxyIdentifier string) {
 	go func() {
 		payload := map[string]interface{}{
-			"switch_proxy_identifier": proxyIdentifier
+			"switch_proxy_identifier": proxyIdentifier,
 		}
 
 		req := c.newRequest("PATCH", "/phone_calls/"+callPlatformId, payload)
@@ -134,7 +134,11 @@ func (c *CallPlatformClient) UpdateCallProxyIdentifier(callPlatformId, proxyIden
 
 func (c *CallPlatformClient) CreateCallHeartbeats(callUUIDs []string) {
 	go func() {
-		req := c.newRequest("POST", "/call_heartbeats", callUUIDs)
+		payload := map[string][]string{
+			"call_ids": callUUIDs,
+		}
+
+		req := c.newRequest("POST", "/call_heartbeats", payload)
 		resp, err := c.Client.Do(req)
 
 		if err != nil {

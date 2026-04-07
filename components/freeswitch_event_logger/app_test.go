@@ -1,14 +1,28 @@
 package main
 
 import (
+	"encoding/json"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+type capturedRequest struct {
+	method   string
+	path     string
+	username string
+	password string
+	body     map[string]any
+}
 
 func TestParseEventFail(t *testing.T) {
 	_, _, parseEventError := parseCustomEvent("")
-	if parseEventError == nil {
-		t.Errorf("got pass expected error")
-	}
+	require.Error(t, parseEventError)
 }
 
 func TestParseEvent(t *testing.T) {
@@ -23,15 +37,139 @@ Event-Payload: %7B%22event%22%3A%20%22disconnect%22,%22accountSid%22%3A%20%22c46
 
 	redisChannel, redisMsg, parseEventError := parseCustomEvent(incomingMsg)
 
-	if parseEventError != nil {
-		t.Errorf("Unexpected error")
-	}
+	require.NoError(t, parseEventError)
+	assert.Equal(t, wantRedisChannel, redisChannel)
+	assert.Equal(t, wantRedisMsg, redisMsg)
+}
 
-	if redisChannel != wantRedisChannel {
-		t.Errorf("Unexpected redis channel expected %q got %q ", wantRedisChannel, redisChannel)
-	}
+func TestUpdateCallProxyIdentifier(t *testing.T) {
+	server, requests := newRequestCaptureServer(t)
+	defer server.Close()
 
-	if redisMsg != wantRedisMsg {
-		t.Errorf("Unexpected redis message expected %q got %q", wantRedisMsg, redisMsg)
+	client := buildStubCallPlatformClient(server)
+
+	client.UpdateCallProxyIdentifier("call-123", "proxy-123")
+	req := waitForRequest(t, requests)
+
+	assert.Equal(t, http.MethodPatch, req.method)
+	assert.Equal(t, "/phone_calls/call-123", req.path)
+	assert.Equal(t, "proxy-123", req.body["switch_proxy_identifier"])
+}
+
+func TestCreateCallHeartbeats(t *testing.T) {
+	server, requests := newRequestCaptureServer(t)
+	defer server.Close()
+
+	client := buildStubCallPlatformClient(server)
+
+	client.CreateCallHeartbeats([]string{"uuid-1", "uuid-2"})
+	req := waitForRequest(t, requests)
+
+	assert.Equal(t, http.MethodPost, req.method)
+	assert.Equal(t, "/call_heartbeats", req.path)
+
+	callIDs, ok := req.body["call_ids"].([]any)
+	require.True(t, ok, "Unexpected payload type for call_ids got %#v", req.body["call_ids"])
+	assert.Equal(t, []any{"uuid-1", "uuid-2"}, callIDs)
+}
+
+func TestHandleProxyChannelCreateOutbound(t *testing.T) {
+	server, requests := newRequestCaptureServer(t)
+	defer server.Close()
+
+	t.Setenv("FS_CALL_PLATFORM_HOST", server.URL)
+	t.Setenv("FS_CALL_PLATFORM_USERNAME", "test-user")
+	t.Setenv("FS_CALL_PLATFORM_PASSWORD", "test-pass")
+
+	handleProxyChannelCreate(map[string]string{
+		"variable_sip_h_X-Somleng-CallDirection": "outbound",
+		"variable_sip_h_X-Somleng-CallSid":       "call-123",
+		"variable_call_uuid":                     "proxy-123",
+	})
+
+	req := waitForRequest(t, requests)
+	assert.Equal(t, http.MethodPatch, req.method)
+	assert.Equal(t, "/phone_calls/call-123", req.path)
+	assert.Equal(t, "proxy-123", req.body["switch_proxy_identifier"])
+}
+
+func TestHandleProxyChannelCreateNonOutbound(t *testing.T) {
+	server, requests := newRequestCaptureServer(t)
+	defer server.Close()
+
+	t.Setenv("FS_CALL_PLATFORM_HOST", server.URL)
+	t.Setenv("FS_CALL_PLATFORM_USERNAME", "test-user")
+	t.Setenv("FS_CALL_PLATFORM_PASSWORD", "test-pass")
+
+	handleProxyChannelCreate(map[string]string{
+		"variable_sip_h_X-Somleng-CallDirection": "inbound",
+		"variable_sip_h_X-Somleng-CallSid":       "call-123",
+		"variable_call_uuid":                     "proxy-123",
+	})
+
+	waitForNoRequest(t, requests)
+}
+
+func buildStubCallPlatformClient(server *httptest.Server) *CallPlatformClient {
+	return &CallPlatformClient{
+		Host:     server.URL,
+		Username: "test-user",
+		Password: "test-pass",
+		Client:   server.Client(),
+	}
+}
+
+func newRequestCaptureServer(t *testing.T) (*httptest.Server, <-chan capturedRequest) {
+	t.Helper()
+
+	requests := make(chan capturedRequest, 1)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		t.Helper()
+
+		rawBody, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Fatalf("failed to read request body: %v", err)
+		}
+
+		var payload map[string]any
+		if err := json.Unmarshal(rawBody, &payload); err != nil {
+			t.Fatalf("failed to decode request body: %v", err)
+		}
+
+		username, password, _ := r.BasicAuth()
+
+		requests <- capturedRequest{
+			method:   r.Method,
+			path:     r.URL.Path,
+			username: username,
+			password: password,
+			body:     payload,
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	return server, requests
+}
+
+func waitForRequest(t *testing.T, requests <-chan capturedRequest) capturedRequest {
+	t.Helper()
+
+	select {
+	case req := <-requests:
+		return req
+	case <-time.After(2 * time.Second):
+		t.Fatal("timed out waiting for request")
+		return capturedRequest{}
+	}
+}
+
+func waitForNoRequest(t *testing.T, requests <-chan capturedRequest) {
+	t.Helper()
+
+	select {
+	case req := <-requests:
+		t.Fatalf("received unexpected request: %#v", req)
+	case <-time.After(300 * time.Millisecond):
 	}
 }
