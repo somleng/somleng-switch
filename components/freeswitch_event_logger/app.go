@@ -120,8 +120,7 @@ func handleProxyChannelCreate(event map[string]string) {
 func (c *CallPlatformClient) UpdateCallProxyIdentifier(callPlatformId, proxyIdentifier string) {
 	go func() {
 		payload := map[string]interface{}{
-			"phone_call_sid":          callPlatformId,
-			"switch_proxy_identifier": proxyIdentifier,
+			"switch_proxy_identifier": proxyIdentifier
 		}
 
 		req := c.newRequest("PATCH", "/phone_calls/"+callPlatformId, payload)

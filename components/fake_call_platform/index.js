@@ -72,7 +72,6 @@ const InboundPhoneCallsSchema = z.object({
 });
 
 const PhoneCallUpdateSchema = z.object({
-  phone_call_sid: z.string(),
   switch_proxy_identifier: z.string(),
 });
 
@@ -272,7 +271,7 @@ const handleCallHeartbeats = async (req, res) => {
   const data = await parseBody(req);
   CallHeartbeatSchema.parse(data);
 
-  res.statusCode = 201;
+  res.statusCode = 204;
 
   res.end(JSON.stringify({}));
 };
