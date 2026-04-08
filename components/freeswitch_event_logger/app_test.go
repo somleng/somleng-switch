@@ -68,8 +68,8 @@ func TestCreateCallHeartbeats(t *testing.T) {
 	assert.Equal(t, http.MethodPost, req.method)
 	assert.Equal(t, "/call_heartbeats", req.path)
 
-	callIDs, ok := req.body["call_ids"].([]any)
-	require.True(t, ok, "Unexpected payload type for call_ids got %#v", req.body["call_ids"])
+	callIDs, ok := req.body["switch_proxy_identifiers"].([]any)
+	require.True(t, ok, "Unexpected payload type for switch_proxy_identifiers got %#v", req.body["switch_proxy_identifiers"])
 	assert.Equal(t, []any{"uuid-1", "uuid-2"}, callIDs)
 }
 

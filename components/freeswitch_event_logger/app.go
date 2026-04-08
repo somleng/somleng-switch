@@ -134,8 +134,8 @@ func (c *CallPlatformClient) UpdateCallProxyIdentifier(callPlatformId, proxyIden
 
 func (c *CallPlatformClient) CreateCallHeartbeats(callUUIDs []string) {
 	go func() {
-		payload := map[string][]string{
-			"call_ids": callUUIDs,
+		payload := map[string]interface{}{
+			"switch_proxy_identifiers": callUUIDs,
 		}
 
 		req := c.newRequest("POST", "/call_heartbeats", payload)

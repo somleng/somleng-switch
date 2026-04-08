@@ -75,7 +75,9 @@ const PhoneCallUpdateSchema = z.object({
   switch_proxy_identifier: z.string(),
 });
 
-const CallHeartbeatSchema = z.array(z.string()).min(1);
+const CallHeartbeatSchema = z.object({
+  switch_proxy_identifiers: z.array(z.string()).min(1),
+});
 
 const server = createServer(async (req, res) => {
   try {
