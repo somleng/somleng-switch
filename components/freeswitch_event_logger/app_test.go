@@ -42,20 +42,6 @@ Event-Payload: %7B%22event%22%3A%20%22disconnect%22,%22accountSid%22%3A%20%22c46
 	assert.Equal(t, wantRedisMsg, redisMsg)
 }
 
-func TestUpdateCallProxyIdentifier(t *testing.T) {
-	server, requests := newRequestCaptureServer(t)
-	defer server.Close()
-
-	client := buildStubCallPlatformClient(server)
-
-	client.UpdateCallProxyIdentifier("call-123", "proxy-123")
-	req := waitForRequest(t, requests)
-
-	assert.Equal(t, http.MethodPatch, req.method)
-	assert.Equal(t, "/phone_calls/call-123", req.path)
-	assert.Equal(t, "proxy-123", req.body["switch_proxy_identifier"])
-}
-
 func TestCreateCallHeartbeats(t *testing.T) {
 	server, requests := newRequestCaptureServer(t)
 	defer server.Close()
@@ -68,46 +54,9 @@ func TestCreateCallHeartbeats(t *testing.T) {
 	assert.Equal(t, http.MethodPost, req.method)
 	assert.Equal(t, "/call_heartbeats", req.path)
 
-	callIDs, ok := req.body["switch_proxy_identifiers"].([]any)
-	require.True(t, ok, "Unexpected payload type for switch_proxy_identifiers got %#v", req.body["switch_proxy_identifiers"])
+	callIDs, ok := req.body["call_ids"].([]any)
+	require.True(t, ok, "Unexpected payload type for call_ids got %#v", req.body["call_ids"])
 	assert.Equal(t, []any{"uuid-1", "uuid-2"}, callIDs)
-}
-
-func TestHandleProxyChannelCreateOutbound(t *testing.T) {
-	server, requests := newRequestCaptureServer(t)
-	defer server.Close()
-
-	t.Setenv("FS_CALL_PLATFORM_HOST", server.URL)
-	t.Setenv("FS_CALL_PLATFORM_USERNAME", "test-user")
-	t.Setenv("FS_CALL_PLATFORM_PASSWORD", "test-pass")
-
-	handleProxyChannelCreate(map[string]string{
-		"variable_sip_h_X-Somleng-CallDirection": "outbound",
-		"variable_sip_h_X-Somleng-CallSid":       "call-123",
-		"variable_call_uuid":                     "proxy-123",
-	})
-
-	req := waitForRequest(t, requests)
-	assert.Equal(t, http.MethodPatch, req.method)
-	assert.Equal(t, "/phone_calls/call-123", req.path)
-	assert.Equal(t, "proxy-123", req.body["switch_proxy_identifier"])
-}
-
-func TestHandleProxyChannelCreateNonOutbound(t *testing.T) {
-	server, requests := newRequestCaptureServer(t)
-	defer server.Close()
-
-	t.Setenv("FS_CALL_PLATFORM_HOST", server.URL)
-	t.Setenv("FS_CALL_PLATFORM_USERNAME", "test-user")
-	t.Setenv("FS_CALL_PLATFORM_PASSWORD", "test-pass")
-
-	handleProxyChannelCreate(map[string]string{
-		"variable_sip_h_X-Somleng-CallDirection": "inbound",
-		"variable_sip_h_X-Somleng-CallSid":       "call-123",
-		"variable_call_uuid":                     "proxy-123",
-	})
-
-	waitForNoRequest(t, requests)
 }
 
 func buildStubCallPlatformClient(server *httptest.Server) *CallPlatformClient {
