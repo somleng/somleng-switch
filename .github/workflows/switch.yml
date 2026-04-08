@@ -43,6 +43,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
+          go-version-file: ".tool-versions"
           go-version: "1.26.x"
           cache-dependency-path: components/freeswitch_event_logger/go.sum
 
