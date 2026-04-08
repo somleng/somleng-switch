@@ -139,3 +139,7 @@ variable "min_tasks" {
 variable "webserver_port" {
   default = 80
 }
+
+variable "call_status_heartbeat_interval_seconds" {
+  default = 30
+}

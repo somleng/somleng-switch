@@ -38,9 +38,9 @@ type CallPlatformClient struct {
 
 func NewCallPlatformClient() *CallPlatformClient {
 	return &CallPlatformClient{
-		Host:     os.Getenv("FS_CALL_PLATFORM_HOST"),
-		Username: os.Getenv("FS_CALL_PLATFORM_USERNAME"),
-		Password: os.Getenv("FS_CALL_PLATFORM_PASSWORD"),
+		Host:     os.Getenv("CALL_PLATFORM_HOST"),
+		Username: os.Getenv("CALL_PLATFORM_USERNAME"),
+		Password: os.Getenv("CALL_PLATFORM_PASSWORD"),
 		Client:   &http.Client{Timeout: 10 * time.Second},
 	}
 }

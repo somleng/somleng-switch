@@ -349,6 +349,10 @@ resource "aws_ecs_task_definition" "this" {
         {
           name      = "EVENT_SOCKET_PASSWORD",
           valueFrom = local.freeswitch_event_socket_password_parameter.arn
+        },
+        {
+          name      = "CALL_PLATFORM_PASSWORD",
+          valueFrom = var.call_platform_password_parameter.arn
         }
       ],
       dependsOn = [
@@ -369,7 +373,19 @@ resource "aws_ecs_task_definition" "this" {
         {
           name  = "REDIS_URL",
           value = "redis://localhost:${var.redis_port}/1"
-        }
+        },
+        {
+          name  = "CALL_STATUS_HEARTBEAT_INTERVAL_SECONDS",
+          value = tostring(var.call_status_heartbeat_interval_seconds)
+        },
+        {
+          name  = "CALL_PLATFORM_HOST",
+          value = var.call_platform_host
+        },
+        {
+          name  = "CALL_PLATFORM_USERNAME",
+          value = var.call_platform_username
+        },
       ]
     },
     {
