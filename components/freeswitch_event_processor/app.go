@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/cgrates/fsock"
+	"github.com/getsentry/sentry-go"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -22,6 +24,17 @@ type CallPlatformClient struct {
 	Username string
 	Password string
 	Client   *http.Client
+}
+
+func initSentry() {
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn:         os.Getenv("SENTRY_DSN"),
+		Environment: os.Getenv("APP_ENV"),
+	})
+
+	if err != nil {
+		log.Fatalf("sentry.Init: %s", err)
+	}
 }
 
 func NewCallPlatformClient() *CallPlatformClient {
@@ -49,6 +62,7 @@ func NewEventSocketClient(eventHandlers map[string][]func(string, int), eventFil
 
 	fs, err := fsock.NewFSock(event_socket_host, event_socket_password, 10, 60, 0, fibDuration, eventHandlers, eventFilters, nil, 0, false, errChan)
 	if err != nil {
+		sentry.CaptureException(err)
 		fmt.Printf("FreeSWITCH error: %s\n", err)
 		panic(err)
 	}
@@ -74,20 +88,21 @@ func parseCustomEvent(eventStr string) (string, string, error) {
 
 	if !strings.HasPrefix(eventName, modTwilioStreamPrefix) {
 		fmt.Println("Unhandled Event Type: " + eventName)
-		return "", "", fmt.Errorf("Unhandled Event Type: " + eventName)
+		return "", "", fmt.Errorf("Unhandled Event Type: %s", eventName)
 	}
 
 	eventPayload := make(map[string]any)
 	parsePayloadError := json.Unmarshal([]byte(eventMap["Event-Payload"]), &eventPayload)
 	if parsePayloadError != nil {
+		sentry.CaptureException(parsePayloadError)
 		fmt.Println("Failed to parse Event Payload: " + eventMap["Event-Payload"])
-		return "", "", fmt.Errorf("Failed to parse Event Payload: " + eventMap["Event-Payload"])
+		return "", "", fmt.Errorf("Failed to parse Event Payload: %s", eventMap["Event-Payload"])
 	}
 
 	streamSid, streamSidExists := eventPayload["streamSid"].(string)
 	if !streamSidExists {
 		fmt.Println("Event does not contain streamSid: " + eventMap["Event-Payload"])
-		return "", "", fmt.Errorf("Event does not contain streamSid: " + eventMap["Event-Payload"])
+		return "", "", fmt.Errorf("Event does not contain streamSid: %s", eventMap["Event-Payload"])
 	}
 
 	redisChannel := modTwilioStreamPrefix + ":" + streamSid
@@ -104,7 +119,9 @@ func (c *CallPlatformClient) CreateCallHeartbeats(callUUIDs []string) {
 		resp, err := c.Client.Do(req)
 
 		if err != nil {
+			sentry.CaptureException(err)
 			println("HTTP request failed:", err.Error())
+			return
 		}
 		defer resp.Body.Close()
 	}()
@@ -173,12 +190,14 @@ func customEventHandler(ctx context.Context, redisClient *redis.Client, eventStr
 	redisChannel, redisMsg, parseEventError := parseCustomEvent(eventStr)
 
 	if parseEventError != nil {
+		sentry.CaptureException(parseEventError)
 		fmt.Println("Error: " + parseEventError.Error())
 		return
 	}
 
 	redisError := redisClient.Publish(ctx, redisChannel, redisMsg).Err()
 	if redisError != nil {
+		sentry.CaptureException(redisError)
 		fmt.Println("Problem publishing to Redis channel: " + redisChannel + " Payload: " + redisMsg + " Error: " + redisError.Error())
 	}
 }
@@ -196,6 +215,9 @@ func fibDuration(durationUnit, maxDuration time.Duration) func() time.Duration {
 }
 
 func main() {
+	initSentry()
+	defer sentry.Flush(2 * time.Second)
+
 	ctx := context.Background()
 
 	redisClient := NewRedisClient()

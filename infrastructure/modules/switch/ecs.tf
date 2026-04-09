@@ -385,6 +385,10 @@ resource "aws_ecs_task_definition" "this" {
         {
           name      = "CALL_PLATFORM_PASSWORD",
           valueFrom = var.call_platform_password_parameter.arn
+        },
+        {
+          name      = "SENTRY_DSN",
+          valueFrom = local.freeswitch_event_processor_sentry_dsn_parameter.arn
         }
       ],
       dependsOn = [
@@ -398,6 +402,10 @@ resource "aws_ecs_task_definition" "this" {
         }
       ],
       environment = [
+        {
+          name  = "APP_ENV",
+          value = var.app_environment
+        },
         {
           name  = "EVENT_SOCKET_HOST",
           value = "localhost:${var.freeswitch_event_socket_port}"

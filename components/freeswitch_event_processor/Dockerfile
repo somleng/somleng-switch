@@ -3,7 +3,10 @@ WORKDIR /app
 COPY . ./
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-s -w" .
 
-FROM scratch
+FROM public.ecr.aws/docker/library/golang:alpine
+
+RUN apk add --no-cache ca-certificates && update-ca-certificates
+
 WORKDIR /app
 COPY --from=builder /app/freeswitch_event_processor /app
 ENTRYPOINT [ "/app/freeswitch_event_processor" ]
