@@ -17,6 +17,7 @@ jobs:
     outputs:
       matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
       deployMatrix: ${{ steps.set-deployment-matrix.outputs.deployMatrix }}
+      releaseMatrix: ${{ steps.set-deployment-matrix.outputs.releaseMatrix }}
     steps:
       - name: Set Deployment Matrix
         id: set-deployment-matrix
@@ -46,6 +47,7 @@ jobs:
           matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
           echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
           echo "deployMatrix={\"region\":[\"ap-southeast-1\",\"us-east-1\"],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+          echo "releaseMatrix={\"sentry_project\":[\"somleng-switch\",\"freeswitch-event-processor\"],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
 
   deploy:
     name: Deploy
@@ -138,7 +140,7 @@ jobs:
       - deploy
 
     strategy:
-      matrix: ${{fromJson(needs.set-deployment-matrix.outputs.deployMatrix)}}
+      matrix: ${{fromJSON(needs.set-deployment-matrix.outputs.releaseMatrix)}}
 
     steps:
       - name: Checkout
@@ -149,6 +151,6 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: somleng
-          SENTRY_PROJECT: somleng-switch
+          SENTRY_PROJECT: ${{ matrix.sentry_project }}
         with:
           environment: ${{ matrix.environment }}
