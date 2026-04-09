@@ -1,5 +1,11 @@
-on: workflow_call
-name: Switch
+name: Switch Build
+
+on:
+  workflow_call:
+    inputs:
+      build-matrix:
+        required: true
+        type: string
 
 env:
   CI: true
@@ -12,42 +18,34 @@ env:
 
 jobs:
   set-build-matrix:
-    name: Set Deployment Matrix
+    name: Set Build Matrix
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-build-matrix.outputs.matrix }}
-      matrixLength: ${{ steps.set-build-matrix.outputs.matrixLength }}
+      matrix: ${{ steps.set-build-matrix.outputs.packageMatrix }}
       packageMatrix: ${{ steps.set-build-matrix.outputs.packageMatrix }}
     steps:
       - name: Set Deployment Matrix
         id: set-build-matrix
         run: |
-          branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
           matrixSource=$(cat << EOF
           [
             {
+              "environment": "staging",
               "identifier": "switch-staging",
-              "branch": "develop",
-              "friendly_image_tag": "beta",
-              "image_tag": "stag-${{ github.sha }}"
             },
             {
-              "identifier": "switch",
-              "branch": "master",
-              "friendly_image_tag": "latest",
-              "image_tag": "prod-${{ github.sha }}"
+              "environment": "production",
+              "identifier": "switch"
             }
           ]
           EOF
           )
-          matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
+          matrix=$(echo $matrixSource | jq --arg environment "${{ inputs.build-matrix.environment }}" 'map(. | select((.environment==${{ inputs.build-matrix.environment }})) )')
           echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
-          echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
           echo "packageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
 
   build-packages:
     name: Build Packages
-    if: needs.set-build-matrix.outputs.matrixLength > 0
 
     strategy:
       matrix: ${{fromJSON(needs.set-build-matrix.outputs.packageMatrix)}}

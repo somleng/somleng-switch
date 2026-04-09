@@ -22,10 +22,46 @@ jobs:
     needs: [switch_tests, s3_mpeg_tests, services_tests]
     secrets: inherit
 
+  set-build-matrix:
+    name: Set Build Matrix
+    needs: integration_tests
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-build-matrix.outputs.matrix }}
+      matrixLength: ${{ steps.set-build-matrix.outputs.matrixLength }}
+    steps:
+      - name: Set Build Matrix
+        id: set-build-matrix
+        run: |
+          branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
+          matrixSource=$(cat << EOF
+          [
+            {
+              "branch": "improve_ci",
+              "environment": "staging",
+              "friendly_image_tag": "beta",
+              "image_tag": "stag-${{ github.sha }}"
+            },
+            {
+              "branch": "master",
+              "environment": "production",
+              "friendly_image_tag": "latest",
+              "image_tag": "prod-${{ github.sha }}"
+            }
+          ]
+          EOF
+          )
+          matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
+          echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+          echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
+
   build_switch:
     uses: ./.github/workflows/switch_build.yml
-    needs: integration_tests
+    needs: set-build-matrix
+    if: needs.set-build-matrix.outputs.matrixLength > 0
     secrets: inherit
+    with:
+      matrix: ${{ needs.set-build-matrix.outputs.matrix }}
 
   build_rating_engine:
     uses: ./.github/workflows/rating_engine_build.yml
