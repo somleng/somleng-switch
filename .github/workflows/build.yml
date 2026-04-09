@@ -71,10 +71,13 @@ jobs:
   #   needs: integration_tests
   #   secrets: inherit
 
-  # deploy_switch:
-  #   uses: ./.github/workflows/switch_deploy.yml
-  #   needs: [build_switch, build_rating_engine]
-  #   secrets: inherit
+  deploy_switch:
+    uses: ./.github/workflows/switch_deploy.yml
+    needs: [build_switch, build_rating_engine]
+    if: needs.set-build-matrix.outputs.matrixLength > 0
+    secrets: inherit
+    with:
+      build-matrix: ${{ needs.set-build-matrix.outputs.matrix }}
 
   # deploy_rating_engine:
   #   uses: ./.github/workflows/rating_engine_deploy.yml
