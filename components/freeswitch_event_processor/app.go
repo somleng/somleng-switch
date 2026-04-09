@@ -26,6 +26,10 @@ type CallPlatformClient struct {
 	Client   *http.Client
 }
 
+type FSockClient interface {
+	SendApiCmd(cmd string) (string, error)
+}
+
 func initSentry() {
 	err := sentry.Init(sentry.ClientOptions{
 		Dsn:         os.Getenv("SENTRY_DSN"),
@@ -127,7 +131,7 @@ func (c *CallPlatformClient) CreateCallHeartbeats(callUUIDs []string) {
 	}()
 }
 
-func fetchActiveCallUUIDs(fs *fsock.FSock) []string {
+func fetchActiveCallUUIDs(fs FSockClient) []string {
 	resp, err := fs.SendApiCmd("show channels as json")
 	if err != nil {
 		return []string{}
@@ -148,8 +152,7 @@ func fetchActiveCallUUIDs(fs *fsock.FSock) []string {
 	uuidSet := make(map[string]struct{})
 	for _, row := range rows {
 		rowMap := row.(map[string]any)
-
-		uuidSet[rowMap["call_uuid"].(string)] = struct{}{}
+		uuidSet[rowMap["uuid"].(string)] = struct{}{}
 	}
 
 	var uuids []string
