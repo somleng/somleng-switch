@@ -75,6 +75,7 @@ data "aws_iam_policy_document" "task_execution_policy" {
       local.recordings_bucket_secret_access_key_parameter.arn,
       var.rating_engine_configuration.http_password_parameter.arn,
       var.rating_engine_configuration.stordb_password_parameter.arn,
+      local.freeswitch_event_processor_sentry_dsn_parameter.arn,
     ]
   }
 }

@@ -30,6 +30,10 @@ output "freeswitch_event_socket_password_parameter" {
   value = local.freeswitch_event_socket_password_parameter
 }
 
+output "freeswitch_event_processor_sentry_dsn_parameter" {
+  value = local.freeswitch_event_processor_sentry_dsn_parameter
+}
+
 output "container_instances" {
   value = module.container_instances
 }

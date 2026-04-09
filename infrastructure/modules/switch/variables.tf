@@ -144,3 +144,11 @@ variable "webserver_port" {
 variable "call_status_heartbeat_interval_seconds" {
   default = 30
 }
+
+variable "freeswitch_event_processor_sentry_dsn_parameter_name" {
+  default = null
+}
+
+variable "freeswitch_event_processor_sentry_dsn_parameter" {
+  default = null
+}
