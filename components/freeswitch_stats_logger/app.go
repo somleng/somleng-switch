@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log/syslog"
 	"os"
 	"time"
 
@@ -14,12 +13,7 @@ func NewEventSocketClient(eventHandlers map[string][]func(string, int), eventFil
 	event_socket_host := os.Getenv("EVENT_SOCKET_HOST")
 	event_socket_password := os.Getenv("EVENT_SOCKET_PASSWORD")
 
-	logger, errLog := syslog.New(syslog.LOG_INFO, "freeswitch_stats_logger")
-	if errLog != nil {
-		panic(errLog)
-	}
-
-	fs, err := fsock.NewFSock(event_socket_host, event_socket_password, 10, 60, 0, fibDuration, eventHandlers, eventFilters, logger, 0, false, errChan)
+	fs, err := fsock.NewFSock(event_socket_host, event_socket_password, 10, 60, 0, fibDuration, eventHandlers, eventFilters, nil, 0, false, errChan)
 	if err != nil {
 		fmt.Printf("FreeSWITCH error: %s\n", err)
 		panic(err)

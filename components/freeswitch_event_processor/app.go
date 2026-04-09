@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log/syslog"
 	"net/http"
 	"os"
 	"strconv"
@@ -47,12 +46,8 @@ func NewRedisClient() *redis.Client {
 func NewEventSocketClient(eventHandlers map[string][]func(string, int), eventFilters map[string][]string, errChan chan error) *fsock.FSock {
 	event_socket_host := os.Getenv("EVENT_SOCKET_HOST")
 	event_socket_password := os.Getenv("EVENT_SOCKET_PASSWORD")
-	logger, errLog := syslog.New(syslog.LOG_INFO, "freeswitch_event_processor")
-	if errLog != nil {
-		panic(errLog)
-	}
 
-	fs, err := fsock.NewFSock(event_socket_host, event_socket_password, 10, 60, 0, fibDuration, eventHandlers, eventFilters, logger, 0, false, errChan)
+	fs, err := fsock.NewFSock(event_socket_host, event_socket_password, 10, 60, 0, fibDuration, eventHandlers, eventFilters, nil, 0, false, errChan)
 	if err != nil {
 		fmt.Printf("FreeSWITCH error: %s\n", err)
 		panic(err)
