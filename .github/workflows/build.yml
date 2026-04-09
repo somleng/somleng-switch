@@ -24,7 +24,7 @@ jobs:
 
   set-build-matrix:
     name: Set Build Matrix
-    needs: integration_tests
+    # needs: integration_tests
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-build-matrix.outputs.matrix }}
