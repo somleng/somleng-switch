@@ -43,10 +43,15 @@ jobs:
           EOF
           )
 
+          # Filter the environment from matrixSource
           matched=$(echo "$matrixSource" | jq --argjson bm "$buildMatrix" 'map(select(.environment == $bm.environment)) | .[0]')
+
+          # Merge input buildMatrix with matched object
           merged=$(jq -n --argjson a "$buildMatrix" --argjson b "$matched" '$b + $a')
+
+          # Set GitHub Actions outputs
           echo "matrix={\"include\":[$merged]}" >> $GITHUB_OUTPUT
-          echo "packageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+          echo "packageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":[$merged]}" >> $GITHUB_OUTPUT
 
           # Debug
           echo "Merged Matrix: $merged"
