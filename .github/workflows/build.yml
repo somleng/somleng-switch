@@ -61,7 +61,7 @@ jobs:
     if: needs.set-build-matrix.outputs.matrixLength > 0
     secrets: inherit
     with:
-      matrix: ${{ needs.set-build-matrix.outputs.matrix }}
+      build-matrix: ${{ needs.set-build-matrix.outputs.matrix }}
 
   build_rating_engine:
     uses: ./.github/workflows/rating_engine_build.yml
