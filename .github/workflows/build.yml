@@ -58,11 +58,6 @@ jobs:
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
           echo "matrixLength=$matrixLength" >> $GITHUB_OUTPUT
 
-          # Debug
-          echo "Matched array: $matchedArray"
-          echo "Matrix object: $matrix"
-          echo "Matrix length: $matrixLength"
-
   build_switch:
     uses: ./.github/workflows/switch_build.yml
     needs: set-build-matrix
