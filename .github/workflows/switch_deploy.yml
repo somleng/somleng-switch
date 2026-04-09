@@ -38,7 +38,7 @@ jobs:
             {
               "identifier": "switch",
               "environment": "production",
-              "branch": "fix_event_logger",
+              "branch": "master",
               "friendly_image_tag": "latest",
               "image_tag": "prod-${{ github.sha }}",
               "ecs_service": "switch",

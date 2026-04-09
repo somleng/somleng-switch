@@ -344,7 +344,7 @@ resource "aws_ecs_task_definition" "this" {
         }
       },
       startTimeout = 120,
-      essential    = false,
+      essential    = true,
       secrets = [
         {
           name      = "EVENT_SOCKET_PASSWORD",
@@ -376,7 +376,7 @@ resource "aws_ecs_task_definition" "this" {
         }
       },
       startTimeout = 120,
-      essential    = false,
+      essential    = true,
       secrets = [
         {
           name      = "EVENT_SOCKET_PASSWORD",
