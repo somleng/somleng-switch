@@ -51,7 +51,6 @@ jobs:
           ]
           EOF
           )
-          matrix=$(
           matrix=$(echo "$matrixSource" | jq -c --arg branchName "$branchName" 'map(select(.branch==$branchName)) | .[0]')
           echo $matrix
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
