@@ -166,7 +166,7 @@ func callStatusUpdates(fs *fsock.FSock, callPlatformClient *CallPlatformClient) 
 			continue
 		}
 
-		// callPlatformClient.CreateCallHeartbeats(callUUIDs)
+		callPlatformClient.CreateCallHeartbeats(callUUIDs)
 	}
 }
 
