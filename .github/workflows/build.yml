@@ -5,21 +5,41 @@ env:
   CI: true
 
 jobs:
-  s3_mpeg:
-    uses: ./.github/workflows/s3_mpeg.yml
+  s3_mpeg_tests:
+    uses: ./.github/workflows/s3_mpeg_tests.yml
     secrets: inherit
 
-  services:
-    uses: ./.github/workflows/services.yml
+  services_tests:
+    uses: ./.github/workflows/services_tests.yml
     secrets: inherit
 
-  switch:
-    uses: ./.github/workflows/switch.yml
+  switch_tests:
+    uses: ./.github/workflows/switch_tests.yml
     secrets: inherit
 
   integration_tests:
     uses: ./.github/workflows/integration_tests.yml
-    needs: [switch, s3_mpeg, services]
+    needs: [switch_tests, s3_mpeg_tests, services_tests]
+    secrets: inherit
+
+  build_switch:
+    uses: ./.github/workflows/switch_build.yml
+    needs: integration_tests
+    secrets: inherit
+
+  build_rating_engine:
+    uses: ./.github/workflows/rating_engine_build.yml
+    needs: integration_tests
+    secrets: inherit
+
+  deploy_switch:
+    uses: ./.github/workflows/switch_deploy.yml
+    needs: [build_switch, build_rating_engine]
+    secrets: inherit
+
+  deploy_rating_engine:
+    uses: ./.github/workflows/rating_engine_deploy.yml
+    needs: build_rating_engine
     secrets: inherit
 
   deploy_opensips_scheduler:
@@ -50,14 +70,4 @@ jobs:
   deploy_media_proxy:
     uses: ./.github/workflows/media_proxy_deploy.yml
     needs: integration_tests
-    secrets: inherit
-
-  deploy_rating_engine:
-    uses: ./.github/workflows/rating_engine_deploy.yml
-    needs: integration_tests
-    secrets: inherit
-
-  deploy_switch:
-    uses: ./.github/workflows/switch_deploy.yml
-    needs: deploy_rating_engine
     secrets: inherit

@@ -20,6 +20,15 @@ type capturedRequest struct {
 	body     map[string]any
 }
 
+type mockFSock struct {
+	response string
+	err      error
+}
+
+func (m *mockFSock) SendApiCmd(cmd string) (string, error) {
+	return m.response, m.err
+}
+
 func TestParseEventFail(t *testing.T) {
 	_, _, parseEventError := parseCustomEvent("")
 	require.Error(t, parseEventError)
@@ -57,6 +66,51 @@ func TestCreateCallHeartbeats(t *testing.T) {
 	callIDs, ok := req.body["call_ids"].([]any)
 	require.True(t, ok, "Unexpected payload type for call_ids got %#v", req.body["call_ids"])
 	assert.Equal(t, []any{"uuid-1", "uuid-2"}, callIDs)
+}
+
+func TestFetchActiveCallUUIDs(t *testing.T) {
+	mockResponse := `{
+  "row_count": 4,
+  "rows": [
+    {
+      "uuid": "db2fd14f-0ec6-4d61-8411-007dfa395887",
+      "direction": "outbound",
+      "call_uuid": "db2fd14f-0ec6-4d61-8411-007dfa395887"
+    },
+    {
+      "uuid": "c1f2b0ab-8459-43b0-9aeb-c4087a4ac44b",
+      "direction": "inbound",
+      "call_uuid": ""
+	  },
+		{
+      "uuid": "c1f2b0ab-8459-43b0-9aeb-c4087a4ac44b",
+      "direction": "inbound",
+      "call_uuid": ""
+    }
+  ]
+}`
+
+	mock := &mockFSock{
+		response: mockResponse,
+		err:      nil,
+	}
+
+	result := fetchActiveCallUUIDs(mock)
+
+	expected := map[string]bool{
+		"db2fd14f-0ec6-4d61-8411-007dfa395887": true,
+		"c1f2b0ab-8459-43b0-9aeb-c4087a4ac44b": true,
+	}
+
+	if len(result) != 2 {
+		t.Fatalf("expected 2 UUIDs, got %d", len(result))
+	}
+
+	for _, uuid := range result {
+		if !expected[uuid] {
+			t.Errorf("unexpected UUID: %s", uuid)
+		}
+	}
 }
 
 func buildStubCallPlatformClient(server *httptest.Server) *CallPlatformClient {

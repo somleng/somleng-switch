@@ -20,7 +20,7 @@ local payload = {
   to = session:getVariable("sip_h_X-Somleng-Callee-Identity"),
   from = session:getVariable("sip_h_X-Somleng-Caller-Identity"),
   external_id = session:getVariable("uuid"),
-  host = session:getVariable("sip_network_ip"),
+  host = session:getVariable("sip_local_network_addr"),
   source_ip = session:getVariable("sip_h_X-Src-Ip"),
   region = region,
   client_identifier = session:getVariable("sip_h_X-Somleng-Client-Identifier"),
@@ -31,7 +31,6 @@ local payload = {
     sip_via_host = session:getVariable("sip_via_host")
   }
 }
-
 
 local credentials = mime.b64(call_platform_username .. ":" .. call_platform_password)
 local headers = "append_headers 'Authorization: Basic " .. credentials .. "' append_headers 'Accept: application/json' append_headers 'Content-Type: application/json'"
