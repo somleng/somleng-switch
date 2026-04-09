@@ -40,8 +40,11 @@ jobs:
           ]
           EOF
           )
+
+          echo ${{ inputs.build-matrix }}
+
           matrix=$(echo $matrixSource | jq --arg environment "${{ inputs.build-matrix.environment }}" 'map(. | select((.environment==${{ inputs.build-matrix.environment }})) )')
-          matrix=$(jq -n --argjson o1 "${{inputs.build-matrix}}" --argjson o2 "$matrix" '$o1 + $o2')
+          matrix=$(jq -n --argjson o1 "${{ inputs.build-matrix }}" --argjson o2 "$matrix" '$o1 + $o2')
           echo $matrix
           echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
           echo "packageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
