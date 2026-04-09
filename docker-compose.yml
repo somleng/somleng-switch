@@ -112,16 +112,31 @@ services:
       - "5080/udp"
       - "8021/tcp"
 
-  freeswitch_event_logger:
+  freeswitch_stats_logger:
     build:
-      context: components/freeswitch_event_logger
-    image: freeswitch_event_logger:latest
+      context: components/freeswitch_stats_logger
+    image: freeswitch_stats_logger:latest
+    depends_on:
+      freeswitch:
+        condition: service_healthy
+    environment:
+      EVENT_SOCKET_HOST: freeswitch:8021
+      EVENT_SOCKET_PASSWORD: secret
+
+  freeswitch_event_processor:
+    build:
+      context: components/freeswitch_event_processor
+    image: freeswitch_event_processor:latest
     depends_on:
       redis:
         condition: service_healthy
       freeswitch:
         condition: service_healthy
     environment:
+      CALL_PLATFORM_HOST: http://fake_call_platform:3000
+      CALL_PLATFORM_USERNAME: "services"
+      CALL_PLATFORM_PASSWORD: "password"
+      CALL_STATUS_HEARTBEAT_INTERVAL_SECONDS: "1"
       EVENT_SOCKET_HOST: freeswitch:8021
       EVENT_SOCKET_PASSWORD: secret
       REDIS_URL: "redis://redis:6379/1"

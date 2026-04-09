@@ -333,12 +333,12 @@ resource "aws_ecs_task_definition" "this" {
       ]
     },
     {
-      name  = "freeswitch-event-logger",
-      image = "${var.freeswitch_event_logger_image}:latest",
+      name  = "freeswitch-stats-logger",
+      image = "${var.freeswitch_stats_logger_image}:latest",
       logConfiguration = {
         logDriver = "awslogs",
         options = {
-          awslogs-group         = aws_cloudwatch_log_group.freeswitch_event_logger.name,
+          awslogs-group         = aws_cloudwatch_log_group.freeswitch_stats_logger.name,
           awslogs-region        = var.region.aws_region,
           awslogs-stream-prefix = var.identifier
         }
@@ -349,6 +349,42 @@ resource "aws_ecs_task_definition" "this" {
         {
           name      = "EVENT_SOCKET_PASSWORD",
           valueFrom = local.freeswitch_event_socket_password_parameter.arn
+        },
+      ],
+      dependsOn = [
+        {
+          containerName = "freeswitch",
+          condition     = "HEALTHY"
+        },
+      ],
+      environment = [
+        {
+          name  = "EVENT_SOCKET_HOST",
+          value = "localhost:${var.freeswitch_event_socket_port}"
+        },
+      ]
+    },
+    {
+      name  = "freeswitch-event-processor",
+      image = "${var.freeswitch_event_processor_image}:latest",
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.freeswitch_event_processor.name,
+          awslogs-region        = var.region.aws_region,
+          awslogs-stream-prefix = var.identifier
+        }
+      },
+      startTimeout = 120,
+      essential    = true,
+      secrets = [
+        {
+          name      = "EVENT_SOCKET_PASSWORD",
+          valueFrom = local.freeswitch_event_socket_password_parameter.arn
+        },
+        {
+          name      = "CALL_PLATFORM_PASSWORD",
+          valueFrom = var.call_platform_password_parameter.arn
         }
       ],
       dependsOn = [
@@ -369,7 +405,19 @@ resource "aws_ecs_task_definition" "this" {
         {
           name  = "REDIS_URL",
           value = "redis://localhost:${var.redis_port}/1"
-        }
+        },
+        {
+          name  = "CALL_STATUS_HEARTBEAT_INTERVAL_SECONDS",
+          value = tostring(var.call_status_heartbeat_interval_seconds)
+        },
+        {
+          name  = "CALL_PLATFORM_HOST",
+          value = var.call_platform_host
+        },
+        {
+          name  = "CALL_PLATFORM_USERNAME",
+          value = var.call_platform_username
+        },
       ]
     },
     {

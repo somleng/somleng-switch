@@ -26,8 +26,12 @@ output "freeswitch_ecr_repository" {
   value = module.freeswitch_ecr_repository
 }
 
-output "freeswitch_event_logger_ecr_repository" {
-  value = module.freeswitch_event_logger_ecr_repository
+output "freeswitch_stats_logger_ecr_repository" {
+  value = module.freeswitch_stats_logger_ecr_repository
+}
+
+output "freeswitch_event_processor_ecr_repository" {
+  value = module.freeswitch_event_processor_ecr_repository
 }
 
 output "s3_mpeg_ecr_repository" {

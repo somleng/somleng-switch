@@ -71,6 +71,10 @@ const InboundPhoneCallsSchema = z.object({
   }),
 });
 
+const CallHeartbeatSchema = z.object({
+  call_ids: z.array(z.string()).min(1),
+});
+
 const server = createServer(async (req, res) => {
   try {
     if (req.url === "/health_checks") {
@@ -109,6 +113,9 @@ const server = createServer(async (req, res) => {
       case "/media_streams":
         assertHTTPMethod(req, "POST");
         await handleMediaStreams(req, res);
+        break;
+      case "/call_heartbeats":
+        handleCallHeartbeats(req, res);
         break;
       default:
         if (req.url.startsWith("/recordings")) {
@@ -242,6 +249,16 @@ const handleRecordings = async (req, res) => {
       url: "https://api.somleng.org/cowbell.mp3",
     }),
   );
+};
+
+const handleCallHeartbeats = async (req, res) => {
+  assertHTTPMethod(req, "POST");
+  const data = await parseBody(req);
+  CallHeartbeatSchema.parse(data);
+
+  res.statusCode = 204;
+
+  res.end(JSON.stringify({}));
 };
 
 const handleMediaStreams = async (_req, res) => {

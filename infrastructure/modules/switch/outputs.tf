@@ -110,8 +110,12 @@ output "freeswitch_image" {
   value = var.freeswitch_image
 }
 
-output "freeswitch_event_logger_image" {
-  value = var.freeswitch_event_logger_image
+output "freeswitch_stats_logger_image" {
+  value = var.freeswitch_stats_logger_image
+}
+
+output "freeswitch_event_processor_image" {
+  value = var.freeswitch_event_processor_image
 }
 
 output "freeswitch_log_level" {

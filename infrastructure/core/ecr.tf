@@ -33,9 +33,14 @@ module "freeswitch_ecr_repository" {
   name   = "freeswitch"
 }
 
-module "freeswitch_event_logger_ecr_repository" {
+module "freeswitch_stats_logger_ecr_repository" {
   source = "../modules/ecr_repository"
-  name   = "freeswitch-events"
+  name   = "freeswitch-stats-logger"
+}
+
+module "freeswitch_event_processor_ecr_repository" {
+  source = "../modules/ecr_repository"
+  name   = "freeswitch-event-processor"
 }
 
 module "s3_mpeg_ecr_repository" {
