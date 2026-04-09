@@ -27,7 +27,7 @@ jobs:
           [
             {
               "identifier": "switch-staging",
-              "branch": "fix_switch_host_for_inbound_calls",
+              "branch": "develop",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}"
             },

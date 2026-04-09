@@ -27,7 +27,7 @@ jobs:
             {
               "identifier": "switch-staging",
               "environment": "staging",
-              "branch": "fix_switch_host_for_inbound_calls",
+              "branch": "develop",
               "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "switch-staging",
               "ecs_cluster": "somleng-switch-staging"
