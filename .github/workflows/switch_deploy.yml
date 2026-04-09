@@ -1,5 +1,11 @@
-on: workflow_call
-name: Switch
+name: Deploy Switch
+
+on:
+  workflow_call:
+    inputs:
+      build-matrix:
+        required: true
+        type: string
 
 env:
   CI: true
@@ -15,39 +21,36 @@ jobs:
     name: Set Deployment Matrix
     runs-on: ubuntu-latest
     outputs:
-      matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
       deployMatrix: ${{ steps.set-deployment-matrix.outputs.deployMatrix }}
       releaseMatrix: ${{ steps.set-deployment-matrix.outputs.releaseMatrix }}
     steps:
       - name: Set Deployment Matrix
         id: set-deployment-matrix
         run: |
-          branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
+          buildMatrix=${{ toJSON(inputs.build-matrix) }}
           matrixSource=$(cat << EOF
           [
             {
-              "identifier": "switch-staging",
               "environment": "staging",
-              "branch": "develop",
-              "image_tag": "stag-${{ github.sha }}",
+              "identifier": "switch-staging",
               "ecs_service": "switch-staging",
               "ecs_cluster": "somleng-switch-staging"
             },
             {
-              "identifier": "switch",
               "environment": "production",
-              "branch": "master",
-              "image_tag": "prod-${{ github.sha }}",
+              "identifier": "switch",
               "ecs_service": "switch",
               "ecs_cluster": "somleng-switch"
             }
           ]
           EOF
           )
-          matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
-          echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
-          echo "deployMatrix={\"region\":[\"ap-southeast-1\",\"us-east-1\"],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
-          echo "releaseMatrix={\"sentry_project\":[\"somleng-switch\",\"freeswitch-event-processor\"],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+
+          matched=$(echo "$matrixSource" | jq --argjson bm "$buildMatrix" 'map(select(.environment == $bm.environment)) | .[0]')
+          merged=$(jq -n --argjson a "$buildMatrix" --argjson b "$matched" '$b + $a')
+          merged_compact=$(echo "$merged" | jq -c '.')
+          echo "deployMatrix={\"region\":[\"ap-southeast-1\",\"us-east-1\"],\"include\":[$merged_compact]}" >> $GITHUB_OUTPUT
+          echo "releaseMatrix={\"sentry_project\":[\"somleng-switch\",\"freeswitch-event-processor\"],\"include\":[$merged_compact]}" >> $GITHUB_OUTPUT
 
   deploy:
     name: Deploy

@@ -1,4 +1,4 @@
-name: Switch Build
+name: Build Switch
 
 on:
   workflow_call:
@@ -24,40 +24,11 @@ jobs:
       matrix: ${{ steps.set-build-matrix.outputs.packageMatrix }}
       packageMatrix: ${{ steps.set-build-matrix.outputs.packageMatrix }}
     steps:
-      - name: Set Deployment Matrix
+      - name: Set Build Matrix
         id: set-build-matrix
         run: |
-          buildMatrix=${{ toJSON(inputs.build-matrix) }}
-
-          matrixSource=$(cat << EOF
-          [
-            {
-              "environment": "staging",
-              "identifier": "switch-staging"
-            },
-            {
-              "environment": "production",
-              "identifier": "switch"
-            }
-          ]
-          EOF
-          )
-
-          # Match environment
-          matched=$(echo "$matrixSource" | jq --argjson bm "$buildMatrix" 'map(select(.environment == $bm.environment)) | .[0]')
-
-          # Merge input with environment defaults
-          merged=$(jq -n --argjson a "$buildMatrix" --argjson b "$matched" '$b + $a')
-
-          # Compact JSON so GitHub Actions can read it
-          merged_compact=$(echo "$merged" | jq -c '.')
-
-          # Set outputs
-          echo "matrix={\"include\":[$merged_compact]}" >> $GITHUB_OUTPUT
-          echo "packageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":[$merged_compact]}" >> $GITHUB_OUTPUT
-
-          # Debug
-          echo "Merged Matrix: $merged_compact"
+          echo "matrix={\"include\":[${{ inputs.build-matrix }}]}" >> $GITHUB_OUTPUT
+          echo "packageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":[${{ inputs.build-matrix }}]}" >> $GITHUB_OUTPUT
 
   build-packages:
     name: Build Packages
