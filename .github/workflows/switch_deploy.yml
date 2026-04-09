@@ -283,7 +283,7 @@ jobs:
         id: render-freeswitch-event-processor-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ steps.render-freeswitch-render-freeswitch-stats-logger-task-def.outputs.task-definition }}
+          task-definition: ${{ steps.render-freeswitch-stats-logger-task-def.outputs.task-definition }}
           container-name: freeswitch-event-processor
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_PROCESSOR_REPOSITORY_NAME }}:${{ matrix.image_tag }}
 
