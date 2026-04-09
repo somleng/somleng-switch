@@ -4,16 +4,16 @@ env:
   GATEWAY_SCHEDULER_REPOSITORY_NAME: gateway-scheduler
 
 jobs:
-  set-deployment-matrix:
+  set-build-matrix:
     name: Set Deployment Matrix
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
-      matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
+      matrix: ${{ steps.set-build-matrix.outputs.matrix }}
+      matrixLength: ${{ steps.set-build-matrix.outputs.matrixLength }}
 
     steps:
       - name: Set Deployment Matrix
-        id: set-deployment-matrix
+        id: set-build-matrix
         run: |
           branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
           matrixSource=$(cat << EOF
@@ -38,13 +38,13 @@ jobs:
   build-packages:
     name: Build Packages
     runs-on: ubuntu-latest
-    if: needs.set-deployment-matrix.outputs.matrixLength > 0
+    if: needs.set-build-matrix.outputs.matrixLength > 0
 
     strategy:
-      matrix: ${{fromJson(needs.set-deployment-matrix.outputs.matrix)}}
+      matrix: ${{fromJson(needs.set-build-matrix.outputs.matrix)}}
 
     needs:
-      - set-deployment-matrix
+      - set-build-matrix
 
     steps:
       - name: Checkout

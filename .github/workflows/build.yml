@@ -42,8 +42,8 @@ jobs:
     needs: build_rating_engine
     secrets: inherit
 
-  deploy_opensips_scheduler:
-    uses: ./.github/workflows/opensips_scheduler_deploy.yml
+  build_opensips_scheduler:
+    uses: ./.github/workflows/opensips_scheduler_build.yml
     needs: integration_tests
     secrets: inherit
 
@@ -59,12 +59,12 @@ jobs:
 
   deploy_public_gateway:
     uses: ./.github/workflows/public_gateway_deploy.yml
-    needs: [deploy_opensips_scheduler]
+    needs: [build_opensips_scheduler]
     secrets: inherit
 
   deploy_client_gateway:
     uses: ./.github/workflows/client_gateway_deploy.yml
-    needs: [deploy_opensips_scheduler]
+    needs: [build_opensips_scheduler]
     secrets: inherit
 
   deploy_media_proxy:
