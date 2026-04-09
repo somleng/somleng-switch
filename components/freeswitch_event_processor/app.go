@@ -105,6 +105,7 @@ func (c *CallPlatformClient) CreateCallHeartbeats(callUUIDs []string) {
 
 		if err != nil {
 			println("HTTP request failed:", err.Error())
+			return
 		}
 		defer resp.Body.Close()
 	}()
