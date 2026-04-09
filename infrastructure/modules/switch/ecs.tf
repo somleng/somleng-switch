@@ -333,12 +333,44 @@ resource "aws_ecs_task_definition" "this" {
       ]
     },
     {
-      name  = "freeswitch-event-logger",
-      image = "${var.freeswitch_event_logger_image}:latest",
+      name  = "freeswitch-stats-logger",
+      image = "${var.freeswitch_stats_logger_image}:latest",
       logConfiguration = {
         logDriver = "awslogs",
         options = {
-          awslogs-group         = aws_cloudwatch_log_group.freeswitch_event_logger.name,
+          awslogs-group         = aws_cloudwatch_log_group.freeswitch_stats_logger.name,
+          awslogs-region        = var.region.aws_region,
+          awslogs-stream-prefix = var.identifier
+        }
+      },
+      startTimeout = 120,
+      essential    = true,
+      secrets = [
+        {
+          name      = "EVENT_SOCKET_PASSWORD",
+          valueFrom = local.freeswitch_event_socket_password_parameter.arn
+        },
+      ],
+      dependsOn = [
+        {
+          containerName = "freeswitch",
+          condition     = "HEALTHY"
+        },
+      ],
+      environment = [
+        {
+          name  = "EVENT_SOCKET_HOST",
+          value = "localhost:${var.freeswitch_event_socket_port}"
+        },
+      ]
+    },
+    {
+      name  = "freeswitch-event-processor",
+      image = "${var.freeswitch_event_processor_image}:latest",
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.freeswitch_event_processor.name,
           awslogs-region        = var.region.aws_region,
           awslogs-stream-prefix = var.identifier
         }

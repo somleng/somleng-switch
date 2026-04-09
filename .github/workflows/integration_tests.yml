@@ -69,15 +69,25 @@ jobs:
           cache-from: type=gha,scope=integration-tests-freeswitch
           cache-to: type=gha,mode=max,scope=integration-tests-freeswitch
 
-      - name: Build FreeSWITCH Event Logger
+      - name: Build FreeSWITCH Stats Logger
         uses: docker/build-push-action@v7
         with:
           push: false
           load: true
-          context: components/freeswitch_event_logger
-          tags: freeswitch_event_logger:latest
-          cache-from: type=gha,scope=integration-tests-freeswitch-event-logger
-          cache-to: type=gha,mode=max,scope=integration-tests-freeswitch-event-logger
+          context: components/freeswitch_stats_logger
+          tags: freeswitch_stats_logger:latest
+          cache-from: type=gha,scope=integration-tests-freeswitch-stats-logger
+          cache-to: type=gha,mode=max,scope=integration-tests-freeswitch-stats-logger
+
+      - name: Build FreeSWITCH Event Processor
+        uses: docker/build-push-action@v7
+        with:
+          push: false
+          load: true
+          context: components/freeswitch_event_processor
+          tags: freeswitch_event_processor:latest
+          cache-from: type=gha,scope=integration-tests-freeswitch-event-processor
+          cache-to: type=gha,mode=max,scope=integration-tests-freeswitch-event-processor
 
       - name: Build Public Gateway
         uses: docker/build-push-action@v7

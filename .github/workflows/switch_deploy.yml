@@ -7,7 +7,8 @@ env:
   RATING_ENGINE_REPOSITORY_NAME: rating-engine
   WEBSERVER_REPOSITORY_NAME: switch-webserver
   FREESWITCH_REPOSITORY_NAME: freeswitch
-  FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME: freeswitch-events
+  FREESWITCH_STATS_LOGGER_REPOSITORY_NAME: freeswitch-stats-logger
+  FREESWITCH_EVENT_PROCESSOR_REPOSITORY_NAME: freeswitch-event-processor
 
 jobs:
   set-deployment-matrix:
@@ -28,7 +29,7 @@ jobs:
             {
               "identifier": "switch-staging",
               "environment": "staging",
-              "branch": "develop",
+              "branch": "channel_heartbeat",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "switch-staging",
@@ -145,18 +146,31 @@ jobs:
             ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.image_tag }}-${{ matrix.platform.arch }}
             ${{ secrets.GHCR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform.arch }}
 
-      - name: Build and push FreeSWITCH Event Logger image
+      - name: Build and push FreeSWITCH Stats Logger image
         uses: docker/build-push-action@v7
         with:
           push: true
-          context: components/freeswitch_event_logger
+          context: components/freeswitch_stats_logger
           platforms: linux/${{ matrix.platform.arch }}
-          cache-from: type=gha,scope=${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
-          cache-to: type=gha,mode=max,scope=${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
+          cache-from: type=gha,scope=${{ env.FREESWITCH_STATS_LOGGER_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
+          cache-to: type=gha,mode=max,scope=${{ env.FREESWITCH_STATS_LOGGER_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
           provenance: false
           tags: |
-            ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.image_tag }}-${{ matrix.platform.arch }}
-            ${{ secrets.GHCR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform.arch }}
+            ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_STATS_LOGGER_REPOSITORY_NAME }}:${{ matrix.image_tag }}-${{ matrix.platform.arch }}
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.FREESWITCH_STATS_LOGGER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform.arch }}
+
+      - name: Build and push FreeSWITCH Event Processor image
+        uses: docker/build-push-action@v7
+        with:
+          push: true
+          context: components/freeswitch_event_processor
+          platforms: linux/${{ matrix.platform.arch }}
+          cache-from: type=gha,scope=${{ env.FREESWITCH_EVENT_PROCESSOR_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
+          cache-to: type=gha,mode=max,scope=${{ env.FREESWITCH_EVENT_PROCESSOR_REPOSITORY_NAME }}-${{ matrix.platform.arch }}
+          provenance: false
+          tags: |
+            ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_PROCESSOR_REPOSITORY_NAME }}:${{ matrix.image_tag }}-${{ matrix.platform.arch }}
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.FREESWITCH_EVENT_PROCESSOR_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform.arch }}
 
   build-manifest:
     name: Build Manifest
@@ -202,7 +216,7 @@ jobs:
       - name: Build Manifest
         run: |
           declare -a platforms=("amd64" "arm64")
-          declare -a repositories=("${{ env.APP_REPOSITORY_NAME }}" "${{ env.WEBSERVER_REPOSITORY_NAME }}" "${{ env.FREESWITCH_REPOSITORY_NAME }}" "${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}")
+          declare -a repositories=("${{ env.APP_REPOSITORY_NAME }}" "${{ env.WEBSERVER_REPOSITORY_NAME }}" "${{ env.FREESWITCH_REPOSITORY_NAME }}" "${{ env.FREESWITCH_STATS_LOGGER_REPOSITORY_NAME }}" "${{ env.FREESWITCH_EVENT_PROCESSOR_REPOSITORY_NAME }}")
 
           for repository in "${repositories[@]}"
           do
@@ -257,19 +271,27 @@ jobs:
           container-name: freeswitch
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_REPOSITORY_NAME }}:${{ matrix.image_tag }}
 
-      - name: Prepare FreeSWITCH event logger task definition
-        id: render-freeswitch-event-logger-task-def
+      - name: Prepare FreeSWITCH stats logger task definition
+        id: render-freeswitch-stats-logger-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ steps.render-freeswitch-task-def.outputs.task-definition }}
-          container-name: freeswitch-event-logger
-          image: ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_LOGGER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+          container-name: freeswitch-stats-logger
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_STATS_LOGGER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
+
+      - name: Prepare FreeSWITCH event processor task definition
+        id: render-freeswitch-event-processor-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-freeswitch-render-freeswitch-stats-logger-task-def.outputs.task-definition }}
+          container-name: freeswitch-event-processor
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.FREESWITCH_EVENT_PROCESSOR_REPOSITORY_NAME }}:${{ matrix.image_tag }}
 
       - name: Prepare Rating Engine task definition
         id: render-rating-engine-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ steps.render-freeswitch-event-logger-task-def.outputs.task-definition }}
+          task-definition: ${{ steps.render-freeswitch-event-processor-task-def.outputs.task-definition }}
           container-name: rating-engine
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.RATING_ENGINE_REPOSITORY_NAME }}:${{ matrix.image_tag }}
 

@@ -2,7 +2,7 @@ name: Cleanup Packages
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
 
 jobs:
   cleanup_packages:
@@ -11,66 +11,72 @@ jobs:
     steps:
       - uses: actions/delete-package-versions@v5
         with:
-          package-name: 's3-mpeg'
-          package-type: 'container'
-          delete-only-untagged-versions: 'true'
+          package-name: "s3-mpeg"
+          package-type: "container"
+          delete-only-untagged-versions: "true"
 
       - uses: actions/delete-package-versions@v5
         with:
-          package-name: 'switch-services'
-          package-type: 'container'
-          delete-only-untagged-versions: 'true'
+          package-name: "switch-services"
+          package-type: "container"
+          delete-only-untagged-versions: "true"
 
       - uses: actions/delete-package-versions@v5
         with:
-          package-name: 'media-proxy'
-          package-type: 'container'
-          delete-only-untagged-versions: 'true'
+          package-name: "media-proxy"
+          package-type: "container"
+          delete-only-untagged-versions: "true"
 
       - uses: actions/delete-package-versions@v5
         with:
-          package-name: 'client-gateway'
-          package-type: 'container'
-          delete-only-untagged-versions: 'true'
+          package-name: "client-gateway"
+          package-type: "container"
+          delete-only-untagged-versions: "true"
 
       - uses: actions/delete-package-versions@v5
         with:
-          package-name: 'public-gateway'
-          package-type: 'container'
-          delete-only-untagged-versions: 'true'
+          package-name: "public-gateway"
+          package-type: "container"
+          delete-only-untagged-versions: "true"
 
       - uses: actions/delete-package-versions@v5
         with:
-          package-name: 'gateway'
-          package-type: 'container'
-          delete-only-untagged-versions: 'true'
+          package-name: "gateway"
+          package-type: "container"
+          delete-only-untagged-versions: "true"
 
       - uses: actions/delete-package-versions@v5
         with:
-          package-name: 'gateway-scheduler'
-          package-type: 'container'
-          delete-only-untagged-versions: 'true'
+          package-name: "gateway-scheduler"
+          package-type: "container"
+          delete-only-untagged-versions: "true"
 
       - uses: actions/delete-package-versions@v5
         with:
-          package-name: 'switch-app'
-          package-type: 'container'
-          delete-only-untagged-versions: 'true'
+          package-name: "switch-app"
+          package-type: "container"
+          delete-only-untagged-versions: "true"
 
       - uses: actions/delete-package-versions@v5
         with:
-          package-name: 'switch-webserver'
-          package-type: 'container'
-          delete-only-untagged-versions: 'true'
+          package-name: "switch-webserver"
+          package-type: "container"
+          delete-only-untagged-versions: "true"
 
       - uses: actions/delete-package-versions@v5
         with:
-          package-name: 'freeswitch'
-          package-type: 'container'
-          delete-only-untagged-versions: 'true'
+          package-name: "freeswitch"
+          package-type: "container"
+          delete-only-untagged-versions: "true"
 
       - uses: actions/delete-package-versions@v5
         with:
-          package-name: 'freeswitch-events'
-          package-type: 'container'
-          delete-only-untagged-versions: 'true'
+          package-name: "freeswitch-stats-logger"
+          package-type: "container"
+          delete-only-untagged-versions: "true"
+
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: "freeswitch-event-processor"
+          package-type: "container"
+          delete-only-untagged-versions: "true"

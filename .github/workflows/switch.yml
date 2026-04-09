@@ -45,10 +45,16 @@ jobs:
         with:
           go-version-file: ".tool-versions"
           go-version: "1.26.x"
-          cache-dependency-path: components/freeswitch_event_logger/go.sum
+          cache-dependency-path: components/freeswitch_event_processor/go.sum
 
-      - name: Run tests
-        working-directory: components/freeswitch_event_logger
+      - name: Run FreeSWITCH Stats Logger tests
+        working-directory: components/freeswitch_stats_logger
+        run: |
+          go get .
+          go test
+
+      - name: Run FreeSWITCH Event Processor tests
+        working-directory: components/freeswitch_event_processor
         run: |
           go get .
           go test

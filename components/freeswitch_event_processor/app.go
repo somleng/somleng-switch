@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/syslog"
 	"net/http"
 	"os"
 	"strconv"
@@ -14,18 +15,6 @@ import (
 	"github.com/cgrates/fsock"
 	"github.com/redis/go-redis/v9"
 )
-
-type nopLogger struct{}
-
-func (nopLogger) Alert(string) error   { return nil }
-func (nopLogger) Close() error         { return nil }
-func (nopLogger) Crit(string) error    { return nil }
-func (nopLogger) Debug(string) error   { return nil }
-func (nopLogger) Emerg(string) error   { return nil }
-func (nopLogger) Err(string) error     { return nil }
-func (nopLogger) Info(string) error    { return nil }
-func (nopLogger) Notice(string) error  { return nil }
-func (nopLogger) Warning(string) error { return nil }
 
 const modTwilioStreamPrefix = "mod_twilio_stream"
 
@@ -58,8 +47,12 @@ func NewRedisClient() *redis.Client {
 func NewEventSocketClient(eventHandlers map[string][]func(string, int), eventFilters map[string][]string, errChan chan error) *fsock.FSock {
 	event_socket_host := os.Getenv("EVENT_SOCKET_HOST")
 	event_socket_password := os.Getenv("EVENT_SOCKET_PASSWORD")
+	logger, errLog := syslog.New(syslog.LOG_INFO, "freeswitch_event_processor")
+	if errLog != nil {
+		panic(errLog)
+	}
 
-	fs, err := fsock.NewFSock(event_socket_host, event_socket_password, 10, 60, 0, fibDuration, eventHandlers, eventFilters, nopLogger{}, 0, false, errChan)
+	fs, err := fsock.NewFSock(event_socket_host, event_socket_password, 10, 60, 0, fibDuration, eventHandlers, eventFilters, logger, 0, false, errChan)
 	if err != nil {
 		fmt.Printf("FreeSWITCH error: %s\n", err)
 		panic(err)
@@ -77,14 +70,6 @@ func (c *CallPlatformClient) newRequest(method, path string, body any) *http.Req
 	req.SetBasicAuth(c.Username, c.Password)
 
 	return req
-}
-
-// Formats the event as map and prints it out
-func logHeartbeat(eventStr string, connIdx int) {
-	// Format the event from string into Go's map type
-	eventMap := fsock.FSEventStrToMap(eventStr, []string{})
-	jsonString, _ := json.Marshal(eventMap)
-	fmt.Println(string(jsonString))
 }
 
 func parseCustomEvent(eventStr string) (string, string, error) {
@@ -225,14 +210,12 @@ func main() {
 
 	evFilters := map[string][]string{
 		"Event-Name": {
-			"HEARTBEAT",
 			"CUSTOM",
 		},
 	}
 
 	evHandlers := map[string][]func(string, int){
-		"HEARTBEAT": {logHeartbeat},
-		"ALL":       {customEventHandlerWrapper},
+		"ALL": {customEventHandlerWrapper},
 	}
 
 	errChan := make(chan error)

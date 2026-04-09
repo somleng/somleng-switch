@@ -94,7 +94,8 @@ variable "internal_route53_zone" {}
 variable "app_image" {}
 variable "nginx_image" {}
 variable "freeswitch_image" {}
-variable "freeswitch_event_logger_image" {}
+variable "freeswitch_stats_logger_image" {}
+variable "freeswitch_event_processor_image" {}
 variable "external_sip_outbound_ip" {}
 variable "nat_gateway_ip" {}
 variable "alternative_sip_outbound_ip" {}

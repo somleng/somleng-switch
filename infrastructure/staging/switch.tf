@@ -30,7 +30,8 @@ module "switch" {
   app_image                                          = data.terraform_remote_state.core.outputs.app_ecr_repository.this.repository_url
   nginx_image                                        = data.terraform_remote_state.core.outputs.webserver_ecr_repository.this.repository_url
   freeswitch_image                                   = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository.this.repository_url
-  freeswitch_event_logger_image                      = data.terraform_remote_state.core.outputs.freeswitch_event_logger_ecr_repository.this.repository_url
+  freeswitch_stats_logger_image                      = data.terraform_remote_state.core.outputs.freeswitch_stats_logger_ecr_repository.this.repository_url
+  freeswitch_event_processor_image                   = data.terraform_remote_state.core.outputs.freeswitch_event_processor_ecr_repository.this.repository_url
   freeswitch_event_socket_port                       = var.freeswitch_event_socket_port
   freeswitch_log_level                               = var.freeswitch_log_level
   freeswitch_sip_trace                               = var.freeswitch_sip_trace
@@ -76,7 +77,8 @@ module "switch_helium" {
   app_image                                     = module.switch.app_image
   nginx_image                                   = module.switch.nginx_image
   freeswitch_image                              = module.switch.freeswitch_image
-  freeswitch_event_logger_image                 = module.switch.freeswitch_event_logger_image
+  freeswitch_stats_logger_image                 = module.switch.freeswitch_stats_logger_image
+  freeswitch_event_processor_image              = module.switch.freeswitch_event_processor_image
   freeswitch_event_socket_port                  = module.switch.freeswitch_event_socket_port
   freeswitch_event_socket_password_parameter    = module.switch.freeswitch_event_socket_password_parameter
   freeswitch_log_level                          = module.switch.freeswitch_log_level

@@ -30,7 +30,8 @@ module "switch" {
   app_image                                          = data.terraform_remote_state.core.outputs.app_ecr_repository.this.repository_url
   nginx_image                                        = data.terraform_remote_state.core.outputs.webserver_ecr_repository.this.repository_url
   freeswitch_image                                   = data.terraform_remote_state.core.outputs.freeswitch_ecr_repository.this.repository_url
-  freeswitch_event_logger_image                      = data.terraform_remote_state.core.outputs.freeswitch_event_logger_ecr_repository.this.repository_url
+  freeswitch_stats_logger_image                      = data.terraform_remote_state.core.outputs.freeswitch_stats_logger_ecr_repository.this.repository_url
+  freeswitch_event_processor_image                   = data.terraform_remote_state.core.outputs.freeswitch_event_processor_ecr_repository.this.repository_url
   external_sip_outbound_ip                           = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc.nat_public_ips[0]
   nat_gateway_ip                                     = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.vpc.nat_public_ips[0]
   alternative_sip_outbound_ip                        = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region.nat_instance.public_ip
@@ -75,7 +76,8 @@ module "switch_helium" {
   app_image                                     = module.switch.app_image
   nginx_image                                   = module.switch.nginx_image
   freeswitch_image                              = module.switch.freeswitch_image
-  freeswitch_event_logger_image                 = module.switch.freeswitch_event_logger_image
+  freeswitch_stats_logger_image                 = module.switch.freeswitch_stats_logger_image
+  freeswitch_event_processor_image              = module.switch.freeswitch_event_processor_image
   internal_route53_zone                         = module.switch.internal_route53_zone
   target_event_bus                              = module.switch.target_event_bus
   rating_engine_configuration                   = module.rating_engine_configuration
