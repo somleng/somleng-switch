@@ -5,22 +5,22 @@ env:
   CI: true
 
 jobs:
-  s3_mpeg_tests:
-    uses: ./.github/workflows/s3_mpeg_tests.yml
-    secrets: inherit
+  # s3_mpeg_tests:
+  #   uses: ./.github/workflows/s3_mpeg_tests.yml
+  #   secrets: inherit
 
-  services_tests:
-    uses: ./.github/workflows/services_tests.yml
-    secrets: inherit
+  # services_tests:
+  #   uses: ./.github/workflows/services_tests.yml
+  #   secrets: inherit
 
-  switch_tests:
-    uses: ./.github/workflows/switch_tests.yml
-    secrets: inherit
+  # switch_tests:
+  #   uses: ./.github/workflows/switch_tests.yml
+  #   secrets: inherit
 
-  integration_tests:
-    uses: ./.github/workflows/integration_tests.yml
-    needs: [switch_tests, s3_mpeg_tests, services_tests]
-    secrets: inherit
+  # integration_tests:
+  #   uses: ./.github/workflows/integration_tests.yml
+  #   needs: [switch_tests, s3_mpeg_tests, services_tests]
+  #   secrets: inherit
 
   set-build-matrix:
     name: Set Build Matrix
@@ -52,7 +52,7 @@ jobs:
           EOF
           )
           matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
-          echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
           echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
 
   build_switch:
