@@ -33,7 +33,7 @@ jobs:
           [
             {
               "environment": "staging",
-              "identifier": "switch-staging",
+              "identifier": "switch-staging"
             },
             {
               "environment": "production",
