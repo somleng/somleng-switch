@@ -401,6 +401,12 @@ resource "aws_ecs_task_definition" "this" {
           condition     = "HEALTHY"
         }
       ],
+      healthCheck = {
+        command  = ["CMD-SHELL", "wget --server-response --spider --quiet http://localhost:$AHN_CORE_HTTP_PORT/health_checks 2>&1 | grep '200 OK' > /dev/null"],
+        interval = 10,
+        retries  = 10,
+        timeout  = 5
+      },
       environment = [
         {
           name  = "APP_ENV",
