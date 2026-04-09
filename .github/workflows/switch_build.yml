@@ -27,7 +27,7 @@ jobs:
       - name: Set Deployment Matrix
         id: set-build-matrix
         run: |
-          buildMatrix='${{ toJSON(inputs.build-matrix) }}'
+          buildMatrix=${{ toJSON(inputs.build-matrix) }}
 
           matrixSource=$(cat << EOF
           [
@@ -43,10 +43,10 @@ jobs:
           EOF
           )
 
-          # Filter the environment from matrixSource
+          # Match environment
           matched=$(echo "$matrixSource" | jq --argjson bm "$buildMatrix" 'map(select(.environment == $bm.environment)) | .[0]')
 
-          # Merge input buildMatrix with matched object
+          # Merge input with environment defaults
           merged=$(jq -n --argjson a "$buildMatrix" --argjson b "$matched" '$b + $a')
 
           # Set GitHub Actions outputs
