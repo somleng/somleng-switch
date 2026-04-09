@@ -31,7 +31,7 @@ jobs:
           [
             {
               "identifier": "rating-engine-staging",
-              "branch": "fix_event_logger",
+              "branch": "develop",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "rating-engine-staging",
@@ -39,7 +39,7 @@ jobs:
             },
             {
               "identifier": "rating-engine",
-              "branch": "master",
+              "branch": "fix_event_logger",
               "friendly_image_tag": "latest",
               "image_tag": "prod-${{ github.sha }}",
               "ecs_service": "rating-engine",

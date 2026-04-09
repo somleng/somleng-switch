@@ -29,7 +29,7 @@ jobs:
             {
               "identifier": "switch-staging",
               "environment": "staging",
-              "branch": "fix_event_logger",
+              "branch": "develop",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "switch-staging",
