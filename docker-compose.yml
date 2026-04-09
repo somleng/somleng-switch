@@ -140,6 +140,16 @@ services:
       EVENT_SOCKET_HOST: freeswitch:8021
       EVENT_SOCKET_PASSWORD: secret
       REDIS_URL: "redis://redis:6379/1"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --server-response --spider --quiet http://127.0.0.1:8080/health 2>&1 | grep '200 OK' > /dev/null",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
 
   rating-engine-api:
     build:

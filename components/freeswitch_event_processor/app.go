@@ -74,6 +74,60 @@ func NewEventSocketClient(eventHandlers map[string][]func(string, int), eventFil
 	return fs
 }
 
+func getHealthPort() string {
+	port := os.Getenv("HEALTHCHECK_PORT")
+	if port == "" {
+		port = "8080"
+	}
+	return port
+}
+
+func checkFSock(fs FSockClient) error {
+	done := make(chan error, 1)
+
+	go func() {
+		_, err := fs.SendApiCmd("status")
+		done <- err
+	}()
+
+	select {
+	case err := <-done:
+		return err
+	case <-time.After(3 * time.Second):
+		return fmt.Errorf("fsock timeout")
+	}
+}
+
+func startHealthServer(fs FSockClient, redisClient *redis.Client) {
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		// Check FreeSWITCH (with timeout)
+		fsErr := checkFSock(fs)
+
+		// Check Redis
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		redisErr := redisClient.Ping(ctx).Err()
+
+		if fsErr != nil || redisErr != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			w.Write([]byte("unhealthy"))
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
+
+	port := getHealthPort()
+
+	go func() {
+		log.Printf("Health server running on :%s\n", port)
+		if err := http.ListenAndServe(":"+port, nil); err != nil {
+			log.Fatalf("health server failed: %v", err)
+		}
+	}()
+}
+
 func (c *CallPlatformClient) newRequest(method, path string, body any) *http.Request {
 	jsonData, _ := json.Marshal(body)
 
@@ -241,6 +295,8 @@ func main() {
 	errChan := make(chan error)
 	eventSocketClient := NewEventSocketClient(evHandlers, evFilters, errChan)
 	callPlatformClient := NewCallPlatformClient()
+
+	startHealthServer(eventSocketClient, redisClient)
 
 	go callStatusUpdates(eventSocketClient, callPlatformClient)
 
