@@ -49,12 +49,15 @@ jobs:
           # Merge input with environment defaults
           merged=$(jq -n --argjson a "$buildMatrix" --argjson b "$matched" '$b + $a')
 
-          # Set GitHub Actions outputs
-          echo "matrix={\"include\":[$merged]}" >> $GITHUB_OUTPUT
-          echo "packageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":[$merged]}" >> $GITHUB_OUTPUT
+          # Compact JSON so GitHub Actions can read it
+          merged_compact=$(echo "$merged" | jq -c '.')
+
+          # Set outputs
+          echo "matrix={\"include\":[$merged_compact]}" >> $GITHUB_OUTPUT
+          echo "packageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":[$merged_compact]}" >> $GITHUB_OUTPUT
 
           # Debug
-          echo "Merged Matrix: $merged"
+          echo "Merged Matrix: $merged_compact"
 
   build-packages:
     name: Build Packages
