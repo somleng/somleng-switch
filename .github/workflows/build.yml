@@ -51,10 +51,17 @@ jobs:
           ]
           EOF
           )
-          matrix=$(echo "$matrixSource" | jq -c --arg branchName "$branchName" 'map(select(.branch==$branchName)) | .[0]')
-          echo $matrix
+
+          matchedArray=$(echo "$matrixSource" | jq -c --arg branchName "$branchName" 'map(select(.branch==$branchName))')
+          matrixLength=$(echo "$matchedArray" | jq 'length')
+          matrix=$(echo "$matchedArray" | jq -c '.[0]')
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
-          echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
+          echo "matrixLength=$matrixLength" >> $GITHUB_OUTPUT
+
+          # Debug
+          echo "Matched array: $matchedArray"
+          echo "Matrix object: $matrix"
+          echo "Matrix length: $matrixLength"
 
   build_switch:
     uses: ./.github/workflows/switch_build.yml
