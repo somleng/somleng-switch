@@ -5,30 +5,30 @@ env:
   CI: true
 
 jobs:
-  # s3_mpeg_tests:
-  #   uses: ./.github/workflows/s3_mpeg_tests.yml
-  #   secrets: inherit
+  s3_mpeg_tests:
+    uses: ./.github/workflows/s3_mpeg_tests.yml
+    secrets: inherit
 
-  # services_tests:
-  #   uses: ./.github/workflows/services_tests.yml
-  #   secrets: inherit
+  services_tests:
+    uses: ./.github/workflows/services_tests.yml
+    secrets: inherit
 
-  # switch_tests:
-  #   uses: ./.github/workflows/switch_tests.yml
-  #   secrets: inherit
+  switch-tests:
+    uses: ./.github/workflows/switch_tests.yml
+    secrets: inherit
 
-  # integration_tests:
-  #   uses: ./.github/workflows/integration_tests.yml
-  #   needs: [switch_tests, s3_mpeg_tests, services_tests]
-  #   secrets: inherit
+  integration-tests:
+    uses: ./.github/workflows/integration_tests.yml
+    secrets: inherit
 
   set-build-matrix:
     name: Set Build Matrix
-    # needs: integration_tests
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-build-matrix.outputs.matrix }}
-      matrixLength: ${{ steps.set-build-matrix.outputs.matrixLength }}
+      buildConfig: ${{ steps.set-build-matrix.outputs.buildConfig }}
+      buildConfigLength: ${{ steps.set-build-matrix.outputs.buildConfigLength }}
+      buildMatrix: ${{ steps.set-build-matrix.outputs.buildMatrix }}
+      packageMatrix: ${{ steps.set-build-matrix.outputs.packageMatrix }}
     steps:
       - name: Set Build Matrix
         id: set-build-matrix
@@ -53,50 +53,54 @@ jobs:
           )
 
           matchedArray=$(echo "$matrixSource" | jq -c --arg branchName "$branchName" 'map(select(.branch==$branchName))')
-          matrixLength=$(echo "$matchedArray" | jq 'length')
-          matrix=$(echo "$matchedArray" | jq -c '.[0]')
-          echo "matrix=$matrix" >> $GITHUB_OUTPUT
-          echo "matrixLength=$matrixLength" >> $GITHUB_OUTPUT
+          buildConfigLength=$(echo "$matchedArray" | jq 'length')
+          buildConfig=$(echo "$matchedArray" | jq -c '.[0]')
+          echo "buildConfig=$buildConfig" >> $GITHUB_OUTPUT
+          echo "buildConfigLength=$buildConfigLength" >> $GITHUB_OUTPUT
+          echo "buildMatrix={\"include\":[$buildConfig]}" >> $GITHUB_OUTPUT
+          echo "packageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":[$buildMatrix]}" >> $GITHUB_OUTPUT
 
-  build_switch:
+  build-switch:
     uses: ./.github/workflows/switch_build.yml
-    needs: set-build-matrix
-    if: needs.set-build-matrix.outputs.matrixLength > 0
+    needs: [set-build-matrix, switch-tests]
+    if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
     with:
-      build-matrix: ${{ needs.set-build-matrix.outputs.matrix }}
+      packageMatrix: ${{ needs.set-build-matrix.outputs.packageMatrix }}
 
-  # build_rating_engine:
-  #   uses: ./.github/workflows/rating_engine_build.yml
-  #   needs: integration_tests
-  #   secrets: inherit
+  build-rating-engine:
+    uses: ./.github/workflows/rating_engine_build.yml
+    needs: [set-build-matrix]
+    if: needs.set-build-matrix.outputs.buildConfigLength > 0
+    secrets: inherit
+    with:
+      packageMatrix: ${{ needs.set-build-matrix.outputs.packageMatrix }}
 
-  deploy_switch:
+  deploy-switch:
     uses: ./.github/workflows/switch_deploy.yml
-    needs: [build_switch, build_rating_engine]
-    if: needs.set-build-matrix.outputs.matrixLength > 0
+    needs: [set-build-matrix, build-switch, build-rating-engine]
     secrets: inherit
     with:
-      build-matrix: ${{ needs.set-build-matrix.outputs.matrix }}
+      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
 
   # deploy_rating_engine:
   #   uses: ./.github/workflows/rating_engine_deploy.yml
-  #   needs: build_rating_engine
+  #   needs: build-rating-engine
   #   secrets: inherit
 
   # build_opensips_scheduler:
   #   uses: ./.github/workflows/opensips_scheduler_build.yml
-  #   needs: integration_tests
+  #   needs: integration-tests
   #   secrets: inherit
 
   # deploy_s3_mpeg:
   #   uses: ./.github/workflows/s3_mpeg_deploy.yml
-  #   needs: integration_tests
+  #   needs: integration-tests
   #   secrets: inherit
 
   # deploy_services:
   #   uses: ./.github/workflows/services_deploy.yml
-  #   needs: integration_tests
+  #   needs: integration-tests
   #   secrets: inherit
 
   # deploy_public_gateway:
@@ -111,5 +115,5 @@ jobs:
 
   # deploy_media_proxy:
   #   uses: ./.github/workflows/media_proxy_deploy.yml
-  #   needs: integration_tests
+  #   needs: integration-tests
   #   secrets: inherit

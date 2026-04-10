@@ -3,7 +3,7 @@ name: Deploy Switch
 on:
   workflow_call:
     inputs:
-      build-matrix:
+      buildConfig:
         required: true
         type: string
 
@@ -27,7 +27,7 @@ jobs:
       - name: Set Deployment Matrix
         id: set-deployment-matrix
         run: |
-          buildMatrix=${{ toJSON(inputs.build-matrix) }}
+          buildConfig=${{ toJSON(inputs.buildConfig) }}
           matrixSource=$(cat << EOF
           [
             {
@@ -46,9 +46,9 @@ jobs:
           EOF
           )
 
-          matched=$(echo "$matrixSource" | jq --argjson bm "$buildMatrix" 'map(select(.environment == $bm.environment)) | .[0]')
-          merged=$(jq -n --argjson a "$buildMatrix" --argjson b "$matched" '$b + $a')
-          merged_compact=$(echo "$merged" | jq -c '.')
+          matched=$(echo "$matrixSource" | jq --argjson bc "$buildConfig" 'map(select(.environment == $bc.environment)) | .[0]')
+          mergedConfig=$(jq -n --argjson a "$buildConfig" --argjson b "$matched" '$b + $a')
+          merged_compact=$(echo "$mergedConfig" | jq -c '.')
           echo "deployMatrix={\"region\":[\"ap-southeast-1\",\"us-east-1\"],\"include\":[$merged_compact]}" >> $GITHUB_OUTPUT
           echo "releaseMatrix={\"sentry_project\":[\"somleng-switch\",\"freeswitch-event-processor\"],\"include\":[$merged_compact]}" >> $GITHUB_OUTPUT
 

@@ -3,7 +3,10 @@ name: Build Switch
 on:
   workflow_call:
     inputs:
-      build-matrix:
+      buildMatrix:
+        required: true
+        type: string
+      packageMatrix:
         required: true
         type: string
 
@@ -17,30 +20,14 @@ env:
   FREESWITCH_EVENT_PROCESSOR_REPOSITORY_NAME: freeswitch-event-processor
 
 jobs:
-  set-build-matrix:
-    name: Set Build Matrix
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-build-matrix.outputs.matrix }}
-      packageMatrix: ${{ steps.set-build-matrix.outputs.packageMatrix }}
-    steps:
-      - name: Set Build Matrix
-        id: set-build-matrix
-        run: |
-          buildMatrix=${{ toJSON(inputs.build-matrix) }}
-          echo "matrix={\"include\":[$buildMatrix]}" >> $GITHUB_OUTPUT
-          echo "packageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":[$buildMatrix]}" >> $GITHUB_OUTPUT
-
   build-packages:
     name: Build Packages
 
     strategy:
-      matrix: ${{fromJSON(needs.set-build-matrix.outputs.packageMatrix)}}
+      matrix: ${{fromJSON(inputs.packageMatrix)}}
       fail-fast: false
 
     runs-on: ${{ matrix.platform.runner }}
-    needs:
-      - set-build-matrix
 
     permissions:
       contents: read
@@ -154,11 +141,10 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      - set-build-matrix
       - build-packages
 
     strategy:
-      matrix: ${{fromJSON(needs.set-build-matrix.outputs.matrix)}}
+      matrix: ${{fromJSON(inputs.buildMatrix)}}
 
     permissions:
       contents: read
