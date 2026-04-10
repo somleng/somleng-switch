@@ -86,6 +86,7 @@ jobs:
   build-opensips-scheduler:
     uses: ./.github/workflows/opensips_scheduler_build.yml
     needs: [set-build-matrix]
+    if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
     with:
       packageMatrix: ${{ needs.set-build-matrix.outputs.amd64PackageMatrix }}
@@ -93,13 +94,31 @@ jobs:
   build-public-gateway:
     uses: ./.github/workflows/public_gateway_build.yml
     needs: [set-build-matrix]
+    if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
     with:
       packageMatrix: ${{ needs.set-build-matrix.outputs.amd64PackageMatrix }}
 
+  build-client-gateway:
+    uses: ./.github/workflows/client_gateway_build.yml
+    needs: [set-build-matrix]
+    if: needs.set-build-matrix.outputs.buildConfigLength > 0
+    secrets: inherit
+    with:
+      packageMatrix: ${{ needs.set-build-matrix.outputs.arm64PackageMatrix }}
+
+  build-media-proxy:
+    uses: ./.github/workflows/media_proxy_build.yml
+    needs: [set-build-matrix]
+    if: needs.set-build-matrix.outputs.buildConfigLength > 0
+    secrets: inherit
+    with:
+      packageMatrix: ${{ needs.set-build-matrix.outputs.multiArchPackageMatrix }}
+
   build-services:
     uses: ./.github/workflows/services_build.yml
     needs: [set-build-matrix, services-tests]
+    if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
     with:
       packageMatrix: ${{ needs.set-build-matrix.outputs.arm64PackageMatrix }}
@@ -107,6 +126,7 @@ jobs:
   build-s3-mpeg:
     uses: ./.github/workflows/s3_mpeg_build.yml
     needs: [set-build-matrix, s3-mpeg-tests]
+    if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
     with:
       packageMatrix: ${{ needs.set-build-matrix.outputs.arm64PackageMatrix }}
@@ -127,7 +147,28 @@ jobs:
 
   deploy-public-gateway:
     uses: ./.github/workflows/public_gateway_deploy.yml
-    needs: [set-build-matrix, build-public-gateway]
+    needs: [set-build-matrix, build-public-gateway, build-opensips-scheduler]
+    secrets: inherit
+    with:
+      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
+
+  deploy-client-gateway:
+    uses: ./.github/workflows/client_gateway_deploy.yml
+    needs: [set-build-matrix, build-client-gateway, build-opensips-scheduler]
+    secrets: inherit
+    with:
+      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
+
+  deploy-media-proxy:
+    uses: ./.github/workflows/media_proxy_deploy.yml
+    needs: [set-build-matrix, build-media-proxy]
+    secrets: inherit
+    with:
+      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
+
+  deploy-services:
+    uses: ./.github/workflows/services_deploy.yml
+    needs: [set-build-matrix, build-services]
     secrets: inherit
     with:
       buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
@@ -138,21 +179,3 @@ jobs:
     secrets: inherit
     with:
       buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
-
-  deploy-services:
-    uses: ./.github/workflows/s3_mpeg_deploy.yml
-    needs: [set-build-matrix, build-services]
-    secrets: inherit
-    with:
-      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
-
-
-  # deploy_client_gateway:
-  #   uses: ./.github/workflows/client_gateway_deploy.yml
-  #   needs: [build_opensips_scheduler]
-  #   secrets: inherit
-
-  # deploy_media_proxy:
-  #   uses: ./.github/workflows/media_proxy_deploy.yml
-  #   needs: integration-tests
-  #   secrets: inherit
