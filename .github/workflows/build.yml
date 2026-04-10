@@ -113,7 +113,7 @@ jobs:
     if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
     with:
-      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
+      buildMatrix: ${{ needs.set-build-matrix.outputs.buildConfig }}
       packageMatrix: ${{ needs.set-build-matrix.outputs.multiArchPackageMatrix }}
 
   build-services:
