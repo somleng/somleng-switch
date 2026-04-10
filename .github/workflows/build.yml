@@ -105,7 +105,7 @@ jobs:
     if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
     with:
-      packageMatrix: ${{ needs.set-build-matrix.outputs.arm64PackageMatrix }}
+      packageMatrix: ${{ needs.set-build-matrix.outputs.amd64PackageMatrix }}
 
   build-media-proxy:
     uses: ./.github/workflows/media_proxy_build.yml
