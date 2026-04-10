@@ -90,6 +90,13 @@ jobs:
     with:
       packageMatrix: ${{ needs.set-build-matrix.outputs.amd64PackageMatrix }}
 
+  build-public-gateway:
+    uses: ./.github/workflows/public_gateway_build.yml
+    needs: [set-build-matrix]
+    secrets: inherit
+    with:
+      packageMatrix: ${{ needs.set-build-matrix.outputs.amd64PackageMatrix }}
+
   build-services:
     uses: ./.github/workflows/services_build.yml
     needs: [set-build-matrix, services-tests]
@@ -118,6 +125,13 @@ jobs:
     with:
       buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
 
+  deploy-public-gateway:
+    uses: ./.github/workflows/public_gateway_deploy.yml
+    needs: [set-build-matrix, build-public-gateway]
+    secrets: inherit
+    with:
+      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
+
   deploy-s3-mpeg:
     uses: ./.github/workflows/s3_mpeg_deploy.yml
     needs: [set-build-matrix, build-s3-mpeg]
@@ -132,15 +146,6 @@ jobs:
     with:
       buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
 
-  # deploy_services:
-  #   uses: ./.github/workflows/services_deploy.yml
-  #   needs: integration-tests
-  #   secrets: inherit
-
-  # deploy_public_gateway:
-  #   uses: ./.github/workflows/public_gateway_deploy.yml
-  #   needs: [build_opensips_scheduler]
-  #   secrets: inherit
 
   # deploy_client_gateway:
   #   uses: ./.github/workflows/client_gateway_deploy.yml
