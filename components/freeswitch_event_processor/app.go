@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -30,6 +31,19 @@ type FSockClient interface {
 	SendApiCmd(cmd string) (string, error)
 }
 
+type AppError struct {
+	Err           error
+	ErrorTracking bool
+}
+
+func (e *AppError) Error() string {
+	return e.Err.Error()
+}
+
+func (e *AppError) Unwrap() error {
+	return e.Err
+}
+
 func initSentry() {
 	err := sentry.Init(sentry.ClientOptions{
 		Dsn:         os.Getenv("SENTRY_DSN"),
@@ -38,6 +52,19 @@ func initSentry() {
 
 	if err != nil {
 		log.Fatalf("sentry.Init: %s", err)
+	}
+}
+
+func NewAppError(err error) error {
+	return &AppError{
+		Err: err,
+	}
+}
+
+func TrackError(err error) error {
+	return &AppError{
+		Err:           err,
+		ErrorTracking: true,
 	}
 }
 
@@ -74,6 +101,60 @@ func NewEventSocketClient(eventHandlers map[string][]func(string, int), eventFil
 	return fs
 }
 
+func getHealthPort() string {
+	port := os.Getenv("HEALTHCHECK_PORT")
+	if port == "" {
+		port = "8080"
+	}
+	return port
+}
+
+func checkFSock(fs FSockClient) error {
+	done := make(chan error, 1)
+
+	go func() {
+		_, err := fs.SendApiCmd("status")
+		done <- err
+	}()
+
+	select {
+	case err := <-done:
+		return err
+	case <-time.After(3 * time.Second):
+		return fmt.Errorf("fsock timeout")
+	}
+}
+
+func startHealthServer(fs FSockClient, redisClient *redis.Client) {
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		// Check FreeSWITCH (with timeout)
+		fsErr := checkFSock(fs)
+
+		// Check Redis
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		redisErr := redisClient.Ping(ctx).Err()
+
+		if fsErr != nil || redisErr != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			w.Write([]byte("unhealthy"))
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
+
+	port := getHealthPort()
+
+	go func() {
+		log.Printf("Health server running on :%s\n", port)
+		if err := http.ListenAndServe(":"+port, nil); err != nil {
+			log.Fatalf("health server failed: %v", err)
+		}
+	}()
+}
+
 func (c *CallPlatformClient) newRequest(method, path string, body any) *http.Request {
 	jsonData, _ := json.Marshal(body)
 
@@ -87,26 +168,28 @@ func (c *CallPlatformClient) newRequest(method, path string, body any) *http.Req
 
 func parseCustomEvent(eventStr string) (string, string, error) {
 	eventMap := fsock.FSEventStrToMap(eventStr, []string{})
-
 	eventName := eventMap["Event-Subclass"]
 
 	if !strings.HasPrefix(eventName, modTwilioStreamPrefix) {
-		fmt.Println("Unhandled Event Type: " + eventName)
-		return "", "", fmt.Errorf("Unhandled Event Type: %s", eventName)
+		return "", "", NewAppError(
+			fmt.Errorf("Unhandled Event Type: %s", eventName),
+		)
 	}
 
 	eventPayload := make(map[string]any)
 	parsePayloadError := json.Unmarshal([]byte(eventMap["Event-Payload"]), &eventPayload)
+
 	if parsePayloadError != nil {
-		sentry.CaptureException(parsePayloadError)
-		fmt.Println("Failed to parse Event Payload: " + eventMap["Event-Payload"])
-		return "", "", fmt.Errorf("Failed to parse Event Payload: %s", eventMap["Event-Payload"])
+		return "", "", TrackError(
+			fmt.Errorf("Failed to parse Event Payload: %s", eventMap["Event-Payload"]),
+		)
 	}
 
 	streamSid, streamSidExists := eventPayload["streamSid"].(string)
 	if !streamSidExists {
-		fmt.Println("Event does not contain streamSid: " + eventMap["Event-Payload"])
-		return "", "", fmt.Errorf("Event does not contain streamSid: %s", eventMap["Event-Payload"])
+		return "", "", TrackError(
+			fmt.Errorf("Event does not contain streamSid: %s", eventMap["Event-Payload"]),
+		)
 	}
 
 	redisChannel := modTwilioStreamPrefix + ":" + streamSid
@@ -190,11 +273,15 @@ func callStatusUpdates(fs *fsock.FSock, callPlatformClient *CallPlatformClient) 
 }
 
 func customEventHandler(ctx context.Context, redisClient *redis.Client, eventStr string) {
-	redisChannel, redisMsg, parseEventError := parseCustomEvent(eventStr)
+	redisChannel, redisMsg, err := parseCustomEvent(eventStr)
 
-	if parseEventError != nil {
-		sentry.CaptureException(parseEventError)
-		fmt.Println("Error: " + parseEventError.Error())
+	if err != nil {
+		var appErr *AppError
+		if errors.As(err, &appErr) && appErr.ErrorTracking {
+			sentry.CaptureException(err)
+		}
+
+		fmt.Println("Error: " + err.Error())
 		return
 	}
 
@@ -241,6 +328,8 @@ func main() {
 	errChan := make(chan error)
 	eventSocketClient := NewEventSocketClient(evHandlers, evFilters, errChan)
 	callPlatformClient := NewCallPlatformClient()
+
+	startHealthServer(eventSocketClient, redisClient)
 
 	go callStatusUpdates(eventSocketClient, callPlatformClient)
 

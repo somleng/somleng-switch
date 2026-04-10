@@ -1,5 +1,11 @@
-on: workflow_call
-name: Switch
+name: Deploy Switch
+
+on:
+  workflow_call:
+    inputs:
+      buildConfig:
+        required: true
+        type: string
 
 env:
   CI: true
@@ -15,37 +21,36 @@ jobs:
     name: Set Deployment Matrix
     runs-on: ubuntu-latest
     outputs:
-      matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
       deployMatrix: ${{ steps.set-deployment-matrix.outputs.deployMatrix }}
+      releaseMatrix: ${{ steps.set-deployment-matrix.outputs.releaseMatrix }}
     steps:
       - name: Set Deployment Matrix
         id: set-deployment-matrix
         run: |
-          branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
+          buildConfig=${{ toJSON(inputs.buildConfig) }}
           matrixSource=$(cat << EOF
           [
             {
-              "identifier": "switch-staging",
               "environment": "staging",
-              "branch": "develop",
-              "image_tag": "stag-${{ github.sha }}",
+              "identifier": "switch-staging",
               "ecs_service": "switch-staging",
               "ecs_cluster": "somleng-switch-staging"
             },
             {
-              "identifier": "switch",
               "environment": "production",
-              "branch": "master",
-              "image_tag": "prod-${{ github.sha }}",
+              "identifier": "switch",
               "ecs_service": "switch",
               "ecs_cluster": "somleng-switch"
             }
           ]
           EOF
           )
-          matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
-          echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
-          echo "deployMatrix={\"region\":[\"ap-southeast-1\",\"us-east-1\"],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+
+          matched=$(echo "$matrixSource" | jq --argjson bc "$buildConfig" 'map(select(.environment == $bc.environment)) | .[0]')
+          mergedConfig=$(jq -n --argjson a "$buildConfig" --argjson b "$matched" '$b + $a')
+          mergedConfig=$(echo "$mergedConfig" | jq -c '.')
+          echo "deployMatrix={\"region\":[\"ap-southeast-1\",\"us-east-1\"],\"include\":[$mergedConfig]}" >> $GITHUB_OUTPUT
+          echo "releaseMatrix={\"sentry_project\":[\"somleng-switch\",\"freeswitch-event-processor\"],\"include\":[$mergedConfig]}" >> $GITHUB_OUTPUT
 
   deploy:
     name: Deploy
@@ -138,7 +143,7 @@ jobs:
       - deploy
 
     strategy:
-      matrix: ${{fromJson(needs.set-deployment-matrix.outputs.deployMatrix)}}
+      matrix: ${{fromJSON(needs.set-deployment-matrix.outputs.releaseMatrix)}}
 
     steps:
       - name: Checkout
@@ -149,6 +154,6 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: somleng
-          SENTRY_PROJECT: somleng-switch
+          SENTRY_PROJECT: ${{ matrix.sentry_project }}
         with:
           environment: ${{ matrix.environment }}

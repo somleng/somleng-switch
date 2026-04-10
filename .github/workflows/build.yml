@@ -5,69 +5,178 @@ env:
   CI: true
 
 jobs:
-  s3_mpeg_tests:
+  s3-mpeg-tests:
     uses: ./.github/workflows/s3_mpeg_tests.yml
     secrets: inherit
 
-  services_tests:
+  services-tests:
     uses: ./.github/workflows/services_tests.yml
     secrets: inherit
 
-  switch_tests:
+  switch-tests:
     uses: ./.github/workflows/switch_tests.yml
     secrets: inherit
 
-  integration_tests:
+  integration-tests:
     uses: ./.github/workflows/integration_tests.yml
-    needs: [switch_tests, s3_mpeg_tests, services_tests]
     secrets: inherit
 
-  build_switch:
+  set-build-matrix:
+    name: Set Build Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      buildConfig: ${{ steps.set-build-matrix.outputs.buildConfig }}
+      buildConfigLength: ${{ steps.set-build-matrix.outputs.buildConfigLength }}
+      buildMatrix: ${{ steps.set-build-matrix.outputs.buildMatrix }}
+      amd64PackageMatrix: ${{ steps.set-build-matrix.outputs.amd64PackageMatrix }}
+      arm64PackageMatrix: ${{ steps.set-build-matrix.outputs.arm64PackageMatrix }}
+      multiArchPackageMatrix: ${{ steps.set-build-matrix.outputs.multiArchPackageMatrix }}
+
+    steps:
+      - name: Set Build Matrix
+        id: set-build-matrix
+        run: |
+          branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
+          matrixSource=$(cat << EOF
+          [
+            {
+              "branch": "develop",
+              "environment": "staging",
+              "friendly_image_tag": "beta",
+              "image_tag": "stag-${{ github.sha }}"
+            },
+            {
+              "branch": "master",
+              "environment": "production",
+              "friendly_image_tag": "latest",
+              "image_tag": "prod-${{ github.sha }}"
+            }
+          ]
+          EOF
+          )
+
+          matchedArray=$(echo "$matrixSource" | jq -c --arg branchName "$branchName" 'map(select(.branch==$branchName))')
+          buildConfigLength=$(echo "$matchedArray" | jq 'length')
+          buildConfig=$(echo "$matchedArray" | jq -c '.[0]')
+          echo "buildConfig=$buildConfig" >> $GITHUB_OUTPUT
+          echo "buildConfigLength=$buildConfigLength" >> $GITHUB_OUTPUT
+          echo "buildMatrix={\"include\":[$buildConfig]}" >> $GITHUB_OUTPUT
+          echo "amd64PackageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"}],\"include\":[$buildConfig]}" >> $GITHUB_OUTPUT
+          echo "arm64PackageMatrix={\"platform\":[{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":[$buildConfig]}" >> $GITHUB_OUTPUT
+          echo "multiArchPackageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":[$buildConfig]}" >> $GITHUB_OUTPUT
+
+  build-switch:
     uses: ./.github/workflows/switch_build.yml
-    needs: integration_tests
+    needs: [set-build-matrix, integration-tests, switch-tests]
+    if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
+    with:
+      buildMatrix: ${{ needs.set-build-matrix.outputs.buildMatrix }}
+      packageMatrix: ${{ needs.set-build-matrix.outputs.multiArchPackageMatrix }}
 
-  build_rating_engine:
+  build-rating-engine:
     uses: ./.github/workflows/rating_engine_build.yml
-    needs: integration_tests
+    needs: [set-build-matrix, integration-tests]
+    if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
+    with:
+      buildMatrix: ${{ needs.set-build-matrix.outputs.buildMatrix }}
+      packageMatrix: ${{ needs.set-build-matrix.outputs.multiArchPackageMatrix }}
 
-  deploy_switch:
+  build-opensips-scheduler:
+    uses: ./.github/workflows/opensips_scheduler_build.yml
+    needs: [set-build-matrix, integration-tests]
+    if: needs.set-build-matrix.outputs.buildConfigLength > 0
+    secrets: inherit
+    with:
+      packageMatrix: ${{ needs.set-build-matrix.outputs.amd64PackageMatrix }}
+
+  build-public-gateway:
+    uses: ./.github/workflows/public_gateway_build.yml
+    needs: [set-build-matrix, integration-tests]
+    if: needs.set-build-matrix.outputs.buildConfigLength > 0
+    secrets: inherit
+    with:
+      packageMatrix: ${{ needs.set-build-matrix.outputs.amd64PackageMatrix }}
+
+  build-client-gateway:
+    uses: ./.github/workflows/client_gateway_build.yml
+    needs: [set-build-matrix, integration-tests]
+    if: needs.set-build-matrix.outputs.buildConfigLength > 0
+    secrets: inherit
+    with:
+      packageMatrix: ${{ needs.set-build-matrix.outputs.amd64PackageMatrix }}
+
+  build-media-proxy:
+    uses: ./.github/workflows/media_proxy_build.yml
+    needs: [set-build-matrix, integration-tests]
+    if: needs.set-build-matrix.outputs.buildConfigLength > 0
+    secrets: inherit
+    with:
+      buildMatrix: ${{ needs.set-build-matrix.outputs.buildConfig }}
+      packageMatrix: ${{ needs.set-build-matrix.outputs.multiArchPackageMatrix }}
+
+  build-services:
+    uses: ./.github/workflows/services_build.yml
+    needs: [set-build-matrix, services-tests]
+    if: needs.set-build-matrix.outputs.buildConfigLength > 0
+    secrets: inherit
+    with:
+      packageMatrix: ${{ needs.set-build-matrix.outputs.arm64PackageMatrix }}
+
+  build-s3-mpeg:
+    uses: ./.github/workflows/s3_mpeg_build.yml
+    needs: [set-build-matrix, s3-mpeg-tests]
+    if: needs.set-build-matrix.outputs.buildConfigLength > 0
+    secrets: inherit
+    with:
+      packageMatrix: ${{ needs.set-build-matrix.outputs.arm64PackageMatrix }}
+
+  deploy-switch:
     uses: ./.github/workflows/switch_deploy.yml
-    needs: [build_switch, build_rating_engine]
+    needs: [set-build-matrix, build-switch, build-rating-engine]
     secrets: inherit
+    with:
+      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
 
-  deploy_rating_engine:
+  deploy-rating-engine:
     uses: ./.github/workflows/rating_engine_deploy.yml
-    needs: build_rating_engine
+    needs: [set-build-matrix, build-rating-engine]
     secrets: inherit
+    with:
+      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
 
-  deploy_opensips_scheduler:
-    uses: ./.github/workflows/opensips_scheduler_deploy.yml
-    needs: integration_tests
-    secrets: inherit
-
-  deploy_s3_mpeg:
-    uses: ./.github/workflows/s3_mpeg_deploy.yml
-    needs: integration_tests
-    secrets: inherit
-
-  deploy_services:
-    uses: ./.github/workflows/services_deploy.yml
-    needs: integration_tests
-    secrets: inherit
-
-  deploy_public_gateway:
+  deploy-public-gateway:
     uses: ./.github/workflows/public_gateway_deploy.yml
-    needs: [deploy_opensips_scheduler]
+    needs: [set-build-matrix, build-public-gateway, build-opensips-scheduler]
     secrets: inherit
+    with:
+      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
 
-  deploy_client_gateway:
+  deploy-client-gateway:
     uses: ./.github/workflows/client_gateway_deploy.yml
-    needs: [deploy_opensips_scheduler]
+    needs: [set-build-matrix, build-client-gateway, build-opensips-scheduler]
     secrets: inherit
+    with:
+      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
 
-  deploy_media_proxy:
+  deploy-media-proxy:
     uses: ./.github/workflows/media_proxy_deploy.yml
-    needs: integration_tests
+    needs: [set-build-matrix, build-media-proxy]
     secrets: inherit
+    with:
+      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
+
+  deploy-services:
+    uses: ./.github/workflows/services_deploy.yml
+    needs: [set-build-matrix, build-services]
+    secrets: inherit
+    with:
+      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
+
+  deploy-s3-mpeg:
+    uses: ./.github/workflows/s3_mpeg_deploy.yml
+    needs: [set-build-matrix, build-s3-mpeg]
+    secrets: inherit
+    with:
+      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}

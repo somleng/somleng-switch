@@ -44,7 +44,6 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version-file: ".tool-versions"
-          go-version: "1.26.x"
           cache-dependency-path: components/freeswitch_event_processor/go.sum
 
       - name: Run FreeSWITCH Stats Logger tests
