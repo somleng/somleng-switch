@@ -5,11 +5,11 @@ env:
   CI: true
 
 jobs:
-  s3_mpeg_tests:
+  s3-mpeg-tests:
     uses: ./.github/workflows/s3_mpeg_tests.yml
     secrets: inherit
 
-  services_tests:
+  services-tests:
     uses: ./.github/workflows/services_tests.yml
     secrets: inherit
 
@@ -31,6 +31,7 @@ jobs:
       amd64PackageMatrix: ${{ steps.set-build-matrix.outputs.amd64PackageMatrix }}
       arm64PackageMatrix: ${{ steps.set-build-matrix.outputs.arm64PackageMatrix }}
       multiArchPackageMatrix: ${{ steps.set-build-matrix.outputs.multiArchPackageMatrix }}
+
     steps:
       - name: Set Build Matrix
         id: set-build-matrix
@@ -89,24 +90,33 @@ jobs:
     with:
       buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
 
-  deploy_rating_engine:
+  deploy-rating-engine:
     uses: ./.github/workflows/rating_engine_deploy.yml
     needs: [set-build-matrix, build-rating-engine]
     secrets: inherit
     with:
       buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
 
-  build_opensips_scheduler:
+  build-opensips-scheduler:
     uses: ./.github/workflows/opensips_scheduler_build.yml
     needs: [set-build-matrix]
     secrets: inherit
     with:
       packageMatrix: ${{ needs.set-build-matrix.outputs.amd64PackageMatrix }}
 
-  # deploy_s3_mpeg:
-  #   uses: ./.github/workflows/s3_mpeg_deploy.yml
-  #   needs: integration-tests
-  #   secrets: inherit
+  build-s3-mpeg:
+    uses: ./.github/workflows/s3_mpeg_build.yml
+    needs: [set-build-matrix, s3-mpeg-tests]
+    secrets: inherit
+    with:
+      packageMatrix: ${{ needs.set-build-matrix.outputs.arm64PackageMatrix }}
+
+  deploy-s3-mpeg:
+    uses: ./.github/workflows/s3_mpeg_deploy.yml
+    needs: [build-s3-mpeg]
+    secrets: inherit
+    with:
+      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
 
   # deploy_services:
   #   uses: ./.github/workflows/services_deploy.yml
