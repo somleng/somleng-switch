@@ -58,7 +58,7 @@ jobs:
           echo "buildConfig=$buildConfig" >> $GITHUB_OUTPUT
           echo "buildConfigLength=$buildConfigLength" >> $GITHUB_OUTPUT
           echo "buildMatrix={\"include\":[$buildConfig]}" >> $GITHUB_OUTPUT
-          echo "packageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":[$buildMatrix]}" >> $GITHUB_OUTPUT
+          echo "packageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":[$buildConfig]}" >> $GITHUB_OUTPUT
 
   build-switch:
     uses: ./.github/workflows/switch_build.yml
