@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix: ${{fromJSON(inputs.packageMatrix)}}
 
-    runs-on: $${ matrix.platform.runner }
+    runs-on: ${{ matrix.platform.runner }}
 
     steps:
       - name: Checkout
