@@ -1,5 +1,10 @@
-name: Services
-on: workflow_call
+name: Deploy Services
+on:
+  workflow_call:
+    inputs:
+      buildConfig:
+        required: true
+        type: string
 
 env:
   CI: true
@@ -10,112 +15,42 @@ jobs:
     name: Set Deployment Matrix
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
-      matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
+      deployMatrix: ${{ steps.set-deployment-matrix.outputs.deployMatrix }}
     steps:
       - name: Set Deployment Matrix
         id: set-deployment-matrix
         run: |
-          branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
+          buildConfig=${{ toJSON(inputs.buildConfig) }}
           matrixSource=$(cat << EOF
           [
             {
-              "identifier": "switch-services-staging",
               "environment": "staging",
-              "branch": "develop",
-              "friendly_image_tag": "beta",
-              "image_tag": "stag-${{ github.sha }}"
+              "identifier": "switch-services-staging"
             },
             {
-              "identifier": "switch-services",
               "environment": "production",
-              "branch": "master",
-              "friendly_image_tag": "latest",
-              "image_tag": "prod-${{ github.sha }}"
+              "identifier": "switch-services"
             }
           ]
           EOF
           )
-          matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
-          echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
-          echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
-
-  build-packages:
-    name: Build Packages
-    runs-on: ubuntu-24.04-arm
-    if: needs.set-deployment-matrix.outputs.matrixLength > 0
-    permissions:
-      contents: read
-      packages: write
-
-    strategy:
-      matrix: ${{fromJson(needs.set-deployment-matrix.outputs.matrix)}}
-
-    needs:
-      - set-deployment-matrix
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-skip-session-tagging: true
-          role-duration-seconds: 3600
-          aws-region: ap-southeast-1
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Login to ECR
-        uses: docker/login-action@v4
-        with:
-          registry: ${{ secrets.ECR_REGISTRY }}
-
-      - name: Build and push application image
-        uses: docker/build-push-action@v7
-        with:
-          push: true
-          context: ./components/services
-          platforms: linux/arm64
-          cache-from: type=gha,scope=${{ matrix.identifier }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.identifier }}
-          provenance: false
-          tags: |
-            ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}-arm64
-            ${{ secrets.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-arm64
-            ${{ secrets.GHCR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}
+          matched=$(echo "$matrixSource" | jq --argjson bc "$buildConfig" 'map(select(.environment == $bc.environment)) | .[0]')
+          mergedConfig=$(jq -n --argjson a "$buildConfig" --argjson b "$matched" '$b + $a')
+          mergedConfig=$(echo "$mergedConfig" | jq '. + {arch: "arm64"}')
+          mergedConfig=$(echo "$mergedConfig" | jq -c '.')
+          echo "deployMatrix={\"region\":[\"ap-southeast-1\"],\"include\":[$mergedConfig]}" >> $GITHUB_OUTPUT
 
   deploy:
     name: Deploy
-    runs-on: ubuntu-latest
-    needs:
-      - set-deployment-matrix
-      - build-packages
-
-    if: needs.set-deployment-matrix.outputs.matrixLength > 0
     defaults:
       run:
         working-directory: components/services
-
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: ap-southeast-1
-
     strategy:
-      matrix: ${{fromJson(needs.set-deployment-matrix.outputs.matrix)}}
+      matrix: ${{fromJson(needs.set-deployment-matrix.outputs.deployMatrix)}}
+
+    runs-on: ubuntu-latest
+    needs:
+      - set-deployment-matrix
 
     steps:
       - name: Checkout
@@ -129,13 +64,13 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-skip-session-tagging: true
           role-duration-seconds: 3600
-          aws-region: ap-southeast-1
+          aws-region: ${{ matrix.region }}
 
       - name: Deploy Lambda
         run: |
           aws lambda update-function-code --function-name ${{ matrix.identifier }} \
-                                          --image-uri ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}-arm64 \
-                                          --architectures "arm64" \
+                                          --image-uri ${{ secrets.ECR_REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ matrix.image_tag }}-${{ matrix.arch }} \
+                                          --architectures "${{ matrix.arch }}" \
                                           --publish
 
       - name: Create Sentry release

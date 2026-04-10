@@ -83,6 +83,27 @@ jobs:
       buildMatrix: ${{ needs.set-build-matrix.outputs.buildMatrix }}
       packageMatrix: ${{ needs.set-build-matrix.outputs.multiArchPackageMatrix }}
 
+  build-opensips-scheduler:
+    uses: ./.github/workflows/opensips_scheduler_build.yml
+    needs: [set-build-matrix]
+    secrets: inherit
+    with:
+      packageMatrix: ${{ needs.set-build-matrix.outputs.amd64PackageMatrix }}
+
+  build-services:
+    uses: ./.github/workflows/services_build.yml
+    needs: [set-build-matrix, services-tests]
+    secrets: inherit
+    with:
+      packageMatrix: ${{ needs.set-build-matrix.outputs.arm64PackageMatrix }}
+
+  build-s3-mpeg:
+    uses: ./.github/workflows/s3_mpeg_build.yml
+    needs: [set-build-matrix, s3-mpeg-tests]
+    secrets: inherit
+    with:
+      packageMatrix: ${{ needs.set-build-matrix.outputs.arm64PackageMatrix }}
+
   deploy-switch:
     uses: ./.github/workflows/switch_deploy.yml
     needs: [set-build-matrix, build-switch, build-rating-engine]
@@ -97,23 +118,16 @@ jobs:
     with:
       buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
 
-  build-opensips-scheduler:
-    uses: ./.github/workflows/opensips_scheduler_build.yml
-    needs: [set-build-matrix]
-    secrets: inherit
-    with:
-      packageMatrix: ${{ needs.set-build-matrix.outputs.amd64PackageMatrix }}
-
-  build-s3-mpeg:
-    uses: ./.github/workflows/s3_mpeg_build.yml
-    needs: [set-build-matrix, s3-mpeg-tests]
-    secrets: inherit
-    with:
-      packageMatrix: ${{ needs.set-build-matrix.outputs.arm64PackageMatrix }}
-
   deploy-s3-mpeg:
     uses: ./.github/workflows/s3_mpeg_deploy.yml
     needs: [set-build-matrix, build-s3-mpeg]
+    secrets: inherit
+    with:
+      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
+
+  deploy-services:
+    uses: ./.github/workflows/s3_mpeg_deploy.yml
+    needs: [set-build-matrix, build-services]
     secrets: inherit
     with:
       buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
