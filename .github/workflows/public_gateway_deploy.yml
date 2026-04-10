@@ -16,7 +16,7 @@ jobs:
     name: Set Deployment Matrix
     runs-on: ubuntu-latest
     outputs:
-      deployMatrix: ${{ steps.set-deployment-matrix.outputs.matrix }}
+      deployMatrix: ${{ steps.set-deployment-matrix.outputs.deployMatrix }}
 
     steps:
       - name: Set Deployment Matrix

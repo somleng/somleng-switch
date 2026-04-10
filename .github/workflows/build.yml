@@ -67,7 +67,7 @@ jobs:
 
   build-switch:
     uses: ./.github/workflows/switch_build.yml
-    needs: [set-build-matrix, switch-tests]
+    needs: [set-build-matrix, integration-tests, switch-tests]
     if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
     with:
@@ -76,7 +76,7 @@ jobs:
 
   build-rating-engine:
     uses: ./.github/workflows/rating_engine_build.yml
-    needs: [set-build-matrix]
+    needs: [set-build-matrix, integration-tests]
     if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
     with:
@@ -85,7 +85,7 @@ jobs:
 
   build-opensips-scheduler:
     uses: ./.github/workflows/opensips_scheduler_build.yml
-    needs: [set-build-matrix]
+    needs: [set-build-matrix, integration-tests]
     if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
     with:
@@ -93,7 +93,7 @@ jobs:
 
   build-public-gateway:
     uses: ./.github/workflows/public_gateway_build.yml
-    needs: [set-build-matrix]
+    needs: [set-build-matrix, integration-tests]
     if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
     with:
@@ -101,7 +101,7 @@ jobs:
 
   build-client-gateway:
     uses: ./.github/workflows/client_gateway_build.yml
-    needs: [set-build-matrix]
+    needs: [set-build-matrix, integration-tests]
     if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
     with:
@@ -109,7 +109,7 @@ jobs:
 
   build-media-proxy:
     uses: ./.github/workflows/media_proxy_build.yml
-    needs: [set-build-matrix]
+    needs: [set-build-matrix, integration-tests]
     if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
     with:
