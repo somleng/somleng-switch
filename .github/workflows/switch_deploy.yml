@@ -48,9 +48,9 @@ jobs:
 
           matched=$(echo "$matrixSource" | jq --argjson bc "$buildConfig" 'map(select(.environment == $bc.environment)) | .[0]')
           mergedConfig=$(jq -n --argjson a "$buildConfig" --argjson b "$matched" '$b + $a')
-          merged_compact=$(echo "$mergedConfig" | jq -c '.')
-          echo "deployMatrix={\"region\":[\"ap-southeast-1\",\"us-east-1\"],\"include\":[$merged_compact]}" >> $GITHUB_OUTPUT
-          echo "releaseMatrix={\"sentry_project\":[\"somleng-switch\",\"freeswitch-event-processor\"],\"include\":[$merged_compact]}" >> $GITHUB_OUTPUT
+          mergedCompact=$(echo "$mergedConfig" | jq -c '.')
+          echo "deployMatrix={\"region\":[\"ap-southeast-1\",\"us-east-1\"],\"include\":[$mergedCompact]}" >> $GITHUB_OUTPUT
+          echo "releaseMatrix={\"sentry_project\":[\"somleng-switch\",\"freeswitch-event-processor\"],\"include\":[$mergedCompact]}" >> $GITHUB_OUTPUT
 
   deploy:
     name: Deploy

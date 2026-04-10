@@ -1,5 +1,10 @@
-name: Rating Engine
-on: workflow_call
+name: Deploy Rating Engine
+on:
+  workflow_call:
+    inputs:
+      buildConfig:
+        required: true
+        type: string
 
 env:
   CI: true
@@ -10,7 +15,6 @@ jobs:
     name: Set Deployment Matrix
     runs-on: ubuntu-latest
     outputs:
-      matrixLength: ${{ steps.set-deployment-matrix.outputs.matrixLength }}
       deployMatrix: ${{ steps.set-deployment-matrix.outputs.deployMatrix }}
 
     defaults:
@@ -28,25 +32,25 @@ jobs:
           matrixSource=$(cat << EOF
           [
             {
+              "environment": "staging",
               "identifier": "rating-engine-staging",
-              "branch": "develop",
-              "image_tag": "stag-${{ github.sha }}",
               "ecs_service": "rating-engine-staging",
               "ecs_cluster": "somleng-switch-staging"
             },
             {
+              "environment": "production",
               "identifier": "rating-engine",
-              "branch": "master",
-              "image_tag": "prod-${{ github.sha }}",
               "ecs_service": "rating-engine",
               "ecs_cluster": "somleng-switch"
             }
           ]
           EOF
           )
-          matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
-          echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
-          echo "deployMatrix={\"region\":[\"ap-southeast-1\"],\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+
+          matched=$(echo "$matrixSource" | jq --argjson bc "$buildConfig" 'map(select(.environment == $bc.environment)) | .[0]')
+          mergedConfig=$(jq -n --argjson a "$buildConfig" --argjson b "$matched" '$b + $a')
+          mergedCompact=$(echo "$mergedConfig" | jq -c '.')
+          echo "deployMatrix={\"region\":[\"ap-southeast-1\"],\"include\":[$mergedCompact]}" >> $GITHUB_OUTPUT
 
   deploy:
     name: Deploy

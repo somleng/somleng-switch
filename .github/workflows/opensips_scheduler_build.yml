@@ -1,50 +1,22 @@
-name: OpenSIPS Scheduler
-on: workflow_call
+name: Build OpenSIPS Scheduler
+
+on:
+  workflow_call:
+    inputs:
+      packageMatrix:
+        required: true
+        type: string
+
 env:
   GATEWAY_SCHEDULER_REPOSITORY_NAME: gateway-scheduler
 
 jobs:
-  set-build-matrix:
-    name: Set Deployment Matrix
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-build-matrix.outputs.matrix }}
-      matrixLength: ${{ steps.set-build-matrix.outputs.matrixLength }}
-
-    steps:
-      - name: Set Deployment Matrix
-        id: set-build-matrix
-        run: |
-          branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
-          matrixSource=$(cat << EOF
-          [
-            {
-              "branch": "develop",
-              "friendly_image_tag": "beta",
-              "image_tag": "stag-${{ github.sha }}"
-            },
-            {
-              "branch": "master",
-              "friendly_image_tag": "latest",
-              "image_tag": "prod-${{ github.sha }}"
-            }
-          ]
-          EOF
-          )
-          matrix=$(echo $matrixSource | jq --arg branchName "$branchName" 'map(. | select((.branch==$branchName)) )')
-          echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
-          echo "matrixLength=$(echo $matrix | jq length)" >> $GITHUB_OUTPUT
-
   build-packages:
     name: Build Packages
     runs-on: ubuntu-latest
-    if: needs.set-build-matrix.outputs.matrixLength > 0
 
     strategy:
-      matrix: ${{fromJson(needs.set-build-matrix.outputs.matrix)}}
-
-    needs:
-      - set-build-matrix
+      matrix: ${{fromJson(inputs.packageMatrix)}}
 
     steps:
       - name: Checkout
@@ -80,10 +52,10 @@ jobs:
         with:
           context: components/opensips_scheduler
           push: true
-          platforms: linux/amd64
-          cache-from: type=gha,scope=gateway-scheduler
-          cache-to: type=gha,mode=max,scope=gateway-scheduler
+          platforms: linux/${{ matrix.platform.arch }}
+          cache-from: type=gha,scope=gateway-scheduler-${{ matrix.platform.arch }}
+          cache-to: type=gha,mode=max,scope=gateway-scheduler-${{ matrix.platform.arch }}
           tags: |
             ${{ secrets.ECR_REGISTRY }}/${{ env.GATEWAY_SCHEDULER_REPOSITORY_NAME }}:${{ matrix.image_tag }}
-            ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_SCHEDULER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-amd64
+            ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_SCHEDULER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}-${{ matrix.platform.arch }}
             ${{ secrets.GHCR_REGISTRY }}/${{ env.GATEWAY_SCHEDULER_REPOSITORY_NAME }}:${{ matrix.friendly_image_tag }}

@@ -28,7 +28,9 @@ jobs:
       buildConfig: ${{ steps.set-build-matrix.outputs.buildConfig }}
       buildConfigLength: ${{ steps.set-build-matrix.outputs.buildConfigLength }}
       buildMatrix: ${{ steps.set-build-matrix.outputs.buildMatrix }}
-      packageMatrix: ${{ steps.set-build-matrix.outputs.packageMatrix }}
+      amd64PackageMatrix: ${{ steps.set-build-matrix.outputs.amd64PackageMatrix }}
+      arm64PackageMatrix: ${{ steps.set-build-matrix.outputs.arm64PackageMatrix }}
+      multiArchPackageMatrix: ${{ steps.set-build-matrix.outputs.multiArchPackageMatrix }}
     steps:
       - name: Set Build Matrix
         id: set-build-matrix
@@ -58,7 +60,9 @@ jobs:
           echo "buildConfig=$buildConfig" >> $GITHUB_OUTPUT
           echo "buildConfigLength=$buildConfigLength" >> $GITHUB_OUTPUT
           echo "buildMatrix={\"include\":[$buildConfig]}" >> $GITHUB_OUTPUT
-          echo "packageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":[$buildConfig]}" >> $GITHUB_OUTPUT
+          echo "amd64PackageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"}],\"include\":[$buildConfig]}" >> $GITHUB_OUTPUT
+          echo "arm64PackageMatrix={\"platform\":[{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":[$buildConfig]}" >> $GITHUB_OUTPUT
+          echo "multiArchPackageMatrix={\"platform\":[{\"arch\":\"amd64\",\"runner\":\"ubuntu-latest\"},{\"arch\":\"arm64\",\"runner\":\"ubuntu-24.04-arm\"}],\"include\":[$buildConfig]}" >> $GITHUB_OUTPUT
 
   build-switch:
     uses: ./.github/workflows/switch_build.yml
@@ -67,7 +71,7 @@ jobs:
     secrets: inherit
     with:
       buildMatrix: ${{ needs.set-build-matrix.outputs.buildMatrix }}
-      packageMatrix: ${{ needs.set-build-matrix.outputs.packageMatrix }}
+      packageMatrix: ${{ needs.set-build-matrix.outputs.multiArchPackageMatrix }}
 
   build-rating-engine:
     uses: ./.github/workflows/rating_engine_build.yml
@@ -76,7 +80,7 @@ jobs:
     secrets: inherit
     with:
       buildMatrix: ${{ needs.set-build-matrix.outputs.buildMatrix }}
-      packageMatrix: ${{ needs.set-build-matrix.outputs.packageMatrix }}
+      packageMatrix: ${{ needs.set-build-matrix.outputs.multiArchPackageMatrix }}
 
   deploy-switch:
     uses: ./.github/workflows/switch_deploy.yml
@@ -85,15 +89,19 @@ jobs:
     with:
       buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
 
-  # deploy_rating_engine:
-  #   uses: ./.github/workflows/rating_engine_deploy.yml
-  #   needs: build-rating-engine
-  #   secrets: inherit
+  deploy_rating_engine:
+    uses: ./.github/workflows/rating_engine_deploy.yml
+    needs: [set-build-matrix, build-rating-engine]
+    secrets: inherit
+    with:
+      buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}
 
-  # build_opensips_scheduler:
-  #   uses: ./.github/workflows/opensips_scheduler_build.yml
-  #   needs: integration-tests
-  #   secrets: inherit
+  build_opensips_scheduler:
+    uses: ./.github/workflows/opensips_scheduler_build.yml
+    needs: [set-build-matrix]
+    secrets: inherit
+    with:
+      packageMatrix: ${{ needs.set-build-matrix.outputs.amd64PackageMatrix }}
 
   # deploy_s3_mpeg:
   #   uses: ./.github/workflows/s3_mpeg_deploy.yml
