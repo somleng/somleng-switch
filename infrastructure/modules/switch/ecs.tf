@@ -402,7 +402,7 @@ resource "aws_ecs_task_definition" "this" {
         }
       ],
       healthCheck = {
-        command  = ["CMD-SHELL", "wget --server-response --spider --quiet http://localhost:$AHN_CORE_HTTP_PORT/health_checks 2>&1 | grep '200 OK' > /dev/null"],
+        command  = ["CMD-SHELL", "wget --server-response --spider --quiet http://localhost:$HEALTHCHECK_PORT/health_checks 2>&1 | grep '200 OK' > /dev/null"],
         interval = 10,
         retries  = 10,
         timeout  = 5
@@ -431,6 +431,10 @@ resource "aws_ecs_task_definition" "this" {
         {
           name  = "CALL_PLATFORM_USERNAME",
           value = var.call_platform_username
+        },
+        {
+          name  = "HEALTHCHECK_PORT",
+          value = "8080"
         },
       ]
     },
