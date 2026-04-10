@@ -66,6 +66,7 @@ jobs:
     if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
     with:
+      buildMatrix: ${{ needs.set-build-matrix.outputs.buildMatrix }}
       packageMatrix: ${{ needs.set-build-matrix.outputs.packageMatrix }}
 
   build-rating-engine:
@@ -74,6 +75,7 @@ jobs:
     if: needs.set-build-matrix.outputs.buildConfigLength > 0
     secrets: inherit
     with:
+      buildMatrix: ${{ needs.set-build-matrix.outputs.buildMatrix }}
       packageMatrix: ${{ needs.set-build-matrix.outputs.packageMatrix }}
 
   deploy-switch:
