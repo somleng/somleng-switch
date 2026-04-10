@@ -175,6 +175,16 @@ services:
       SERVER_MODE: "api"
       JSON_RPC_USERNAME: "cgrates"
       JSON_RPC_PASSWORD: "password"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/usr/local/bin/docker-healthcheck.sh",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
     extra_hosts:
       - "host.docker.internal:host-gateway"
     expose:
@@ -210,6 +220,15 @@ services:
       SERVER_MODE: "engine"
       JSON_RPC_USERNAME: "cgrates"
       JSON_RPC_PASSWORD: "password"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/usr/local/bin/docker-healthcheck.sh",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     extra_hosts:
       - "host.docker.internal:host-gateway"
 

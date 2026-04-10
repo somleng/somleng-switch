@@ -451,6 +451,7 @@ resource "aws_ecs_task_definition" "this" {
       },
       startTimeout = 120,
       essential    = true,
+
       secrets = [
         {
           name      = "EVENT_SOCKET_PASSWORD",
@@ -471,6 +472,12 @@ resource "aws_ecs_task_definition" "this" {
           condition     = "HEALTHY"
         }
       ],
+      healthCheck = {
+        command  = ["CMD-SHELL", "/usr/local/bin/docker-healthcheck.sh"],
+        interval = 10,
+        retries  = 10,
+        timeout  = 5
+      },
       environment = [
         {
           name  = "SERVER_MODE",
