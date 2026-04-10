@@ -113,7 +113,7 @@ jobs:
 
   deploy-s3-mpeg:
     uses: ./.github/workflows/s3_mpeg_deploy.yml
-    needs: [build-s3-mpeg]
+    needs: [set-build-matrix, build-s3-mpeg]
     secrets: inherit
     with:
       buildConfig: ${{ needs.set-build-matrix.outputs.buildConfig }}

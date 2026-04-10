@@ -28,7 +28,7 @@ jobs:
       - name: Set Deployment Matrix
         id: set-deployment-matrix
         run: |
-          branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
+          buildConfig=${{ toJSON(inputs.buildConfig) }}
           matrixSource=$(cat << EOF
           [
             {
