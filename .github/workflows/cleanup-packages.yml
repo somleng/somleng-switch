@@ -41,12 +41,6 @@ jobs:
 
       - uses: actions/delete-package-versions@v5
         with:
-          package-name: "gateway"
-          package-type: "container"
-          delete-only-untagged-versions: "true"
-
-      - uses: actions/delete-package-versions@v5
-        with:
           package-name: "gateway-scheduler"
           package-type: "container"
           delete-only-untagged-versions: "true"

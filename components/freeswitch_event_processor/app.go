@@ -73,7 +73,7 @@ func NewCallPlatformClient() *CallPlatformClient {
 		Host:     os.Getenv("CALL_PLATFORM_HOST"),
 		Username: os.Getenv("CALL_PLATFORM_USERNAME"),
 		Password: os.Getenv("CALL_PLATFORM_PASSWORD"),
-		Client:   &http.Client{Timeout: 10 * time.Second},
+		Client:   &http.Client{Timeout: 20 * time.Second},
 	}
 }
 
