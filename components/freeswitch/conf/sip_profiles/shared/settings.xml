@@ -9,11 +9,12 @@
   <param name="rtp-ip" value="$${local_ip_v4}"/>
 
   <param name="bind-params" value="transport=udp"/>
-  <param name="codec-prefs" value="G722,PCMU,PCMA,GSM"/>
+  <param name="codec-prefs" value="G729,G722,PCMU,PCMA,GSM"/>
 
   <param name="context" value="default"/>
   <param name="disable-register" value="true"/>
   <param name="rtp-timer-name" value="soft"/>
 
   <param name="user-agent-string" value="SomlengSWITCH"/>
+  <param name="inbound-late-negotiation" value="true"/>
 </include>

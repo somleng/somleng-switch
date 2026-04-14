@@ -9,6 +9,7 @@
 
     <extension name="Outbound_Setup" continue="true">
       <condition field="${sip_h_X-Somleng-CallDirection}" expression="^outbound$">
+        <action application="set" data="inherit_codec=true"/>
         <action application="set"
           data="bridge_dial_string=sofia/${sip_h_X-Somleng-ExternalProfile}/${sip_req_uri}${sip_h_X-Somleng-ProxyAddress}" />
       </condition>

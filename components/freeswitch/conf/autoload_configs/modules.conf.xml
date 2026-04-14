@@ -32,6 +32,10 @@
     <!-- CDR -->
     <load module="mod_json_cdr" />
 
+    <!-- Codecs -->
+    <load module="mod_spandsp" />
+    <load module="mod_bcg729" />
+
     <!-- TTS -->
     <load module="mod_flite" />
     <load module="mod_tts_commandline" />
