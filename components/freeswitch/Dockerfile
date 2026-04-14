@@ -31,6 +31,13 @@ RUN ./configure
 RUN make
 RUN make install
 
+WORKDIR  /usr/src
+RUN git clone https://github.com/xadhoom/mod_bcg729
+
+WORKDIR /usr/src/mod_bcg729
+RUN make
+RUN make install
+
 FROM public.ecr.aws/aws-cli/aws-cli AS aws-cli
 
 FROM public.ecr.aws/docker/library/debian:bookworm-slim
@@ -64,7 +71,8 @@ RUN apt-get update && apt-get install --no-install-recommends -yq libssl-dev lib
             freeswitch-mod-tone-stream \
             freeswitch-mod-tts-commandline \
             freeswitch-mod-lua \
-            freeswitch-mod-curl && \
+            freeswitch-mod-curl \
+            freeswitch-mod-spandsp && \
             apt-get purge -y --auto-remove wget gnupg2 lsb-release \
             && apt-get clean \
             && rm -rf /var/lib/apt/lists/*
@@ -86,6 +94,7 @@ COPY --link --from=aws-cli /usr/local/aws-cli/ /usr/local/aws-cli/
 COPY --link --from=aws-cli /usr/local/bin/ /usr/local/bin
 COPY --link --from=freeswitch-build /usr/local/freeswitch/mod/mod_twilio_stream.so /usr/lib/freeswitch/mod/
 COPY --link --from=freeswitch-build /usr/lib/freeswitch/mod/mod_rayo.* /usr/lib/freeswitch/mod/
+COPY --link --from=freeswitch-build /usr/lib/freeswitch/mod/mod_bcg729.* /usr/lib/freeswitch/mod/
 
 RUN ldconfig
 
