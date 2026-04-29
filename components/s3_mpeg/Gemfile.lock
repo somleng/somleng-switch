@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/somleng/encrypted_credentials.git
-  revision: 87e4e532de66b80d2876ea0ea323c020a9070c5b
+  revision: 92ad12bd1f694f7d22111dadf6a2f4e50508c1b8
   specs:
     encrypted_credentials (0.1.0)
       base64
