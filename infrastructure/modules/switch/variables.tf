@@ -3,6 +3,7 @@ variable "ecs_cluster" {}
 variable "app_environment" {}
 variable "lb_rule_index" {}
 variable "region" {}
+variable "azure_region" {}
 variable "call_platform_password_parameter" {}
 variable "rating_engine_configuration" {}
 variable "call_platform_host" {}

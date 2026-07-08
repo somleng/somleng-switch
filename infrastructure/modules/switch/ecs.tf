@@ -219,6 +219,10 @@ resource "aws_ecs_task_definition" "this" {
         {
           name      = "FS_CALL_PLATFORM_PASSWORD",
           valueFrom = var.call_platform_password_parameter.arn
+        },
+        {
+          name      = "AZURE_SPEECH_KEY",
+          valueFrom = aws_ssm_parameter.azure_speech_key.arn
         }
       ],
       environment = [
@@ -305,6 +309,10 @@ resource "aws_ecs_task_definition" "this" {
         {
           name  = "FS_REGION",
           value = var.region.alias
+        },
+        {
+          name  = "AZURE_SPEECH_REGION",
+          value = var.azure_region
         }
       ]
     },

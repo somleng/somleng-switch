@@ -17,6 +17,7 @@ module "switch" {
   identifier                                           = var.switch_identifier
   app_environment                                      = var.app_environment
   region                                               = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region
+  azure_region                                         = var.azure_region
   ecs_cluster                                          = aws_ecs_cluster.this
   sip_port                                             = var.sip_port
   internal_sip_port                                    = var.internal_sip_port
@@ -44,6 +45,7 @@ module "switch_helium" {
   source = "../modules/switch"
 
   region                                          = data.terraform_remote_state.core_infrastructure.outputs.helium_region
+  azure_region                                    = var.azure_region
   ecs_cluster                                     = aws_ecs_cluster.helium
   external_sip_outbound_ip                        = data.terraform_remote_state.core_infrastructure.outputs.helium_region.vpc.nat_public_ips[0]
   nat_gateway_ip                                  = data.terraform_remote_state.core_infrastructure.outputs.helium_region.vpc.nat_public_ips[0]

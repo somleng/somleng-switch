@@ -7,6 +7,7 @@ cache_file="$4"
 
 # Allow injecting a custom aws_polly command (for testing)
 aws_polly_cmd="${AWS_POLLY_CMD:-aws_polly}"
+azure_speech_cmd="${AZURE_SPEECH_CMD:-azure_speech}"
 
 if [[ "$voice" =~ ^Polly\..+ ]]; then
   # Remove the "Polly." prefix
@@ -25,4 +26,10 @@ if [[ "$voice" =~ ^Polly\..+ ]]; then
   engine="$(echo "$engine" | tr '[:upper:]' '[:lower:]')"
 
   "$aws_polly_cmd" "$text" "$file" "$voice_id" "$engine" "$cache_file"
+elif [[ "$voice" =~ ^Azure\..+ ]]; then
+  # Remove the "Azure." prefix
+  voice_id="${voice#Azure.}"
+  voice_lang="${voice_id%-*}"
+
+  "$azure_speech_cmd" "$text" "$file" "$voice_id" "$voice_lang" "$cache_file"
 fi

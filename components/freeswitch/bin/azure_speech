@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+text="$1"
+file="$2"
+voice_id="$3"
+voice_lang="$4"
+cache_file="$5"
+
+xml_escape() {
+  local s=$1
+
+  s=${s//&/&amp;}
+  s=${s//</&lt;}
+  s=${s//>/&gt;}
+  s=${s//\"/&quot;}
+  s=${s//\'/&apos;}
+
+  printf '%s' "$s"
+}
+
+text_escaped=$(xml_escape "$text")
+
+curl --fail --show-error --silent \
+  -X POST "https://$AZURE_SPEECH_REGION.tts.speech.microsoft.com/cognitiveservices/v1" \
+  -H "Ocp-Apim-Subscription-Key: $AZURE_SPEECH_KEY" \
+  -H "Content-Type: application/ssml+xml" \
+  -H "X-Microsoft-OutputFormat: riff-8khz-8bit-mono-mulaw" \
+  -H "User-Agent: Somleng Switch" \
+  --data-binary @- \
+  --output "$cache_file" <<EOF
+<speak version="1.0" xml:lang="$voice_lang">
+  <voice xml:lang="$voice_lang" name="$voice_id">
+    $text_escaped
+  </voice>
+</speak>
+EOF
+
+
+ln -s "$cache_file" "$file"

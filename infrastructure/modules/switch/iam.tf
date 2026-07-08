@@ -76,6 +76,7 @@ data "aws_iam_policy_document" "task_execution_policy" {
       var.rating_engine_configuration.http_password_parameter.arn,
       var.rating_engine_configuration.stordb_password_parameter.arn,
       local.freeswitch_event_processor_sentry_dsn_parameter.arn,
+      aws_ssm_parameter.azure_speech_key.arn,
     ]
   }
 }

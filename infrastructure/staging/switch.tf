@@ -19,6 +19,7 @@ module "switch" {
   identifier                                           = var.switch_identifier
   app_environment                                      = var.app_environment
   region                                               = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region
+  azure_region                                         = var.azure_region
   ecs_cluster                                          = aws_ecs_cluster.this
   sip_port                                             = var.sip_port
   internal_sip_port                                    = var.internal_sip_port

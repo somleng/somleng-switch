@@ -62,3 +62,13 @@ resource "aws_ssm_parameter" "freeswitch_event_processor_sentry_dsn" {
     ignore_changes = [value]
   }
 }
+
+resource "aws_ssm_parameter" "azure_speech_key" {
+  name  = "${var.identifier}.azure_speech_key"
+  type  = "SecureString"
+  value = "change-me"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
