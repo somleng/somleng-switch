@@ -56,6 +56,7 @@ module "switch_helium" {
   identifier                                      = module.switch.identifier
   lb_rule_index                                   = module.switch.lb_rule_index
   app_environment                                 = module.switch.app_environment
+  azure_region                                    = module.switch.azure_region
   json_cdr_url                                    = module.switch.json_cdr_url
   cache_name                                      = module.switch.cache_name
   recordings_bucket                               = module.switch.recordings_bucket

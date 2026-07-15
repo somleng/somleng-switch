@@ -149,3 +149,7 @@ output "lb_rule_index" {
 output "rating_engine_configuration" {
   value = var.rating_engine_configuration
 }
+
+output "azure_region" {
+  value = var.azure_region
+}
