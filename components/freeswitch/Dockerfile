@@ -21,6 +21,15 @@ RUN make
 RUN make install
 
 WORKDIR  /usr/src
+RUN git clone https://github.com/freeswitch/mod_ssml.git -b main
+
+WORKDIR /usr/src/mod_ssml
+RUN ./bootstrap.sh
+RUN ./configure
+RUN make
+RUN make install
+
+WORKDIR  /usr/src
 RUN git clone https://github.com/freeswitch/mod_rayo.git -b main
 COPY src/mod/mod_rayo/mod_rayo.patch mod_rayo/mod_rayo.patch
 
@@ -51,12 +60,11 @@ RUN apt-get update && apt-get install --no-install-recommends -yq libssl-dev lib
     echo "deb [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" > /etc/apt/sources.list.d/freeswitch.list && \
     echo "deb-src [signed-by=/usr/share/keyrings/signalwire-freeswitch-repo.gpg] https://freeswitch.signalwire.com/repo/deb/debian-release/ `lsb_release -sc` main" >> /etc/apt/sources.list.d/freeswitch.list && \
     apt-get update --allow-releaseinfo-change && \
-    apt-get -y install --no-install-recommends lua-cjson lua-socket sipsak netcat-traditional ffmpeg \
+    apt-get -y install --no-install-recommends libpcre3 lua-cjson lua-socket sipsak netcat-traditional ffmpeg \
             freeswitch \
             freeswitch-mod-console \
             freeswitch-mod-event-socket \
             freeswitch-mod-logfile \
-            freeswitch-mod-ssml \
             freeswitch-mod-sofia \
             freeswitch-mod-dialplan-xml \
             freeswitch-mod-commands \
@@ -93,6 +101,7 @@ RUN chown -R freeswitch:daemon /etc/freeswitch && \
 COPY --link --from=aws-cli /usr/local/aws-cli/ /usr/local/aws-cli/
 COPY --link --from=aws-cli /usr/local/bin/ /usr/local/bin
 COPY --link --from=freeswitch-build /usr/local/freeswitch/mod/mod_twilio_stream.so /usr/lib/freeswitch/mod/
+COPY --link --from=freeswitch-build /usr/lib/freeswitch/mod/mod_ssml.* /usr/lib/freeswitch/mod/
 COPY --link --from=freeswitch-build /usr/lib/freeswitch/mod/mod_rayo.* /usr/lib/freeswitch/mod/
 COPY --link --from=freeswitch-build /usr/lib/freeswitch/mod/mod_bcg729.* /usr/lib/freeswitch/mod/
 
