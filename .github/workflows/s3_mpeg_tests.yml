@@ -14,7 +14,8 @@ jobs:
         working-directory: components/s3_mpeg
 
     steps:
-      - uses: FedericoCarboni/setup-ffmpeg@v3
+      # v3 depends on node 20 which has been deprecated
+      - uses: FedericoCarboni/setup-ffmpeg@main
 
       - name: Checkout
         uses: actions/checkout@v6
