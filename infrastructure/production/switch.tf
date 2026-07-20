@@ -13,6 +13,7 @@ module "switch" {
   recordings_bucket_access_key_id_parameter_name       = "somleng-switch.${var.app_environment}.recordings_bucket_access_key_id"
   recordings_bucket_secret_access_key_parameter_name   = "somleng-switch.${var.app_environment}.recordings_bucket_secret_access_key"
   freeswitch_event_processor_sentry_dsn_parameter_name = "somleng-switch.${var.app_environment}.freeswitch_event_processor_sentry_dsn"
+  azure_speech_key_parameter_name                      = "somleng-switch.${var.app_environment}.azure_speech_key"
   max_tasks                                            = 10
   identifier                                           = var.switch_identifier
   app_environment                                      = var.app_environment
@@ -64,6 +65,7 @@ module "switch_helium" {
   http_password_parameter                         = module.switch.http_password_parameter
   freeswitch_event_socket_password_parameter      = module.switch.freeswitch_event_socket_password_parameter
   freeswitch_event_processor_sentry_dsn_parameter = module.switch.freeswitch_event_processor_sentry_dsn_parameter
+  azure_speech_key_parameter                      = module.switch.azure_speech_key_parameter
   container_instance_profile                      = module.switch.container_instances.iam_instance_profile
   iam_task_role                                   = module.switch.iam_task_role
   iam_task_execution_role                         = module.switch.iam_task_execution_role

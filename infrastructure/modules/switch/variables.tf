@@ -153,3 +153,11 @@ variable "freeswitch_event_processor_sentry_dsn_parameter_name" {
 variable "freeswitch_event_processor_sentry_dsn_parameter" {
   default = null
 }
+
+variable "azure_speech_key_parameter_name" {
+  default = null
+}
+
+variable "azure_speech_key_parameter" {
+  default = null
+}

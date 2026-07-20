@@ -95,7 +95,7 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name      = "AZURE_SPEECH_KEY",
-          valueFrom = aws_ssm_parameter.azure_speech_key.arn
+          valueFrom = local.azure_speech_key_parameter.arn
         }
 
       ],
@@ -231,7 +231,7 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           name      = "AZURE_SPEECH_KEY",
-          valueFrom = aws_ssm_parameter.azure_speech_key.arn
+          valueFrom = local.azure_speech_key_parameter.arn
         }
       ],
       environment = [
