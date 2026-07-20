@@ -40,7 +40,7 @@ jobs:
           matrixSource=$(cat << EOF
           [
             {
-              "branch": "develop",
+              "branch": "support-azure-speech",
               "environment": "staging",
               "friendly_image_tag": "beta",
               "image_tag": "stag-${{ github.sha }}"
