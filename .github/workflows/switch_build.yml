@@ -66,6 +66,8 @@ jobs:
           registry: ${{ secrets.ECR_REGISTRY }}
 
       - name: Export Polly Voices
+        env:
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
         run: |
           components/freeswitch/bin/export_tts_voices > components/freeswitch/conf/autoload_configs/tts_voices.xml
 
