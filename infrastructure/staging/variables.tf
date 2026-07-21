@@ -1,3 +1,7 @@
+variable "azure_region" {
+  default = "southeastasia"
+}
+
 variable "aws_default_region" {
   default = "ap-southeast-1"
 }

@@ -6,6 +6,7 @@ locals {
   http_password_parameter                         = var.http_password_parameter != null ? var.http_password_parameter : aws_ssm_parameter.http_password[0]
   freeswitch_event_socket_password_parameter      = var.freeswitch_event_socket_password_parameter != null ? var.freeswitch_event_socket_password_parameter : aws_ssm_parameter.freeswitch_event_socket_password[0]
   freeswitch_event_processor_sentry_dsn_parameter = var.freeswitch_event_processor_sentry_dsn_parameter != null ? var.freeswitch_event_processor_sentry_dsn_parameter : aws_ssm_parameter.freeswitch_event_processor_sentry_dsn[0]
+  azure_speech_key_parameter                      = var.azure_speech_key_parameter != null ? var.azure_speech_key_parameter : aws_ssm_parameter.azure_speech_key[0]
 }
 
 resource "aws_ssm_parameter" "application_master_key" {
@@ -55,6 +56,17 @@ resource "aws_ssm_parameter" "freeswitch_event_socket_password" {
 resource "aws_ssm_parameter" "freeswitch_event_processor_sentry_dsn" {
   count = var.freeswitch_event_processor_sentry_dsn_parameter != null ? 0 : 1
   name  = var.freeswitch_event_processor_sentry_dsn_parameter_name
+  type  = "SecureString"
+  value = "change-me"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "azure_speech_key" {
+  count = var.azure_speech_key_parameter != null ? 0 : 1
+  name  = var.azure_speech_key_parameter_name
   type  = "SecureString"
   value = "change-me"
 

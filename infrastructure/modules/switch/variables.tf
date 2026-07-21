@@ -3,6 +3,7 @@ variable "ecs_cluster" {}
 variable "app_environment" {}
 variable "lb_rule_index" {}
 variable "region" {}
+variable "azure_region" {}
 variable "call_platform_password_parameter" {}
 variable "rating_engine_configuration" {}
 variable "call_platform_host" {}
@@ -150,5 +151,13 @@ variable "freeswitch_event_processor_sentry_dsn_parameter_name" {
 }
 
 variable "freeswitch_event_processor_sentry_dsn_parameter" {
+  default = null
+}
+
+variable "azure_speech_key_parameter_name" {
+  default = null
+}
+
+variable "azure_speech_key_parameter" {
   default = null
 }

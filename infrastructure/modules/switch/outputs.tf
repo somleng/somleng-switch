@@ -34,6 +34,10 @@ output "freeswitch_event_processor_sentry_dsn_parameter" {
   value = local.freeswitch_event_processor_sentry_dsn_parameter
 }
 
+output "azure_speech_key_parameter" {
+  value = local.azure_speech_key_parameter
+}
+
 output "container_instances" {
   value = module.container_instances
 }
@@ -148,4 +152,8 @@ output "lb_rule_index" {
 
 output "rating_engine_configuration" {
   value = var.rating_engine_configuration
+}
+
+output "azure_region" {
+  value = var.azure_region
 }

@@ -5,34 +5,30 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cloud_tts="${script_dir}/../../bin/cloud_tts"
 
-# Mock function to intercept calls to aws_polly
+# Mock functions to intercept calls to subcommands
 mock_calls=()
 mock_polly() {
   mock_calls+=("$*")
 }
+mock_azure_speech() {
+  mock_calls+=("$*")
+}
 
-# Export the mock so subshells (like cloud_tts) can use it
-export -f mock_polly
+# Export the mocks so subshells (like cloud_tts) can use them
+export -f mock_polly mock_azure_speech
 
-# Tell cloud_tts to use the mock instead of aws_polly
+# Tell cloud_tts to use the mocks instead of the real commands
 export AWS_POLLY_CMD="mock_polly"
+export AZURE_SPEECH_CMD="mock_azure_speech"
 
 # Use a temporary directory for test files
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
 
-run_test() {
+assert_last_call() {
   local voice="$1"
-  local expected_voice_id="$2"
-  local expected_engine="$3"
-  local text="Hello world"
-  local file="${tmp_dir}/output.mp3"
-  local cache_file="${tmp_dir}/cache"
-
-  mock_calls=()
-
-  # Source the cloud_tts script in the current shell so it can see mock_polly
-  source "$cloud_tts" "$text" "$file" "$voice" "$cache_file"
+  local provider="$2"
+  local expected_call="$3"
 
   local last_call=""
   local call_count="${#mock_calls[@]}"
@@ -41,10 +37,8 @@ run_test() {
     last_call="${mock_calls[$last_index]}"
   fi
 
-  local expected_call="$text $file $expected_voice_id $expected_engine $cache_file"
-
   if [[ "$last_call" == "$expected_call" ]]; then
-    echo "✅ PASS: $voice → aws_polly called with: $expected_call"
+    echo "✅ PASS: $voice → $provider called with: $expected_call"
   else
     echo "❌ FAIL: $voice → expected: '$expected_call' but got '$last_call'"
     echo "mock_calls: ${mock_calls[*]:-empty}"
@@ -52,9 +46,44 @@ run_test() {
   fi
 }
 
+run_cloud_tts() {
+  local voice="$1"
+
+  text="Hello world"
+  file="${tmp_dir}/output.mp3"
+  cache_file="${tmp_dir}/cache"
+
+  mock_calls=()
+
+  # Source the cloud_tts script in the current shell so it can see the mocks
+  source "$cloud_tts" "$text" "$file" "$voice" "$cache_file"
+}
+
+run_polly_test() {
+  local voice="$1"
+  local voice_id="$2"
+  local engine="$3"
+
+  run_cloud_tts "$voice"
+  assert_last_call "$voice" "aws_polly" "$text $file $voice_id $engine $cache_file"
+}
+
+run_azure_test() {
+  local voice="$1"
+  local voice_id="$2"
+  local voice_lang="$3"
+
+  run_cloud_tts "$voice"
+
+  assert_last_call "$voice" "azure_speech" "$text $file $voice_id $voice_lang $cache_file"
+}
+
 # Run tests
-run_test "Polly.Matthew" "Matthew" "standard"
-run_test "Polly.Joanna-Neural" "Joanna" "neural"
-run_test "Polly.Joanna-Generative" "Joanna" "generative"
+run_polly_test "Polly.Matthew" "Matthew" "standard"
+run_polly_test "Polly.Joanna-Neural" "Joanna" "neural"
+run_polly_test "Polly.Joanna-Generative" "Joanna" "generative"
+
+run_azure_test "Azure.en-US-JennyNeural" "en-US-JennyNeural" "en-US"
+run_azure_test "Azure.fr-FR-DeniseNeural" "fr-FR-DeniseNeural" "fr-FR"
 
 echo "🎉 All tests passed!"

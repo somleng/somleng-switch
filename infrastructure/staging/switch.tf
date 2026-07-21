@@ -13,12 +13,14 @@ module "switch" {
   recordings_bucket_access_key_id_parameter_name       = "somleng-switch.${var.app_environment}.recordings_bucket_access_key_id"
   recordings_bucket_secret_access_key_parameter_name   = "somleng-switch.${var.app_environment}.recordings_bucket_secret_access_key"
   freeswitch_event_processor_sentry_dsn_parameter_name = "somleng-switch.${var.app_environment}.freeswitch_event_processor_sentry_dsn"
+  azure_speech_key_parameter_name                      = "somleng-switch.${var.app_environment}.azure_speech_key"
   min_tasks                                            = 0
   max_tasks                                            = 2
   lb_rule_index                                        = 120
   identifier                                           = var.switch_identifier
   app_environment                                      = var.app_environment
   region                                               = data.terraform_remote_state.core_infrastructure.outputs.hydrogen_region
+  azure_region                                         = var.azure_region
   ecs_cluster                                          = aws_ecs_cluster.this
   sip_port                                             = var.sip_port
   internal_sip_port                                    = var.internal_sip_port
@@ -55,6 +57,7 @@ module "switch_helium" {
   identifier                                      = module.switch.identifier
   lb_rule_index                                   = module.switch.lb_rule_index
   app_environment                                 = module.switch.app_environment
+  azure_region                                    = module.switch.azure_region
   json_cdr_url                                    = module.switch.json_cdr_url
   cache_name                                      = module.switch.cache_name
   recordings_bucket                               = module.switch.recordings_bucket
@@ -64,6 +67,7 @@ module "switch_helium" {
   rayo_password_parameter                         = module.switch.rayo_password_parameter
   http_password_parameter                         = module.switch.http_password_parameter
   freeswitch_event_processor_sentry_dsn_parameter = module.switch.freeswitch_event_processor_sentry_dsn_parameter
+  azure_speech_key_parameter                      = module.switch.azure_speech_key_parameter
   container_instance_profile                      = module.switch.container_instances.iam_instance_profile
   iam_task_role                                   = module.switch.iam_task_role
   iam_task_execution_role                         = module.switch.iam_task_execution_role
