@@ -61,7 +61,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-skip-session-tagging: true
           role-duration-seconds: 3600
-          aws-region: $${ matrix.region }
+          aws-region: ${{ matrix.region }}
 
       - name: Get current task definition
         run: |
