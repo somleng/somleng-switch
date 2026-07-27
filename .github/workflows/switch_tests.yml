@@ -41,7 +41,7 @@ jobs:
           ./tests/tests.sh
 
       - name: Setup Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: ".tool-versions"
           cache-dependency-path: components/freeswitch_event_processor/go.sum
