@@ -153,7 +153,7 @@ GEM
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
       logger
-    sequel (5.103.0)
+    sequel (5.106.0)
       bigdecimal
     simplecov (0.22.0)
       docile (~> 1.1)
