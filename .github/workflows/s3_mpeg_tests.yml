@@ -16,6 +16,7 @@ jobs:
     steps:
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
+        working-directory: .
 
       - name: Checkout
         uses: actions/checkout@v6
