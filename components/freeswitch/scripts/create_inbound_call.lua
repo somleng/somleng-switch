@@ -2,6 +2,7 @@ freeswitch.consoleLog("DEBUG", "Creating inbound call")
 
 local json = require "cjson"
 local mime = require("mime")
+local socket = require "socket"
 local api = freeswitch.API()
 
 local function safe_string(v)
@@ -34,15 +35,21 @@ local payload = {
 
 local credentials = mime.b64(call_platform_username .. ":" .. call_platform_password)
 local headers = "append_headers 'Authorization: Basic " .. credentials .. "' append_headers 'Accept: application/json' append_headers 'Content-Type: application/json'"
-
 local body = json.encode(payload)
 
 -- mod_curl Syntax:
 -- curl url [headers|json|content-type <mime-type>|connect-timeout <seconds>|timeout <seconds>|append_headers <header_name:header_value>[|append_headers <header_name:header_value>]|insecure|secure|[proxy <http://proxy:port>]] [get|head|post|delete|put [data]]
-local params = call_platform_host .. "/inbound_phone_calls " .. headers .. " post " .. body .. " json"
 
+local params = call_platform_host .. "/inbound_phone_calls " .. headers .. " connect-timeout 2 timeout 15 " .. " post " .. body .. " json"
+
+local uuid = session:getVariable("uuid")
+freeswitch.consoleLog("INFO", "Calling Call Platform for " .. uuid .. "\n")
+
+local start = socket.gettime()
 local raw_response = api:execute("curl", params)
+local elapsed = socket.gettime() - start
 
+freeswitch.consoleLog("INFO", "Call Platform returned after " .. elapsed .. " seconds\n")
 freeswitch.consoleLog("DEBUG", raw_response .. "\n")
 local response = json.decode(raw_response)
 
