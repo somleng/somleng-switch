@@ -2,6 +2,7 @@ freeswitch.consoleLog("DEBUG", "Creating inbound call")
 
 local json = require "cjson"
 local mime = require("mime")
+local socket = require "socket"
 local api = freeswitch.API()
 
 local function safe_string(v)
