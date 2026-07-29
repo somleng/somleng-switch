@@ -14,8 +14,8 @@ jobs:
         working-directory: components/s3_mpeg
 
     steps:
-      # v3 depends on node 20 which has been deprecated
-      - uses: FedericoCarboni/setup-ffmpeg@main
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
       - name: Checkout
         uses: actions/checkout@v6
