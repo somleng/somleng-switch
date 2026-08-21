@@ -11,7 +11,7 @@ GIT
 
 GIT
   remote: https://github.com/bblimke/webmock.git
-  revision: ce700d989d015ace217f0c2720910abff25a029d
+  revision: 2c976d5134fd4c43b504c21c5259e4459fa35db4
   specs:
     webmock (3.26.2)
       addressable (>= 2.8.0)
