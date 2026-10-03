@@ -173,14 +173,26 @@ namespace
             if (name)
             {
               AudioPipe *pAudioPipe = static_cast<AudioPipe *>(tech_pvt->pAudioPipe);
+              std::vector<std::string> marks;
               if (pAudioPipe != nullptr)
               {
                 pAudioPipe->lockAudioBuffer();
                 pAudioPipe->binaryReadMark(name);
+                // No audio buffered ahead of the mark: echo it now (Twilio/Telnyx
+                // semantics). Marks are otherwise only released when a frame is
+                // played, so on an idle stream it would wait for the next clear.
+                if (pAudioPipe->binaryReadPtrCount() == 0)
+                  marks = pAudioPipe->clearExpiredMarks();
                 pAudioPipe->unlockAudioBuffer();
               }
               auto payload = build_json_payload("mark", name);
               send_event(tech_pvt, session, EVENT_SOCKET_MARK, payload.c_str());
+              for (int i = 0; i < marks.size(); i++)
+              {
+                pTwilioHelper->mark(pAudioPipe, marks[i]);
+                auto markPayload = build_json_payload("mark", marks[i].c_str());
+                send_event(tech_pvt, session, EVENT_MARK, markPayload.c_str());
+              }
             }
           }
         }
