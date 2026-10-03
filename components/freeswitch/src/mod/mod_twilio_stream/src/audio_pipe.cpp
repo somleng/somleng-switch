@@ -675,8 +675,12 @@ size_t AudioPipe::binaryReadPop(uint8_t *data, size_t data_len)
 
     for (int i = 0; i < m_marks.size(); i++)
     {
-      m_marks[i].buffer_index -= len;
-      if (m_marks[i].buffer_index < 0)
+      // Saturate at 0. buffer_index is unsigned, so a plain `-= len` past the
+      // mark wrapped to ~4e9 (the `< 0` check could never fire) and the mark
+      // was only echoed by the next clear.
+      if (m_marks[i].buffer_index > len)
+        m_marks[i].buffer_index -= len;
+      else
         m_marks[i].buffer_index = 0;
     }
   }
