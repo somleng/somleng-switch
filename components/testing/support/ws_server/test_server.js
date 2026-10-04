@@ -35,8 +35,8 @@ class AudioTestStream {
     }
   }
 
-  markAudio(ws) {
-    const msg = this.makeMark()
+  markAudio(ws, name) {
+    const msg = this.makeMark(name)
     if (ws) {
       console.log(`${JSON.stringify(msg)}`)
       ws.send(JSON.stringify(msg))
@@ -58,11 +58,11 @@ class AudioTestStream {
     }
   }
 
-  makeMark() {
+  makeMark(name) {
     return {
       "event": "mark",
       "mark": {
-        "name": "audio"
+        "name": name
       },
       "streamSid": this.streamSid
     }
@@ -93,8 +93,11 @@ wss.on("connection", (ws) => {
           log("From Somleng: DTMF event received: ", data);
           log(`Start sending stored data`);
           isRecord = false
+          // Sent while nothing is buffered, so it must be echoed straight away
+          // rather than held until the next clear.
+          audioStream.markAudio(ws, "start");
           audioStream.streamStoredAudio(ws);
-          audioStream.markAudio(ws);
+          audioStream.markAudio(ws, "audio");
         }
         if (data.event === "media") {
           log("From Somleng: Media event received", data);
@@ -105,8 +108,11 @@ wss.on("connection", (ws) => {
         }
         if (data.event === "mark") {
           log("From Somleng: Mark event received.", data);
-          log("Closing Stream");
-          ws.close();
+          log(`From Somleng: Mark echoed: ${data.mark.name}`);
+          if (data.mark.name === "audio") {
+            log("Closing Stream");
+            ws.close();
+          }
         }
         if (data.event === "close") {
           log("From Somleng: Close event received: ", data);
