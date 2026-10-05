@@ -5,7 +5,7 @@ RUN apk add --no-cache git build-base bash
 WORKDIR /go/src/github.com/cgrates/cgrates
 
 # Clone CGRateS source
-RUN git clone https://github.com/cgrates/cgrates.git .
+RUN git clone --branch v0.11.0 --depth 1 https://github.com/cgrates/cgrates.git .
 
 # Build CGRateS using official build.sh script
 RUN chmod +x build.sh && ./build.sh
