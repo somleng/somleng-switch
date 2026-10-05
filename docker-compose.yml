@@ -202,8 +202,6 @@ services:
         condition: service_healthy
       freeswitch:
         condition: service_healthy
-      rating-engine-api:
-        condition: service_healthy
     environment:
       EVENT_SOCKET_HOST: freeswitch:8021
       EVENT_SOCKET_PASSWORD: secret
