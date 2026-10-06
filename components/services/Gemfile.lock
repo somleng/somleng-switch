@@ -154,7 +154,7 @@ GEM
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
       logger
-    sequel (5.108.0)
+    sequel (5.109.0)
       bigdecimal
     simplecov (1.3.1)
     simplecov-cobertura (4.0.0)
