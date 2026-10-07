@@ -10,9 +10,10 @@
 # 5. WebSockets server receives audio via mod_twilio_stream
 # 6. UAC sends DTMF Tone
 # 7. WebSockets server receives DTMF Tone
-# 8. WebSockets sends back the audio received in step 5 to the media server as well as a mark.
-# 9. Media server plays back the audio to the UAC
-# 10. Media server sends back a mark when it's done playing
+# 8. WebSockets sends a mark while nothing is buffered, then the audio received in step 5
+#    followed by a second mark.
+# 9. Media server echoes the first mark straight away and plays back the audio to the UAC
+# 10. Media server sends back the second mark when it's done playing
 # 11. Websockets server closes stream
 # 12. Event is detected by switch app and falls though to the next Verb <Play>
 # 13. Play URL is downloaded and played back to UAC
@@ -25,6 +26,7 @@
 # 4. The audio from the websockets server (played back to the callee in step 9) is extracted
 # 5. The audio from the <Play> verb (step 13) is extracted
 # 6. Assert the checksums of the audio
+# 7. Assert the mark sent on an empty buffer was echoed, ahead of the one behind the audio
 
 set -e
 
@@ -48,6 +50,9 @@ mkdir -p $artifacts_dir
 # start tcpdump in background
 nohup tcpdump -Xvv -i eth0 -s0 -w $artifacts_dir/uac_connect.pcap &
 tcpdump_pid=$!
+
+ws_server_log=/testing/test-server.log
+ws_server_log_start=$(($(wc -l < $ws_server_log) + 1))
 
 clear_sipp_log_file "$scenario"
 sipp -sf $scenario public_gateway:5060 -key username "+855715100850" -s 2222 -m 1 -trace_msg > /dev/null
@@ -83,6 +88,13 @@ if [[ "$ws_server_audio_md5" != "$expected_audio_md5" ]]; then
 fi
 
 if [[ "$play_verb_audio_md5" != "$expected_audio_md5" ]]; then
+	exit 1
+fi
+
+marks_echoed=$(tail -n +$ws_server_log_start $ws_server_log | sed -n 's/.*Mark echoed: //p' | tr '\n' ' ')
+echo "Marks echoed: $marks_echoed"
+
+if [[ "$marks_echoed" != "start audio " ]]; then
 	exit 1
 fi
 
