@@ -2,67 +2,65 @@
 
 set -e
 
-FS_HOST=$(hostname -i)
+check_rayo_status() {
+  fs_cli -p "$FS_EVENT_SOCKET_PASSWORD" -x 'rayo status' | rayo_status_parser
+}
 
-# 1. Existing Rayo and SIP responsiveness checks
-fs_cli -p "$FS_EVENT_SOCKET_PASSWORD" -x 'rayo status' | rayo_status_parser
+check_sip_responsiveness() {
+  fs_host=$(hostname -i)
 
-sipsak -s "sip:healthcheck@$FS_HOST:${FS_EXT_PROFILE_NAT_GATEWAY_SIP_PORT:-5060}" >/dev/null 2>&1
-sipsak -s "sip:healthcheck@$FS_HOST:${FS_EXT_PROFILE_UAS_NAT_INSTANCE_SIP_PORT:-5080}" >/dev/null 2>&1
+  sipsak -s "sip:healthcheck@${fs_host}:${FS_EXT_PROFILE_NAT_GATEWAY_SIP_PORT:-5060}" >/dev/null 2>&1
+  sipsak -s "sip:healthcheck@${fs_host}:${FS_EXT_PROFILE_UAS_NAT_INSTANCE_SIP_PORT:-5080}" >/dev/null 2>&1
+}
 
-# 2. Inspect SQLite for Ghost Records and Batch-Purge Dead UUIDs
-CORE_DB_PATH="/dev/shm/core.db"
+count_verified_ram_channels() {
+  calls_json=$(fs_cli -p "$FS_EVENT_SOCKET_PASSWORD" -x "show calls as json")
+  reported_uuids=$(echo "$calls_json" | jq -r '.rows[]?.uuid // empty' 2>/dev/null || true)
 
-if [ -f "$CORE_DB_PATH" ]; then
-  # Fetch all UUIDs currently registered in SQLite channels table
-  DB_UUIDS=$(sqlite3 "file:${CORE_DB_PATH}?mode=ro&nolock=1" "SELECT uuid FROM channels;" 2>/dev/null || true)
+  real_alive_count=0
 
-  GHOST_UUIDS=""
+  for uuid in $reported_uuids; do
+    [ -z "$uuid" ] && continue
 
-  for UUID in $DB_UUIDS; do
-    [ -z "$UUID" ] && continue
+    is_alive=$(fs_cli -p "$FS_EVENT_SOCKET_PASSWORD" -x "uuid_exists $uuid" | tr -d '\r\n' || echo "false")
 
-    # Verify if session thread actually exists in memory
-    IS_ALIVE=$(fs_cli -p "$FS_EVENT_SOCKET_PASSWORD" -x "uuid_exists $UUID" | tr -d '\r\n' || echo "false")
-
-    if [ "$IS_ALIVE" = "false" ]; then
-      if [ -z "$GHOST_UUIDS" ]; then
-        GHOST_UUIDS="'$UUID'"
-      else
-        GHOST_UUIDS="$GHOST_UUIDS, '$UUID'"
-      fi
+    if [ "$is_alive" = "true" ]; then
+      real_alive_count=$((real_alive_count + 1))
     fi
   done
 
-  # Execute a single batched DELETE if ghost records were found
-  if [ -n "$GHOST_UUIDS" ]; then
-    echo "NOTICE: Batch purging ghost DB records: $GHOST_UUIDS" >&2
-    sqlite3 "file:${CORE_DB_PATH}?mode=rw&nolock=1" \
-      "DELETE FROM channels WHERE uuid IN ($GHOST_UUIDS); DELETE FROM calls WHERE caller_uuid IN ($GHOST_UUIDS) OR callee_uuid IN ($GHOST_UUIDS);" 2>/dev/null || true
+  echo "$real_alive_count"
+}
+
+check_session_counter_leak() {
+  status_output=$(fs_cli -p "$FS_EVENT_SOCKET_PASSWORD" -x "status")
+
+  active_sessions=$(echo "$status_output" | awk '/session\(s\) - peak/ {print $1}')
+  max_sessions=$(echo "$status_output" | awk '/session\(s\) max/ {print $1}')
+
+  active_sessions=${active_sessions:-0}
+  max_sessions=${max_sessions:-0}
+
+  # If the counter reports saturation, verify against real memory channels
+  if [ "$max_sessions" -gt 0 ] && [ "$active_sessions" -ge "$max_sessions" ]; then
+    real_alive_count=$(count_verified_ram_channels)
+
+    if [ "$real_alive_count" -eq 0 ]; then
+      echo "CRITICAL: Session counter leak detected! Status reports $active_sessions/$max_sessions active sessions, but uuid_exists verified $real_alive_count real channels in RAM." >&2
+      return 1
+    fi
   fi
-fi
 
-# 3. Check for C-level Session Counter Leak (runtime.session_count desync)
-STATUS_OUTPUT=$(fs_cli -p "$FS_EVENT_SOCKET_PASSWORD" -x "status")
+  return 0
+}
 
-ACTIVE_SESSIONS=$(echo "$STATUS_OUTPUT" | awk '/session\(s\) - peak/ {print $1}')
-MAX_SESSIONS=$(echo "$STATUS_OUTPUT" | awk '/session\(s\) max/ {print $1}')
+main() {
+  check_rayo_status
+  check_sip_responsiveness
+  check_session_counter_leak
 
-# Check real channels in memory
-SHOW_CHANNELS_OUT=$(fs_cli -p "$FS_EVENT_SOCKET_PASSWORD" -x "show channels count")
-REAL_CHANNELS=$(echo "$SHOW_CHANNELS_OUT" | awk '/total\./ {print $1}')
+  echo "HEALTHY: FreeSWITCH operating normally"
+  exit 0
+}
 
-ACTIVE_SESSIONS=${ACTIVE_SESSIONS:-0}
-MAX_SESSIONS=${MAX_SESSIONS:-0}
-REAL_CHANNELS=${REAL_CHANNELS:-0}
-
-# 4. Trigger container failure if session counter is pegged at max but 0 channels exist in RAM
-if [ "$MAX_SESSIONS" -gt 0 ] && [ "$ACTIVE_SESSIONS" -ge "$MAX_SESSIONS" ]; then
-  if [ "$REAL_CHANNELS" -eq 0 ]; then
-    echo "CRITICAL: Session counter leak detected! Status reports $ACTIVE_SESSIONS/$MAX_SESSIONS active sessions, but real channels = $REAL_CHANNELS." >&2
-    exit 1
-  fi
-fi
-
-echo "HEALTHY: FreeSWITCH operating normally"
-exit 0
+main
