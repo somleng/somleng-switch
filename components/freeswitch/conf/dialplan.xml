@@ -12,6 +12,7 @@
         <action application="set" data="inherit_codec=true"/>
         <action application="set" data="ignore_early_media=true"/>
         <action application="set" data="call_timeout=$${ring_timeout}"/>
+        <action application="set" data="hangup_after_bridge=true"/>
         <action application="set"
           data="bridge_dial_string=sofia/${sip_h_X-Somleng-ExternalProfile}/${sip_req_uri}${sip_h_X-Somleng-ProxyAddress}" />
       </condition>

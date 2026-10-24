@@ -88,10 +88,10 @@ func NewRedisClient() *redis.Client {
 }
 
 func NewEventSocketClient(eventHandlers map[string][]func(string, int), eventFilters map[string][]string, errChan chan error) *fsock.FSock {
-	event_socket_host := os.Getenv("EVENT_SOCKET_HOST")
-	event_socket_password := os.Getenv("EVENT_SOCKET_PASSWORD")
+	eventSocketHost := os.Getenv("EVENT_SOCKET_HOST")
+	eventSocketPassword := os.Getenv("EVENT_SOCKET_PASSWORD")
 
-	fs, err := fsock.NewFSock(event_socket_host, event_socket_password, 10, 60, 0, fibDuration, eventHandlers, eventFilters, nil, 0, false, errChan)
+	fs, err := fsock.NewFSock(eventSocketHost, eventSocketPassword, 10, 60, 0, fibDuration, eventHandlers, eventFilters, nil, 0, false, errChan)
 	if err != nil {
 		sentry.CaptureException(err)
 		fmt.Printf("FreeSWITCH error: %s\n", err)
@@ -127,10 +127,8 @@ func checkFSock(fs FSockClient) error {
 
 func startHealthServer(fs FSockClient, redisClient *redis.Client) {
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		// Check FreeSWITCH (with timeout)
 		fsErr := checkFSock(fs)
 
-		// Check Redis
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 		redisErr := redisClient.Ping(ctx).Err()
@@ -231,11 +229,20 @@ func fetchActiveCallUUIDs(fs FSockClient) []string {
 	}
 
 	rows := rawRows.([]any)
-
 	uuidSet := make(map[string]struct{})
+
 	for _, row := range rows {
 		rowMap := row.(map[string]any)
-		uuidSet[rowMap["uuid"].(string)] = struct{}{}
+
+		// Filter out channels where SIP state is already DOWN
+		callState, _ := rowMap["callstate"].(string)
+		if callState == "DOWN" {
+			continue
+		}
+
+		if uuid, ok := rowMap["uuid"].(string); ok {
+			uuidSet[uuid] = struct{}{}
+		}
 	}
 
 	var uuids []string
@@ -269,6 +276,45 @@ func callStatusUpdates(fs *fsock.FSock, callPlatformClient *CallPlatformClient) 
 		}
 
 		callPlatformClient.CreateCallHeartbeats(callUUIDs)
+	}
+}
+
+// Background cleaner to purge leaked mod_rayo sessions
+func startChannelSweeper(fs FSockClient) {
+	ticker := time.NewTicker(30 * time.Second)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		resp, err := fs.SendApiCmd("show channels as json")
+		if err != nil {
+			continue
+		}
+
+		payload := make(map[string]any)
+		if err := json.Unmarshal([]byte(resp), &payload); err != nil {
+			continue
+		}
+
+		rawRows, ok := payload["rows"].([]any)
+		if !ok {
+			continue
+		}
+
+		for _, row := range rawRows {
+			rowMap := row.(map[string]any)
+			uuid, ok := rowMap["uuid"].(string)
+			if !ok {
+				continue
+			}
+
+			callState, _ := rowMap["callstate"].(string)
+
+			// Kill orphaned legs sitting in DOWN state
+			if callState == "DOWN" {
+				log.Printf("[Sweeper] Clearing leaked Rayo session: %s", uuid)
+				_, _ = fs.SendApiCmd("uuid_kill " + uuid)
+			}
+		}
 	}
 }
 
@@ -331,7 +377,11 @@ func main() {
 
 	startHealthServer(eventSocketClient, redisClient)
 
+	// Heartbeat loop
 	go callStatusUpdates(eventSocketClient, callPlatformClient)
+
+	// Background channel cleaner for leaked mod_rayo sessions
+	go startChannelSweeper(eventSocketClient)
 
 	<-errChan
 }

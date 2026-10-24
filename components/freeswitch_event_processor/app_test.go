@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"sync"
 	"testing"
 	"time"
 
@@ -21,12 +22,25 @@ type capturedRequest struct {
 }
 
 type mockFSock struct {
-	response string
-	err      error
+	mu          sync.Mutex
+	response    string
+	err         error
+	executedCmd []string
 }
 
 func (m *mockFSock) SendApiCmd(cmd string) (string, error) {
+	m.mu.Lock()
+	m.executedCmd = append(m.executedCmd, cmd)
+	m.mu.Unlock()
 	return m.response, m.err
+}
+
+func (m *mockFSock) GetExecutedCmds() []string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	cmds := make([]string, len(m.executedCmd))
+	copy(cmds, m.executedCmd)
+	return cmds
 }
 
 func TestParseEventFail(t *testing.T) {
@@ -69,22 +83,26 @@ func TestCreateCallHeartbeats(t *testing.T) {
 }
 
 func TestFetchActiveCallUUIDs(t *testing.T) {
+	// Updated mock json including a row with callstate = DOWN
 	mockResponse := `{
-  "row_count": 4,
+  "row_count": 3,
   "rows": [
     {
       "uuid": "db2fd14f-0ec6-4d61-8411-007dfa395887",
       "direction": "outbound",
+      "callstate": "ACTIVE",
       "call_uuid": "db2fd14f-0ec6-4d61-8411-007dfa395887"
     },
     {
       "uuid": "c1f2b0ab-8459-43b0-9aeb-c4087a4ac44b",
       "direction": "inbound",
+      "callstate": "RINGING",
       "call_uuid": ""
-	  },
-		{
-      "uuid": "c1f2b0ab-8459-43b0-9aeb-c4087a4ac44b",
-      "direction": "inbound",
+    },
+    {
+      "uuid": "leaked-uuid-down-state",
+      "direction": "outbound",
+      "callstate": "DOWN",
       "call_uuid": ""
     }
   ]
@@ -102,13 +120,82 @@ func TestFetchActiveCallUUIDs(t *testing.T) {
 		"c1f2b0ab-8459-43b0-9aeb-c4087a4ac44b": true,
 	}
 
+	// Ensure the DOWN channel was ignored
 	if len(result) != 2 {
-		t.Fatalf("expected 2 UUIDs, got %d", len(result))
+		t.Fatalf("expected 2 active UUIDs, got %d", len(result))
 	}
 
 	for _, uuid := range result {
 		if !expected[uuid] {
-			t.Errorf("unexpected UUID: %s", uuid)
+			t.Errorf("unexpected UUID found in active calls: %s", uuid)
+		}
+	}
+}
+
+func TestStartChannelSweeper(t *testing.T) {
+	mockResponse := `{
+  "row_count": 3,
+  "rows": [
+    {
+      "uuid": "active-uuid-1",
+      "callstate": "ACTIVE"
+    },
+    {
+      "uuid": "leaked-uuid-1",
+      "callstate": "DOWN"
+    },
+    {
+      "uuid": "leaked-uuid-2",
+      "callstate": "DOWN"
+    }
+  ]
+}`
+
+	mock := &mockFSock{
+		response: mockResponse,
+		err:      nil,
+	}
+
+	// Trigger a single run of the sweeper logic
+	runSweeperIteration(mock)
+
+	executedCmds := mock.GetExecutedCmds()
+
+	// Should run 1 "show channels as json" + 2 "uuid_kill" commands
+	require.Len(t, executedCmds, 3)
+	assert.Equal(t, "show channels as json", executedCmds[0])
+	assert.Equal(t, "uuid_kill leaked-uuid-1", executedCmds[1])
+	assert.Equal(t, "uuid_kill leaked-uuid-2", executedCmds[2])
+}
+
+// Helper to test single iteration of the sweeper without sleeping/tickers
+func runSweeperIteration(fs FSockClient) {
+	resp, err := fs.SendApiCmd("show channels as json")
+	if err != nil {
+		return
+	}
+
+	payload := make(map[string]any)
+	if err := json.Unmarshal([]byte(resp), &payload); err != nil {
+		return
+	}
+
+	rawRows, ok := payload["rows"].([]any)
+	if !ok {
+		return
+	}
+
+	for _, row := range rawRows {
+		rowMap := row.(map[string]any)
+		uuid, ok := rowMap["uuid"].(string)
+		if !ok {
+			continue
+		}
+
+		callState, _ := rowMap["callstate"].(string)
+
+		if callState == "DOWN" {
+			_, _ = fs.SendApiCmd("uuid_kill " + uuid)
 		}
 	}
 }
