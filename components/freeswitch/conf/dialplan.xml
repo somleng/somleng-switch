@@ -48,6 +48,7 @@
         <action application="set" data="cgr_destination=${sip_h_X-Somleng-Destination}" />
 
         <action application="set" data="cgr_reqtype=*${sip_h_X-Somleng-BillingMode}" />
+        <action application="set" data="park_timeout=10"/>
         <action application="park" />
       </condition>
     </extension>

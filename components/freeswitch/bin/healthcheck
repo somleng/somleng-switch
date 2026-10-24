@@ -2,11 +2,65 @@
 
 set -e
 
-# Determine host: prefer FS_HOST if set, otherwise use localhost
-FS_HOST=$(hostname -i)
+check_rayo_status() {
+  fs_cli -p "$FS_EVENT_SOCKET_PASSWORD" -x 'rayo status' | rayo_status_parser
+}
 
-fs_cli -p $FS_EVENT_SOCKET_PASSWORD -x 'rayo status' | rayo_status_parser
+check_sip_responsiveness() {
+  fs_host=$(hostname -i)
 
-# Check SIP responsiveness
-sipsak -s sip:healthcheck@$FS_HOST:${FS_EXT_PROFILE_NAT_GATEWAY_SIP_PORT:-5060} >/dev/null 2>&1
-sipsak -s sip:healthcheck@$FS_HOST:${FS_EXT_PROFILE_UAS_NAT_INSTANCE_SIP_PORT:-5080} >/dev/null 2>&1
+  sipsak -s "sip:healthcheck@${fs_host}:${FS_EXT_PROFILE_NAT_GATEWAY_SIP_PORT:-5060}" >/dev/null 2>&1
+  sipsak -s "sip:healthcheck@${fs_host}:${FS_EXT_PROFILE_UAS_NAT_INSTANCE_SIP_PORT:-5080}" >/dev/null 2>&1
+}
+
+count_verified_ram_channels() {
+  calls_json=$(fs_cli -p "$FS_EVENT_SOCKET_PASSWORD" -x "show calls as json")
+  reported_uuids=$(echo "$calls_json" | jq -r '.rows[]?.uuid // empty' 2>/dev/null || true)
+
+  real_alive_count=0
+
+  for uuid in $reported_uuids; do
+    [ -z "$uuid" ] && continue
+
+    is_alive=$(fs_cli -p "$FS_EVENT_SOCKET_PASSWORD" -x "uuid_exists $uuid" | tr -d '\r\n' || echo "false")
+
+    if [ "$is_alive" = "true" ]; then
+      real_alive_count=$((real_alive_count + 1))
+    fi
+  done
+
+  echo "$real_alive_count"
+}
+
+check_session_counter_leak() {
+  status_output=$(fs_cli -p "$FS_EVENT_SOCKET_PASSWORD" -x "status")
+
+  active_sessions=$(echo "$status_output" | awk '/session\(s\) - peak/ {print $1}')
+  max_sessions=$(echo "$status_output" | awk '/session\(s\) max/ {print $1}')
+
+  active_sessions=${active_sessions:-0}
+  max_sessions=${max_sessions:-0}
+
+  # If the counter reports saturation, verify against real memory channels
+  if [ "$max_sessions" -gt 0 ] && [ "$active_sessions" -ge "$max_sessions" ]; then
+    real_alive_count=$(count_verified_ram_channels)
+
+    if [ "$real_alive_count" -eq 0 ]; then
+      echo "CRITICAL: Session counter leak detected! Status reports $active_sessions/$max_sessions active sessions, but uuid_exists verified $real_alive_count real channels in RAM." >&2
+      return 1
+    fi
+  fi
+
+  return 0
+}
+
+main() {
+  check_rayo_status
+  check_sip_responsiveness
+  check_session_counter_leak
+
+  echo "HEALTHY: FreeSWITCH operating normally"
+  exit 0
+}
+
+main
