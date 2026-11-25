@@ -11,9 +11,9 @@ GIT
 
 GIT
   remote: https://github.com/bblimke/webmock.git
-  revision: 11392e455b9ee025b72cbebcaaa9e0a9f201bac0
+  revision: 596b1fb7d50a47e36c8f7aad0488db92750b10bd
   specs:
-    webmock (3.34.0)
+    webmock (3.35.0)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
@@ -104,7 +104,7 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
-    addressable (2.9.1)
+    addressable (2.9.2)
       public_suffix (>= 2.0.2, < 8.0)
     adhearsion-loquacious (1.9.3)
     ast (2.4.3)
@@ -176,7 +176,7 @@ GEM
     ffi (1.17.4-x86_64-linux-musl)
     future-resource (1.1.0)
     has-guarded-handlers (1.6.3)
-    hashdiff (1.2.1)
+    hashdiff (1.2.2)
     http (6.0.4)
       http-cookie (~> 1.0)
       llhttp (~> 0.6.1)
